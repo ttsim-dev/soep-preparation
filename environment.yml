@@ -1,0 +1,24 @@
+---
+name: data_management_von_gaudecker
+channels: [conda-forge, nodefaults]
+dependencies:
+  - conda-lock
+  - ipykernel
+  - jupyterlab
+  - pandas
+  - pip >=21.1
+  - plotly>=5.13.0
+  - pre-commit
+  - pytask-latex>=0.4.0
+  - pytask-parallel>=0.4.0
+  - pytask>=0.4.0
+  - pytest
+  - pytest-cov
+  - pytest-xdist
+  - python-graphviz
+  - python=3.11
+  - pyyaml
+  - setuptools_scm
+  - statsmodels
+  - toml
+  - pip: [-e ., kaleido, pdbp]
