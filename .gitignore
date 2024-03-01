@@ -24,3 +24,9 @@ bld/
 *.pdf
 *.run.xml
 *.synctex.gz
+
+#MacOS
+.DS_Store
+
+# temporarily ignore data files due to large size
+data/
