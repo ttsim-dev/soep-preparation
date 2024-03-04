@@ -13,4 +13,4 @@ for id_, kwargs in ID_TO_KWARGS.items():
         # TODO: write docstring
         """Clean one dataset."""
         out = clean_biobirth.clean_biobirth(depends_on)
-        return out.to_pickle(produces)
+        out.to_pickle(produces)
