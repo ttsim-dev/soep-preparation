@@ -1,6 +1,7 @@
 """Utilities used in various parts of the project."""
 
 import yaml
+import re
 
 
 def read_yaml(path):
