@@ -1,7 +1,7 @@
 from data_management_von_gaudecker.config import SRC, BLD
 
 def create_parametrization():
-    """Create the parametrization for the task."""
+    """Create the parametrization for the task clean datasets."""
     id_to_kwargs = {}
     for id_ in ["biobirth"]:
         id_to_kwargs[id_] = {
