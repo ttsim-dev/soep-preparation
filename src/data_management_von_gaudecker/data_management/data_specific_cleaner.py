@@ -19,3 +19,4 @@ def melt_biobirth(data: pd.DataFrame) -> pd.DataFrame:
     """Melt the biobirth dataset from wide to long format."""
     out = data.melt(id_vars=["hh_id_orig", "p_id", "n_kids_total"])
     return out.dropna(subset=['value']).reset_index(drop=True)
+    

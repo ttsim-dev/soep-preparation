@@ -3,7 +3,7 @@ from pytask import task
 from data_management_von_gaudecker.data_helper.data_loader import dta_loader
 from data_management_von_gaudecker.data_helper.data_cleaning_parametrization import create_parametrization
 import data_management_von_gaudecker.data_management.data_specific_cleaner as data_specific_cleaner
-from data_management_von_gaudecker.src.data_management_von_gaudecker.data_management.data_specific_cleaner import clean_biobirth, melt_biobirth
+from data_management_von_gaudecker.data_management.data_specific_cleaner import clean_biobirth, melt_biobirth
 
 ID_TO_KWARGS = create_parametrization()
 
@@ -20,6 +20,7 @@ for id_, kwargs in ID_TO_KWARGS.items():
             data_set_name (str): Name of the dataset.
         """
         raw_data = dta_loader(depends_on)
-        cleaned = clean_biobirth(raw_data)
-        long_cleaned = melt_biobirth(cleaned)
+        breakpoint()
+        cleaned = getattr(data_specific_cleaner, f"clean_{data_set_name}")(raw_data)
+        long_cleaned = getattr(data_specific_cleaner, f"melt_{data_set_name}")(cleaned)
         long_cleaned.to_pickle(produces)
