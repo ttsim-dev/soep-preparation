@@ -2,7 +2,8 @@ from pytask import task
 
 from data_management_von_gaudecker.data_helper.data_loader import dta_loader
 from data_management_von_gaudecker.data_helper.data_cleaning_parametrization import create_parametrization
-from data_management_von_gaudecker.data_management.data_specific_cleaner.clean_biobirth import clean_biobirth, melt_biobirth
+import data_management_von_gaudecker.data_management.data_specific_cleaner as data_specific_cleaner
+from data_management_von_gaudecker.src.data_management_von_gaudecker.data_management.data_specific_cleaner import clean_biobirth, melt_biobirth
 
 ID_TO_KWARGS = create_parametrization()
 
