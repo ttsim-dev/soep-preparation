@@ -11,29 +11,15 @@ def _remove_irrelevant_categories(sr: pd.Series) -> pd.Series:
     removing_categories = list(set(sr.cat.categories) & set(CATEGORIES_TO_REMOVE))
     return sr.cat.remove_categories(removing_categories)
 
-
-def _integer_category_transformation(sr: pd.Series) -> pd.Series:
+def _integer_category_cleaning(sr: pd.Series) -> pd.Series:
     """Transform a series to an integer."""
+    sr = _remove_irrelevant_categories(sr)
     return sr.cat.rename_categories(sr.cat.categories.astype("Int64"))
 
-def _birth_month_child_categories(sr: pd.Series) -> pd.Series:
+def _month_category_cleaning(sr: pd.Series) -> pd.Series:
     """Set the categories of the birth month of a child."""
-    return sr.cat.set_categories(
-        [
-            "Januar",
-            "Februar",
-            "Maerz",
-            "April",
-            "Mai",
-            "Juni",
-            "Juli",
-            "August",
-            "September",
-            "Oktober",
-            "November",
-            "Dezember",
-        ]
-    )
+    sr = _remove_irrelevant_categories(sr)
+    return sr.cat.rename_categories([i.split(" ")[1] for i in sr.cat.categories])
 
 
 def clean_biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -44,15 +30,12 @@ def clean_biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["n_kids_total"] = raw_data["sumkids"].astype("Int64")
     for i in range(1, 16):
         two_digit = f"{i:02d}"
-        out[f"birth_year_child_{i}"] = _integer_category_transformation(_remove_irrelevant_categories(raw_data[f"kidgeb{two_digit}"])) # convert to int and reset categories ?
-        out[f"p_id_child_{i}"] = _integer_category_transformation(_remove_irrelevant_categories(raw_data[f"kidpnr{two_digit}"])) # convert to int and reset categories ?
-        out[f"birth_month_child_{i}"] = _birth_month_child_categories(_remove_irrelevant_categories(raw_data[f"kidmon{two_digit}"]))
+        out[f"birth_year_child_{i}"] = _integer_category_cleaning(raw_data[f"kidgeb{two_digit}"])
+        out[f"p_id_child_{i}"] = _integer_category_cleaning(raw_data[f"kidpnr{two_digit}"])
+        out[f"birth_month_child_{i}"] = _month_category_cleaning(raw_data[f"kidmon{two_digit}"])
     return out
-
-    # TODO: there is still a bug regarding the cleaning and transformation of birthmonth data
 
 def melt_biobirth(data: pd.DataFrame) -> pd.DataFrame:
     """Melt the biobirth dataset."""
-    # breakpoint()
     out = data.melt(id_vars=["hh_id_orig", "p_id", "n_kids_total"])
     return out.dropna(subset=['value']).reset_index(drop=True)
