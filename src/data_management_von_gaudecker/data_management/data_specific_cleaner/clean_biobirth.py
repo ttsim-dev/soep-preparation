@@ -1,9 +1,6 @@
 import pandas as pd
-from pathlib import Path
 
-from data_management_von_gaudecker.config import SRC, BLD
-
-CATEGORIES_TO_REMOVE = ["[-5] In Fragebogenversion nicht enthalten", "[-3] nicht valide", "[-2] trifft nicht zu", "[-1] keine Angabe"] # move to different place
+from data_management_von_gaudecker.config import CATEGORIES_TO_REMOVE
 
 
 def _remove_irrelevant_categories(sr: pd.Series) -> pd.Series:
@@ -36,6 +33,6 @@ def clean_biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
     return out
 
 def melt_biobirth(data: pd.DataFrame) -> pd.DataFrame:
-    """Melt the biobirth dataset."""
+    """Melt the biobirth dataset from wide to long format."""
     out = data.melt(id_vars=["hh_id_orig", "p_id", "n_kids_total"])
     return out.dropna(subset=['value']).reset_index(drop=True)
