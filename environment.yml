@@ -5,10 +5,12 @@ dependencies:
   - conda-lock
   - ipykernel
   - jupyterlab
-  - pandas
+  - pandas >=2.1
   - pip >=21.1
   - plotly>=5.13.0
   - pre-commit
+  - pyarrow >=13.0
+  - pygraphviz
   - pytask-latex>=0.4.0
   - pytask-parallel>=0.4.0
   - pytask>=0.4.0
