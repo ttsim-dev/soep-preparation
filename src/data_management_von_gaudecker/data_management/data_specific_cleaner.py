@@ -6,7 +6,7 @@ from data_management_von_gaudecker.data_helper.data_cleaning_helper import _inte
 def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the bioedu dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = raw_data["cid"].astype("Int32")
+    out["soep_initial_hh_id"] = raw_data["cid"].astype("Int32")
     out["p_id"] = raw_data["pid"].astype("Int32")
 
     out["birth_month"] = _categorical_string_cleaning(raw_data["gebmonat"])
@@ -16,7 +16,7 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
 def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biobirth dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = raw_data["cid"].astype("Int32")
+    out["soep_initial_hh_id"] = raw_data["cid"].astype("Int32")
     out["p_id"] = raw_data["pid"].astype("Int32")
 
     out["n_kids_total"] = raw_data["sumkids"].astype("Int16")
@@ -33,7 +33,7 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
 def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
-    out["hh_id"] = raw_data["hid"].astype("Int32")
+    out["soep_hh_id"] = raw_data["hid"].astype("Int32")
     out["p_id"] = raw_data["pid"].astype("Int32")
 
     out["year"] = raw_data["syear"].astype("Int16")
