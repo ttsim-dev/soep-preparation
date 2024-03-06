@@ -1,15 +1,21 @@
+import pandas as pd
+
 from pytask import task
 
-from data_management_von_gaudecker.data_helper.data_loader import dta_loader
-from data_management_von_gaudecker.data_helper.data_cleaning_parametrization import create_parametrization
+from data_management_von_gaudecker.config import SRC, BLD
 import data_management_von_gaudecker.data_management.data_specific_cleaner as data_specific_cleaner
-from data_management_von_gaudecker.data_management.data_specific_cleaner import clean_biobirth, melt_biobirth
 
-ID_TO_KWARGS = create_parametrization()
+def create_parametrization(dataset: str) -> dict:
+    """Create the parametrization for the task clean dataset."""
+    return {
+            "depends_on": SRC.joinpath("data", "V37", f"{dataset}.dta").resolve(),
+            "produces": BLD.joinpath("python", "data", f"{dataset}_long_and_cleaned.pkl").resolve(),
+            "data_set_name": dataset,
+        }
 
-for id_, kwargs in ID_TO_KWARGS.items():
+for dataset in ["biobirth", "bioedu", "biol"]:
 
-    @task(id=id_, kwargs=kwargs)
+    @task(id=dataset, kwargs=create_parametrization(dataset))
     def task_clean_one_dataset(depends_on, produces, data_set_name):
         """
         Clean one dataset.
@@ -19,8 +25,7 @@ for id_, kwargs in ID_TO_KWARGS.items():
             produces (str): Path to save the cleaned data file.
             data_set_name (str): Name of the dataset.
         """
-        raw_data = dta_loader(depends_on)
-        breakpoint()
-        cleaned = getattr(data_specific_cleaner, f"clean_{data_set_name}")(raw_data)
-        long_cleaned = getattr(data_specific_cleaner, f"melt_{data_set_name}")(cleaned)
-        long_cleaned.to_pickle(produces)
+        raw_data = pd.read_stata(depends_on)
+        cleaned = getattr(data_specific_cleaner, f"{data_set_name}")(raw_data)
+        cleaned.to_pickle(produces)
+        
