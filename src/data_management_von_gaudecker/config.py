@@ -9,6 +9,6 @@ PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
 GROUPS = ["marital_status", "qualification"]
 
-CATEGORIES_TO_REMOVE = ["[-5] In Fragebogenversion nicht enthalten", "[-3] nicht valide", "[-2] trifft nicht zu", "[-1] keine Angabe"]
+CATEGORIES_TO_REMOVE = ["[-8] Frage in diesem Jahr nicht Teil des Frageprogramms", "[-5] in Fragebogenversion nicht enthalten", "[-3] nicht valide", "[-2] trifft nicht zu", "[-1] keine Angabe"]
 
 __all__ = ["BLD", "SRC", "TEST_DIR", "GROUPS", "CATEGORIES_TO_REMOVE"]
