@@ -10,7 +10,7 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = raw_data["pid"].astype("Int32")
 
     out["birth_month"] = _categorical_string_cleaning(raw_data["gebmonat"])
-    out = out.melt(id_vars=["soep_hh_id", "p_id"])
+    out = out.melt(id_vars=["soep_initial_hh_id", "p_id"])
     return out.dropna(subset=['value']).reset_index(drop=True)
 
 def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -27,7 +27,7 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
         out[f"p_id_child_{i}"] = _integer_category_cleaning(raw_data[f"kidpnr{two_digit}"])
         out[f"birth_month_child_{i}"] = _categorical_string_cleaning(raw_data[f"kidmon{two_digit}"])
 
-    out = out.melt(id_vars=["soep_hh_id", "p_id"])
+    out = out.melt(id_vars=["soep_initial_hh_id", "p_id"])
     return out.dropna(subset=['value']).reset_index(drop=True)
 
 def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -45,5 +45,5 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["religion_father"] = _categorical_string_cleaning(raw_data["lb0124_h"])
     out["religion_mother"] = _categorical_string_cleaning(raw_data["lb0125_h"])
 
-    out = out.melt(id_vars=["hh_id", "p_id"])
+    out = out.melt(id_vars=["soep_hh_id", "p_id"])
     return out.dropna(subset=['value']).reset_index(drop=True)
