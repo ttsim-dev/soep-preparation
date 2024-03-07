@@ -7,6 +7,4 @@ BLD = SRC.joinpath("..", "..", "bld").resolve()
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
-CATEGORIES_TO_REMOVE = {"[-8] Frage in diesem Jahr nicht Teil des Frageprogramms", "[-5] In Fragebogenversion nicht enthalten", "[-3] nicht valide", "[-2] trifft nicht zu", "[-1] keine Angabe"}
-
-__all__ = ["BLD", "SRC", "TEST_DIR", "CATEGORIES_TO_REMOVE"]
+__all__ = ["BLD", "SRC", "TEST_DIR"]

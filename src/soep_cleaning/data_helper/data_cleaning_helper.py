@@ -1,12 +1,11 @@
 import pandas as pd
 
-from soep_cleaning.config import CATEGORIES_TO_REMOVE
 from soep_cleaning.utilities import find_lowest_int_dtype
 
 def _remove_irrelevant_categories(sr: pd.Series) -> pd.Series:
     """Remove irrelevant categories from a series."""
     str_categories = sr.cat.categories[sr.cat.categories.map(lambda x: isinstance(x, str))]
-    removing_categories = list(set(str_categories) & CATEGORIES_TO_REMOVE)
+    removing_categories = [i for i in str_categories if i.startswith("[-") and i[3] == "]"]
     return sr.cat.remove_categories(removing_categories)
 
 def _categorical_string_cleaning(sr: pd.Series, one_identifier_level: bool=True) -> pd.Series:
@@ -25,3 +24,8 @@ def _categorical_int_cleaning(sr: pd.Series) -> pd.Series:
     categories_order = sr.sort_values().unique().dropna().tolist()
     sr = sr.astype("category")
     return sr.cat.set_categories(categories_order, rename=True, ordered=True)
+
+def _categorical_bool_cleaning(sr: pd.Series) -> pd.Series:
+    """Transform a series to an ordered categorical containing booleans."""
+    sr = sr.astype("category")
+    return sr.cat.set_categories([False, True], rename=True, ordered=True)
