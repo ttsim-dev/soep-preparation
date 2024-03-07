@@ -1,6 +1,6 @@
 import pandas as pd
 
-from soep_cleaning.data_helper.data_cleaning_helper import _categorical_string_cleaning, _categorical_int_cleaning
+from soep_cleaning.data_helper.data_cleaning_helper import _categorical_string_cleaning, _categorical_int_cleaning, _categorical_bool_cleaning
 
 def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the bioedu dataset."""
@@ -64,17 +64,44 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["soep_initial_hh_id"] = raw_data["cid"].astype("Int32")
     out["soep_hh_id"] = raw_data["hid"].astype("Int32")
+
     out["year"] = _categorical_int_cleaning(raw_data["syear"])
     out["building_year_hh_max"] = _categorical_int_cleaning(raw_data["hgcnstyrmax"])
     out["building_year_hh_min"] = _categorical_int_cleaning(raw_data["hgcnstyrmin"])
     out["heating_costs_m_hh"] = _categorical_int_cleaning(raw_data["hgheat"])
-    out["heizkosten_mi_reason"] = _categorical_string_cleaning(raw_data["hgheatinfo"])
     out["einzugsjahr"] = _categorical_int_cleaning(raw_data["hgmoveyr"])
-    out["rented_or_owned"] = _categorical_string_cleaning(raw_data["hgowner"])
     out["bruttokaltmiete_m_hh"] = _categorical_int_cleaning(raw_data["hgrent"])
     out["living_space_hh"] = _categorical_int_cleaning(raw_data["hgsize"])
+
+    out["heizkosten_mi_reason"] = _categorical_string_cleaning(raw_data["hgheatinfo"])
+    out["rented_or_owned"] = _categorical_string_cleaning(raw_data["hgowner"])
     out["hh_typ"] = _categorical_string_cleaning(sr=raw_data["hgtyp1hh"], one_identifier_level=False)
     out["hh_typ_2st"] = _categorical_string_cleaning(raw_data["hgtyp2hh"])
     
     out = out.melt(id_vars=["soep_initial_hh_id", "soep_hh_id"])
+    return out.dropna(subset=['value']).reset_index(drop=True)
+
+def hl(raw_data: pd.DataFrame) -> pd.DataFrame:
+    """Clean the biol dataset."""
+    out = pd.DataFrame()
+    out["soep_hh_id"] = raw_data["hid"].astype("Int32")
+
+    out["year"] = _categorical_int_cleaning(raw_data["syear"])
+
+    out["kindergeld_hl_m_hh_prev"] = _categorical_int_cleaning(raw_data["hlc0042_h"])
+    out["kindergeld_bezug_aktuell"] = _categorical_bool_cleaning(raw_data["hlc0044_h"])
+    out["kindergeld_aktuell_hl_m_hh"] = _categorical_int_cleaning(raw_data["hlc0045_h"])
+    out["kinderzuschlag_aktuell_hh"] = _categorical_bool_cleaning(raw_data["hlc0046_h"])
+    out["kinderzuschlag_hl_m_hh"] = _categorical_int_cleaning(raw_data["hlc0047_h"])
+    out["kinderzuschlag_hl_hh_prev"] = _categorical_bool_cleaning(raw_data["hlc0049_h"])
+    out["kinderzuschlag_hl_m_hh_prev"] = _categorical_int_cleaning(raw_data["hlc0051_h"])
+    out["alg2_months_soep_hh_prev"] = _categorical_int_cleaning(raw_data["hlc0053"])
+    out["arbeitsl_geld_2_soep_m_hh_prev"] = _categorical_int_cleaning(raw_data["hlc0054"])
+    out["alg2_etc_aktuell_hh"] = _categorical_bool_cleaning(raw_data["hlc0064_h"])
+    out["hilfe_lebensunterh_aktuell_hh"] = _categorical_bool_cleaning(raw_data["hlc0067_h"])
+    out["wohngeld_soep_m_hh_prev"] = _categorical_int_cleaning(raw_data["hlc0082_h"])
+    out["wohngeld_aktuell_hh"] = _categorical_bool_cleaning(raw_data["hlc0083_h"])
+    out["betreu_kosten_pro_kind"] = _categorical_int_cleaning(raw_data["hld0009"])
+
+    out = out.melt(id_vars=["soep_hh_id"])
     return out.dropna(subset=['value']).reset_index(drop=True)

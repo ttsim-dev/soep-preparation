@@ -13,7 +13,7 @@ def create_parametrization(dataset: str) -> dict:
             "data_set_name": dataset,
         }
 
-for dataset in ["biobirth", "bioedu", "biol", "design", "hgen"]:
+for dataset in ["biobirth", "bioedu", "biol", "design", "hgen", "hl"]:
 
     @task(id=dataset, kwargs=create_parametrization(dataset))
     def task_clean_one_dataset(depends_on, produces, data_set_name):
