@@ -1,7 +1,7 @@
 """Utilities used in various parts of the project."""
 
 import yaml
-import re
+import pandas as pd
 
 
 def read_yaml(path):
@@ -24,3 +24,29 @@ def read_yaml(path):
             )
             raise ValueError(info) from error
     return out
+
+def find_lowest_int_dtype(sr: pd.Series):
+    """Find the lowest integer dtype for a series.
+
+    Args:
+        sr (pd.Series): The series to check.
+
+    Returns:
+        str: The lowest integer dtype.
+
+    """
+    if sr.min() >= 0:
+        if sr.max() <= 255:
+            return "UInt8"
+        if sr.max() <= 65535:
+            return "UInt16"
+        if sr.max() <= 4294967295:
+            return "UInt32"
+        return "UInt64"
+    if sr.min() >= -128 and sr.max() <= 127:
+        return "Int8"
+    if sr.min() >= -32768 and sr.max() <= 32767:
+        return "Int16"
+    if sr.min() >= -2147483648 and sr.max() <= 2147483647:
+        return "Int32"
+    return "Int64"
