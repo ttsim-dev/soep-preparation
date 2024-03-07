@@ -13,7 +13,7 @@ def create_parametrization(dataset: str) -> dict:
             "data_set_name": dataset,
         }
 
-for dataset in ["biobirth", "bioedu", "biol"]:
+for dataset in ["biobirth", "bioedu", "biol", "design", "hgen"]:
 
     @task(id=dataset, kwargs=create_parametrization(dataset))
     def task_clean_one_dataset(depends_on, produces, data_set_name):
@@ -28,4 +28,3 @@ for dataset in ["biobirth", "bioedu", "biol"]:
         raw_data = pd.read_stata(depends_on)
         cleaned = getattr(data_specific_cleaner, f"{data_set_name}")(raw_data)
         cleaned.to_pickle(produces)
-        

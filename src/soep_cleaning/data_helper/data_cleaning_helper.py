@@ -9,10 +9,13 @@ def _remove_irrelevant_categories(sr: pd.Series) -> pd.Series:
     removing_categories = list(set(str_categories) & CATEGORIES_TO_REMOVE)
     return sr.cat.remove_categories(removing_categories)
 
-def _categorical_string_cleaning(sr: pd.Series) -> pd.Series:
+def _categorical_string_cleaning(sr: pd.Series, one_identifier_level: bool=True) -> pd.Series:
     """Clean categorial categories with preceiding numbering."""
     sr = _remove_irrelevant_categories(sr)
-    return sr.cat.rename_categories([i.split(" ", 1)[1] for i in sr.cat.categories])
+    if one_identifier_level:
+        return sr.cat.rename_categories([i.split(" ", 1)[1] for i in sr.cat.categories])
+    else:
+        return sr.cat.rename_categories([i.split(" ", 2)[2] for i in sr.cat.categories])
 
 def _categorical_int_cleaning(sr: pd.Series) -> pd.Series:
     """Transform a series to an ordered categorical containing integers."""
