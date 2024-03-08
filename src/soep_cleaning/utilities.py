@@ -37,16 +37,16 @@ def find_lowest_int_dtype(sr: pd.Series):
     """
     if sr.min() >= 0:
         if sr.max() <= 255:
-            return "UInt8"
+            return "uint8[pyarrow]"
         if sr.max() <= 65535:
-            return "UInt16"
+            return "uint16[pyarrow]"
         if sr.max() <= 4294967295:
-            return "UInt32"
-        return "UInt64"
+            return "uint32[pyarrow]"
+        return "uint64[pyarrow]"
     if sr.min() >= -128 and sr.max() <= 127:
-        return "Int8"
+        return "int8[pyarrow]"
     if sr.min() >= -32768 and sr.max() <= 32767:
-        return "Int16"
+        return "int16[pyarrow]"
     if sr.min() >= -2147483648 and sr.max() <= 2147483647:
-        return "Int32"
-    return "Int64"
+        return "int32[pyarrow]"
+    return "int64[pyarrow]"
