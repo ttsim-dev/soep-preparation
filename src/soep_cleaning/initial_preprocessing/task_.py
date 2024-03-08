@@ -26,7 +26,5 @@ for dataset in ["biobirth", "bioedu", "biol", "design", "hgen", "hl"]:
             data_set_name (str): Name of the dataset.
         """
         raw_data = pd.read_stata(depends_on)
-        breakpoint()
         cleaned = getattr(data_specific_cleaner, f"{data_set_name}")(raw_data)
         cleaned.to_pickle(produces)
-

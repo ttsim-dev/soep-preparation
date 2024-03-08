@@ -33,7 +33,7 @@ def categorical_bool_cleaning(sr: pd.Series) -> pd.Series:
     sr = sr.astype("category")
     return sr.cat.set_categories([False, True], rename=True, ordered=True)
 
-def transform_biobirth(df: pd.DataFrame) -> pd.DataFrame:
+def biobirth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
     prev_wide_cols = ['birth_year_child', 'p_id_child', 'birth_month_child']
     df = pd.wide_to_long(df, stubnames=prev_wide_cols, i=['soep_initial_hh_id', 'p_id', 'n_kids_total'], j='child_number', sep='_').reset_index()
     df = df.dropna(subset=prev_wide_cols, how="all")
