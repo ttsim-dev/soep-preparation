@@ -4,11 +4,6 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.0"]
 [tool.setuptools_scm]
 write_to = "src/soep_cleaning/_version.py"
 
-[tool.pytask.ini_options]
-paths = ["./src/soep_cleaning"]
-pdbcls = "pdbp:Pdb"
-task_files = ["task_*.py", "task.py"]
-
 [tool.ruff]
 target-version = "py311"
 select = ["ALL"]
@@ -34,6 +29,8 @@ black = "pyproject.toml"
 black = 1
 
 [tool.pytask.ini_options]
+paths = ["./src/soep_cleaning"]
+pdbcls = "pdbp:Pdb"
 editor_url_scheme = "vscode"
 task_files = ["task_*.py", "task.py", "tasks.py"]
 
