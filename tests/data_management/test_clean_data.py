@@ -2,18 +2,18 @@ import numpy as np
 import pandas as pd
 import pytest
 from soep_cleaning.config import TEST_DIR
-from soep_cleaning.data_management import clean_data
+from soep_cleaning.initial_preprocessing import clean_data
 from soep_cleaning.utilities import read_yaml
 
 
 @pytest.fixture()
 def data():
-    return pd.read_csv(TEST_DIR / "data_management" / "data_fixture.csv")
+    return pd.read_csv(TEST_DIR / "initial_preprocessing" / "data_fixture.csv")
 
 
 @pytest.fixture()
 def data_info():
-    return read_yaml(TEST_DIR / "data_management" / "data_info_fixture.yaml")
+    return read_yaml(TEST_DIR / "initial_preprocessing" / "data_info_fixture.yaml")
 
 
 def test_clean_data_drop_columns(data, data_info):
