@@ -1,12 +1,13 @@
 import pandas as pd
 
+from soep_cleaning.utilities import find_lowest_int_dtype
 from soep_cleaning.initial_preprocessing.data_cleaning_helper import categorical_string_cleaning, categorical_int_cleaning, categorical_bool_cleaning, transform_biobirth
 
 def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the bioedu dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = raw_data["cid"].astype("int32[pyarrow]")
-    out["p_id"] = raw_data["pid"].astype("int32[pyarrow]")
+    out["soep_initial_hh_id"] = raw_data["cid"].astype(find_lowest_int_dtype(raw_data["cid"]))
+    out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
 
     out["birth_month"] = categorical_string_cleaning(raw_data["gebmonat"], unordered=True)
     return out
@@ -14,10 +15,10 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
 def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biobirth dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = raw_data["cid"].astype("int32[pyarrow]")
-    out["p_id"] = raw_data["pid"].astype("int32[pyarrow]")
+    out["soep_initial_hh_id"] = raw_data["cid"].astype(find_lowest_int_dtype(raw_data["cid"]))
+    out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
 
-    out["n_kids_total"] = raw_data["sumkids"].astype("int16[pyarrow]")
+    out["n_kids_total"] = raw_data["sumkids"].astype(find_lowest_int_dtype(raw_data["sumkids"]))
 
     for i in range(1, 16):
         two_digit = f"{i:02d}"
@@ -30,11 +31,10 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
 def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = raw_data["hid"].astype("int32[pyarrow]")
-    out["p_id"] = raw_data["pid"].astype("int32[pyarrow]")
+    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
+    out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
 
     out["year"] = categorical_int_cleaning(raw_data["syear"])
-
 
     out["birthplace"] = categorical_string_cleaning(raw_data["lb0013_h"], unordered=True)
     out["res_childhood"] = categorical_string_cleaning(raw_data["lb0058"], unordered=True)
@@ -48,19 +48,19 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
 def design(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = raw_data["cid"].astype("int32[pyarrow]")
-    out["hh_random_group"] = raw_data["rgroup"].astype("int8[pyarrow]")
-    out["hh_strat"] = raw_data["strat"].astype("int16[pyarrow]")
+    out["soep_initial_hh_id"] = raw_data["cid"].astype(find_lowest_int_dtype(raw_data["cid"]))
+    out["hh_random_group"] = raw_data["rgroup"].astype(find_lowest_int_dtype(raw_data["rgroup"]))
+    out["hh_strat"] = raw_data["strat"].astype(find_lowest_int_dtype(raw_data["strat"]))
 
-    out["hh_random_group"] = categorical_string_cleaning(raw_data["hsample"], unordered=True)
+    out["hh_soep_sample"] = categorical_string_cleaning(raw_data["hsample"], one_identifier_level=False, unordered=True)
 
     return out
 
 def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = raw_data["cid"].astype("int32[pyarrow]")
-    out["soep_hh_id"] = raw_data["hid"].astype("int32[pyarrow]")
+    out["soep_initial_hh_id"] = raw_data["cid"].astype(find_lowest_int_dtype(raw_data["cid"]))
+    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
 
     out["year"] = categorical_int_cleaning(raw_data["syear"])
     out["building_year_hh_max"] = categorical_int_cleaning(raw_data["hgcnstyrmax"])
@@ -81,7 +81,7 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
 def hl(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = raw_data["hid"].astype("int32[pyarrow]")
+    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
 
     out["year"] = categorical_int_cleaning(raw_data["syear"])
 
