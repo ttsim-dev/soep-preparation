@@ -32,6 +32,10 @@ black = "pyproject.toml"
 [tool.nbqa.mutate]
 black = 1
 
+[tool.pytask.ini_options]
+editor_url_scheme = "vscode"
+task_files = ["task_*.py", "task.py", "tasks.py"]
+
 
 [tool.pytest.ini_options]
 addopts = "--pdbcls=pdbp:Pdb"
