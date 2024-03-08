@@ -25,7 +25,7 @@ def read_yaml(path):
             raise ValueError(info) from error
     return out
 
-def find_lowest_int_dtype(sr: pd.Series):
+def find_lowest_int_dtype(sr: pd.Series) -> str:
     """Find the lowest integer dtype for a series.
 
     Args:
@@ -35,6 +35,8 @@ def find_lowest_int_dtype(sr: pd.Series):
         str: The lowest integer dtype.
 
     """
+    if "float" in sr.dtype.name:
+        sr = sr.astype("float[pyarrow]")
     if sr.min() >= 0:
         if sr.max() <= 255:
             return "uint8[pyarrow]"
@@ -50,3 +52,24 @@ def find_lowest_int_dtype(sr: pd.Series):
     if sr.min() >= -2147483648 and sr.max() <= 2147483647:
         return "int32[pyarrow]"
     return "int64[pyarrow]"
+
+def find_lowest_float_dtype(sr: pd.Series) -> str:
+    """Find the lowest float dtype for a series.
+
+    Args:
+        sr (pd.Series): The series to check.
+
+    Returns:
+        str: The lowest float dtype.
+
+    """
+    if sr.isna().any():
+        return "float64[pyarrow]"
+    if sr.min() >= 0:
+        if sr.max() <= 3.4028235e38:
+            return "float32[pyarrow]"
+        return "float64[pyarrow]"
+    if sr.min() >= -1.7976931348623157e308 and sr.max() <= 1.7976931348623157e308:
+        return "float64[pyarrow]"
+    return "float64[pyarrow]"
+    
