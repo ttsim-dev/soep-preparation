@@ -6,14 +6,14 @@ from soep_cleaning.initial_preprocessing.helper import (
     int_categorical_to_int,
     str_categorical,
 )
-from soep_cleaning.utilities import find_lowest_int_dtype
+from soep_cleaning.utilities import apply_lowest_int_dtype
 
 
 def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the bioedu dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = int_categorical_to_int(raw_data["cid"])
-    out["p_id"] = int_categorical_to_int(raw_data["pid"])
+    out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
 
     out["birth_month"] = str_categorical(
         raw_data["gebmonat"],
@@ -49,7 +49,7 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
 def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = int_categorical_to_int(raw_data["hid"])
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
 
     out["year"] = int_categorical_to_int(raw_data["syear"])

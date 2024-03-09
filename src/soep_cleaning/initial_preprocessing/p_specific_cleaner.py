@@ -3,7 +3,7 @@ import pandas as pd
 from soep_cleaning.initial_preprocessing.helper import (
     int_categorical_to_int,
 )
-from soep_cleaning.utilities import find_lowest_int_dtype
+from soep_cleaning.utilities import apply_lowest_int_dtype
 
 
 def pbrutto(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -11,7 +11,7 @@ def pbrutto(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["soep_initial_hh_id"] = int_categorical_to_int(raw_data["cid"])
-    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["birth_year"] = raw_data["geburt_v2"]
     out["befragungs_status"] = raw_data["befstat_h"]
@@ -29,7 +29,7 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pequiv dataset."""
     out = pd.DataFrame()
     out["soep_initial_hh_id"] = int_categorical_to_int(raw_data["cid"])
-    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["gender"] = raw_data["d11102ll"]
@@ -121,7 +121,7 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pgen dataset."""
     out = pd.DataFrame()
     out["soep_initial_hh_id"] = int_categorical_to_int(raw_data["cid"])
-    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["nationality_first"] = raw_data["pgnation"]
@@ -154,7 +154,7 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pkal dataset."""
     out = pd.DataFrame()
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
-    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
     out["soep_initial_hh_id"] = int_categorical_to_int(raw_data["cid"])
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["full_empl_v1_prev_1"] = raw_data["kal1a001_v1"]
@@ -218,7 +218,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pl dataset."""
     out = pd.DataFrame()
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
-    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
     out["lfd_pnr"] = raw_data["pnr"]
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["altersteilzeit_02_14"] = raw_data["plb0103"]
@@ -322,7 +322,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
 def ppathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the ppathl dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["current_east_west"] = raw_data["sampreg"]
