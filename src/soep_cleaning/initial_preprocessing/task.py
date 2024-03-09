@@ -5,14 +5,26 @@ from soep_cleaning.config import BLD, SRC
 from soep_cleaning.initial_preprocessing import data_specific_cleaner
 
 
-def create_parametrization(dataset: str) -> dict:
+def _dataset_script_name(dataset_name: str) -> str:
+    """Map the dataset name to the name of the script that cleans the dataset."""
+    if dataset_name.startswith("bio"):
+        return "bio_specific_cleaner"
+    elif dataset_name.startswith("h"):
+        return "h_specific_cleaner"
+    elif dataset_name.startswith("p"):
+        return "p_specific_cleaner"
+    else:
+        return "other_specific_cleaner"
+
+
+def _create_parametrization(dataset: str) -> dict:
     """Create the parametrization for the task clean dataset."""
     return {
         "depends_on": {
             "dataset": SRC.joinpath("data", "V37", f"{dataset}.dta").resolve(),
             "script": SRC.joinpath(
                 "initial_preprocessing",
-                "data_specific_cleaner.py",
+                f"{_dataset_script_name(dataset)}.py",
             ).resolve(),
         },
         "produces": BLD.joinpath(
@@ -20,7 +32,6 @@ def create_parametrization(dataset: str) -> dict:
             "data",
             f"{dataset}_long_and_cleaned.pkl",
         ).resolve(),
-        "data_set_name": dataset,
     }
 
 
@@ -42,8 +53,8 @@ for dataset in [
     "ppathl",
 ]:
 
-    @task(id=dataset, kwargs=create_parametrization(dataset))
-    def task_clean_one_dataset(depends_on, produces, data_set_name):
+    @task(id=dataset, kwargs=_create_parametrization(dataset))
+    def clean_one_dataset(depends_on, produces, data_set_name=dataset):
         """Clean one dataset.
 
         Args:
