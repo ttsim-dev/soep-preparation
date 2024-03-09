@@ -1,3 +1,4 @@
+from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import Annotated
 
@@ -60,19 +61,23 @@ for dataset in [
     def clean_one_dataset(
         depends_on: dict[str, Path],
         produces: Annotated[Path, Product],
-        data_set_name: str,
+        dataset_name: str,
     ) -> None:
         """Cleans a dataset using a specified cleaning script.
 
         Parameters:
             depends_on (dict[str, Path]): A dictionary containing the paths to the dependencies of the cleaning task.
             produces (Annotated[Path, Product]): The path where the cleaned dataset will be saved.
-            data_set_name (str): The name of the dataset to be cleaned.
+            dataset_name (str): The name of the dataset to be cleaned.
 
         Returns:
             None
 
         """
         raw_data = pd.read_stata(depends_on["dataset"])
-        cleaned = getattr(depends_on["script"], f"{data_set_name}")(raw_data)
+        module = SourceFileLoader(
+            depends_on["script"].stem,
+            str(depends_on["script"]),
+        ).load_module()
+        cleaned = getattr(module, f"{dataset_name}")(raw_data)
         cleaned.to_pickle(produces)
