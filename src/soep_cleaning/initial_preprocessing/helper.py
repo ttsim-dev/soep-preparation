@@ -1,6 +1,10 @@
 import pandas as pd
 
-from soep_cleaning.utilities import find_lowest_int_dtype
+from soep_cleaning.utilities import (
+    apply_lowest_int_dtype,
+    find_lowest_float_dtype,
+    find_lowest_int_dtype,
+)
 
 
 def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
@@ -92,7 +96,7 @@ def int_to_int_categorical(
         pd.Series[int]: The series with int categories.
 
     """
-    sr = sr.astype(find_lowest_int_dtype(sr))
+    sr = apply_lowest_int_dtype(sr)
     categories_order = sr.sort_values().unique().dropna().tolist()
     sr = sr.astype("category")
     return sr.cat.set_categories(categories_order, rename=True, ordered=ordered)
@@ -128,7 +132,7 @@ def biobirth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
     df = pd.wide_to_long(
         df,
         stubnames=prev_wide_cols,
-        i=["soep_initial_hh_id", "p_id", "n_kids_total"],
+        i=["soep_initial_hh_id", "p_id"],
         j="child_number",
         sep="_",
     ).reset_index()
@@ -138,6 +142,53 @@ def biobirth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
             "birth_year_child": find_lowest_int_dtype(df["birth_year_child"]),
             "p_id_child": find_lowest_int_dtype(df["p_id_child"]),
             "birth_month_child": "category",
+        },
+    )
+
+
+def hwealth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
+    """Transform the hwealth dataset from wide to long format.
+
+    Parameters:
+        df (pd.DataFrame): The input dataframe.
+
+    Returns:
+        pd.DataFrame: The dataframe in long format.
+
+    """
+    prev_wide_cols = [
+        "wohnsitz_immobilienverm_hh",
+        "finanzverm_hh",
+        "bruttoverm_hh",
+        "nettoverm_hh",
+        "wert_fahrzeuge",
+        "bruttoverm_inkl_fahrz_hh",
+        "nettoverm_fahrz_kredit_hh",
+    ]
+    df = pd.wide_to_long(
+        df,
+        stubnames=prev_wide_cols,
+        i=["year", "soep_hh_id"],
+        j="var",
+        sep="_",
+        suffix=r"\w+",
+    ).reset_index()
+    df = df.dropna(subset=prev_wide_cols, how="all")
+    return df.astype(
+        {
+            "wohnsitz_immobilienverm_hh": find_lowest_float_dtype(
+                df["wohnsitz_immobilienverm_hh"],
+            ),
+            "finanzverm_hh": find_lowest_float_dtype(df["finanzverm_hh"]),
+            "bruttoverm_hh": find_lowest_float_dtype(df["bruttoverm_hh"]),
+            "nettoverm_hh": find_lowest_float_dtype(df["nettoverm_hh"]),
+            "wert_fahrzeuge": find_lowest_int_dtype(df["wert_fahrzeuge"]),
+            "bruttoverm_inkl_fahrz_hh": find_lowest_float_dtype(
+                df["bruttoverm_inkl_fahrz_hh"],
+            ),
+            "nettoverm_fahrz_kredit_hh": find_lowest_float_dtype(
+                df["nettoverm_fahrz_kredit_hh"],
+            ),
         },
     )
 
@@ -153,4 +204,4 @@ def int_categorical_to_int(sr: "pd.Series[category]") -> "pd.Series[int]":
 
     """
     sr = _remove_missing_data_categories(sr)
-    return sr.astype(find_lowest_int_dtype(sr))
+    return apply_lowest_int_dtype(sr)
