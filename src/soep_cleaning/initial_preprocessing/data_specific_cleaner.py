@@ -1,11 +1,11 @@
 import pandas as pd
 
-from soep_cleaning.initial_preprocessing.data_cleaning_helper import (
+from soep_cleaning.initial_preprocessing.helper import (
     biobirth_wide_to_long,
-    categorical_bool_cleaning,
-    categorical_int_cleaning,
-    categorical_string_cleaning,
-    categorical_to_int_cleaning,
+    bool_categorical,
+    int_categorical,
+    int_categorical_to_int,
+    str_categorical,
 )
 from soep_cleaning.utilities import find_lowest_float_dtype, find_lowest_int_dtype
 
@@ -18,7 +18,7 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
 
-    out["birth_month"] = categorical_string_cleaning(
+    out["birth_month"] = str_categorical(
         raw_data["gebmonat"],
         unordered=True,
     )
@@ -39,13 +39,13 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     for i in range(1, 16):
         two_digit = f"{i:02d}"
-        out[f"birth_year_child_{i}"] = categorical_int_cleaning(
+        out[f"birth_year_child_{i}"] = int_categorical(
             raw_data[f"kidgeb{two_digit}"],
         )
-        out[f"p_id_child_{i}"] = categorical_int_cleaning(
+        out[f"p_id_child_{i}"] = int_categorical(
             raw_data[f"kidpnr{two_digit}"],
         )
-        out[f"birth_month_child_{i}"] = categorical_string_cleaning(
+        out[f"birth_month_child_{i}"] = str_categorical(
             raw_data[f"kidmon{two_digit}"],
             unordered=True,
         )
@@ -59,23 +59,23 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
     out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
 
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
 
-    out["birthplace"] = categorical_string_cleaning(
+    out["birthplace"] = str_categorical(
         raw_data["lb0013_h"],
         unordered=True,
     )
-    out["res_childhood"] = categorical_string_cleaning(
+    out["res_childhood"] = str_categorical(
         raw_data["lb0058"],
         unordered=True,
     )
-    out["birthplace_father"] = categorical_bool_cleaning(raw_data["lb0084_h"])
-    out["birthplace_mother"] = categorical_bool_cleaning(raw_data["lb0085_h"])
-    out["religion_father"] = categorical_string_cleaning(
+    out["birthplace_father"] = bool_categorical(raw_data["lb0084_h"])
+    out["birthplace_mother"] = bool_categorical(raw_data["lb0085_h"])
+    out["religion_father"] = str_categorical(
         raw_data["lb0124_h"],
         unordered=True,
     )
-    out["religion_mother"] = categorical_string_cleaning(
+    out["religion_mother"] = str_categorical(
         raw_data["lb0125_h"],
         unordered=True,
     )
@@ -94,9 +94,9 @@ def design(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["hh_strat"] = raw_data["strat"].astype(find_lowest_int_dtype(raw_data["strat"]))
 
-    out["hh_soep_sample"] = categorical_string_cleaning(
+    out["hh_soep_sample"] = str_categorical(
         raw_data["hsample"],
-        one_identifier_level=False,
+        no_identifiers=2,
         unordered=True,
     )
 
@@ -111,7 +111,7 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
 
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
     out["building_year_hh_max"] = raw_data["hgcnstyrmax"].astype(
         find_lowest_int_dtype(raw_data["hgcnstyrmax"]),
     )
@@ -121,7 +121,7 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["heating_costs_m_hh"] = raw_data["hgheat"].astype(
         find_lowest_int_dtype(raw_data["hgheat"]),
     )
-    out["einzugsjahr"] = categorical_int_cleaning(raw_data["hgmoveyr"])
+    out["einzugsjahr"] = int_categorical(raw_data["hgmoveyr"])
     out["bruttokaltmiete_m_hh"] = raw_data["hgrent"].astype(
         find_lowest_int_dtype(raw_data["hgrent"]),
     )
@@ -129,20 +129,20 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
         find_lowest_int_dtype(raw_data["hgsize"]),
     )
 
-    out["heizkosten_mi_reason"] = categorical_string_cleaning(
+    out["heizkosten_mi_reason"] = str_categorical(
         raw_data["hgheatinfo"],
         unordered=True,
     )
-    out["rented_or_owned"] = categorical_string_cleaning(
+    out["rented_or_owned"] = str_categorical(
         raw_data["hgowner"],
         unordered=True,
     )
-    out["hh_typ"] = categorical_string_cleaning(
+    out["hh_typ"] = str_categorical(
         sr=raw_data["hgtyp1hh"],
-        one_identifier_level=False,
+        no_identifiers=2,
         unordered=True,
     )
-    out["hh_typ_2st"] = categorical_string_cleaning(
+    out["hh_typ_2st"] = str_categorical(
         raw_data["hgtyp2hh"],
         unordered=True,
     )
@@ -155,7 +155,7 @@ def hl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
 
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
 
     out["kindergeld_hl_m_hh_prev"] = raw_data["hlc0042_h"].astype(
         find_lowest_int_dtype(raw_data["hlc0042_h"]),
@@ -179,15 +179,15 @@ def hl(raw_data: pd.DataFrame) -> pd.DataFrame:
         find_lowest_int_dtype(raw_data["hld0009"]),
     )
 
-    out["kindergeld_bezug_aktuell"] = categorical_bool_cleaning(raw_data["hlc0044_h"])
-    out["kinderzuschlag_aktuell_hh"] = categorical_bool_cleaning(raw_data["hlc0046_h"])
-    out["kinderzuschlag_hl_hh_prev"] = categorical_bool_cleaning(raw_data["hlc0049_h"])
-    out["alg2_etc_aktuell_hh"] = categorical_bool_cleaning(raw_data["hlc0064_h"])
-    out["hilfe_lebensunterh_aktuell_hh"] = categorical_bool_cleaning(
+    out["kindergeld_bezug_aktuell"] = bool_categorical(raw_data["hlc0044_h"])
+    out["kinderzuschlag_aktuell_hh"] = bool_categorical(raw_data["hlc0046_h"])
+    out["kinderzuschlag_hl_hh_prev"] = bool_categorical(raw_data["hlc0049_h"])
+    out["alg2_etc_aktuell_hh"] = bool_categorical(raw_data["hlc0064_h"])
+    out["hilfe_lebensunterh_aktuell_hh"] = bool_categorical(
         raw_data["hlc0067_h"],
     )
-    out["wohngeld_soep_m_hh_prev"] = categorical_int_cleaning(raw_data["hlc0082_h"])
-    out["wohngeld_aktuell_hh"] = categorical_bool_cleaning(raw_data["hlc0083_h"])
+    out["wohngeld_soep_m_hh_prev"] = int_categorical(raw_data["hlc0082_h"])
+    out["wohngeld_aktuell_hh"] = bool_categorical(raw_data["hlc0083_h"])
 
     return out
 
@@ -196,10 +196,10 @@ def hpathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the hpathl dataset."""
     out = pd.DataFrame()
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
-    out["hh_soep_sample"] = categorical_string_cleaning(
+    out["year"] = int_categorical_to_int(raw_data["syear"])
+    out["hh_soep_sample"] = str_categorical(
         raw_data["hsample"],
-        one_identifier_level=False,
+        no_identifiers=2,
         unordered=True,
     )
 
@@ -221,7 +221,7 @@ def hpathl(raw_data: pd.DataFrame) -> pd.DataFrame:
 def hwealth(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the hwealth dataset."""
     out = pd.DataFrame()
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
 
     out["wohnsitz_immobilienverm_hh_a"] = raw_data["p010ha"].astype(
@@ -326,7 +326,7 @@ def hwealth(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["nettoverm_fahrz_kredit_hh_d"] = raw_data["n011hd"].astype(
         find_lowest_float_dtype(raw_data["n011hd"]),
     )
-    out["flag_netwealth"] = categorical_string_cleaning(
+    out["flag_netwealth"] = str_categorical(
         raw_data["n022h0"],
         unordered=True,
     )
@@ -342,12 +342,12 @@ def kidlong(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
     out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
-    out["pointer_mother"] = categorical_int_cleaning(raw_data["k_pmum"], ordered=False)
-    out["betreuungskost_einrichtung"] = categorical_to_int_cleaning(
+    out["year"] = int_categorical_to_int(raw_data["syear"])
+    out["pointer_mother"] = int_categorical(raw_data["k_pmum"], ordered=False)
+    out["betreuungskost_einrichtung"] = int_categorical_to_int(
         raw_data["kk_amtp_h"],
     )
-    out["school_costs"] = categorical_to_int_cleaning(raw_data["ks_amtp_h"])
+    out["school_costs"] = int_categorical_to_int(raw_data["ks_amtp_h"])
 
     return out
 
@@ -360,7 +360,7 @@ def pbrutto(raw_data: pd.DataFrame) -> pd.DataFrame:
         find_lowest_int_dtype(raw_data["cid"]),
     )
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
     out["birth_year"] = raw_data["geburt_v2"]
     out["befragungs_status"] = raw_data["befstat_h"]
     out["hh_position_raw"] = raw_data["stell_h"]
@@ -381,7 +381,7 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
     out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
     out["gender"] = raw_data["d11102ll"]
     out["age"] = raw_data["d11101"]
     out["hh_size"] = raw_data["d11106"]
@@ -475,7 +475,7 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
     out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
     out["nationality_first"] = raw_data["pgnation"]
     out["status_refugee"] = raw_data["pgstatus_refu"]
     out["marital_status"] = raw_data["pgfamstd"]
@@ -510,7 +510,7 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["soep_initial_hh_id"] = raw_data["cid"].astype(
         find_lowest_int_dtype(raw_data["cid"]),
     )
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
     out["full_empl_v1_prev_1"] = raw_data["kal1a001_v1"]
     out["full_empl_v2_prev_1"] = raw_data["kal1a001_v2"]
     out["full_empl_v1_prev_2"] = raw_data["kal1a002_v1"]
@@ -574,7 +574,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
     out["lfd_pnr"] = raw_data["pnr"]
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
     out["altersteilzeit_02_14"] = raw_data["plb0103"]
     out["altersteilzeit_2001"] = raw_data["plb0179"]
     out["dauer_letzte_stelle_j"] = raw_data["plb0301"]
@@ -678,7 +678,7 @@ def ppathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["soep_hh_id"] = raw_data["hid"].astype(find_lowest_int_dtype(raw_data["hid"]))
     out["p_id"] = raw_data["pid"].astype(find_lowest_int_dtype(raw_data["pid"]))
-    out["year"] = categorical_to_int_cleaning(raw_data["syear"])
+    out["year"] = int_categorical_to_int(raw_data["syear"])
     out["current_east_west"] = raw_data["sampreg"]
     out["befragungsstatus"] = raw_data["netto"]
     out["year_immigration"] = raw_data["immiyear"]
