@@ -1,8 +1,10 @@
+from pathlib import Path
+from typing import Annotated
+
 import pandas as pd
-from pytask import task
+from pytask import Product, task
 
 from soep_cleaning.config import BLD, SRC
-from soep_cleaning.initial_preprocessing import data_specific_cleaner
 
 
 def _dataset_script_name(dataset_name: str) -> str:
@@ -32,6 +34,7 @@ def _create_parametrization(dataset: str) -> dict:
             "data",
             f"{dataset}_long_and_cleaned.pkl",
         ).resolve(),
+        "dataset_name": dataset,
     }
 
 
@@ -54,15 +57,22 @@ for dataset in [
 ]:
 
     @task(id=dataset, kwargs=_create_parametrization(dataset))
-    def clean_one_dataset(depends_on, produces, data_set_name=dataset):
-        """Clean one dataset.
+    def clean_one_dataset(
+        depends_on: dict[str, Path],
+        produces: Annotated[Path, Product],
+        data_set_name: str,
+    ) -> None:
+        """Cleans a dataset using a specified cleaning script.
 
-        Args:
-            depends_on (str): Path to the raw data file.
-            produces (str): Path to save the cleaned data file.
-            data_set_name (str): Name of the dataset.
+        Parameters:
+            depends_on (dict[str, Path]): A dictionary containing the paths to the dependencies of the cleaning task.
+            produces (Annotated[Path, Product]): The path where the cleaned dataset will be saved.
+            data_set_name (str): The name of the dataset to be cleaned.
+
+        Returns:
+            None
 
         """
         raw_data = pd.read_stata(depends_on["dataset"])
-        cleaned = getattr(data_specific_cleaner, f"{data_set_name}")(raw_data)
+        cleaned = getattr(depends_on["script"], f"{data_set_name}")(raw_data)
         cleaned.to_pickle(produces)
