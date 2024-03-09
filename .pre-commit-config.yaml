@@ -91,7 +91,7 @@ repos:
     rev: v2.2.6
     hooks:
       - id: codespell
-        args: [--skip="**.ipynb", --ignore-words=.codespell-wordlist.yaml]
+        args: [--skip="**.ipynb", --ignore-words=.codespell-wordlist.txt]
   - repo: https://github.com/asottile/setup-cfg-fmt
     rev: v2.2.0
     hooks:
