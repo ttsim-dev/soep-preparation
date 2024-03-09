@@ -55,6 +55,11 @@ def find_lowest_int_dtype(sr: pd.Series) -> str:
     return "int64[pyarrow]"
 
 
+def apply_lowest_int_dtype(sr: pd.Series) -> str:
+    """Apply the lowest integer dtype to a series."""
+    return sr.astype(find_lowest_int_dtype(sr))
+
+
 def find_lowest_float_dtype(sr: pd.Series) -> str:
     """Find the lowest float dtype for a series.
 
@@ -74,3 +79,8 @@ def find_lowest_float_dtype(sr: pd.Series) -> str:
     if sr.min() >= -1.7976931348623157e308 and sr.max() <= 1.7976931348623157e308:
         return "float64[pyarrow]"
     return "float64[pyarrow]"
+
+
+def apply_lowest_float_dtype(sr: pd.Series) -> str:
+    """Apply the lowest integer dtype to a series."""
+    return sr.astype(find_lowest_float_dtype(sr))
