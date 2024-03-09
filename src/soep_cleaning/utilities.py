@@ -1,7 +1,7 @@
 """Utilities used in various parts of the project."""
 
-import yaml
 import pandas as pd
+import yaml
 
 
 def read_yaml(path):
@@ -24,6 +24,7 @@ def read_yaml(path):
             )
             raise ValueError(info) from error
     return out
+
 
 def find_lowest_int_dtype(sr: pd.Series) -> str:
     """Find the lowest integer dtype for a series.
@@ -53,6 +54,7 @@ def find_lowest_int_dtype(sr: pd.Series) -> str:
         return "int32[pyarrow]"
     return "int64[pyarrow]"
 
+
 def find_lowest_float_dtype(sr: pd.Series) -> str:
     """Find the lowest float dtype for a series.
 
@@ -72,4 +74,3 @@ def find_lowest_float_dtype(sr: pd.Series) -> str:
     if sr.min() >= -1.7976931348623157e308 and sr.max() <= 1.7976931348623157e308:
         return "float64[pyarrow]"
     return "float64[pyarrow]"
-    
