@@ -28,5 +28,8 @@ bld/
 #MacOS
 .DS_Store
 
-# temporarily ignore data files due to large size
+# ignore data directory
 data/
+
+# ignore notebooks
+*.ipynb
