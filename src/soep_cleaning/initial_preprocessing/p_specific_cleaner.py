@@ -21,7 +21,7 @@ def pbrutto(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_position_raw"] = str_categorical(raw_data["stell_h"])
     out["bearbeitungserg"] = raw_data[
         "perg"
-    ]  # categories [29] and [39] have identical labels, should by cleaned using str_categorical
+    ]  # TODO: categories [29] and [39] have identical labels, should by cleaned using str_categorical
     out["bearbeitungserg_ausf"] = str_categorical(raw_data["pergz"])
     out["hh_position_raw_last_year"] = str_categorical(raw_data["pzugv"])
     out["teilnahmebereitchaft"] = str_categorical(raw_data["ber"])
