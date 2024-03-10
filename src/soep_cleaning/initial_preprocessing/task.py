@@ -8,6 +8,32 @@ from pytask import Product, task
 from soep_cleaning.config import BLD, SRC
 
 
+def _fail_if_missing_dependency(depends_on: dict[str, Path]):
+    for key, value in depends_on.items():
+        if not value.exists():
+            msg = f"The dependency {key} does not exist at {value}."
+            raise FileNotFoundError(
+                msg,
+            )
+
+
+def _fail_if_invalid_dependency(depends_on: dict[str, Path]):
+    for key, value in depends_on.items():
+        if not isinstance(value, Path):
+            msg = f"The dependency {key} is not a Path object, got {type(value)}."
+            raise TypeError(
+                msg,
+            )
+
+
+def _fail_if_invalid_input(inputt, expected_dtype: str):
+    if expected_dtype not in str(type(inputt)):
+        msg = f"Expected {inputt} to be of type {expected_dtype}, got {type(inputt)}"
+        raise TypeError(
+            msg,
+        )
+
+
 def _dataset_script_name(dataset_name: str) -> str:
     """Map the dataset name to the name of the script that cleans the dataset."""
     if dataset_name.startswith("bio"):
@@ -22,6 +48,7 @@ def _dataset_script_name(dataset_name: str) -> str:
 
 def _create_parametrization(dataset: str) -> dict:
     """Create the parametrization for the task clean dataset."""
+    _fail_if_invalid_input(dataset, "str")
     return {
         "depends_on": {
             "dataset": SRC.joinpath("data", "V37", f"{dataset}.dta").resolve(),
@@ -74,6 +101,7 @@ for dataset in [
             None
 
         """
+        _error_handling_task(depends_on, produces, dataset_name)
         raw_data = pd.read_stata(depends_on["dataset"])
         module = SourceFileLoader(
             depends_on["script"].stem,
@@ -81,3 +109,11 @@ for dataset in [
         ).load_module()
         cleaned = getattr(module, f"{dataset_name}")(raw_data)
         cleaned.to_pickle(produces)
+
+
+def _error_handling_task(depends_on, produces, dataset_name):
+    _fail_if_missing_dependency(depends_on)
+    _fail_if_invalid_dependency(depends_on)
+    _fail_if_invalid_input(depends_on, "dict")
+    _fail_if_invalid_input(produces, "pathlib.PosixPath")
+    _fail_if_invalid_input(dataset_name, "str")
