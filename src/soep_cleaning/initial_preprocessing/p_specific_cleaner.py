@@ -2,6 +2,7 @@ import pandas as pd
 
 from soep_cleaning.initial_preprocessing.helper import (
     int_categorical_to_int,
+    str_categorical,
 )
 from soep_cleaning.utilities import apply_lowest_int_dtype
 
@@ -11,16 +12,18 @@ def pbrutto(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["soep_initial_hh_id"] = int_categorical_to_int(raw_data["cid"])
-    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = int_categorical_to_int(raw_data["hid"])
     out["year"] = int_categorical_to_int(raw_data["syear"])
-    out["birth_year"] = raw_data["geburt_v2"]
-    out["befragungs_status"] = raw_data["befstat_h"]
-    out["hh_position_raw"] = raw_data["stell_h"]
-    out["bearbeitungserg"] = raw_data["perg"]
-    out["bearbeitungserg_ausf"] = raw_data["pergz"]
-    out["hh_position_raw_last_year"] = raw_data["pzugv"]
-    out["teilnahmebereitchaft"] = raw_data["ber"]
-    out["bearbeitungserg_alt"] = raw_data["hergs"]
+    out["birth_year"] = int_categorical_to_int(raw_data["geburt_v2"])
+    out["befragungs_status"] = str_categorical(raw_data["befstat_h"])
+    out["hh_position_raw"] = str_categorical(raw_data["stell_h"])
+    out["bearbeitungserg"] = raw_data[
+        "perg"
+    ]  # categories [29] and [39] have identical labels, should by cleaned using str_categorical
+    out["bearbeitungserg_ausf"] = str_categorical(raw_data["pergz"])
+    out["hh_position_raw_last_year"] = str_categorical(raw_data["pzugv"])
+    out["teilnahmebereitchaft"] = str_categorical(raw_data["ber"])
+    out["bearbeitungserg_alt"] = str_categorical(raw_data["hergs"])
 
     return out
 

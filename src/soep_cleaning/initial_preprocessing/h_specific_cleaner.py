@@ -25,20 +25,20 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["heizkosten_mi_reason"] = str_categorical(
         raw_data["hgheatinfo"],
-        unordered=True,
+        ordered=False,
     )
     out["rented_or_owned"] = str_categorical(
         raw_data["hgowner"],
-        unordered=True,
+        ordered=False,
     )
     out["hh_typ"] = str_categorical(
         raw_data["hgtyp1hh"],
         no_identifiers=2,
-        unordered=True,
+        ordered=False,
     )
     out["hh_typ_2st"] = str_categorical(
         raw_data["hgtyp2hh"],
-        unordered=True,
+        ordered=False,
     )
 
     return out
@@ -79,7 +79,7 @@ def hpathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_soep_sample"] = str_categorical(
         raw_data["hsample"],
         no_identifiers=2,
-        unordered=True,
+        ordered=False,
     )
 
     out["hh_bleibe_wkeit"] = apply_lowest_float_dtype(raw_data["hbleib"])
@@ -132,7 +132,7 @@ def hwealth(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["nettoverm_fahrz_kredit_hh_e"] = apply_lowest_float_dtype(raw_data["n011he"])
     out["flag_netwealth"] = str_categorical(
         raw_data["n022h0"],
-        unordered=True,
+        ordered=False,
     )
 
     return hwealth_wide_to_long(out)

@@ -17,7 +17,7 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["birth_month"] = str_categorical(
         raw_data["gebmonat"],
-        unordered=True,
+        ordered=False,
     )
     return out
 
@@ -40,7 +40,7 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
         )
         out[f"birth_month_child_{i}"] = str_categorical(
             raw_data[f"kidmon{two_digit}"],
-            unordered=True,
+            ordered=False,
         )
 
     return biobirth_wide_to_long(out)
@@ -56,21 +56,21 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["birthplace"] = str_categorical(
         raw_data["lb0013_h"],
-        unordered=True,
+        ordered=False,
     )
     out["res_childhood"] = str_categorical(
         raw_data["lb0058"],
-        unordered=True,
+        ordered=False,
     )
     out["birthplace_father"] = bool_categorical(raw_data["lb0084_h"])
     out["birthplace_mother"] = bool_categorical(raw_data["lb0085_h"])
     out["religion_father"] = str_categorical(
         raw_data["lb0124_h"],
-        unordered=True,
+        ordered=False,
     )
     out["religion_mother"] = str_categorical(
         raw_data["lb0125_h"],
-        unordered=True,
+        ordered=False,
     )
 
     return out
