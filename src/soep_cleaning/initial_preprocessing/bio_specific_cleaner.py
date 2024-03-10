@@ -62,8 +62,14 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["lb0058"],
         ordered=False,
     )
-    out["birthplace_father"] = bool_categorical(raw_data["lb0084_h"])
-    out["birthplace_mother"] = bool_categorical(raw_data["lb0085_h"])
+    out["birthplace_father"] = bool_categorical(
+        raw_data["lb0084_h"],
+        renaming={"Ja": True, "Nein": False},
+    )
+    out["birthplace_mother"] = bool_categorical(
+        raw_data["lb0085_h"],
+        renaming={"Ja": True, "Nein": False},
+    )
     out["religion_father"] = str_categorical(
         raw_data["lb0124_h"],
         ordered=False,
