@@ -61,6 +61,40 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
     return sr.cat.remove_categories(removing_categories)
 
 
+def bool_categorical(
+    sr: "pd.Series[str]",
+    renaming: dict | None = None,
+    ordered: bool = False,
+) -> "pd.Series[bool]":
+    """Clean the categories of a pd.Series of dtype category with str entries and change
+    categories to bool.
+
+    Parameters:
+        sr (pd.Series[int]): The input series to be cleaned.
+        renaming (dict | None, optional): A dictionary to rename the categories. Defaults to None.
+        ordered (bool, optional): Whether the series should be returned as ordered. Defaults to False.
+
+    Returns:
+        pd.Series[int]: The series with cleaned categories.
+
+    """
+    _error_handling_categorical(
+        sr,
+        "category",
+        [
+            [sr, "pandas.core.series.Series"],
+            [renaming, "dict" if renaming is not None else "None"],
+        ],
+    )
+    sr = sr.astype("category")
+    if renaming is not None:
+        sr = sr.cat.rename_categories(renaming)
+    if ordered:
+        return sr.cat.as_ordered()
+    else:
+        return sr.as_unordered()
+
+
 def str_categorical(
     sr: "pd.Series[str]",
     no_identifiers: int = 1,
@@ -126,6 +160,21 @@ def int_categorical(sr: "pd.Series[int]", ordered: bool = False) -> "pd.Series[i
     return int_to_int_categorical(sr, ordered)
 
 
+def int_categorical_to_int(sr: "pd.Series[category]") -> "pd.Series[int]":
+    """Transform a pd.Series of dtype category with int entries to dtype int.
+
+    Parameters:
+        sr (pd.Series[int]): The input series to be cleaned.
+
+    Returns:
+        pd.Series[int]: The series with cleaned categories.
+
+    """
+    _error_handling_categorical(sr, "category", [[sr, "pandas.core.series.Series"]])
+    sr = _remove_missing_data_categories(sr)
+    return apply_lowest_int_dtype(sr)
+
+
 def int_to_int_categorical(
     sr: "pd.Series[int]",
     ordered: bool = False,
@@ -149,21 +198,25 @@ def int_to_int_categorical(
     return sr.cat.set_categories(categories_order, rename=True, ordered=ordered)
 
 
-def bool_categorical(sr: "pd.Series[str]") -> "pd.Series[bool]":
-    """Clean the categories of a pd.Series of dtype category with str entries and change
-    categories to bool.
+def agreement_int_categorical(sr: "pd.Series") -> "pd.Series[int]":
+    """Clean the categories of a pd.Series of dtype category with unspecified type
+    entries.
 
     Parameters:
-        sr (pd.Series[int]): The input series to be cleaned.
-        unordered (bool, optional): Whether the series should be returned as unordered. Defaults to False.
+        sr (pd.Series): The input series to be cleaned.
 
     Returns:
         pd.Series[int]: The series with cleaned categories.
 
     """
     _error_handling_categorical(sr, "category", [[sr, "pandas.core.series.Series"]])
-    sr = sr.astype("category")
-    return sr.cat.set_categories([False, True], rename=True, ordered=True)
+    sr = _remove_missing_data_categories(sr)
+    return sr.cat.rename_categories(
+        {
+            "[0] Completely dissatisfied": 0,
+            "[10] Completely satisfied": 10,
+        },
+    )
 
 
 def biobirth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
@@ -241,18 +294,3 @@ def hwealth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
             ),
         },
     )
-
-
-def int_categorical_to_int(sr: "pd.Series[category]") -> "pd.Series[int]":
-    """Transform a pd.Series of dtype category with int entries to dtype int.
-
-    Parameters:
-        sr (pd.Series[int]): The input series to be cleaned.
-
-    Returns:
-        pd.Series[int]: The series with cleaned categories.
-
-    """
-    _error_handling_categorical(sr, "category", [[sr, "pandas.core.series.Series"]])
-    sr = _remove_missing_data_categories(sr)
-    return apply_lowest_int_dtype(sr)
