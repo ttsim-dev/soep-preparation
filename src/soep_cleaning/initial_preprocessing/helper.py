@@ -8,7 +8,7 @@ from soep_cleaning.utilities import (
 
 
 def _fail_if_series_wrong_dtype(sr: pd.Series, expected_dtype: str):
-    if expected_dtype != sr.dtype.name:
+    if expected_dtype not in sr.dtype.name:
         msg = f"Expected dtype {expected_dtype}, got {sr.dtype.name}"
         raise TypeError(msg)
 
@@ -86,13 +86,13 @@ def bool_categorical(
             [renaming, "dict" if renaming is not None else "None"],
         ],
     )
-    sr = sr.astype("category")
+    sr = _remove_missing_data_categories(sr)
     if renaming is not None:
         sr = sr.cat.rename_categories(renaming)
     if ordered:
         return sr.cat.as_ordered()
     else:
-        return sr.as_unordered()
+        return sr.cat.as_unordered()
 
 
 def str_categorical(
