@@ -86,6 +86,7 @@ def bool_categorical(
             [renaming, "dict" if renaming is not None else "None"],
         ],
     )
+    sr = sr.astype("category")
     sr = _remove_missing_data_categories(sr)
     if renaming is not None:
         sr = sr.cat.rename_categories(renaming)
