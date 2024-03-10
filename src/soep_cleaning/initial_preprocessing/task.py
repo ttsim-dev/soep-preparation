@@ -78,10 +78,10 @@ for dataset in [
     "kidlong",
     "pbrutto",
     "pequiv",
-    "pgen",
-    "pkal",
-    "pl",
-    "ppathl",
+    # "pgen",
+    # "pkal",
+    # "pl",
+    # "ppathl",
 ]:
 
     @task(id=dataset, kwargs=_create_parametrization(dataset))
