@@ -7,6 +7,40 @@ from soep_cleaning.utilities import (
 )
 
 
+def _fail_if_series_wrong_dtype(sr: pd.Series, expected_dtype: str):
+    if expected_dtype != sr.dtype.name:
+        msg = f"Expected dtype {expected_dtype}, got {sr.dtype.name}"
+        raise TypeError(msg)
+
+
+def _fail_series_without_categories(sr: pd.Series):
+    if sr.cat.categories is None:
+        msg = "Series has no categories"
+        raise ValueError(msg)
+
+
+def _fail_if_invalid_input(inputt, expected_dtype: str):
+    if expected_dtype not in str(type(inputt)):
+        msg = f"Expected {inputt} to be of type {expected_dtype}, got {type(inputt)}"
+        raise TypeError(
+            msg,
+        )
+
+
+def _error_handling_categorical(
+    sr: pd.Series,
+    expected_sr_dtype: str,
+    input_expected_types: list[list] | None = None,
+):
+    if input_expected_types is None:
+        input_expected_types = [[]]
+    _fail_if_series_wrong_dtype(sr, expected_sr_dtype)
+    _fail_series_without_categories(sr)
+    for item in input_expected_types:
+        inputt, expected_type = item
+        _fail_if_invalid_input(inputt, expected_type)
+
+
 def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
     """Remove categories representing missing data or no response to the questionnaire
     from a categorical Series.
@@ -222,37 +256,3 @@ def int_categorical_to_int(sr: "pd.Series[category]") -> "pd.Series[int]":
     _error_handling_categorical(sr, "category", [[sr, "pandas.core.series.Series"]])
     sr = _remove_missing_data_categories(sr)
     return apply_lowest_int_dtype(sr)
-
-
-def _error_handling_categorical(
-    sr: pd.Series,
-    expected_sr_dtype: str,
-    input_expected_types: list[list] | None = None,
-):
-    if input_expected_types is None:
-        input_expected_types = [[]]
-    _fail_if_series_wrong_dtype(sr, expected_sr_dtype)
-    _fail_series_without_categories(sr)
-    for item in input_expected_types:
-        inputt, expected_type = item
-        _fail_if_invalid_input(inputt, expected_type)
-
-
-def _fail_if_series_wrong_dtype(sr: pd.Series, expected_dtype: str):
-    if expected_dtype != sr.dtype.name:
-        msg = f"Expected dtype {expected_dtype}, got {sr.dtype.name}"
-        raise TypeError(msg)
-
-
-def _fail_series_without_categories(sr: pd.Series):
-    if sr.cat.categories is None:
-        msg = "Series has no categories"
-        raise ValueError(msg)
-
-
-def _fail_if_invalid_input(inputt, expected_dtype: str):
-    if expected_dtype not in str(type(inputt)):
-        msg = f"Expected {inputt} to be of type {expected_dtype}, got {type(inputt)}"
-        raise TypeError(
-            msg,
-        )
