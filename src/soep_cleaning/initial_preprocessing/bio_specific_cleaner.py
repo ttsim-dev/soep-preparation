@@ -1,5 +1,6 @@
 import pandas as pd
 
+from soep_cleaning.config import MONTH_MAPPING
 from soep_cleaning.initial_preprocessing.helper import (
     biobirth_wide_to_long,
     bool_categorical,
@@ -18,6 +19,7 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["birth_month"] = str_categorical(
         raw_data["gebmonat"],
         ordered=False,
+        renaming=MONTH_MAPPING,
     )
     return out
 
