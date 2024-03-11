@@ -1,6 +1,7 @@
 import pandas as pd
 
 from soep_cleaning.utilities import (
+    apply_lowest_float_dtype,
     apply_lowest_int_dtype,
     find_lowest_float_dtype,
     find_lowest_int_dtype,
@@ -52,6 +53,8 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
         pd.Series: A new categorical Series with the missing data categories removed.
 
     """
+    if -8 in sr.cat.categories:
+        sr = sr.cat.remove_categories(-8)
     str_categories = sr.cat.categories[
         sr.cat.categories.map(lambda x: isinstance(x, str))
     ]
@@ -100,6 +103,7 @@ def str_categorical(
     sr: "pd.Series[str]",
     no_identifiers: int = 1,
     ordered: bool = True,
+    renaming: dict | None = None,
 ) -> "pd.Series[str]":
     """Clean the categories of a pd.Series of dtype category with str entries.
 
@@ -107,6 +111,7 @@ def str_categorical(
         sr (pd.Series[str]): The input series with categories to be cleaned.
         no_identifiers (int, optional): The number of identifiers inside each category to be removed. Defaults to 1.
         ordered (bool, optional): Whether the series should be returned as unordered. Defaults to True.
+        renaming (dict | None, optional): A dictionary to rename the categories. Defaults to None.
 
     Returns:
         pd.Series[str]: The series with cleaned categories.
@@ -136,9 +141,12 @@ def str_categorical(
     sr = _remove_missing_data_categories(sr)
     if not ordered:
         sr = sr.cat.as_unordered()
-    return sr.cat.rename_categories(
-        [i.split(" ", no_identifiers)[no_identifiers] for i in sr.cat.categories],
-    )
+    if renaming is not None:
+        return sr.cat.rename_categories(renaming)
+    else:
+        return sr.cat.rename_categories(
+            [i.split(" ", no_identifiers)[no_identifiers] for i in sr.cat.categories],
+        )
 
 
 def int_categorical(sr: "pd.Series[int]", ordered: bool = False) -> "pd.Series[int]":
@@ -218,6 +226,21 @@ def agreement_int_categorical(sr: "pd.Series") -> "pd.Series[int]":
             "[10] Completely satisfied": 10,
         },
     )
+
+
+def float_categorical_to_float(sr: "pd.Series[category]") -> "pd.Series[float]":
+    """Transform a pd.Series of dtype category with flota entries to dtype float.
+
+    Parameters:
+        sr (pd.Series[float]): The input series to be cleaned.
+
+    Returns:
+        pd.Series[float]: The series with cleaned categories.
+
+    """
+    _error_handling_categorical(sr, "category", [[sr, "pandas.core.series.Series"]])
+    sr = _remove_missing_data_categories(sr)
+    return apply_lowest_float_dtype(sr)
 
 
 def biobirth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:

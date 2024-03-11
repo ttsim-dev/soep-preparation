@@ -1,8 +1,10 @@
 import pandas as pd
 
+from soep_cleaning.config import MONTH_MAPPING
 from soep_cleaning.initial_preprocessing.helper import (
     agreement_int_categorical,
     bool_categorical,
+    float_categorical_to_float,
     int_categorical_to_int,
     str_categorical,
 )
@@ -182,32 +184,41 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
 def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pgen dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = int_categorical_to_int(raw_data["cid"])
-    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
-    out["p_id"] = int_categorical_to_int(raw_data["pid"])
-    out["year"] = int_categorical_to_int(raw_data["syear"])
-    out["nationality_first"] = raw_data["pgnation"]
-    out["status_refugee"] = raw_data["pgstatus_refu"]
-    out["marital_status"] = raw_data["pgfamstd"]
-    out["curr_earnings_m"] = raw_data["pglabgro"]
-    out["net_wage_m"] = raw_data["pglabnet"]
-    out["occupation_status"] = raw_data["pgstib"]
-    out["employment_status"] = raw_data["pgemplst"]
-    out["laborf_status"] = raw_data["pglfs"]
-    out["dauer_im_betrieb"] = raw_data["pgerwzeit"]
-    out["weekly_working_hours_actual"] = raw_data["pgtatzeit"]
-    out["weekly_working_hours_contract"] = raw_data["pgvebzeit"]
-    out["public_service"] = raw_data["pgoeffd"]
-    out["size_company_raw"] = raw_data["pgbetr"]
-    out["size_company"] = raw_data["pgallbet"]
-    out["pgen_grund_beschäftigungsende"] = raw_data["pgjobend"]
-    out["exp_full_time"] = raw_data["pgexpft"]
-    out["exp_part_time"] = raw_data["pgexppt"]
-    out["exp_unempl"] = raw_data["pgexpue"]
-    out["education_isced_alt"] = raw_data["pgisced97"]
-    out["education_isced"] = raw_data["pgisced11"]
-    out["education_casmin"] = raw_data["pgcasmin"]
-    out["month_interview"] = raw_data["pgmonth"]
+    out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
+    out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["nationality_first"] = str_categorical(raw_data["pgnation"], ordered=False)
+    out["status_refugee"] = str_categorical(raw_data["pgstatus_refu"], ordered=False)
+    out["marital_status"] = str_categorical(raw_data["pgfamstd"], ordered=False)
+    out["curr_earnings_m"] = int_categorical_to_int(raw_data["pglabgro"])
+    out["net_wage_m"] = int_categorical_to_int(raw_data["pglabnet"])
+    out["occupation_status"] = str_categorical(raw_data["pgstib"], ordered=False)
+    out["employment_status"] = str_categorical(raw_data["pgemplst"], ordered=False)
+    out["laborf_status"] = str_categorical(raw_data["pglfs"], ordered=False)
+    out["dauer_im_betrieb"] = int_categorical_to_int(raw_data["pgerwzeit"])
+    out["weekly_working_hours_actual"] = int_categorical_to_int(raw_data["pgtatzeit"])
+    out["weekly_working_hours_contract"] = int_categorical_to_int(raw_data["pgvebzeit"])
+    out["public_service"] = bool_categorical(
+        raw_data["pgoeffd"],
+        renaming={"[1] ja": True, "[2] nein": False},
+    )
+    out["size_company_raw"] = str_categorical(raw_data["pgbetr"])
+    out["size_company"] = str_categorical(raw_data["pgallbet"])
+    out["pgen_grund_beschäftigungsende"] = str_categorical(
+        raw_data["pgjobend"],
+        ordered=False,
+    )
+    out["exp_full_time"] = float_categorical_to_float(raw_data["pgexpft"])
+    out["exp_part_time"] = float_categorical_to_float(raw_data["pgexppt"])
+    out["exp_unempl"] = float_categorical_to_float(raw_data["pgexpue"])
+    out["education_isced_alt"] = str_categorical(raw_data["pgisced97"])
+    out["education_isced"] = str_categorical(raw_data["pgisced11"])
+    out["education_casmin"] = str_categorical(raw_data["pgcasmin"], no_identifiers=2)
+    out["month_interview"] = str_categorical(
+        raw_data["pgmonth"],
+        renaming=MONTH_MAPPING,
+    )
 
     return out
 
