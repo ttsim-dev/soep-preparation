@@ -194,7 +194,11 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["curr_earnings_m"] = int_categorical_to_int(raw_data["pglabgro"])
     out["net_wage_m"] = int_categorical_to_int(raw_data["pglabnet"])
     out["occupation_status"] = str_categorical(raw_data["pgstib"], ordered=False)
-    out["employment_status"] = str_categorical(raw_data["pgemplst"], ordered=False)
+    out["employment_status"] = str_categorical(
+        raw_data["pgemplst"],
+        ordered=False,
+        renaming={"Nicht erwerbstaetig": "Nicht erwerbstätig"},
+    )
     out["laborf_status"] = str_categorical(raw_data["pglfs"], ordered=False)
     out["dauer_im_betrieb"] = int_categorical_to_int(raw_data["pgerwzeit"])
     out["weekly_working_hours_actual"] = int_categorical_to_int(raw_data["pgtatzeit"])
@@ -213,8 +217,35 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["exp_part_time"] = float_categorical_to_float(raw_data["pgexppt"])
     out["exp_unempl"] = float_categorical_to_float(raw_data["pgexpue"])
     out["education_isced_alt"] = str_categorical(raw_data["pgisced97"])
-    out["education_isced"] = str_categorical(raw_data["pgisced11"])
-    out["education_casmin"] = str_categorical(raw_data["pgcasmin"], no_identifiers=2)
+    out["education_isced"] = str_categorical(
+        raw_data["pgisced11"],
+        renaming={
+            "[0] in school": "primary_and_lower_secondary",
+            "[1] Primary education": "primary_and_lower_secondary",
+            "[2] Lower secondary education": "primary_and_lower_secondary",
+            "[3] Upper secondary education": "upper_secondary",
+            "[4] Post-secondary non-tertiary education": "upper_secondary",
+            "[5] Short-cycle tertiary education": "upper_secondary",
+            "[6] Bachelor s or equivalent level": "tertiary",
+            "[7] Master s or equivalent level": "tertiary",
+            "[8] Doctoral or equivalent level": "tertiary",
+        },
+    )
+    out["education_casmin"] = str_categorical(
+        raw_data["pgcasmin"],
+        renaming={
+            "[0] (0) in school": "primary_and_lower_secondary",
+            "[1] (1a) inadequately completed": "primary_and_lower_secondary",
+            "[2] (1b) general elementary school": "primary_and_lower_secondary",
+            "[3] (1c) basic vocational qualification": "primary_and_lower_secondary",
+            "[4] (2b) intermediate general qualification": "upper_secondary",
+            "[5] (2a) intermediate vocational": "upper_secondary",
+            "[6] (2c_gen) general maturity certificate": "upper_secondary",
+            "[7] (2c_voc) vocational maturity certificate": "upper_secondary",
+            "[8] (3a) lower tertiary education": "tertiary",
+            "[9] (3b) higher tertiary education": "tertiary",
+        },
+    )
     out["month_interview"] = str_categorical(
         raw_data["pgmonth"],
         renaming=MONTH_MAPPING,
