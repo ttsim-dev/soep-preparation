@@ -77,7 +77,7 @@ def bool_categorical(
     Parameters:
         sr (pd.Series[int]): The input series to be cleaned.
         renaming (dict | None, optional): A dictionary to rename the categories. Defaults to None.
-        ordered (bool, optional): Whether the series should be returned as ordered. Defaults to False.
+        ordered (bool, optional): Whether the series should be returned as ordered, order imputed from renaming keys. Defaults to False.
 
     Returns:
         pd.Series[int]: The series with cleaned categories.
@@ -96,7 +96,7 @@ def bool_categorical(
     if renaming is not None:
         sr = sr.cat.rename_categories(renaming)
     if ordered:
-        return sr.cat.as_ordered()
+        return sr.cat.reorder_categories(list(renaming.values()), ordered=True)
     else:
         return sr.cat.as_unordered()
 

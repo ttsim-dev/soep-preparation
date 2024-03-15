@@ -79,7 +79,7 @@ for dataset in [
     "pbrutto",
     "pequiv",
     "pgen",
-    # "pkal",
+    "pkal",
     # "pl",
     # "ppathl",
 ]:
