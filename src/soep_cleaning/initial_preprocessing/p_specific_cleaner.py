@@ -197,7 +197,14 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["employment_status"] = str_categorical(
         raw_data["pgemplst"],
         ordered=False,
-        renaming={"Nicht erwerbstaetig": "Nicht erwerbstätig"},
+        renaming={
+            "[1] Voll erwerbstätig": "[1] Voll erwerbstätig",
+            "[2] Teilzeitbeschäftigung": "[2] Teilzeitbeschäftigung",
+            "[3] Ausbildung, Lehre": "[3] Ausbildung, Lehre",
+            "[4] Unregelmässig, geringfügig erwerbstät.": "[4] Unregelmässig, geringfügig erwerbstät.",
+            "[5] Nicht erwerbstaetig": "[5] Nicht erwerbstätig",
+            "[6] Werkstatt für behinderte Menschen": "[6] Werkstatt für behinderte Menschen",
+        },
     )
     out["laborf_status"] = str_categorical(raw_data["pglfs"], ordered=False)
     out["dauer_im_betrieb"] = int_categorical_to_int(raw_data["pgerwzeit"])
