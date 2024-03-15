@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import pandas as pd
 
 from soep_cleaning.utilities import (
@@ -142,11 +144,20 @@ def str_categorical(
     if not ordered:
         sr = sr.cat.as_unordered()
     if renaming is not None:
-        return sr.cat.rename_categories(renaming)
+        new_categories = list(OrderedDict.fromkeys(renaming.values()))
+        sr = (
+            sr.astype("str")
+            .replace(renaming)
+            .astype("category")
+            .cat.remove_categories("nan")
+            .cat.reorder_categories(new_categories, ordered=ordered)
+        )
     else:
-        return sr.cat.rename_categories(
+        # TODO: Check if the following lines are adequate
+        sr = sr.cat.rename_categories(
             [i.split(" ", no_identifiers)[no_identifiers] for i in sr.cat.categories],
         )
+    return sr
 
 
 def int_categorical(sr: "pd.Series[int]", ordered: bool = False) -> "pd.Series[int]":
