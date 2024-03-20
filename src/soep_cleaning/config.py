@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+from pytask import DataCatalog
 
 pd.options.mode.copy_on_write = True
 pd.options.future.infer_string = True
@@ -27,5 +28,7 @@ MONTH_MAPPING = {
     "[11] November": 11,
     "[12] Dezember": 12,
 }
+
+data_catalog = DataCatalog()
 
 __all__ = ["BLD", "SRC", "TEST_DIR", "MONTH_MAPPING"]
