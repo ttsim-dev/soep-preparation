@@ -29,6 +29,26 @@ MONTH_MAPPING = {
     "[12] Dezember": 12,
 }
 
-data_catalog = DataCatalog()
+DATASETS = [
+    "biobirth",
+    # "bioedu", TODO: Fix str_categorical ValueError: items in new_categories are not the same as in old categories
+    "biol",
+    "design",
+    "hgen",
+    "hl",
+    "hpathl",
+    "hwealth",
+    "kidlong",
+    "pbrutto",
+    # "pequiv", TODO: Fix str_categorical ValueError: items in new_categories are not the same as in old categories
+    "pgen",
+    "pkal",
+    # "pl",
+    # "ppathl",
+]
 
-__all__ = ["BLD", "SRC", "TEST_DIR", "MONTH_MAPPING"]
+data_catalog = DataCatalog()
+for dataset in DATASETS:
+    data_catalog.add(dataset, Path(f"data/V37/{dataset}.dta"))
+
+__all__ = ["BLD", "SRC", "TEST_DIR", "MONTH_MAPPING", "DATASETS", "data_catalog"]

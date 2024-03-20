@@ -3,9 +3,9 @@ from pathlib import Path
 from typing import Annotated
 
 import pandas as pd
-from pytask import Product, task
+from pytask import PickleNode, Product, task
 
-from soep_cleaning.config import BLD, SRC
+from soep_cleaning.config import DATASETS, SRC, data_catalog
 
 
 def _fail_if_missing_dependency(depends_on: dict[str, Path]):
@@ -51,43 +51,23 @@ def _create_parametrization(dataset: str) -> dict:
     _fail_if_invalid_input(dataset, "str")
     return {
         "depends_on": {
-            "dataset": SRC.joinpath("data", "V37", f"{dataset}.dta").resolve(),
+            "dataset": data_catalog[dataset],
             "script": SRC.joinpath(
                 "initial_preprocessing",
                 f"{_dataset_script_name(dataset)}.py",
             ).resolve(),
         },
-        "produces": BLD.joinpath(
-            "python",
-            "data",
-            f"{dataset}_long_and_cleaned.pkl",
-        ).resolve(),
+        "node": data_catalog[f"{dataset}_cleaned"],
         "dataset_name": dataset,
     }
 
 
-for dataset in [
-    "biobirth",
-    "bioedu",
-    "biol",
-    "design",
-    "hgen",
-    "hl",
-    "hpathl",
-    "hwealth",
-    "kidlong",
-    "pbrutto",
-    "pequiv",
-    "pgen",
-    "pkal",
-    # "pl",
-    # "ppathl",
-]:
+for dataset in DATASETS:
 
     @task(id=dataset, kwargs=_create_parametrization(dataset))
     def clean_one_dataset(
         depends_on: dict[str, Path],
-        produces: Annotated[Path, Product],
+        node: Annotated[PickleNode, Product],
         dataset_name: str,
     ) -> None:
         """Cleans a dataset using a specified cleaning script.
@@ -101,19 +81,19 @@ for dataset in [
             None
 
         """
-        _error_handling_task(depends_on, produces, dataset_name)
+        _error_handling_task(depends_on, node, dataset_name)
         raw_data = pd.read_stata(depends_on["dataset"])
         module = SourceFileLoader(
             depends_on["script"].stem,
             str(depends_on["script"]),
         ).load_module()
         cleaned = getattr(module, f"{dataset_name}")(raw_data)
-        cleaned.to_pickle(produces)
+        node.save(cleaned)
 
 
 def _error_handling_task(depends_on, produces, dataset_name):
     _fail_if_missing_dependency(depends_on)
     _fail_if_invalid_dependency(depends_on)
     _fail_if_invalid_input(depends_on, "dict")
-    _fail_if_invalid_input(produces, "pathlib.PosixPath")
+    _fail_if_invalid_input(produces, "_pytask.nodes.PickleNode")
     _fail_if_invalid_input(dataset_name, "str")
