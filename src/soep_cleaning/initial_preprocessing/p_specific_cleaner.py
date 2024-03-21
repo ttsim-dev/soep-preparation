@@ -1,6 +1,5 @@
 import pandas as pd
 
-from soep_cleaning.config import MONTH_MAPPING
 from soep_cleaning.initial_preprocessing.helper import (
     agreement_int_categorical,
     bool_categorical,
@@ -8,7 +7,7 @@ from soep_cleaning.initial_preprocessing.helper import (
     int_categorical_to_int,
     str_categorical,
 )
-from soep_cleaning.utilities import apply_lowest_int_dtype
+from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
 
 
 def pbrutto(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -43,7 +42,10 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
-    out["gender"] = bool_categorical(raw_data["d11102ll"])
+    out["gender"] = str_categorical(
+        raw_data["d11102ll"],
+        renaming={"[1] Male": "male", "[2] Female": "female"},
+    )
     out["age"] = int_categorical_to_int(raw_data["d11101"])
     out["hh_size"] = apply_lowest_int_dtype(raw_data["d11106"])
     out["anz_minderj_hh1"] = apply_lowest_int_dtype(raw_data["d11107"])
@@ -101,7 +103,7 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["med_pe_krnkhaus"] = bool_categorical(
         raw_data["m11101"],
-        renaming={"Does not apply": False, "Applies": True},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_pe_schlaganf"] = bool_categorical(
@@ -141,33 +143,57 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["med_pe_schw_treppen"] = bool_categorical(
         raw_data["m11113"],
-        renaming={"Does not apply": False, "Applies": True},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_pe_schw_anziehen"] = bool_categorical(
         raw_data["m11115"],
-        renaming={"Does not apply": False, "Applies": True},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_pe_schw_bett"] = bool_categorical(
         raw_data["m11116"],
-        renaming={"Does not apply": False, "Applies": True},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_pe_schw_einkauf"] = bool_categorical(
         raw_data["m11117"],
-        renaming={"Does not apply": False, "Applies": True},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_pe_schw_hausarb"] = bool_categorical(
         raw_data["m11119"],
-        renaming={"Does not apply": False, "Applies": True},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_pe_groesse"] = int_categorical_to_int(raw_data["m11122"])
     out["med_pe_gewicht"] = int_categorical_to_int(raw_data["m11123"])
-    out["med_pe_zufrieden"] = agreement_int_categorical(raw_data["m11125"])
-    out["med_pe_subj_status"] = str_categorical(raw_data["m11126"])
+    out["med_pe_zufrieden"] = str_categorical(
+        raw_data["m11125"],
+        renaming={
+            "[0] Completely dissatisfied": 0,
+            "1": 1,
+            "2": 2,
+            "3": 3,
+            "4": 4,
+            "5": 5,
+            "6": 6,
+            "7": 7,
+            "8": 8,
+            "9": 9,
+            "[10] Completely satisfied": 10,
+        },
+    )
+    out["med_pe_subj_status"] = str_categorical(
+        raw_data["m11126"],
+        renaming={
+            "[1] Very good": 1,
+            "[2] Good": 2,
+            "[3] Satisfactory": 3,
+            "[4] Poor": 4,
+            "[5] Bad": 5,
+        },
+    )
     out["soc_assist_eld_hh_prev"] = int_categorical_to_int(raw_data["ssold"])
     out["arbeitsl_geld_2_soep_hh_prev"] = int_categorical_to_int(raw_data["alg2"])
     out["kinderzuschlag_pequiv_hh_prev"] = int_categorical_to_int(raw_data["adchb"])
@@ -255,7 +281,20 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["month_interview"] = str_categorical(
         raw_data["pgmonth"],
-        renaming=MONTH_MAPPING,
+        renaming={
+            "[1] Januar": 1,
+            "[2] Februar": 2,
+            "[3] Maerz": 3,
+            "[4] April": 4,
+            "[5] Mai": 5,
+            "[6] Juni": 6,
+            "[7] Juli": 7,
+            "[8] August": 8,
+            "[9] September": 9,
+            "[10] Oktober": 10,
+            "[11] November": 11,
+            "[12] Dezember": 12,
+        },
     )
 
     return out
@@ -369,7 +408,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pl dataset."""
     out = pd.DataFrame()
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
-    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
+    out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["lfd_pnr"] = raw_data["pnr"]
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["altersteilzeit_02_14"] = raw_data["plb0103"]
@@ -414,7 +453,22 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["disability_degree"] = raw_data["ple0041"]
     out["med_pl_raucher"] = raw_data["ple0081_h"]
     out["art_kv"] = raw_data["ple0097"]
-    out["politics_left_right"] = raw_data["plh0004"]
+    out["politics_left_right"] = agreement_int_categorical(
+        raw_data["plh0004"],
+        renaming={
+            "[0] 0 ganz links": 0,
+            "[1] 1": 1,
+            "[2] 2": 2,
+            "[3] 3": 3,
+            "[4] 4": 4,
+            "[5] 5": 5,
+            "[6] 6": 6,
+            "[7] 7": 7,
+            "[8] 8": 8,
+            "[9] 9": 9,
+            "[10] 10 ganz rechts": 10,
+        },
+    )
     out["interest_politics"] = raw_data["plh0007"]
     out["party_affiliation_any"] = raw_data["plh0011_h"]
     out["party_affiliation"] = raw_data["plh0012_h"]
@@ -473,24 +527,44 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
 def ppathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the ppathl dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = raw_data["hid"].astype(apply_lowest_int_dtype(raw_data["hid"]))
-    out["p_id"] = int_categorical_to_int(raw_data["pid"])
-    out["year"] = int_categorical_to_int(raw_data["syear"])
-    out["current_east_west"] = raw_data["sampreg"]
-    out["befragungsstatus"] = raw_data["netto"]
-    out["year_immigration"] = raw_data["immiyear"]
-    out["born_in_germany"] = raw_data["germborn"]
-    out["country_of_birth"] = raw_data["corigin"]
-    out["birth_month_ppathl"] = raw_data["gebmonat"]
-    out["east_west_1989"] = raw_data["loc1989"]
-    out["migrationshintergrund"] = raw_data["migback"]
-    out["sexual_orientation"] = raw_data["sexor"]
-    out["birth_bundesland"] = raw_data["birthregion"]
-    out["p_bleibe_wkeit"] = raw_data["pbleib"]
-    out["p_gewicht"] = raw_data["phrf"]
-    out["p_gewicht_nur_neue"] = raw_data["phrf0"]
-    out["p_gewicht_ohne_neue"] = raw_data["phrf1"]
-    out["pointer_partner"] = raw_data["parid"]
-    out["has_partner"] = raw_data["partner"]
+    out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"], remove_negatives=True)
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["current_east_west"] = str_categorical(raw_data["sampreg"], ordered=False)
+    out["befragungsstatus"] = str_categorical(raw_data["netto"], ordered=False)
+    out["year_immigration"] = apply_lowest_int_dtype(raw_data["immiyear"])
+    out["born_in_germany"] = str_categorical(raw_data["germborn"], ordered=False)
+    out["country_of_birth"] = str_categorical(raw_data["corigin"], ordered=False)
+    out["birth_month_ppathl"] = str_categorical(
+        raw_data["gebmonat"],
+        ordered=False,
+        renaming={
+            "[1] Januar": 1,
+            "[2] Februar": 2,
+            "[3] Maerz": 3,
+            "[4] April": 4,
+            "[5] Mai": 5,
+            "[6] Juni": 6,
+            "[7] Juli": 7,
+            "[8] August": 8,
+            "[9] September": 9,
+            "[10] Oktober": 10,
+            "[11] November": 11,
+            "[12] Dezember": 12,
+        },
+    )
+    out["east_west_1989"] = str_categorical(raw_data["loc1989"], ordered=False)
+    out["migrationshintergrund"] = str_categorical(raw_data["migback"], ordered=False)
+    out["sexual_orientation"] = str_categorical(raw_data["sexor"], ordered=False)
+    out["birth_bundesland"] = str_categorical(raw_data["birthregion"], ordered=False)
+    out["p_bleibe_wkeit"] = apply_lowest_float_dtype(raw_data["pbleib"])
+    out["p_gewicht"] = apply_lowest_float_dtype(raw_data["phrf"])
+    out["p_gewicht_nur_neue"] = apply_lowest_float_dtype(raw_data["phrf0"])
+    out["p_gewicht_ohne_neue"] = apply_lowest_float_dtype(raw_data["phrf1"])
+    out["pointer_partner"] = apply_lowest_int_dtype(
+        raw_data["parid"],
+        remove_negatives=True,
+    )
+    out["has_partner"] = str_categorical(raw_data["partner"], ordered=False)
 
     return out
