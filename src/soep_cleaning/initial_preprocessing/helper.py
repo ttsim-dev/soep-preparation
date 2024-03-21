@@ -107,7 +107,8 @@ def str_categorical(
     ordered: bool = True,
     renaming: dict | None = None,
 ) -> "pd.Series[str]":
-    """Clean the categories of a pd.Series of dtype category with str entries.
+    """Clean (and potential rename and reduce number of) the categories of a pd.Series
+    of dtype category with str entries.
 
     Parameters:
         sr (pd.Series[str]): The input series with categories to be cleaned.
@@ -133,6 +134,13 @@ def str_categorical(
         2    '1990 Ausgangs-Sample (Ost)'
         dtype: category
         Categories (3, object): ['1984 Ausgangs-Sample (West)', '1984 Migration (bis 1983, West)', '1990 Ausgangs-Sample (Ost)']
+
+        >>> str_categorical(sr, renaming={'[1] A 1984 Ausgangs-Sample (West)': 'A', '[2] B 1984 Migration (bis 1983, West)': 'B', '[3] C 1990 Ausgangs-Sample (Ost)': 'C'})
+        0    'A'
+        1    'B'
+        2    'C'
+        dtype: category
+        Categories (3, object): ['A', 'B', 'C']
 
     """
     _error_handling_categorical(
@@ -218,25 +226,29 @@ def int_to_int_categorical(
     return sr.cat.set_categories(categories_order, rename=True, ordered=ordered)
 
 
-def agreement_int_categorical(sr: "pd.Series") -> "pd.Series[int]":
+def agreement_int_categorical(
+    sr: "pd.Series",
+    renaming: dict,
+    ordered=True,
+) -> "pd.Series[int]":
     """Clean the categories of a pd.Series of dtype category with unspecified type
     entries.
 
     Parameters:
-        sr (pd.Series): The input series to be cleaned.
+        sr (pd.Series[str]): The input series with categories to be cleaned.
+        renaming (dict): A dictionary to rename the categories.
+        ordered (bool, optional): Whether the series should be returned as unordered. Defaults to True.
 
     Returns:
         pd.Series[int]: The series with cleaned categories.
 
     """
-    _error_handling_categorical(sr, "category", [[sr, "pandas.core.series.Series"]])
-    sr = _remove_missing_data_categories(sr)
-    return sr.cat.rename_categories(
-        {
-            "[0] Completely dissatisfied": 0,
-            "[10] Completely satisfied": 10,
-        },
+    sr = str_categorical(
+        sr,
+        ordered=ordered,
+        renaming=renaming,
     )
+    return int_categorical(sr, ordered=ordered)
 
 
 def float_categorical_to_float(sr: "pd.Series[category]") -> "pd.Series[float]":
