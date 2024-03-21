@@ -33,7 +33,7 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["hh_typ"] = str_categorical(
         raw_data["hgtyp1hh"],
-        no_identifiers=2,
+        nr_identifiers=2,
         ordered=False,
     )
     out["hh_typ_2st"] = str_categorical(
@@ -97,7 +97,7 @@ def hpathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["hh_soep_sample"] = str_categorical(
         raw_data["hsample"],
-        no_identifiers=2,
+        nr_identifiers=2,
         ordered=False,
     )
 

@@ -63,7 +63,7 @@ def _create_parametrization(dataset: str) -> dict:
 
 
 for dataset in DATASETS:
-
+    # TODO: remove task decorator and return node
     @task(id=dataset, kwargs=_create_parametrization(dataset))
     def clean_one_dataset(
         depends_on: dict[str, Path],

@@ -184,6 +184,7 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[10] Completely satisfied": 10,
         },
     )
+    # TODO: renaming to be deleted here
     out["med_pe_subj_status"] = str_categorical(
         raw_data["m11126"],
         renaming={

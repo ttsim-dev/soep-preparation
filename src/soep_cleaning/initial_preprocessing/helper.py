@@ -39,9 +39,7 @@ def _error_handling_categorical(
         input_expected_types = [[]]
     _fail_if_series_wrong_dtype(sr, expected_sr_dtype)
     _fail_series_without_categories(sr)
-    for item in input_expected_types:
-        inputt, expected_type = item
-        _fail_if_invalid_input(inputt, expected_type)
+    [_fail_if_invalid_input(*item) for item in input_expected_types]
 
 
 def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
@@ -102,17 +100,18 @@ def bool_categorical(
 
 
 def str_categorical(
-    sr: "pd.Series[str]",
-    no_identifiers: int = 1,
+    sr: "pd.Series[pd.CategoricalDtype[str]]",  # TODO: Series is actually a categorical series with str entries, fix in all relevant places
+    nr_identifiers: int = 1,
     ordered: bool = True,
     renaming: dict | None = None,
-) -> "pd.Series[str]":
-    """Clean (and potential rename and reduce number of) the categories of a pd.Series
+) -> "pd.Series[pd.CategoricalDtype[str]]":
+    # TODO: What does cleaning do precisely. When are categories reduced? Example categories should be returned in ordered format. Test if entries of different types are handled correctly.
+    """Clean (and potentially rename and reduce number of) the categories of a pd.Series
     of dtype category with str entries.
 
     Parameters:
-        sr (pd.Series[str]): The input series with categories to be cleaned.
-        no_identifiers (int, optional): The number of identifiers inside each category to be removed. Defaults to 1.
+        sr (pd.Series[pd.CategoricalDtype[str]]): The input series with categories to be cleaned.
+        nr_identifiers (int, optional): The number of identifiers inside each category to be removed. Defaults to 1.
         ordered (bool, optional): Whether the series should be returned as unordered. Defaults to True.
         renaming (dict | None, optional): A dictionary to rename the categories. Defaults to None.
 
@@ -120,39 +119,42 @@ def str_categorical(
         pd.Series[str]: The series with cleaned categories.
 
     Example:
-        >>> sr = pd.Series(['[1] A 1984 Ausgangs-Sample (West)', '[2] B 1984 Migration (bis 1983, West)', '[3] C 1990 Ausgangs-Sample (Ost)'])
-        >>> str_categorical(sr, no_identifiers=1)
-        0    'A 1984 Ausgangs-Sample (West)'
-        1    'B 1984 Migration (bis 1983, West)'
-        2    'C 1990 Ausgangs-Sample (Ost)'
+        >>> dtype = pd.CategoricalDtype(['[1] A XY', '[2] B BZ', '[3] D ZZ'], ordered=True)
+        >>> sr = pd.Series(['[1] A XY', '[2] B BZ', '[3] D ZZ'], dtype=dtype)
+        >>> str_categorical(sr, nr_identifiers=1)
+        0    'A XY'
+        1    'B BZ'
+        2    'D ZZ'
         dtype: category
-        Categories (3, object): ['A 1984 Ausgangs-Sample (West)', 'B 1984 Migration (bis 1983, West)', 'C 1990 Ausgangs-Sample (Ost)']
+        Categories (3, object): ['A XY' < 'B BZ' < 'D ZZ']
 
-        >>> str_categorical(sr, no_identifiers=2)
-        0    '1984 Ausgangs-Sample (West)'
-        1    '1984 Migration (bis 1983, West)'
-        2    '1990 Ausgangs-Sample (Ost)'
+        >>> str_categorical(sr, nr_identifiers=2, ordered=False)
+        0    'XY'
+        1    'BZ'
+        2    'CZ'
         dtype: category
-        Categories (3, object): ['1984 Ausgangs-Sample (West)', '1984 Migration (bis 1983, West)', '1990 Ausgangs-Sample (Ost)']
+        Categories (3, object): ['XY', 'BZ', 'CZ']
 
-        >>> str_categorical(sr, renaming={'[1] A 1984 Ausgangs-Sample (West)': 'A', '[2] B 1984 Migration (bis 1983, West)': 'B', '[3] C 1990 Ausgangs-Sample (Ost)': 'C'})
+        >>> str_categorical(sr, renaming={'[1] A XY': 'A', '[2] B BZ': 'B', '[3] D ZZ': 'C'})
         0    'A'
         1    'B'
         2    'C'
         dtype: category
-        Categories (3, object): ['A', 'B', 'C']
+        Categories (3, object): ['A' < 'B' < 'C']
 
     """
     _error_handling_categorical(
         sr,
         "category",
-        [[sr, "pandas.core.series.Series"], [no_identifiers, "int"], [ordered, "bool"]],
+        [[sr, "pandas.core.series.Series"], [nr_identifiers, "int"], [ordered, "bool"]],
     )
     sr = _remove_missing_data_categories(sr)
     if not ordered:
         sr = sr.cat.as_unordered()
     if renaming is not None:
+        # TODO: pd.CategoricalDtype()
         new_categories = list(OrderedDict.fromkeys(renaming.values()))
+        # TODO: find str dtype which handles NaN/missing data
         sr = (
             sr.astype("str")
             .replace(renaming)
@@ -163,7 +165,7 @@ def str_categorical(
     else:
         # TODO: Check if the following lines are adequate
         sr = sr.cat.rename_categories(
-            [i.split(" ", no_identifiers)[no_identifiers] for i in sr.cat.categories],
+            [i.split(" ", nr_identifiers)[nr_identifiers] for i in sr.cat.categories],
         )
     return sr
 

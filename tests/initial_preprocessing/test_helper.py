@@ -82,7 +82,7 @@ def test_str_categorical_assert_dtype():
         ["[0] Cat 0", "[10] Cat 10"],
         dtype="category",
     )
-    actual = str_categorical(sr, no_identifiers=1).dtype
+    actual = str_categorical(sr, nr_identifiers=1).dtype
     assert actual == expected
 
 
@@ -95,7 +95,7 @@ def test_str_categorical_assert_renaming_1_identifier():
         ["[0] Cat 0", "[10] Cat 10"],
         dtype="category",
     )
-    actual = str_categorical(sr, no_identifiers=1)
+    actual = str_categorical(sr, nr_identifiers=1)
     pd.testing.assert_series_equal(actual, expected)
 
 
@@ -108,7 +108,7 @@ def test_str_categorical_assert_renaming_2_identifier():
         ["[0] A Cat 0", "[10] B Cat 10"],
         dtype="category",
     )
-    actual = str_categorical(sr, no_identifiers=2)
+    actual = str_categorical(sr, nr_identifiers=2)
     pd.testing.assert_series_equal(actual, expected)
 
 

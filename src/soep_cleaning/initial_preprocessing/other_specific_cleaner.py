@@ -16,7 +16,7 @@ def design(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["hh_soep_sample"] = str_categorical(
         raw_data["hsample"],
-        no_identifiers=2,
+        nr_identifiers=2,
         ordered=False,
     )
 

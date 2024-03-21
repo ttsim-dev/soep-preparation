@@ -32,6 +32,7 @@ DATASETS = [
     "ppathl",
 ]
 
+# TODO: data catalog in dict hierarchy with multiple data catalogs
 data_catalog = DataCatalog()
 for dataset in DATASETS:
     data_catalog.add(dataset, Path(f"data/V37/{dataset}.dta"))
