@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Annotated
 
 import pandas as pd
-from pytask import PickleNode, Product, task
+from pytask import PathNode, task
 
 from soep_cleaning.config import DATASETS, SRC, data_catalog
 
@@ -57,43 +57,52 @@ def _create_parametrization(dataset: str) -> dict:
                 f"{_dataset_script_name(dataset)}.py",
             ).resolve(),
         },
-        "node": data_catalog[f"{dataset}_cleaned"],
         "dataset_name": dataset,
     }
 
 
 for dataset in DATASETS:
-    # TODO: remove task decorator and return node
-    @task(id=dataset, kwargs=_create_parametrization(dataset))
-    def clean_one_dataset(
-        depends_on: dict[str, Path],
-        node: Annotated[PickleNode, Product],
-        dataset_name: str,
-    ) -> None:
+
+    @task(id=dataset)
+    def task_clean_one_dataset(
+        dataset_path: Annotated[Path, PathNode(path=data_catalog[f"{dataset}"]).load()],
+        script_path: Annotated[
+            Path,
+            Path(
+                SRC.joinpath(
+                    "initial_preprocessing",
+                    f"{_dataset_script_name(dataset)}.py",
+                ).resolve(),
+            ),
+        ],
+        dataset_name: str = dataset,
+    ) -> Annotated[pd.DataFrame, data_catalog[f"{dataset}_cleaned"]]:
         """Cleans a dataset using a specified cleaning script.
 
         Parameters:
-            depends_on (dict[str, Path]): A dictionary containing the paths to the dependencies of the cleaning task.
-            produces (Annotated[Path, Product]): The path where the cleaned dataset will be saved.
-            dataset_name (str): The name of the dataset to be cleaned.
+            dataset_path (Path): The path to the dataset to be cleaned.
+            script_path (Path): The path to the cleaning script.
+            dataset_name (str, optional): The name of the dataset to be cleaned. Defaults to the value of `dataset`.
 
         Returns:
-            None
+            pd.DataFrame: A cleaned pandas DataFrame to be saved to the data catalog.
+
+        Raises:
+            FileNotFoundError: If the dataset file or cleaning script file does not exist.
+            ImportError: If there is an error loading the cleaning script module.
+            AttributeError: If the cleaning script module does not contain the expected function.
 
         """
-        _error_handling_task(depends_on, node, dataset_name)
-        raw_data = pd.read_stata(depends_on["dataset"])
+        _error_handling_task(dataset_path, script_path, dataset_name)
+        raw_data = pd.read_stata(dataset_path)
         module = SourceFileLoader(
-            depends_on["script"].stem,
-            str(depends_on["script"]),
+            script_path.stem,
+            str(script_path),
         ).load_module()
-        cleaned = getattr(module, f"{dataset_name}")(raw_data)
-        node.save(cleaned)
+        return getattr(module, f"{dataset_name}")(raw_data)
 
 
-def _error_handling_task(depends_on, produces, dataset_name):
-    _fail_if_missing_dependency(depends_on)
-    _fail_if_invalid_dependency(depends_on)
-    _fail_if_invalid_input(depends_on, "dict")
-    _fail_if_invalid_input(produces, "_pytask.nodes.PickleNode")
+def _error_handling_task(dataset_path, script_path, dataset_name):
+    _fail_if_invalid_input(dataset_path, "pytask.PathNode")
+    _fail_if_invalid_input(script_path, "pytask.PathNode")
     _fail_if_invalid_input(dataset_name, "str")
