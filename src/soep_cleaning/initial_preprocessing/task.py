@@ -75,14 +75,12 @@ for dataset in DATASETS:
                 ).resolve(),
             ),
         ],
-        dataset_name: str = dataset,
     ) -> Annotated[pd.DataFrame, data_catalog[f"{dataset}_cleaned"]]:
         """Cleans a dataset using a specified cleaning script.
 
         Parameters:
             dataset_path (Path): The path to the dataset to be cleaned.
             script_path (Path): The path to the cleaning script.
-            dataset_name (str, optional): The name of the dataset to be cleaned. Defaults to the value of `dataset`.
 
         Returns:
             pd.DataFrame: A cleaned pandas DataFrame to be saved to the data catalog.
@@ -93,16 +91,15 @@ for dataset in DATASETS:
             AttributeError: If the cleaning script module does not contain the expected function.
 
         """
-        _error_handling_task(dataset_path, script_path, dataset_name)
+        _error_handling_task(dataset_path, script_path)
         raw_data = pd.read_stata(dataset_path)
         module = SourceFileLoader(
             script_path.stem,
             str(script_path),
         ).load_module()
-        return getattr(module, f"{dataset_name}")(raw_data)
+        return getattr(module, f"{dataset}")(raw_data)
 
 
-def _error_handling_task(dataset_path, script_path, dataset_name):
+def _error_handling_task(dataset_path, script_path):
     _fail_if_invalid_input(dataset_path, "pytask.PathNode")
     _fail_if_invalid_input(script_path, "pytask.PathNode")
-    _fail_if_invalid_input(dataset_name, "str")
