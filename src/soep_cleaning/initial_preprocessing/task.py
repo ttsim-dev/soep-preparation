@@ -3,9 +3,9 @@ from pathlib import Path
 from typing import Annotated
 
 import pandas as pd
-from pytask import PathNode, task
+from pytask import task
 
-from soep_cleaning.config import DATASETS, SRC, data_catalog
+from soep_cleaning.config import SRC, data_catalog
 
 
 def _fail_if_missing_dependency(depends_on: dict[str, Path]):
@@ -61,11 +61,11 @@ def _create_parametrization(dataset: str) -> dict:
     }
 
 
-for dataset in DATASETS:
+for dataset in data_catalog["orig"].entries:
 
     @task(id=dataset)
     def task_clean_one_dataset(
-        dataset_path: Annotated[Path, PathNode(path=data_catalog[f"{dataset}"]).load()],
+        orig_data: Annotated[Path, data_catalog["orig"][dataset]],
         script_path: Annotated[
             Path,
             Path(
@@ -75,12 +75,14 @@ for dataset in DATASETS:
                 ).resolve(),
             ),
         ],
-    ) -> Annotated[pd.DataFrame, data_catalog[f"{dataset}_cleaned"]]:
+        dataset: str = dataset,
+    ) -> Annotated[pd.DataFrame, data_catalog["cleaned"][dataset]]:
         """Cleans a dataset using a specified cleaning script.
 
         Parameters:
-            dataset_path (Path): The path to the dataset to be cleaned.
+            orig_data (Path): The path to the dataset to be cleaned.
             script_path (Path): The path to the cleaning script.
+            dataset (str): The name of the dataset.
 
         Returns:
             pd.DataFrame: A cleaned pandas DataFrame to be saved to the data catalog.
@@ -91,15 +93,14 @@ for dataset in DATASETS:
             AttributeError: If the cleaning script module does not contain the expected function.
 
         """
-        _error_handling_task(dataset_path, script_path)
-        raw_data = pd.read_stata(dataset_path)
+        _error_handling_task(orig_data, script_path)
         module = SourceFileLoader(
             script_path.stem,
             str(script_path),
         ).load_module()
-        return getattr(module, f"{dataset}")(raw_data)
+        return getattr(module, f"{dataset}")(pd.read_stata(orig_data))
 
 
-def _error_handling_task(dataset_path, script_path):
-    _fail_if_invalid_input(dataset_path, "pytask.PathNode")
-    _fail_if_invalid_input(script_path, "pytask.PathNode")
+def _error_handling_task(orig_data, script_path):
+    _fail_if_invalid_input(orig_data, "pathlib.PosixPath")
+    _fail_if_invalid_input(script_path, "pathlib.PosixPath")
