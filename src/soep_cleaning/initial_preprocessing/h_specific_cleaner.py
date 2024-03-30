@@ -10,7 +10,7 @@ from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_d
 
 
 def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the biol dataset."""
+    """Clean the hgen dataset."""
     out = pd.DataFrame()
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
@@ -45,7 +45,7 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def hl(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the biol dataset."""
+    """Clean the hl dataset."""
     out = pd.DataFrame()
     out["soep_hh_id"] = int_categorical_to_int(raw_data["hid"])
     out["year"] = int_categorical_to_int(raw_data["syear"])

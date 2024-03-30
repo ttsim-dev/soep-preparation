@@ -13,7 +13,7 @@ dependencies:
   - pygraphviz
   - pytask-latex>=0.4.0
   - pytask-parallel>=0.4.0
-  - pytask>=0.4.0
+  - pytask>=0.4.7
   - pytest
   - pytest-cov
   - pytest-xdist
