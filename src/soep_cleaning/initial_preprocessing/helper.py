@@ -106,8 +106,8 @@ def str_categorical(
     renaming: dict | None = None,
 ) -> "pd.Series[pd.CategoricalDtype[str]]":
     # TODO: What does cleaning do precisely. When are categories reduced? Example categories should be returned in ordered format. Test if entries of different types are handled correctly.
-    """Clean (and potentially rename and reduce number of) the categories of a pd.Series
-    of dtype category with str entries.
+    """Clean and change the categories based on the renaming dict of a pd.Series of
+    dtype category with str entries.
 
     Parameters:
         sr (pd.Series[pd.CategoricalDtype[str]]): The input series with categories to be cleaned.
@@ -116,7 +116,7 @@ def str_categorical(
         renaming (dict | None, optional): A dictionary to rename the categories. Defaults to None.
 
     Returns:
-        pd.Series[str]: The series with cleaned categories.
+        pd.Series[str]: The series with cleaned new categories.
 
     Example:
         >>> dtype = pd.CategoricalDtype(['[1] A XY', '[2] B BZ', '[3] D ZZ'], ordered=True)
