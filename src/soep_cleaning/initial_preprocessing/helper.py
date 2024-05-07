@@ -34,11 +34,24 @@ def _error_handling_categorical(
     sr: pd.Series,
     expected_sr_dtype: str,
     input_expected_types: list[list] | None = None,
+    categories_expected_types: list | None = None,
 ):
     if input_expected_types is None:
         input_expected_types = [[]]
     _fail_if_series_wrong_dtype(sr, expected_sr_dtype)
-    _fail_series_without_categories(sr)
+    if expected_sr_dtype == "category":
+        _fail_series_without_categories(sr)
+        if categories_expected_types is not None:
+            dtype = categories_expected_types[1]
+            [
+                _fail_if_invalid_input(category, dtype)
+                for category in categories_expected_types[0]
+            ]
+        else:
+            msg = "Did not receive a list of categories and their expected dtype, even though categorical dtype of series was specified."
+            raise Warning(
+                msg,
+            )
     [_fail_if_invalid_input(*item) for item in input_expected_types]
 
 
@@ -100,7 +113,7 @@ def bool_categorical(
 
 
 def str_categorical(
-    sr: "pd.Series[pd.CategoricalDtype[str]]",  # TODO: Series is actually a categorical series with str entries, fix in all relevant places
+    sr: "pd.Series[pd.CategoricalDtype[str]]",
     nr_identifiers: int = 1,
     ordered: bool = True,
     renaming: dict | None = None,
@@ -146,7 +159,12 @@ def str_categorical(
     _error_handling_categorical(
         sr,
         "category",
-        [[sr, "pandas.core.series.Series"], [nr_identifiers, "int"], [ordered, "bool"]],
+        [
+            [sr, "pandas.core.series.Series"],
+            [nr_identifiers, "int"],
+            [ordered, "bool"],
+        ],
+        [sr.cat.categories.to_list(), "str"],
     )
     sr = _remove_missing_data_categories(sr)
     if not ordered:
