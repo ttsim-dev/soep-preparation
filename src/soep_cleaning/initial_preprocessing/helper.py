@@ -119,7 +119,6 @@ def str_categorical(
     ordered: bool = True,
     renaming: dict | None = None,
 ) -> "pd.Series[pd.CategoricalDtype[str]]":
-    # TODO: What does cleaning do precisely. When are categories reduced? Example categories should be returned in ordered format. Test if entries of different types are handled correctly.
     """Clean and change the categories based on the renaming dict of a pd.Series of
     dtype category with str entries.
 
@@ -172,7 +171,9 @@ def str_categorical(
 
     if ordered:
         if renaming is not None:
-            # TODO: There is still a bug in the following lines. If a category gets renamed to a string containing the delimiter, the name will be changed by the function trying to remove the number of identifiers.
+            # TODO: There is still a bug in the following lines.
+            # If a category gets renamed to a string containing the delimiter,
+            # the name will be changed by the function trying to remove the number of identifiers.
             new_categories = list(OrderedDict.fromkeys(renaming.values()))
             return (
                 sr.astype("str[pyarrow]")
