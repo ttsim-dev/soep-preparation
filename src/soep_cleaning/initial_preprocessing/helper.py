@@ -188,12 +188,16 @@ def str_categorical(
                 )
             )
         else:
-            return sr.cat.rename_categories(
-                [
-                    i.split(delimiter, nr_identifiers)[nr_identifiers]
-                    for i in sr.cat.categories
-                    if i.count(delimiter) >= nr_identifiers
-                ],
+            return (
+                sr.astype("str[pyarrow]")
+                .astype("category")
+                .cat.rename_categories(
+                    [
+                        i.split(delimiter, nr_identifiers)[nr_identifiers]
+                        for i in sr.cat.categories
+                        if i.count(delimiter) >= nr_identifiers
+                    ],
+                )
             )
     else:
         return sr.cat.as_unordered()
