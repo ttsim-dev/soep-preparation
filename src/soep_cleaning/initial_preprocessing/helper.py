@@ -22,12 +22,29 @@ def _fail_series_without_categories(sr: pd.Series):
         raise ValueError(msg)
 
 
-def _fail_if_invalid_input(inputt, expected_dtype: str):
-    if expected_dtype not in str(type(inputt)):
-        msg = f"Expected {inputt} to be of type {expected_dtype}, got {type(inputt)}"
+def _fail_if_invalid_input(input_, expected_dtype: str):
+    if expected_dtype not in str(type(input_)):
+        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
         raise TypeError(
             msg,
         )
+
+
+def _fail_if_invalid_inputs(input_, expected_dtypes: str):
+    if " | " in expected_dtypes:
+        if not any(
+            expected_dtype in str(type(input_))
+            for expected_dtype in expected_dtypes.split(" | ")
+        ):
+            msg = (
+                f"Expected {input_} to be of type {expected_dtypes}, got {type(input_)}"
+            )
+            raise TypeError(
+                msg,
+            )
+
+    else:
+        _fail_if_invalid_input(input_, expected_dtypes)
 
 
 def _error_handling_categorical(
@@ -44,7 +61,7 @@ def _error_handling_categorical(
         if categories_expected_types is not None:
             dtype = categories_expected_types[1]
             [
-                _fail_if_invalid_input(category, dtype)
+                _fail_if_invalid_inputs(category, dtype)
                 for category in categories_expected_types[0]
             ]
         else:
@@ -101,7 +118,7 @@ def bool_categorical(
             [sr, "pandas.core.series.Series"],
             [renaming, "dict" if renaming is not None else "None"],
         ],
-        [sr.cat.categories.to_list(), "bool"],
+        [sr.cat.categories.to_list(), "str"],
     )
     sr = sr.astype("category")
     sr = _remove_missing_data_categories(sr)

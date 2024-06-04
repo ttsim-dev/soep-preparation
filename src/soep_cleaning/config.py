@@ -30,7 +30,7 @@ for dataset in [
     "pequiv",
     "pgen",
     "pkal",
-    # "pl",
+    "pl",
     "ppathl",
 ]:
     data_catalog["orig"].add(name=dataset, node=Path(f"data/V37/{dataset}.dta"))
