@@ -83,15 +83,20 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
         pd.Series: A new categorical Series with the missing data categories removed.
 
     """
-    if -8 in sr.cat.categories:
-        sr = sr.cat.remove_categories(-8)
     str_categories = sr.cat.categories[
         sr.cat.categories.map(lambda x: isinstance(x, str))
     ]
     removing_categories = [
         i for i in str_categories if i.startswith("[-") and i[3] == "]"
     ]
-    return sr.cat.remove_categories(removing_categories)
+    if -8 in sr.cat.categories:
+        removing_categories.append(-8)
+    return (
+        sr.astype("str")
+        .replace({i: pd.NA for i in removing_categories})
+        .astype("category")
+        .cat.set_categories(sr.cat.categories.drop(removing_categories))
+    )
 
 
 def bool_categorical(
