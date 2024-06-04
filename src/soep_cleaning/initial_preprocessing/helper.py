@@ -241,22 +241,28 @@ def int_categorical(sr: "pd.Series[int]", ordered: bool = False) -> "pd.Series[i
         sr,
         "category",
         [[sr, "pandas.core.series.Series"], [ordered, "bool"]],
+        [sr.cat.categories.to_list(), "int"],
     )
     sr = _remove_missing_data_categories(sr)
-    return int_to_int_categorical(sr, ordered)
+    return int_to_int_categorical(apply_lowest_int_dtype(sr), ordered)
 
 
 def int_categorical_to_int(sr: "pd.Series[category]") -> "pd.Series[int]":
     """Transform a pd.Series of dtype category with int entries to dtype int.
 
     Parameters:
-        sr (pd.Series[int]): The input series to be cleaned.
+        sr (pd.Series[category]): The input series to be cleaned.
 
     Returns:
         pd.Series[int]: The series with cleaned categories.
 
     """
-    _error_handling_categorical(sr, "category", [[sr, "pandas.core.series.Series"]])
+    _error_handling_categorical(
+        sr,
+        "category",
+        [[sr, "pandas.core.series.Series"]],
+        [sr.cat.categories.to_list(), "int | str"],
+    )
     sr = _remove_missing_data_categories(sr)
     return apply_lowest_int_dtype(sr)
 
@@ -319,7 +325,12 @@ def float_categorical_to_float(sr: "pd.Series[category]") -> "pd.Series[float]":
         pd.Series[float]: The series with cleaned categories.
 
     """
-    _error_handling_categorical(sr, "category", [[sr, "pandas.core.series.Series"]])
+    _error_handling_categorical(
+        sr,
+        "category",
+        [[sr, "pandas.core.series.Series"]],
+        [sr.cat.categories.to_list(), "float | str"],
+    )
     sr = _remove_missing_data_categories(sr)
     return apply_lowest_float_dtype(sr)
 
