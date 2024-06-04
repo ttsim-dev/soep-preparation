@@ -40,7 +40,7 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["gender"] = str_categorical(
         raw_data["d11102ll"],
@@ -213,7 +213,7 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["nationality_first"] = str_categorical(raw_data["pgnation"], ordered=False)
     out["status_refugee"] = str_categorical(raw_data["pgstatus_refu"], ordered=False)
@@ -304,7 +304,7 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
 def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pkal dataset."""
     out = pd.DataFrame()
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
     out["year"] = int_categorical_to_int(raw_data["syear"])
@@ -408,34 +408,96 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
 def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pl dataset."""
     out = pd.DataFrame()
-    out["p_id"] = int_categorical_to_int(raw_data["pid"])
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["lfd_pnr"] = raw_data["pnr"]
+    out["lfd_pnr"] = int_categorical_to_int(raw_data["pnr"])
     out["year"] = int_categorical_to_int(raw_data["syear"])
-    out["altersteilzeit_02_14"] = raw_data["plb0103"]
-    out["altersteilzeit_2001"] = raw_data["plb0179"]
-    out["dauer_letzte_stelle_j"] = raw_data["plb0301"]
-    out["dauer_letzte_stelle_m"] = raw_data["plb0302"]
-    out["letzte_stelle_betriebsstilll"] = raw_data["plb0304_v11"]
-    out["letzte_stelle_grund_1999"] = raw_data["plb0304_v13"]
-    out["letzte_stelle_grund"] = raw_data["plb0304_v14"]
-    out["actv_work_search"] = raw_data["plb0424_v2"]
-    out["altersteilzeit_art"] = raw_data["plb0460"]
-    out["wage_employee_m_prev"] = raw_data["plb0471_h"]
-    out["mschaftsgeld_prev"] = raw_data["plc0126_v1"]
-    out["arbeitslosengeld_empf"] = raw_data["plc0130_v1"]
-    out["arbeitslosengeld_m3_m5_empf"] = raw_data["plc0130_v2"]
-    out["mschaftsgeld_vorm_pl"] = raw_data["plc0152_v1"]
-    out["mschaftsgeld_brutto_m"] = raw_data["plc0153_h"]
-    out["mschaftsgeld_betrag_pl_prev"] = raw_data["plc0155_h"]
-    out["child_alimony_before_2016"] = raw_data["plc0178"]
-    out["in_priv_rente_eingezahlt"] = raw_data["plc0437"]
-    out["in_priv_rente_eingezahlt_monate"] = raw_data["plc0438"]
-    out["prv_rente_beitr_2013_m"] = raw_data["plc0439_v1"]
-    out["prv_rente_beitr_2018_m"] = raw_data["plc0439_v2"]
-    out["med_pl_schw_treppen"] = raw_data["ple0004"]
-    out["med_pl_schw_taten"] = raw_data["ple0005"]
-    out["med_pl_groesse"] = raw_data["ple0006"]
+    out["altersteilzeit_02_14"] = bool_categorical(
+        raw_data["plb0103"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["altersteilzeit_2001"] = bool_categorical(
+        raw_data["plb0179"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["dauer_letzte_stelle_j"] = int_categorical_to_int(
+        raw_data["plb0301"],
+    )  # TODO: Check on full dataset
+    out["dauer_letzte_stelle_m"] = bool_categorical(
+        raw_data["plb0302"],
+    )  # TODO: Check on full dataset
+    out["letzte_stelle_betriebsstilll"] = bool_categorical(
+        raw_data["plb0304_v11"],
+    )  # TODO: Check on full dataset
+    out["letzte_stelle_grund_1999"] = bool_categorical(
+        raw_data["plb0304_v13"],
+    )  # TODO: Check on full dataset
+    out["letzte_stelle_grund"] = bool_categorical(
+        raw_data["plb0304_v14"],
+    )  # TODO: Check on full dataset
+    out["actv_work_search"] = bool_categorical(
+        raw_data["plb0424_v2"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["altersteilzeit_art"] = bool_categorical(
+        raw_data["plb0460"],
+    )  # TODO: Check on full dataset
+    out["wage_employee_m_prev"] = bool_categorical(
+        raw_data["plb0471_h"],
+    )  # TODO: Check on full dataset
+    out["mschaftsgeld_prev"] = bool_categorical(
+        raw_data["plc0126_v1"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["arbeitslosengeld_empf"] = bool_categorical(
+        raw_data["plc0130_v1"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["arbeitslosengeld_m3_m5_empf"] = bool_categorical(
+        raw_data["plc0130_v2"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )  # TODO: Fix ordering and category "[3] Weiss nicht"
+    out["mschaftsgeld_vorm_pl"] = bool_categorical(
+        raw_data["plc0152_v1"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["mschaftsgeld_brutto_m"] = bool_categorical(
+        raw_data["plc0153_h"],
+    )  # TODO: Check on full dataset
+    out["mschaftsgeld_betrag_pl_prev"] = bool_categorical(
+        raw_data["plc0155_h"],
+    )  # TODO: Check on full dataset
+    out["child_alimony_before_2016"] = bool_categorical(
+        raw_data["plc0178"],
+    )  # TODO: Check on full dataset
+    out["in_priv_rente_eingezahlt"] = bool_categorical(
+        raw_data["plc0437"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["in_priv_rente_eingezahlt_monate"] = bool_categorical(
+        raw_data["plc0438"],
+    )  # TODO: Check on full dataset
+    out["prv_rente_beitr_2013_m"] = bool_categorical(
+        raw_data["plc0439_v1"],
+    )  # TODO: Check on full dataset
+    out["prv_rente_beitr_2018_m"] = bool_categorical(
+        raw_data["plc0439_v2"],
+    )  # TODO: Check on full dataset
+    out["med_pl_schw_treppen"] = raw_data[
+        "ple0004"
+    ]  # TODO: check with pl_replacing.yaml
+    out["med_pl_schw_taten"] = raw_data["ple0005"]  # TODO: check with pl_replacing.yaml
+    out["med_pl_groesse"] = bool_categorical(
+        raw_data["ple0006"],
+    )  # TODO: Check on full dataset
     out["med_pl_gewicht"] = raw_data["ple0007"]
     out["med_pl_subj_status"] = raw_data["ple0008"]
     out["med_pl_schlaf"] = raw_data["ple0011"]
@@ -529,7 +591,7 @@ def ppathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the ppathl dataset."""
     out = pd.DataFrame()
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"], remove_negatives=True)
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["current_east_west"] = str_categorical(raw_data["sampreg"], ordered=False)
     out["befragungsstatus"] = str_categorical(raw_data["netto"], ordered=False)
