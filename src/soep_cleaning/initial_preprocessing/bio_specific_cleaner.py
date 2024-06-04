@@ -13,7 +13,7 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the bioedu dataset."""
     out = pd.DataFrame()
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["p_id"] = int_categorical_to_int(raw_data["pid"])
 
     out["birth_month"] = str_categorical(
         raw_data["gebmonat"],
