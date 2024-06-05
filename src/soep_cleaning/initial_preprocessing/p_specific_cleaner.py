@@ -425,7 +425,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["dauer_letzte_stelle_j"] = int_categorical_to_int(
         raw_data["plb0301"],
     )  # TODO: Check on full dataset
-    out["dauer_letzte_stelle_m"] = bool_categorical(
+    out["dauer_letzte_stelle_m"] = int_categorical_to_int(
         raw_data["plb0302"],
     )  # TODO: Check on full dataset
     out["letzte_stelle_betriebsstilll"] = bool_categorical(

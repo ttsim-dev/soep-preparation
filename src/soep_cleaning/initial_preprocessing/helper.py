@@ -91,12 +91,7 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
     ]
     if -8 in sr.cat.categories:
         removing_categories.append(-8)
-    return (
-        sr.astype("str")
-        .replace({i: pd.NA for i in removing_categories})
-        .astype("category")
-        .cat.set_categories(sr.cat.categories.drop(removing_categories))
-    )
+    return sr.cat.set_categories(sr.cat.categories.drop(removing_categories))
 
 
 def bool_categorical(
@@ -125,7 +120,7 @@ def bool_categorical(
         ],
         [sr.cat.categories.to_list(), "str"],
     )
-    sr = sr.astype("category")
+    sr = sr.astype("category")  # TODO: check necessity, might be redundant
     sr = _remove_missing_data_categories(sr)
     if renaming is not None:
         sr = sr.cat.rename_categories(renaming)
