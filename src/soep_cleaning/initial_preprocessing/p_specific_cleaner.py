@@ -424,30 +424,30 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["dauer_letzte_stelle_j"] = int_categorical_to_int(
         raw_data["plb0301"],
-    )  # TODO: Check on full dataset
+    )
     out["dauer_letzte_stelle_m"] = int_categorical_to_int(
         raw_data["plb0302"],
-    )  # TODO: Check on full dataset
-    out["letzte_stelle_betriebsstilll"] = bool_categorical(
+    )
+    out["letzte_stelle_betriebsstilll"] = str_categorical(
         raw_data["plb0304_v11"],
-    )  # TODO: Check on full dataset
-    out["letzte_stelle_grund_1999"] = bool_categorical(
+    )
+    out["letzte_stelle_grund_1999"] = str_categorical(
         raw_data["plb0304_v13"],
-    )  # TODO: Check on full dataset
-    out["letzte_stelle_grund"] = bool_categorical(
+    )
+    out["letzte_stelle_grund"] = str_categorical(
         raw_data["plb0304_v14"],
-    )  # TODO: Check on full dataset
+    )
     out["actv_work_search"] = bool_categorical(
         raw_data["plb0424_v2"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["altersteilzeit_art"] = bool_categorical(
+    out["altersteilzeit_art"] = str_categorical(
         raw_data["plb0460"],
-    )  # TODO: Check on full dataset
-    out["wage_employee_m_prev"] = bool_categorical(
+    )
+    out["wage_employee_m_prev"] = int_categorical_to_int(
         raw_data["plb0471_h"],
-    )  # TODO: Check on full dataset
+    )
     out["mschaftsgeld_prev"] = bool_categorical(
         raw_data["plc0126_v1"],
         renaming={"[2] Nein": False, "[1] Ja": True},
@@ -468,13 +468,13 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["mschaftsgeld_brutto_m"] = bool_categorical(
+    out["mschaftsgeld_brutto_m"] = int_categorical_to_int(
         raw_data["plc0153_h"],
     )  # TODO: Check on full dataset
-    out["mschaftsgeld_betrag_pl_prev"] = bool_categorical(
+    out["mschaftsgeld_betrag_pl_prev"] = int_categorical_to_int(
         raw_data["plc0155_h"],
-    )  # TODO: Check on full dataset
-    out["child_alimony_before_2016"] = bool_categorical(
+    )
+    out["child_alimony_before_2016"] = int_categorical_to_int(
         raw_data["plc0178"],
     )  # TODO: Check on full dataset
     out["in_priv_rente_eingezahlt"] = bool_categorical(
@@ -482,40 +482,111 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["in_priv_rente_eingezahlt_monate"] = bool_categorical(
+    out["in_priv_rente_eingezahlt_monate"] = int_categorical_to_int(
         raw_data["plc0438"],
     )  # TODO: Check on full dataset
-    out["prv_rente_beitr_2013_m"] = bool_categorical(
+    out["prv_rente_beitr_2013_m"] = int_categorical_to_int(
         raw_data["plc0439_v1"],
     )  # TODO: Check on full dataset
-    out["prv_rente_beitr_2018_m"] = bool_categorical(
+    out["prv_rente_beitr_2018_m"] = int_categorical_to_int(
         raw_data["plc0439_v2"],
     )  # TODO: Check on full dataset
-    out["med_pl_schw_treppen"] = raw_data[
-        "ple0004"
-    ]  # TODO: check with pl_replacing.yaml
-    out["med_pl_schw_taten"] = raw_data["ple0005"]  # TODO: check with pl_replacing.yaml
-    out["med_pl_groesse"] = bool_categorical(
+    out["med_pl_schw_treppen"] = agreement_int_categorical(
+        raw_data["ple0004"],
+        renaming={"[1] Stark": 2, "[2] Ein wenig": 1, "[3] Gar nicht": 0},
+    )  # TODO: check scale
+    out["med_pl_schw_taten"] = agreement_int_categorical(
+        raw_data["ple0005"],
+        renaming={"[1] Stark": 2, "[2] Ein wenig": 1, "[3] Gar nicht": 0},
+    )  # TODO: check scale and ordered?
+    out["med_pl_groesse"] = float_categorical_to_float(
         raw_data["ple0006"],
     )  # TODO: Check on full dataset
-    out["med_pl_gewicht"] = raw_data["ple0007"]
-    out["med_pl_subj_status"] = raw_data["ple0008"]
-    out["med_pl_schlaf"] = raw_data["ple0011"]
-    out["med_pl_diabetes"] = raw_data["ple0012"]
-    out["med_pl_asthma"] = raw_data["ple0013"]
-    out["med_pl_herzkr"] = raw_data["ple0014"]
-    out["med_pl_krebs"] = raw_data["ple0015"]
-    out["med_pl_schlaganf"] = raw_data["ple0016"]
-    out["med_pl_migraene"] = raw_data["ple0017"]
-    out["med_pl_bluthdrck"] = raw_data["ple0018"]
-    out["med_pl_depressiv"] = raw_data["ple0019"]
-    out["med_pl_demenz"] = raw_data["ple0020"]
-    out["med_pl_gelenk"] = raw_data["ple0021"]
-    out["med_pl_ruecken"] = raw_data["ple0022"]
-    out["med_pl_sonst"] = raw_data["ple0023"]
-    out["disability_degree"] = raw_data["ple0041"]
-    out["med_pl_raucher"] = raw_data["ple0081_h"]
-    out["art_kv"] = raw_data["ple0097"]
+    out["med_pl_gewicht"] = float_categorical_to_float(
+        raw_data["ple0007"],
+    )  # TODO: Check on full dataset
+    out["med_pl_subj_status"] = agreement_int_categorical(
+        raw_data["ple0008"],
+        renaming={
+            "[1] Sehr gut": 1,
+            "[2] Gut": 2,
+            "[3] Zufriedenstellend": 3,
+            "[4] Weniger gut": 4,
+            "[5] Schlecht": 5,
+        },
+    )  # TODO: ordered?
+    out["med_pl_schlaf"] = bool_categorical(
+        raw_data["ple0011"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_diabetes"] = bool_categorical(
+        raw_data["ple0012"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_asthma"] = bool_categorical(
+        raw_data["ple0013"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_herzkr"] = bool_categorical(
+        raw_data["ple0014"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_krebs"] = bool_categorical(
+        raw_data["ple0015"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_schlaganf"] = bool_categorical(
+        raw_data["ple0016"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_migraene"] = bool_categorical(
+        raw_data["ple0017"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_bluthdrck"] = bool_categorical(
+        raw_data["ple0018"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_depressiv"] = bool_categorical(
+        raw_data["ple0019"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_demenz"] = bool_categorical(
+        raw_data["ple0020"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_gelenk"] = bool_categorical(
+        raw_data["ple0021"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_ruecken"] = bool_categorical(
+        raw_data["ple0022"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["med_pl_sonst"] = bool_categorical(
+        raw_data["ple0023"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["disability_degree"] = int_categorical_to_int(raw_data["ple0041"])
+    out["med_pl_raucher"] = bool_categorical(
+        raw_data["ple0081_h"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["art_kv"] = str_categorical(raw_data["ple0097"])
     out["politics_left_right"] = agreement_int_categorical(
         raw_data["plh0004"],
         renaming={
@@ -532,15 +603,75 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[10] 10 ganz rechts": 10,
         },
     )
-    out["interest_politics"] = raw_data["plh0007"]
-    out["party_affiliation_any"] = raw_data["plh0011_h"]
-    out["party_affiliation"] = raw_data["plh0012_h"]
-    out["party_affiliation_intensity"] = raw_data["plh0013_h"]
-    out["importance_career"] = raw_data["plh0107"]
-    out["importance_children"] = raw_data["plh0110"]
-    out["lebenszufriedenheit"] = raw_data["plh0182"]
-    out["general_trust"] = raw_data["plh0192"]
-    out["confession"] = raw_data["plh0258_h"]
+    out["interest_politics"] = agreement_int_categorical(
+        raw_data["plh0007"],
+        renaming={
+            "[1] Sehr stark": 1,
+            "[2] Stark": 2,
+            "[3] Nicht so stark": 3,
+            "[4] Ueberhaupt nicht": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["party_affiliation_any"] = bool_categorical(
+        raw_data["plh0011_h"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )  # TODO: Fix category "[3] Weiss nicht"
+    out["party_affiliation"] = str_categorical(raw_data["plh0012_h"])
+    out["party_affiliation_intensity"] = agreement_int_categorical(
+        raw_data["plh0013_h"],
+        renaming={
+            "[1] Sehr stark": 1,
+            "[2] Ziemlich stark": 2,
+            "[3] Maessig": 3,
+            "[4] Ziemlich schwach": 4,
+            "[5] Sehr schwach": 5,
+        },
+    )  # TODO: Are all categories covered?
+    out["importance_career"] = agreement_int_categorical(
+        raw_data["plh0107"],
+        renaming={
+            "[1] 1 Sehr wichtig": 1,
+            "[2] 2 Wichtig": 2,
+            "[3] 3 Weniger wichtig": 3,
+            "[4] 4 Ganz unwichtig": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["importance_children"] = agreement_int_categorical(
+        raw_data["plh0110"],
+        renaming={
+            "[1] 1 Sehr wichtig": 1,
+            "[2] 2 Wichtig": 2,
+            "[3] 3 Weniger wichtig": 3,
+            "[4] 4 Ganz unwichtig": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["lebenszufriedenheit"] = agreement_int_categorical(
+        raw_data["plh0182"],
+        renaming={
+            "[0] 0 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 0,
+            "[1] 1 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 1,
+            "[2] 2 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 2,
+            "[3] 3 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 3,
+            "[4] 4 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 4,
+            "[5] 5 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 5,
+            "[6] 6 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 6,
+            "[7] 7 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 7,
+            "[8] 8 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 8,
+            "[9] 9 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 9,
+            "[10] 10 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 10,
+        },
+    )  # TODO: Are all categories covered?
+    out["general_trust"] = agreement_int_categorical(
+        raw_data["plh0192"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Lehne eher ab": 3,
+            "[4] Lehne voll ab": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["confession"] = str_categorical(raw_data["plh0258_h"])
     out["confession_any"] = raw_data["plh0258_v9"]
     out["norm_child_suffers_under_6"] = raw_data["plh0298_v1"]
     out["norm_child_suffers_under_6_2018"] = raw_data["plh0298_v2"]
