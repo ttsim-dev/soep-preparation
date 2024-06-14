@@ -433,9 +433,11 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["letzte_stelle_grund_1999"] = str_categorical(
         raw_data["plb0304_v13"],
+        ordered=False,
     )
     out["letzte_stelle_grund"] = str_categorical(
         raw_data["plb0304_v14"],
+        ordered=False,
     )
     out["actv_work_search"] = bool_categorical(
         raw_data["plb0424_v2"],
@@ -444,25 +446,25 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["altersteilzeit_art"] = str_categorical(
         raw_data["plb0460"],
+        ordered=False,
     )
-    out["wage_employee_m_prev"] = int_categorical_to_int(
+    out["wage_employee_m_prev"] = float_categorical_to_float(
         raw_data["plb0471_h"],
     )
     out["mschaftsgeld_prev"] = bool_categorical(
         raw_data["plc0126_v1"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        renaming={"[1] Ja": True},
         ordered=True,
-    )
+    )  # TODO: renaming={"[2] Nein": False, "[1] Ja": True},
     out["arbeitslosengeld_empf"] = bool_categorical(
         raw_data["plc0130_v1"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        renaming={"[1] Ja": True},
         ordered=True,
-    )
-    out["arbeitslosengeld_m3_m5_empf"] = bool_categorical(
+    )  # TODO: renaming={"[2] Nein": False, "[1] Ja": True},
+    out["arbeitslosengeld_m3_m5_empf"] = str_categorical(
         raw_data["plc0130_v2"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
-        ordered=True,
-    )  # TODO: Fix ordering and category "[3] Weiss nicht"
+        renaming={"[3] Weiss nicht": "Weiss nicht", "[2] Nein": False, "[1] Ja": True},
+    )  # TODO: Convert to bool?
     out["mschaftsgeld_vorm_pl"] = bool_categorical(
         raw_data["plc0152_v1"],
         renaming={"[2] Nein": False, "[1] Ja": True},
@@ -494,11 +496,13 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["med_pl_schw_treppen"] = agreement_int_categorical(
         raw_data["ple0004"],
         renaming={"[1] Stark": 2, "[2] Ein wenig": 1, "[3] Gar nicht": 0},
-    )  # TODO: check scale
+        ordered=True,
+    )  # TODO: ordered?
     out["med_pl_schw_taten"] = agreement_int_categorical(
         raw_data["ple0005"],
         renaming={"[1] Stark": 2, "[2] Ein wenig": 1, "[3] Gar nicht": 0},
-    )  # TODO: check scale and ordered?
+        ordered=True,
+    )  # TODO: ordered?
     out["med_pl_groesse"] = float_categorical_to_float(
         raw_data["ple0006"],
     )  # TODO: Check on full dataset
@@ -586,7 +590,10 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["art_kv"] = str_categorical(raw_data["ple0097"])
+    out["art_kv"] = str_categorical(
+        raw_data["ple0097"],
+        ordered=False,
+    )
     out["politics_left_right"] = agreement_int_categorical(
         raw_data["plh0004"],
         renaming={
@@ -614,10 +621,13 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     )  # TODO: Are all categories covered?
     out["party_affiliation_any"] = bool_categorical(
         raw_data["plh0011_h"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        renaming={"[3] Weiss nicht": "Weiss nicht", "[2] Nein": False, "[1] Ja": True},
         ordered=True,
-    )  # TODO: Fix category "[3] Weiss nicht"
-    out["party_affiliation"] = str_categorical(raw_data["plh0012_h"])
+    )
+    out["party_affiliation"] = str_categorical(
+        raw_data["plh0012_h"],
+        ordered=False,
+    )
     out["party_affiliation_intensity"] = agreement_int_categorical(
         raw_data["plh0013_h"],
         renaming={
@@ -671,49 +681,223 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Lehne voll ab": 4,
         },
     )  # TODO: Are all categories covered?
-    out["confession"] = str_categorical(raw_data["plh0258_h"])
-    out["confession_any"] = raw_data["plh0258_v9"]
-    out["norm_child_suffers_under_6"] = raw_data["plh0298_v1"]
-    out["norm_child_suffers_under_6_2018"] = raw_data["plh0298_v2"]
-    out["norm_marry_when_together"] = raw_data["plh0300_v1"]
-    out["norm_marry_when_together_2018"] = raw_data["plh0300_v2"]
-    out["norm_women_family_priority"] = raw_data["plh0301"]
-    out["norm_child_suffers_under_3"] = raw_data["plh0302_v1"]
-    out["norm_child_suffers_under_3_2018"] = raw_data["plh0302_v2"]
-    out["norm_men_chores"] = raw_data["plh0303"]
-    out["norm_ch_suffers_father_career"] = raw_data["plh0304"]
-    out["norm_genders_similar"] = raw_data["plh0308_v1"]
-    out["norm_genders_similar_2018"] = raw_data["plh0308_v2"]
-    out["norm_career_mothers_same_warmth"] = raw_data["plh0309"]
-    out["importance_faith"] = raw_data["plh0343_v1"]
-    out["importance_faith_v2"] = raw_data["plh0343_v2"]
-    out["h_wage_pl"] = raw_data["plh0354_h"]
-    out["hours_work_sat"] = raw_data["pli0003_h"]
-    out["hours_work_sun"] = raw_data["pli0007_h"]
-    out["hours_hobbies_sun"] = raw_data["pli0010"]
-    out["hours_errands_sun"] = raw_data["pli0011"]
-    out["hours_housework_sat"] = raw_data["pli0012_h"]
-    out["hours_housework_sun"] = raw_data["pli0016_h"]
-    out["hours_childcare_sat"] = raw_data["pli0019_h"]
-    out["hours_childcare_sun"] = raw_data["pli0022_h"]
-    out["hours_repairs_sat"] = raw_data["pli0031_h"]
-    out["hours_repairs_sun"] = raw_data["pli0034_v4"]
-    out["hours_hobbies_sat"] = raw_data["pli0036"]
-    out["hours_work_workday"] = raw_data["pli0038_h"]
-    out["hours_errands_workday"] = raw_data["pli0040"]
-    out["hours_housework_workday"] = raw_data["pli0043_h"]
-    out["hours_childcare_workday"] = raw_data["pli0044_h"]
-    out["hours_care_workday"] = raw_data["pli0046"]
-    out["hours_repairs_workday"] = raw_data["pli0049_h"]
-    out["hours_hobbies_workday"] = raw_data["pli0051"]
-    out["hours_errands_sat"] = raw_data["pli0054"]
-    out["hours_care_sat"] = raw_data["pli0055"]
-    out["hours_care_sun"] = raw_data["pli0057"]
-    out["hours_sleep_workday"] = raw_data["pli0059"]
-    out["hours_sleep_weekend"] = raw_data["pli0060"]
-    out["motor_disability"] = raw_data["plj0582"]
-    out["trust_public_admin"] = raw_data["plm0672"]
-    out["trust_government"] = raw_data["plm0673"]
+    out["confession"] = str_categorical(
+        raw_data["plh0258_h"],
+        ordered=False,
+    )
+    out["confession_any"] = str_categorical(
+        raw_data["plh0258_v9"],
+        ordered=False,
+    )
+    out["norm_child_suffers_under_6"] = agreement_int_categorical(
+        raw_data["plh0298_v1"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Stimme eher nicht zu": 3,
+            "[4] Stimme überhaupt nicht zu": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_child_suffers_under_6_2018"] = agreement_int_categorical(
+        raw_data["plh0298_v2"],
+        renaming={
+            "[1] Stimme ueberhaupt nicht zu": 1,
+            "[2] Skala von 1-7": 2,
+            "[3] Skala von 1-7": 3,
+            "[4] Skala von 1-7": 4,
+            "[5] Skala von 1-7": 5,
+            "[6] Skala von 1-7": 6,
+            "[7] Stimme voll zu": 7,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_marry_when_together"] = agreement_int_categorical(
+        raw_data["plh0300_v1"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Stimme eher nicht zu": 3,
+            "[4] Stimme überhaupt nicht zu": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_marry_when_together_2018"] = agreement_int_categorical(
+        raw_data["plh0300_v2"],
+        renaming={
+            "[1] Stimme ueberhaupt nicht zu": 1,
+            "[2] Skala von 1-7": 2,
+            "[3] Skala von 1-7": 3,
+            "[4] Skala von 1-7": 4,
+            "[5] Skala von 1-7": 5,
+            "[6] Skala von 1-7": 6,
+            "[7] Stimme voll zu": 7,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_women_family_priority"] = agreement_int_categorical(
+        raw_data["plh0301"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Stimme eher nicht zu": 3,
+            "[4] Stimme überhaupt nicht zu": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_child_suffers_under_3"] = agreement_int_categorical(
+        raw_data["plh0302_v1"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Stimme eher nicht zu": 3,
+            "[4] Stimme überhaupt nicht zu": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_child_suffers_under_3_2018"] = agreement_int_categorical(
+        raw_data["plh0302_v2"],
+        renaming={
+            "[1] Stimme ueberhaupt nicht zu": 1,
+            "[2] Skala von 1-7": 2,
+            "[3] Skala von 1-7": 3,
+            "[4] Skala von 1-7": 4,
+            "[5] Skala von 1-7": 5,
+            "[6] Skala von 1-7": 6,
+            "[7] Stimme voll zu": 7,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_men_chores"] = agreement_int_categorical(
+        raw_data["plh0303"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Stimme eher nicht zu": 3,
+            "[4] Stimme überhaupt nicht zu": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_ch_suffers_father_career"] = agreement_int_categorical(
+        raw_data["plh0304"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Stimme eher nicht zu": 3,
+            "[4] Stimme überhaupt nicht zu": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_genders_similar"] = agreement_int_categorical(
+        raw_data["plh0308_v1"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Stimme eher nicht zu": 3,
+            "[4] Stimme überhaupt nicht zu": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_genders_similar_2018"] = agreement_int_categorical(
+        raw_data["plh0308_v2"],
+        renaming={
+            "[1] Stimme ueberhaupt nicht zu": 1,
+            "[2] Skala von 1-7": 2,
+            "[3] Skala von 1-7": 3,
+            "[4] Skala von 1-7": 4,
+            "[5] Skala von 1-7": 5,
+            "[6] Skala von 1-7": 6,
+            "[7] Stimme voll zu": 7,
+        },
+    )  # TODO: Are all categories covered?
+    out["norm_career_mothers_same_warmth"] = agreement_int_categorical(
+        raw_data["plh0309"],
+        renaming={
+            "[1] Stimme voll zu": 1,
+            "[2] Stimme eher zu": 2,
+            "[3] Stimme eher nicht zu": 3,
+            "[4] Stimme überhaupt nicht zu": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["importance_faith"] = agreement_int_categorical(
+        raw_data["plh0343_v1"],
+        renaming={
+            "[1] 1 sehr wichtig": 1,
+            "[2] 2 wichtig": 2,
+            "[3] 3 weniger wichtig": 3,
+            "[4] 4 ganz unwichtig": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["importance_faith_v2"] = agreement_int_categorical(
+        raw_data["plh0343_v2"],
+        renaming={
+            "[1] 1 sehr wichtig": 1,
+            "[2] 2 wichtig": 2,
+            "[3] 3 weniger wichtig": 3,
+            "[4] 4 ganz unwichtig": 4,
+        },
+    )  # TODO: Are all categories covered?
+    out["h_wage_pl"] = float_categorical_to_float(
+        raw_data["plh0354_h"],
+    )  # TODO: Check on whole dataset
+    out["hours_work_sat"] = float_categorical_to_float(raw_data["pli0003_h"])
+    out["hours_work_sun"] = float_categorical_to_float(raw_data["pli0007_h"])
+    out["hours_hobbies_sun"] = int_categorical_to_int(raw_data["pli0010"])
+    out["hours_errands_sun"] = int_categorical_to_int(raw_data["pli0011"])
+    out["hours_housework_sat"] = float_categorical_to_float(raw_data["pli0012_h"])
+    out["hours_housework_sun"] = float_categorical_to_float(raw_data["pli0016_h"])
+    out["hours_childcare_sat"] = float_categorical_to_float(raw_data["pli0019_h"])
+    out["hours_childcare_sun"] = float_categorical_to_float(raw_data["pli0022_h"])
+    out["hours_repairs_sat"] = float_categorical_to_float(raw_data["pli0031_h"])
+    out["hours_repairs_sun"] = float_categorical_to_float(raw_data["pli0034_v4"])
+    out["hours_hobbies_sat"] = float_categorical_to_float(raw_data["pli0036"])
+    out["hours_work_workday"] = float_categorical_to_float(raw_data["pli0038_h"])
+    out["hours_errands_workday"] = int_categorical_to_int(raw_data["pli0040"])
+    out["hours_housework_workday"] = int_categorical_to_int(raw_data["pli0043_h"])
+    out["hours_childcare_workday"] = int_categorical_to_int(raw_data["pli0044_h"])
+    out["hours_care_workday"] = float_categorical_to_float(
+        raw_data["pli0046"],
+    )  # TODO: Check on full dataset
+    out["hours_repairs_workday"] = int_categorical_to_int(raw_data["pli0049_h"])
+    out["hours_hobbies_workday"] = int_categorical_to_int(raw_data["pli0051"])
+    out["hours_errands_sat"] = int_categorical_to_int(raw_data["pli0054"])
+    out["hours_care_sat"] = float_categorical_to_float(
+        raw_data["pli0055"],
+    )  # TODO: Check on full dataset
+    out["hours_care_sun"] = float_categorical_to_float(
+        raw_data["pli0057"],
+    )  # TODO: Check on full dataset
+    out["hours_sleep_workday"] = float_categorical_to_float(
+        raw_data["pli0059"],
+    )  # TODO: Check on full dataset
+    out["hours_sleep_weekend"] = float_categorical_to_float(
+        raw_data["pli0060"],
+    )  # TODO: Check on full dataset
+    out["motor_disability"] = bool_categorical(
+        raw_data["plj0582"],
+    )  # TODO: Check on full dataset
+    out["trust_public_admin"] = agreement_int_categorical(
+        raw_data["plm0672"],
+        renaming={
+            "[0] UEberhaupt kein Vertrauen": 0,
+            "[1] Skala von0-10": 1,
+            "[2] Skala von0-10": 2,
+            "[3] Skala von0-10": 3,
+            "[4] Skala von0-10": 4,
+            "[5] Skala von0-10": 5,
+            "[6] Skala von0-10": 6,
+            "[7] Skala von0-10": 7,
+            "[8] Skala von0-10": 8,
+            "[9] Skala von0-10": 9,
+            "[10] Volles Vertrauen": 10,
+        },
+    )  # TODO: Are all categories covered?
+    out["trust_government"] = agreement_int_categorical(
+        raw_data["plm0673"],
+        renaming={
+            "[0] UEberhaupt kein Vertrauen": 0,
+            "[1] Skala von0-10": 1,
+            "[2] Skala von0-10": 2,
+            "[3] Skala von0-10": 3,
+            "[4] Skala von0-10": 4,
+            "[5] Skala von0-10": 5,
+            "[6] Skala von0-10": 6,
+            "[7] Skala von0-10": 7,
+            "[8] Skala von0-10": 8,
+            "[9] Skala von0-10": 9,
+            "[10] Volles Vertrauen": 10,
+        },
+    )  # TODO: Are all categories covered?
 
     return out
 
