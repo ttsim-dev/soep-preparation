@@ -92,7 +92,7 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
     return sr.cat.set_categories(sr.cat.categories.drop(removing_categories))
 
 
-def _renaming_categories(sr, renaming, ordered):
+def _renaming_categories(sr, renaming, ordered, integers):
     """Rename the categories of a pd.Series of dtype category based on the renaming
     dict.
 
@@ -100,6 +100,7 @@ def _renaming_categories(sr, renaming, ordered):
         sr (pd.Series): A pandas Series of dtype 'category' containing the categorical data.
         renaming (dict): A dictionary to rename the categories.
         ordered (bool): Whether the series should be returned as ordered, order imputed from renaming keys.
+        integers (bool,optional): Whether the renaming keys are integers. Defaults to False.
 
     Return:
         pd.Series: A new categorical Series with the renamed categories.
@@ -109,18 +110,16 @@ def _renaming_categories(sr, renaming, ordered):
         renaming,
         ordered=ordered,
     ).cat.rename_categories(renaming)
-    categories = (
-        pd.Categorical(sr_renamed.cat.categories, sr_renamed.cat.categories)
-        .astype("str[pyarrow]")
-        .astype("category")
+    categories_type_str = (
+        find_lowest_int_dtype(sr_renamed.cat.categories.values)
+        if integers
+        else "str[pyarrow]"
     )
-    if ordered:
-        categories = categories.as_ordered()
-    return (
-        sr_renamed.astype("str[pyarrow]")
-        .astype("category")
-        .cat.set_categories(categories)
+    category_dtype = pd.CategoricalDtype(
+        sr_renamed.cat.categories.astype(categories_type_str),
+        ordered,
     )
+    return pd.Series(sr_renamed, dtype=category_dtype)
 
 
 def _remove_delimiter_levels(sr, delimiter, nr_identifiers, ordered):
@@ -260,7 +259,7 @@ def int_categorical(sr: "pd.Series[int]", ordered: bool = False) -> "pd.Series[i
 
     Parameters:
         sr (pd.Series[int]): The input series to be cleaned.
-        unordered (bool, optional): Whether the series should be returned as unordered. Defaults to False.
+        ordered (bool, optional): Whether the series should be returned as unordered. Defaults to False.
 
     Returns:
         pd.Series[int]: The series with cleaned categories.
@@ -336,12 +335,14 @@ def agreement_int_categorical(
         pd.Series[int]: The series with cleaned categories.
 
     """
-    sr = str_categorical(
+    _error_handling_categorical(
         sr,
-        ordered=ordered,
-        renaming=renaming,
+        "category",
+        [[sr, "pandas.core.series.Series"], [renaming, "dict"]],
+        [sr.cat.categories.to_list(), "int | str"],
     )
-    return int_categorical(sr, ordered=ordered)
+    sr_no_missing = _remove_missing_data_categories(sr)
+    return _renaming_categories(sr_no_missing, renaming, ordered, integers=True)
 
 
 def float_categorical_to_float(sr: "pd.Series[category]") -> "pd.Series[float]":
