@@ -1,9 +1,10 @@
 import pandas as pd
 
 from soep_cleaning.initial_preprocessing.helper import (
-    bool_categorical,
+    float_categorical_to_int,
     hwealth_wide_to_long,
     int_categorical_to_int,
+    int_to_int_categorical,
     str_categorical,
 )
 from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
@@ -16,12 +17,24 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
 
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
-    out["building_year_hh_max"] = int_categorical_to_int(raw_data["hgcnstyrmax"])
-    out["building_year_hh_min"] = int_categorical_to_int(raw_data["hgcnstyrmin"])
-    out["heating_costs_m_hh"] = int_categorical_to_int(raw_data["hgheat"])
-    out["einzugsjahr"] = int_categorical_to_int(raw_data["hgmoveyr"])
-    out["bruttokaltmiete_m_hh"] = int_categorical_to_int(raw_data["hgrent"])
-    out["living_space_hh"] = int_categorical_to_int(raw_data["hgsize"])
+    out["building_year_hh_max"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["hgcnstyrmax"]),
+    )
+    out["building_year_hh_min"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["hgcnstyrmin"]),
+    )
+    out["heating_costs_m_hh"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["hgheat"]),
+    )
+    out["einzugsjahr"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["hgmoveyr"]),
+    )
+    out["bruttokaltmiete_m_hh"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["hgrent"]),
+    )
+    out["living_space_hh"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["hgsize"]),
+    )
 
     out["heizkosten_mi_reason"] = str_categorical(
         raw_data["hgheatinfo"],
@@ -57,34 +70,34 @@ def hl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["alg2_months_soep_hh_prev"] = int_categorical_to_int(raw_data["hlc0053"])
     out["arbeitsl_geld_2_soep_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0054"])
 
-    out["betreu_kosten_pro_kind"] = bool_categorical(
+    out["betreu_kosten_pro_kind"] = str_categorical(
         raw_data["hlc0009"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
-    out["kindergeld_bezug_aktuell"] = bool_categorical(
+    out["kindergeld_bezug_aktuell"] = str_categorical(
         raw_data["hlc0044_h"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
-    out["kinderzuschlag_aktuell_hh"] = bool_categorical(
+    out["kinderzuschlag_aktuell_hh"] = str_categorical(
         raw_data["hlc0046_h"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
-    out["kinderzuschlag_hl_hh_prev"] = bool_categorical(
+    out["kinderzuschlag_hl_hh_prev"] = str_categorical(
         raw_data["hlc0049_h"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
-    out["alg2_etc_aktuell_hh"] = bool_categorical(
+    out["alg2_etc_aktuell_hh"] = str_categorical(
         raw_data["hlc0064_h"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
-    out["hilfe_lebensunterh_aktuell_hh"] = bool_categorical(
+    out["hilfe_lebensunterh_aktuell_hh"] = str_categorical(
         raw_data["hlc0067_h"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
     out["wohngeld_soep_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0082_h"])
-    out["wohngeld_aktuell_hh"] = bool_categorical(
+    out["wohngeld_aktuell_hh"] = str_categorical(
         raw_data["hlc0083_h"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
 
     return out
