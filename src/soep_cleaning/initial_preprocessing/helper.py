@@ -92,7 +92,7 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
     return sr.cat.set_categories(sr.cat.categories.drop(removing_categories))
 
 
-def _renaming_categories(sr, renaming, ordered, integers):
+def _renaming_categories(sr, renaming, ordered, integers=False):
     """Rename the categories of a pd.Series of dtype category based on the renaming
     dict.
 
@@ -151,20 +151,20 @@ def _categories_remove_nr_delimiter_levels(
 
 
 def bool_categorical(
-    sr: "pd.Series[str]",
+    sr: pd.Series,
     renaming: dict | None = None,
     ordered: bool = False,
-) -> "pd.Series[bool]":
+) -> pd.Series:
     """Clean the categories of a pd.Series of dtype category with str entries and change
     categories to bool.
 
     Parameters:
-        sr (pd.Series[int]): The input series to be cleaned.
+        sr (pd.Series): The input series to be cleaned.
         renaming (dict | None, optional): A dictionary to rename the categories. Defaults to None.
         ordered (bool, optional): Whether the series should be returned as ordered, order imputed from renaming keys. Defaults to False.
 
     Returns:
-        pd.Series[int]: The series with cleaned categories.
+        pd.Series: The series with cleaned categories.
 
     """
     _error_handling_categorical(
@@ -176,22 +176,18 @@ def bool_categorical(
         ],
         [sr.cat.categories.to_list(), "str"],
     )
-    sr = sr.astype("category")  # TODO: check necessity, might be redundant
     sr = _remove_missing_data_categories(sr)
     if renaming is not None:
-        sr = sr.cat.rename_categories(renaming)
-    if ordered:
-        return sr.cat.reorder_categories(list(renaming.values()), ordered=True)
-    else:
-        return sr.cat.as_unordered()
+        sr = _renaming_categories(sr, renaming, ordered)
+    return sr
 
 
 def str_categorical(
-    sr: "pd.Series[pd.CategoricalDtype[str]]",
+    sr: pd.Series,
     nr_identifiers: int = 1,
     ordered: bool = True,
     renaming: dict | None = None,
-) -> "pd.Series[pd.CategoricalDtype[str]]":
+) -> pd.Series:
     """Clean and change the categories based on the renaming dict or remove identifier
     levels based on nr_identifiers of a pd.Series of dtype category with str entries.
 
