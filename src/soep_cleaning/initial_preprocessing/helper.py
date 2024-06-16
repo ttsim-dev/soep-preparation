@@ -92,6 +92,25 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
     return sr.cat.set_categories(sr.cat.categories.drop(removing_categories))
 
 
+def _reduce_categories(sr, renaming, ordered, integers=False):
+    sr_renamed = sr.replace(renaming)
+    """sr_renamed = sr.cat.reorder_categories( renaming,
+
+    ordered=ordered, ).cat.rename_categories(renaming)
+
+    """
+    categories_type_str = (
+        find_lowest_int_dtype(sr_renamed.cat.categories.values)
+        if integers
+        else "str[pyarrow]"
+    )
+    category_dtype = pd.CategoricalDtype(
+        sr_renamed.cat.categories.astype(categories_type_str),
+        ordered,
+    )
+    return pd.Series(sr_renamed, dtype=category_dtype)
+
+
 def _renaming_categories(sr, renaming, ordered, integers=False):
     """Rename the categories of a pd.Series of dtype category based on the renaming
     dict.
@@ -187,6 +206,7 @@ def str_categorical(
     nr_identifiers: int = 1,
     ordered: bool = True,
     renaming: dict | None = None,
+    reduce: bool = False,
 ) -> pd.Series:
     """Clean and change the categories based on the renaming dict or remove identifier
     levels based on nr_identifiers of a pd.Series of dtype category with str entries.
@@ -196,6 +216,7 @@ def str_categorical(
         nr_identifiers (int, optional): The number of identifiers inside each category to be removed. Defaults to 1.
         ordered (bool, optional): Whether the series should be returned as unordered. Defaults to True.
         renaming (dict | None, optional): A dictionary to rename the categories. Defaults to None.
+        reduce (bool, optional): Whether the renaming mapping reduces the number of categories. Defaults to False.
 
     Returns:
         pd.Series[str]: The series with cleaned new categories.
@@ -233,13 +254,15 @@ def str_categorical(
             [nr_identifiers, "int"],
             [ordered, "bool"],
         ],
-        [sr.cat.categories.to_list(), "str"],
+        [sr.cat.categories.to_list(), "str | float"],
     )
 
     sr_no_missing = _remove_missing_data_categories(sr)
     delimiter = " "
 
-    if renaming is not None:
+    if reduce:
+        return _reduce_categories(sr_no_missing, renaming, ordered)
+    elif renaming is not None:
         return _renaming_categories(sr_no_missing, renaming, ordered)
     else:
         return _remove_delimiter_levels(
@@ -278,7 +301,7 @@ def int_categorical_to_int(sr: "pd.Series[category]") -> "pd.Series[int]":
         sr (pd.Series[category]): The input series to be cleaned.
 
     Returns:
-        pd.Series[int]: The series with cleaned categories.
+        pd.Series[int]: The series with cleaned entries.
 
     """
     _error_handling_categorical(
@@ -286,6 +309,26 @@ def int_categorical_to_int(sr: "pd.Series[category]") -> "pd.Series[int]":
         "category",
         [[sr, "pandas.core.series.Series"]],
         [sr.cat.categories.to_list(), "int | str"],
+    )
+    sr = _remove_missing_data_categories(sr)
+    return apply_lowest_int_dtype(sr)
+
+
+def float_categorical_to_int(sr: pd.Series) -> pd.Series:
+    """Transform a pd.Series of dtype category with float entries to dtype int.
+
+    Parameters:
+        sr (pd.Series): The input series to be cleaned.
+
+    Returns:
+        pd.Series: The series with cleaned entries.
+
+    """
+    _error_handling_categorical(
+        sr,
+        "category",
+        [[sr, "pandas.core.series.Series"]],
+        [sr.cat.categories.to_list(), "float | str"],
     )
     sr = _remove_missing_data_categories(sr)
     return apply_lowest_int_dtype(sr)
