@@ -98,6 +98,12 @@ for dataset in data_catalog["orig"].entries:
             script_path.stem,
             str(script_path),
         ).load_module()
+        """With pd.read_stata(orig_data, chunksize=1_000) as itr:
+
+        for chunk in itr:
+            getattr(module, f"{dataset}")(chunk)
+
+        """
         return getattr(module, f"{dataset}")(pd.read_stata(orig_data))
 
 
