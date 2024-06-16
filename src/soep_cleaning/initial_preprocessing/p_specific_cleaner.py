@@ -1,10 +1,12 @@
 import pandas as pd
 
 from soep_cleaning.initial_preprocessing.helper import (
-    agreement_int_categorical,
+    agreement_to_int_categorical,
     bool_categorical,
     float_categorical_to_float,
+    float_categorical_to_int,
     int_categorical_to_int,
+    int_to_int_categorical,
     str_categorical,
 )
 from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
@@ -106,86 +108,72 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schlaganf"] = bool_categorical(
+    out["med_pe_schlaganf"] = int_categorical_to_int(
         raw_data["m11105"],
-        renaming={0: False, 1: True},
-        ordered=True,
     )
-    out["med_pe_bluthdrck"] = bool_categorical(
+    out["med_pe_bluthdrck"] = int_categorical_to_int(
         raw_data["m11106"],
-        renaming={0: False, 1: True},
-        ordered=True,
     )
-    out["med_pe_diabetes"] = bool_categorical(
+    out["med_pe_diabetes"] = int_categorical_to_int(
         raw_data["m11107"],
-        renaming={0: False, 1: True},
-        ordered=True,
     )
-    out["med_pe_krebs"] = bool_categorical(
+    out["med_pe_krebs"] = int_categorical_to_int(
         raw_data["m11108"],
-        renaming={0: False, 1: True},
-        ordered=True,
     )
-    out["med_pe_psych"] = bool_categorical(
+    out["med_pe_psych"] = int_categorical_to_int(
         raw_data["m11109"],
-        renaming={0: False, 1: True},
-        ordered=True,
     )
-    out["med_pe_gelenk"] = bool_categorical(
+    out["med_pe_gelenk"] = int_categorical_to_int(
         raw_data["m11110"],
-        renaming={0: False, 1: True},
-        ordered=True,
     )
-    out["med_pe_herzkr"] = bool_categorical(
+    out["med_pe_herzkr"] = int_categorical_to_int(
         raw_data["m11111"],
-        renaming={0: False, 1: True},
-        ordered=True,
     )
-    out["med_pe_schw_treppen"] = bool_categorical(
+    out["med_pe_schw_treppen"] = agreement_to_int_categorical(
         raw_data["m11113"],
-        renaming={"[0] Does not apply": False, "[1] Applies": True},
+        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
         ordered=True,
     )
-    out["med_pe_schw_anziehen"] = bool_categorical(
+    out["med_pe_schw_anziehen"] = agreement_to_int_categorical(
         raw_data["m11115"],
-        renaming={"[0] Does not apply": False, "[1] Applies": True},
+        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
         ordered=True,
     )
-    out["med_pe_schw_bett"] = bool_categorical(
+    out["med_pe_schw_bett"] = agreement_to_int_categorical(
         raw_data["m11116"],
-        renaming={"[0] Does not apply": False, "[1] Applies": True},
+        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
         ordered=True,
     )
-    out["med_pe_schw_einkauf"] = bool_categorical(
+    out["med_pe_schw_einkauf"] = agreement_to_int_categorical(
         raw_data["m11117"],
-        renaming={"[0] Does not apply": False, "[1] Applies": True},
+        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
         ordered=True,
     )
-    out["med_pe_schw_hausarb"] = bool_categorical(
+    out["med_pe_schw_hausarb"] = agreement_to_int_categorical(
         raw_data["m11119"],
-        renaming={"[0] Does not apply": False, "[1] Applies": True},
+        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
         ordered=True,
     )
     out["med_pe_groesse"] = int_categorical_to_int(raw_data["m11122"])
     out["med_pe_gewicht"] = int_categorical_to_int(raw_data["m11123"])
-    out["med_pe_zufrieden"] = str_categorical(
+    out["med_pe_zufrieden"] = agreement_to_int_categorical(
         raw_data["m11125"],
         renaming={
             "[0] Completely dissatisfied": 0,
-            "1": 1,
-            "2": 2,
-            "3": 3,
-            "4": 4,
-            "5": 5,
-            "6": 6,
-            "7": 7,
-            "8": 8,
-            "9": 9,
+            1: 1,
+            2: 2,
+            3: 3,
+            4: 4,
+            5: 5,
+            6: 6,
+            7: 7,
+            8: 8,
+            9: 9,
             "[10] Completely satisfied": 10,
         },
     )
     # TODO: renaming to be deleted here
-    out["med_pe_subj_status"] = str_categorical(
+    out["med_pe_subj_status"] = agreement_to_int_categorical(
         raw_data["m11126"],
         renaming={
             "[1] Very good": 1,
@@ -218,8 +206,8 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["nationality_first"] = str_categorical(raw_data["pgnation"], ordered=False)
     out["status_refugee"] = str_categorical(raw_data["pgstatus_refu"], ordered=False)
     out["marital_status"] = str_categorical(raw_data["pgfamstd"], ordered=False)
-    out["curr_earnings_m"] = int_categorical_to_int(raw_data["pglabgro"])
-    out["net_wage_m"] = int_categorical_to_int(raw_data["pglabnet"])
+    out["curr_earnings_m"] = float_categorical_to_float(raw_data["pglabgro"])
+    out["net_wage_m"] = float_categorical_to_float(raw_data["pglabnet"])
     out["occupation_status"] = str_categorical(raw_data["pgstib"], ordered=False)
     out["employment_status"] = str_categorical(
         raw_data["pgemplst"],
@@ -229,17 +217,21 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[2] Teilzeitbeschäftigung": "[2] Teilzeitbeschäftigung",
             "[3] Ausbildung, Lehre": "[3] Ausbildung, Lehre",
             "[4] Unregelmässig, geringfügig erwerbstät.": "[4] Unregelmässig, geringfügig erwerbstät.",
-            "[5] Nicht erwerbstaetig": "[5] Nicht erwerbstätig",
+            "[5] Nicht erwerbstätig": "[5] Nicht erwerbstätig",
             "[6] Werkstatt für behinderte Menschen": "[6] Werkstatt für behinderte Menschen",
         },
     )
     out["laborf_status"] = str_categorical(raw_data["pglfs"], ordered=False)
-    out["dauer_im_betrieb"] = int_categorical_to_int(raw_data["pgerwzeit"])
-    out["weekly_working_hours_actual"] = int_categorical_to_int(raw_data["pgtatzeit"])
-    out["weekly_working_hours_contract"] = int_categorical_to_int(raw_data["pgvebzeit"])
-    out["public_service"] = bool_categorical(
+    out["dauer_im_betrieb"] = float_categorical_to_float(raw_data["pgerwzeit"])
+    out["weekly_working_hours_actual"] = float_categorical_to_float(
+        raw_data["pgtatzeit"],
+    )
+    out["weekly_working_hours_contract"] = float_categorical_to_float(
+        raw_data["pgvebzeit"],
+    )
+    out["public_service"] = str_categorical(
         raw_data["pgoeffd"],
-        renaming={"[1] ja": True, "[2] nein": False},
+        renaming={"[2] nein": "Nein", "[1] ja": "Ja"},
     )
     out["size_company_raw"] = str_categorical(raw_data["pgbetr"])
     out["size_company"] = str_categorical(raw_data["pgallbet"])
@@ -264,6 +256,7 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[7] Master s or equivalent level": "tertiary",
             "[8] Doctoral or equivalent level": "tertiary",
         },
+        reduce=True,
     )
     out["education_casmin"] = str_categorical(
         raw_data["pgcasmin"],
@@ -279,6 +272,7 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] (3a) lower tertiary education": "tertiary",
             "[9] (3b) higher tertiary education": "tertiary",
         },
+        reduce=True,
     )
     out["month_interview"] = str_categorical(
         raw_data["pgmonth"],
@@ -307,7 +301,7 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["year"] = int_categorical_to_int(raw_data["syear"])
+    out["year"] = apply_lowest_int_dtype(float_categorical_to_int(raw_data["syear"]))
     out["full_empl_v1_prev_1"] = bool_categorical(
         raw_data["kal1a001_v1"],
         renaming={"[1] Ja": True},
@@ -382,25 +376,27 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["half_empl_prev_12"] = str_categorical(raw_data["kal1b012"])
     out["unempl_months_prev"] = int_categorical_to_int(raw_data["kal1d02"])
     out["rente_monate_prev"] = int_categorical_to_int(raw_data["kal1e02"])
-    out["mini_job_prev_1"] = bool_categorical(raw_data["kal1n001"])
-    out["mini_job_prev_3"] = bool_categorical(raw_data["kal1n003"])
-    out["mini_job_prev_4"] = bool_categorical(raw_data["kal1n004"])
-    out["mini_job_prev_5"] = bool_categorical(raw_data["kal1n005"])
-    out["mini_job_prev_6"] = bool_categorical(raw_data["kal1n006"])
-    out["mini_job_prev_7"] = bool_categorical(raw_data["kal1n007"])
-    out["mini_job_prev_8"] = bool_categorical(raw_data["kal1n009"])
-    out["mini_job_prev_9"] = bool_categorical(raw_data["kal1n008"])
-    out["mini_job_prev_2"] = bool_categorical(raw_data["kal1n002"])
-    out["mini_job_prev_10"] = bool_categorical(raw_data["kal1n010"])
-    out["mini_job_prev_11"] = bool_categorical(raw_data["kal1n011"])
-    out["mini_job_prev_12"] = bool_categorical(raw_data["kal1n012"])
-    out["m_alg_prev"] = int_categorical_to_int(raw_data["kal2f02"])
-    out["mschaftsgeld_bezogen_prev"] = bool_categorical(
-        raw_data["kal2j01"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
-        ordered=True,
+    out["mini_job_prev_1"] = int_categorical_to_int(raw_data["kal1n001"])
+    out["mini_job_prev_2"] = int_categorical_to_int(raw_data["kal1n002"])
+    out["mini_job_prev_3"] = int_categorical_to_int(raw_data["kal1n003"])
+    out["mini_job_prev_4"] = int_categorical_to_int(raw_data["kal1n004"])
+    out["mini_job_prev_5"] = int_categorical_to_int(raw_data["kal1n005"])
+    out["mini_job_prev_6"] = int_categorical_to_int(raw_data["kal1n006"])
+    out["mini_job_prev_7"] = int_categorical_to_int(raw_data["kal1n007"])
+    out["mini_job_prev_8"] = int_categorical_to_int(raw_data["kal1n009"])
+    out["mini_job_prev_9"] = int_categorical_to_int(raw_data["kal1n008"])
+    out["mini_job_prev_10"] = int_categorical_to_int(raw_data["kal1n010"])
+    out["mini_job_prev_11"] = int_categorical_to_int(raw_data["kal1n011"])
+    out["mini_job_prev_12"] = int_categorical_to_int(raw_data["kal1n012"])
+    out["m_alg_prev"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["kal2f02"]),
     )
-    out["mschaftsgeld_monate_prev"] = int_categorical_to_int(raw_data["kal2j02"])
+    out["mschaftsgeld_bezogen_prev"] = str_categorical(
+        raw_data["kal2j01"],
+    )
+    out["mschaftsgeld_monate_prev"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["kal2j02"]),
+    )
     # TODO: transform full_empl, half_empl_prev mini_job_prev into long format?
     return out
 
@@ -492,12 +488,12 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["prv_rente_beitr_2018_m"] = int_categorical_to_int(
         raw_data["plc0439_v2"],
     )  # TODO: Check on full dataset
-    out["med_pl_schw_treppen"] = agreement_int_categorical(
+    out["med_pl_schw_treppen"] = agreement_to_int_categorical(
         raw_data["ple0004"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
     )
-    out["med_pl_schw_taten"] = agreement_int_categorical(
+    out["med_pl_schw_taten"] = agreement_to_int_categorical(
         raw_data["ple0005"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
@@ -508,7 +504,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["med_pl_gewicht"] = float_categorical_to_float(
         raw_data["ple0007"],
     )  # TODO: Check on full dataset
-    out["med_pl_subj_status"] = agreement_int_categorical(
+    out["med_pl_subj_status"] = agreement_to_int_categorical(
         raw_data["ple0008"],
         renaming={
             "[1] Sehr gut": 1,
@@ -566,7 +562,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["ple0097"],
         ordered=False,
     )
-    out["politics_left_right"] = agreement_int_categorical(
+    out["politics_left_right"] = agreement_to_int_categorical(
         raw_data["plh0004"],
         renaming={
             "[0] 0 ganz links": 0,
@@ -582,7 +578,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[10] 10 ganz rechts": 10,
         },
     )
-    out["interest_politics"] = agreement_int_categorical(
+    out["interest_politics"] = agreement_to_int_categorical(
         raw_data["plh0007"],
         renaming={
             "[1] Sehr stark": 1,
@@ -598,7 +594,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["plh0012_h"],
         ordered=False,
     )
-    out["party_affiliation_intensity"] = agreement_int_categorical(
+    out["party_affiliation_intensity"] = agreement_to_int_categorical(
         raw_data["plh0013_h"],
         renaming={
             "[1] Sehr stark": 1,
@@ -608,7 +604,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[5] Sehr schwach": 5,
         },
     )
-    out["importance_career"] = agreement_int_categorical(
+    out["importance_career"] = agreement_to_int_categorical(
         raw_data["plh0107"],
         renaming={
             "[1] 1 Sehr wichtig": 1,
@@ -617,7 +613,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] 4 Ganz unwichtig": 4,
         },
     )
-    out["importance_children"] = agreement_int_categorical(
+    out["importance_children"] = agreement_to_int_categorical(
         raw_data["plh0110"],
         renaming={
             "[1] 1 Sehr wichtig": 1,
@@ -626,7 +622,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] 4 Ganz unwichtig": 4,
         },
     )
-    out["lebenszufriedenheit"] = agreement_int_categorical(
+    out["lebenszufriedenheit"] = agreement_to_int_categorical(
         raw_data["plh0182"],
         renaming={
             "[0] 0 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 0,
@@ -642,7 +638,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[10] 10 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 10,
         },
     )
-    out["general_trust"] = agreement_int_categorical(
+    out["general_trust"] = agreement_to_int_categorical(
         raw_data["plh0192"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -659,7 +655,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["plh0258_v9"],
         ordered=False,
     )
-    out["norm_child_suffers_under_6"] = agreement_int_categorical(
+    out["norm_child_suffers_under_6"] = agreement_to_int_categorical(
         raw_data["plh0298_v1"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -668,7 +664,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Stimme ueberhaupt nicht zu": 4,
         },
     )
-    out["norm_child_suffers_under_6_2018"] = agreement_int_categorical(
+    out["norm_child_suffers_under_6_2018"] = agreement_to_int_categorical(
         raw_data["plh0298_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -680,7 +676,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[7] Stimme voll zu": 7,
         },
     )
-    out["norm_marry_when_together"] = agreement_int_categorical(
+    out["norm_marry_when_together"] = agreement_to_int_categorical(
         raw_data["plh0300_v1"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -689,7 +685,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Stimme ueberhaupt nicht zu": 4,
         },
     )
-    out["norm_marry_when_together_2018"] = agreement_int_categorical(
+    out["norm_marry_when_together_2018"] = agreement_to_int_categorical(
         raw_data["plh0300_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -701,7 +697,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[7] Stimme voll zu": 7,
         },
     )
-    out["norm_women_family_priority"] = agreement_int_categorical(
+    out["norm_women_family_priority"] = agreement_to_int_categorical(
         raw_data["plh0301"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -710,7 +706,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Stimme ueberhaupt nicht zu": 4,
         },
     )
-    out["norm_child_suffers_under_3"] = agreement_int_categorical(
+    out["norm_child_suffers_under_3"] = agreement_to_int_categorical(
         raw_data["plh0302_v1"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -719,7 +715,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Stimme ueberhaupt nicht zu": 4,
         },
     )
-    out["norm_child_suffers_under_3_2018"] = agreement_int_categorical(
+    out["norm_child_suffers_under_3_2018"] = agreement_to_int_categorical(
         raw_data["plh0302_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -731,7 +727,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[7] Stimme voll zu": 7,
         },
     )
-    out["norm_men_chores"] = agreement_int_categorical(
+    out["norm_men_chores"] = agreement_to_int_categorical(
         raw_data["plh0303"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -740,7 +736,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Stimme ueberhaupt nicht zu": 4,
         },
     )
-    out["norm_ch_suffers_father_career"] = agreement_int_categorical(
+    out["norm_ch_suffers_father_career"] = agreement_to_int_categorical(
         raw_data["plh0304"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -749,7 +745,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Stimme ueberhaupt nicht zu": 4,
         },
     )
-    out["norm_genders_similar"] = agreement_int_categorical(
+    out["norm_genders_similar"] = agreement_to_int_categorical(
         raw_data["plh0308_v1"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -758,7 +754,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Stimme ueberhaupt nicht zu": 4,
         },
     )
-    out["norm_genders_similar_2018"] = agreement_int_categorical(
+    out["norm_genders_similar_2018"] = agreement_to_int_categorical(
         raw_data["plh0308_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -770,7 +766,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[7] Stimme voll zu": 7,
         },
     )
-    out["norm_career_mothers_same_warmth"] = agreement_int_categorical(
+    out["norm_career_mothers_same_warmth"] = agreement_to_int_categorical(
         raw_data["plh0309"],
         renaming={
             "[1] Stimme voll zu": 1,
@@ -779,7 +775,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Stimme ueberhaupt nicht zu": 4,
         },
     )
-    out["importance_faith"] = agreement_int_categorical(
+    out["importance_faith"] = agreement_to_int_categorical(
         raw_data["plh0343_v1"],
         renaming={
             "[1] sehr wichtig": 1,
@@ -788,7 +784,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] ganz unwichtig": 4,
         },
     )
-    out["importance_faith_v2"] = agreement_int_categorical(
+    out["importance_faith_v2"] = agreement_to_int_categorical(
         raw_data["plh0343_v2"],
         renaming={
             "[1] sehr wichtig": 1,
@@ -836,7 +832,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["motor_disability"] = bool_categorical(
         raw_data["plj0582"],
     )  # TODO: Check on full dataset
-    out["trust_public_admin"] = agreement_int_categorical(
+    out["trust_public_admin"] = agreement_to_int_categorical(
         raw_data["plm0672"],
         renaming={
             "[0] UEberhaupt kein Vertrauen": 0,
@@ -852,7 +848,7 @@ def pl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[10] Volles Vertrauen": 10,
         },
     )  # TODO: Are all categories covered?
-    out["trust_government"] = agreement_int_categorical(
+    out["trust_government"] = agreement_to_int_categorical(
         raw_data["plm0673"],
         renaming={
             "[0] UEberhaupt kein Vertrauen": 0,
@@ -900,7 +896,7 @@ def ppathl(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[11] November": 11,
             "[12] Dezember": 12,
         },
-    )  # TODO: agreement_int_categorical()?
+    )  # TODO: agreement_to_int_categorical()?
     out["east_west_1989"] = str_categorical(raw_data["loc1989"], ordered=False)
     out["migrationshintergrund"] = str_categorical(raw_data["migback"], ordered=False)
     out["sexual_orientation"] = str_categorical(raw_data["sexor"], ordered=False)

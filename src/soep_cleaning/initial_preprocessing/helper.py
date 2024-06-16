@@ -357,7 +357,7 @@ def int_to_int_categorical(
     return sr.cat.set_categories(categories_order, rename=True, ordered=ordered)
 
 
-def agreement_int_categorical(
+def agreement_to_int_categorical(
     sr: "pd.Series",
     renaming: dict,
     ordered=True,
