@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 import pandas as pd
 
 from soep_cleaning.utilities import (
@@ -94,6 +92,65 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
     return sr.cat.set_categories(sr.cat.categories.drop(removing_categories))
 
 
+def _renaming_categories(sr, renaming, ordered):
+    """Rename the categories of a pd.Series of dtype category based on the renaming
+    dict.
+
+    Parameters:
+        sr (pd.Series): A pandas Series of dtype 'category' containing the categorical data.
+        renaming (dict): A dictionary to rename the categories.
+        ordered (bool): Whether the series should be returned as ordered, order imputed from renaming keys.
+
+    Return:
+        pd.Series: A new categorical Series with the renamed categories.
+
+    """
+    sr_renamed = sr.cat.reorder_categories(
+        renaming,
+        ordered=ordered,
+    ).cat.rename_categories(renaming)
+    categories = (
+        pd.Categorical(sr_renamed.cat.categories, sr_renamed.cat.categories)
+        .astype("str[pyarrow]")
+        .astype("category")
+    )
+    if ordered:
+        categories = categories.as_ordered()
+    return (
+        sr_renamed.astype("str[pyarrow]")
+        .astype("category")
+        .cat.set_categories(categories)
+    )
+
+
+def _remove_delimiter_levels(sr, delimiter, nr_identifiers, ordered):
+    categories_list = _categories_remove_nr_delimiter_levels(
+        sr,
+        delimiter,
+        nr_identifiers,
+    )
+    categories = (
+        pd.Categorical(categories_list).astype("str[pyarrow]").astype("category")
+    )
+    sr_new_categories = sr.cat.set_categories(categories)
+    if ordered:
+        return sr_new_categories.cat.as_ordered()
+    else:
+        return sr_new_categories
+
+
+def _categories_remove_nr_delimiter_levels(
+    sr: pd.Series,
+    delimiter: str,
+    nr_identifiers: int,
+) -> list:
+    return [
+        i.split(delimiter, nr_identifiers)[nr_identifiers]
+        for i in sr.cat.categories
+        if i.count(delimiter) >= nr_identifiers
+    ]
+
+
 def bool_categorical(
     sr: "pd.Series[str]",
     renaming: dict | None = None,
@@ -136,8 +193,8 @@ def str_categorical(
     ordered: bool = True,
     renaming: dict | None = None,
 ) -> "pd.Series[pd.CategoricalDtype[str]]":
-    """Clean and change the categories based on the renaming dict of a pd.Series of
-    dtype category with str entries.
+    """Clean and change the categories based on the renaming dict or remove identifier
+    levels based on nr_identifiers of a pd.Series of dtype category with str entries.
 
     Parameters:
         sr (pd.Series[pd.CategoricalDtype[str]]): The input series with categories to be cleaned.
@@ -183,42 +240,19 @@ def str_categorical(
         ],
         [sr.cat.categories.to_list(), "str"],
     )
-    sr = _remove_missing_data_categories(sr)
+
+    sr_no_missing = _remove_missing_data_categories(sr)
     delimiter = " "
 
-    if ordered:
-        if renaming is not None:
-            # TODO: There is still a bug in the following lines.
-            # If a category gets renamed to a string containing the delimiter,
-            # the name will be changed by the function trying to remove the number of identifiers.
-            new_categories = list(OrderedDict.fromkeys(renaming.values()))
-            return (
-                sr.astype("str[pyarrow]")
-                .replace(renaming)
-                .astype("category")
-                .cat.reorder_categories(new_categories, ordered=ordered)
-                .cat.rename_categories(
-                    [
-                        i.split(delimiter, nr_identifiers)[nr_identifiers]
-                        for i in sr.cat.categories
-                        if i.count(delimiter) >= nr_identifiers
-                    ],
-                )
-            )
-        else:
-            return (
-                sr.astype("str[pyarrow]")
-                .astype("category")
-                .cat.rename_categories(
-                    [
-                        i.split(delimiter, nr_identifiers)[nr_identifiers]
-                        for i in sr.cat.categories
-                        if i.count(delimiter) >= nr_identifiers
-                    ],
-                )
-            )
+    if renaming is not None:
+        return _renaming_categories(sr_no_missing, renaming, ordered)
     else:
-        return sr.cat.as_unordered()
+        return _remove_delimiter_levels(
+            sr_no_missing,
+            delimiter,
+            nr_identifiers,
+            ordered,
+        )
 
 
 def int_categorical(sr: "pd.Series[int]", ordered: bool = False) -> "pd.Series[int]":
