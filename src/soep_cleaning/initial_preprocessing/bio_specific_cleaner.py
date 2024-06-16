@@ -2,8 +2,9 @@ import pandas as pd
 
 from soep_cleaning.initial_preprocessing.helper import (
     biobirth_wide_to_long,
-    bool_categorical,
+    float_categorical_to_int,
     int_categorical_to_int,
+    int_to_int_categorical,
     str_categorical,
 )
 from soep_cleaning.utilities import apply_lowest_int_dtype
@@ -13,7 +14,7 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the bioedu dataset."""
     out = pd.DataFrame()
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["p_id"] = int_categorical_to_int(raw_data["pid"])
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
 
     out["birth_month"] = str_categorical(
         raw_data["gebmonat"],
@@ -39,17 +40,21 @@ def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
 def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biobirth dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = int_categorical_to_int(raw_data["cid"])
-    out["p_id"] = int_categorical_to_int(raw_data["pid"])
+    out["soep_initial_hh_id"] = apply_lowest_int_dtype(
+        float_categorical_to_int(raw_data["cid"]),
+    )
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
 
-    out["n_kids_total"] = int_categorical_to_int(raw_data["sumkids"])
+    out["n_kids_total"] = int_to_int_categorical(
+        float_categorical_to_int(raw_data["sumkids"]),
+    )
 
     for i in range(1, 16):
         two_digit = f"{i:02d}"
-        out[f"birth_year_child_{i}"] = int_categorical_to_int(
+        out[f"birth_year_child_{i}"] = float_categorical_to_int(
             raw_data[f"kidgeb{two_digit}"],
         )
-        out[f"p_id_child_{i}"] = int_categorical_to_int(
+        out[f"p_id_child_{i}"] = float_categorical_to_int(
             raw_data[f"kidpnr{two_digit}"],
         )
         out[f"birth_month_child_{i}"] = str_categorical(
@@ -64,7 +69,7 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
     out["soep_hh_id"] = int_categorical_to_int(raw_data["hid"])
-    out["p_id"] = int_categorical_to_int(raw_data["pid"])
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
 
     out["year"] = int_categorical_to_int(raw_data["syear"])
 
@@ -76,13 +81,13 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["lb0058"],
         ordered=False,
     )
-    out["birthplace_father"] = bool_categorical(
+    out["birthplace_father"] = str_categorical(
         raw_data["lb0084_h"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
-    out["birthplace_mother"] = bool_categorical(
+    out["birthplace_mother"] = str_categorical(
         raw_data["lb0085_h"],
-        renaming={"Ja": True, "Nein": False},
+        ordered=False,
     )
     out["religion_father"] = str_categorical(
         raw_data["lb0124_h"],
