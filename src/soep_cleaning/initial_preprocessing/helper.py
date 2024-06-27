@@ -92,18 +92,26 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
     return sr.cat.set_categories(sr.cat.categories.drop(removing_categories))
 
 
-def _reduce_categories(sr, renaming, ordered, integers=False):
+def _reduce_categories(sr, renaming, ordered, categories_type_str="str[pyarrow]"):
     sr_renamed = sr.replace(renaming)
     """sr_renamed = sr.cat.reorder_categories( renaming,
 
     ordered=ordered, ).cat.rename_categories(renaming)
 
-    """
     categories_type_str = (
         find_lowest_int_dtype(sr_renamed.cat.categories.values)
         if integers
         else "str[pyarrow]"
     )
+
+    """
+
+    if "int" in categories_dtype:
+        categories_type_str = find_lowest_int_dtype(sr_renamed.cat.categories.values)
+    elif "bool" in categories_dtype:
+        categories_type_str = "bool[pyarrow]"
+    else:
+        categories_type_str = "str[pyarrow]"
     category_dtype = pd.CategoricalDtype(
         sr_renamed.cat.categories.astype(categories_type_str),
         ordered,
@@ -111,7 +119,7 @@ def _reduce_categories(sr, renaming, ordered, integers=False):
     return pd.Series(sr_renamed, dtype=category_dtype)
 
 
-def _renaming_categories(sr, renaming, ordered, integers=False):
+def _renaming_categories(sr, renaming, ordered, categories_dtype="str[pyarrow]"):
     """Rename the categories of a pd.Series of dtype category based on the renaming
     dict.
 
@@ -119,7 +127,7 @@ def _renaming_categories(sr, renaming, ordered, integers=False):
         sr (pd.Series): A pandas Series of dtype 'category' containing the categorical data.
         renaming (dict): A dictionary to rename the categories.
         ordered (bool): Whether the series should be returned as ordered, order imputed from renaming keys.
-        integers (bool,optional): Whether the renaming keys are integers. Defaults to False.
+        categories_dtype (str,optional): DataType of the renaming keys. Defaults to str[pyarrow].
 
     Return:
         pd.Series: A new categorical Series with the renamed categories.
@@ -129,11 +137,21 @@ def _renaming_categories(sr, renaming, ordered, integers=False):
         renaming,
         ordered=ordered,
     ).cat.rename_categories(renaming)
+
+    if "int" in categories_dtype:
+        categories_type_str = find_lowest_int_dtype(sr_renamed.cat.categories.values)
+    elif "bool" in categories_dtype:
+        categories_type_str = "bool[pyarrow]"
+    else:
+        categories_type_str = "str[pyarrow]"
+
+    """
     categories_type_str = (
         find_lowest_int_dtype(sr_renamed.cat.categories.values)
-        if integers
+        if "int" in categories_dtype
         else "str[pyarrow]"
     )
+    """
     category_dtype = pd.CategoricalDtype(
         sr_renamed.cat.categories.astype(categories_type_str),
         ordered,
@@ -197,7 +215,12 @@ def bool_categorical(
     )
     sr = _remove_missing_data_categories(sr)
     if renaming is not None:
-        sr = _renaming_categories(sr, renaming, ordered)
+        sr = _renaming_categories(
+            sr,
+            renaming,
+            ordered,
+            categories_dtype="bool[pyarrow]",
+        )
     return sr
 
 
@@ -381,7 +404,12 @@ def agreement_to_int_categorical(
         [sr.cat.categories.to_list(), "int | str"],
     )
     sr_no_missing = _remove_missing_data_categories(sr)
-    return _renaming_categories(sr_no_missing, renaming, ordered, integers=True)
+    return _renaming_categories(
+        sr_no_missing,
+        renaming,
+        ordered,
+        categories_dtype="int[pyarrow]",
+    )
 
 
 def float_categorical_to_float(sr: "pd.Series[category]") -> "pd.Series[float]":
