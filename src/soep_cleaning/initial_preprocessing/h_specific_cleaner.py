@@ -1,6 +1,7 @@
 import pandas as pd
 
 from soep_cleaning.initial_preprocessing.helper import (
+    bool_categorical,
     float_categorical_to_int,
     hwealth_wide_to_long,
     int_categorical_to_int,
@@ -19,23 +20,22 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["building_year_hh_max"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgcnstyrmax"]),
-    )
+    )  # TODO: keep as categorical?
     out["building_year_hh_min"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgcnstyrmin"]),
-    )
+    )  # TODO: keep as categorical?
     out["heating_costs_m_hh"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgheat"]),
-    )
+    )  # TODO: keep as categorical?
     out["einzugsjahr"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgmoveyr"]),
-    )
+    )  # TODO: keep as categorical?
     out["bruttokaltmiete_m_hh"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgrent"]),
-    )
+    )  # TODO: keep as categorical?
     out["living_space_hh"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgsize"]),
-    )
-
+    )  # TODO: keep as categorical?
     out["heizkosten_mi_reason"] = str_categorical(
         raw_data["hgheatinfo"],
         ordered=False,
@@ -53,7 +53,6 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["hgtyp2hh"],
         ordered=False,
     )
-
     return out
 
 
@@ -70,36 +69,49 @@ def hl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["alg2_months_soep_hh_prev"] = int_categorical_to_int(raw_data["hlc0053"])
     out["arbeitsl_geld_2_soep_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0054"])
 
-    out["betreu_kosten_pro_kind"] = str_categorical(
+    out["betreu_kosten_pro_kind"] = bool_categorical(
         raw_data["hlc0009"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
-    out["kindergeld_bezug_aktuell"] = str_categorical(
+    out["kindergeld_bezug_aktuell"] = bool_categorical(
         raw_data["hlc0044_h"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
-    out["kinderzuschlag_aktuell_hh"] = str_categorical(
+    out["kinderzuschlag_aktuell_hh"] = bool_categorical(
         raw_data["hlc0046_h"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
-    out["kinderzuschlag_hl_hh_prev"] = str_categorical(
+    out["kinderzuschlag_hl_hh_prev"] = bool_categorical(
         raw_data["hlc0049_h"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
-    out["alg2_etc_aktuell_hh"] = str_categorical(
+    out["alg2_etc_aktuell_hh"] = bool_categorical(
         raw_data["hlc0064_h"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
-    out["hilfe_lebensunterh_aktuell_hh"] = str_categorical(
+    out["hilfe_lebensunterh_aktuell_hh"] = bool_categorical(
         raw_data["hlc0067_h"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
     out["wohngeld_soep_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0082_h"])
-    out["wohngeld_aktuell_hh"] = str_categorical(
+    out["wohngeld_aktuell_hh"] = bool_categorical(
         raw_data["hlc0083_h"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
-
+    # TODO: check with Hans-Martin
+    # fill missing for kindergeld_hl_m_hh with 0 if kindergeld_bezug_aktuell is False
+    out.loc[
+        (out["kindergeld_aktuell_hl_m_hh"].isnull())
+        & (~(out["kindergeld_bezug_aktuell"].notna())),
+        "kindergeld_aktuell_hl_m_hh",
+    ] = 0
     return out
 
 
@@ -110,10 +122,8 @@ def hpathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["hh_soep_sample"] = str_categorical(
         raw_data["hsample"],
-        nr_identifiers=2,
         ordered=False,
-    )
-
+    )  # TODO: Remove the additional alphabetical identifier level?
     out["hh_bleibe_wkeit"] = apply_lowest_float_dtype(raw_data["hbleib"])
     out["hh_gewicht"] = apply_lowest_float_dtype(raw_data["hhrf"])
     out["hh_gewicht_nur_neue"] = apply_lowest_float_dtype(raw_data["hhrf0"])
@@ -132,39 +142,47 @@ def hwealth(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["wohnsitz_immobilienverm_hh_c"] = apply_lowest_float_dtype(raw_data["p010hc"])
     out["wohnsitz_immobilienverm_hh_d"] = apply_lowest_float_dtype(raw_data["p010hd"])
     out["wohnsitz_immobilienverm_hh_e"] = apply_lowest_float_dtype(raw_data["p010he"])
+
     out["finanzverm_hh_a"] = apply_lowest_float_dtype(raw_data["f010ha"])
     out["finanzverm_hh_b"] = apply_lowest_float_dtype(raw_data["f010hb"])
     out["finanzverm_hh_c"] = apply_lowest_float_dtype(raw_data["f010hc"])
     out["finanzverm_hh_d"] = apply_lowest_float_dtype(raw_data["f010hd"])
     out["finanzverm_hh_e"] = apply_lowest_float_dtype(raw_data["f010he"])
+
     out["bruttoverm_hh_a"] = apply_lowest_float_dtype(raw_data["w010ha"])
     out["bruttoverm_hh_b"] = apply_lowest_float_dtype(raw_data["w010hb"])
     out["bruttoverm_hh_c"] = apply_lowest_float_dtype(raw_data["w010hc"])
     out["bruttoverm_hh_d"] = apply_lowest_float_dtype(raw_data["w010hd"])
     out["bruttoverm_hh_e"] = apply_lowest_float_dtype(raw_data["w010he"])
+
     out["nettoverm_hh_a"] = apply_lowest_float_dtype(raw_data["w011ha"])
     out["nettoverm_hh_b"] = apply_lowest_float_dtype(raw_data["w011hb"])
     out["nettoverm_hh_c"] = apply_lowest_float_dtype(raw_data["w011hc"])
     out["nettoverm_hh_d"] = apply_lowest_float_dtype(raw_data["w011hd"])
     out["nettoverm_hh_e"] = apply_lowest_float_dtype(raw_data["w011he"])
+
     out["wert_fahrzeuge_a"] = apply_lowest_int_dtype(raw_data["v010ha"])
     out["wert_fahrzeuge_b"] = apply_lowest_int_dtype(raw_data["v010hb"])
     out["wert_fahrzeuge_c"] = apply_lowest_int_dtype(raw_data["v010hc"])
     out["wert_fahrzeuge_d"] = apply_lowest_int_dtype(raw_data["v010hd"])
     out["wert_fahrzeuge_e"] = apply_lowest_int_dtype(raw_data["v010he"])
+
     out["bruttoverm_inkl_fahrz_hh_a"] = apply_lowest_float_dtype(raw_data["n010ha"])
     out["bruttoverm_inkl_fahrz_hh_b"] = apply_lowest_float_dtype(raw_data["n010hb"])
     out["bruttoverm_inkl_fahrz_hh_c"] = apply_lowest_float_dtype(raw_data["n010hc"])
     out["bruttoverm_inkl_fahrz_hh_d"] = apply_lowest_float_dtype(raw_data["n010hd"])
     out["bruttoverm_inkl_fahrz_hh_e"] = apply_lowest_float_dtype(raw_data["n010he"])
+
     out["nettoverm_fahrz_kredit_hh_a"] = apply_lowest_float_dtype(raw_data["n011ha"])
     out["nettoverm_fahrz_kredit_hh_b"] = apply_lowest_float_dtype(raw_data["n011hb"])
     out["nettoverm_fahrz_kredit_hh_c"] = apply_lowest_float_dtype(raw_data["n011hc"])
     out["nettoverm_fahrz_kredit_hh_d"] = apply_lowest_float_dtype(raw_data["n011hd"])
     out["nettoverm_fahrz_kredit_hh_e"] = apply_lowest_float_dtype(raw_data["n011he"])
+
     out["flag_netwealth"] = str_categorical(
         raw_data["n022h0"],
         ordered=False,
     )
-
+    # TODO: should the _a, _b, _c, _d, _e columns be transformed into long format?
+    # tendency to no, see SOEP companion: https://companion.soep.de/Data%20Structure%20of%20SOEPcore/Data%20Sets.html#generated-data
     return hwealth_wide_to_long(out)
