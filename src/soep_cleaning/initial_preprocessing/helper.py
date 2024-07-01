@@ -106,12 +106,10 @@ def _reduce_categories(sr, renaming, ordered, categories_type_str="str[pyarrow]"
 
     """
 
-    if "int" in categories_dtype:
+    if "int" in categories_type_str:
         categories_type_str = find_lowest_int_dtype(sr_renamed.cat.categories.values)
-    elif "bool" in categories_dtype:
+    elif "bool" in categories_type_str:
         categories_type_str = "bool[pyarrow]"
-    else:
-        categories_type_str = "str[pyarrow]"
     category_dtype = pd.CategoricalDtype(
         sr_renamed.cat.categories.astype(categories_type_str),
         ordered,
@@ -119,7 +117,7 @@ def _reduce_categories(sr, renaming, ordered, categories_type_str="str[pyarrow]"
     return pd.Series(sr_renamed, dtype=category_dtype)
 
 
-def _renaming_categories(sr, renaming, ordered, categories_dtype="str[pyarrow]"):
+def _renaming_categories(sr, renaming, ordered, categories_type_str="str[pyarrow]"):
     """Rename the categories of a pd.Series of dtype category based on the renaming
     dict.
 
@@ -127,7 +125,7 @@ def _renaming_categories(sr, renaming, ordered, categories_dtype="str[pyarrow]")
         sr (pd.Series): A pandas Series of dtype 'category' containing the categorical data.
         renaming (dict): A dictionary to rename the categories.
         ordered (bool): Whether the series should be returned as ordered, order imputed from renaming keys.
-        categories_dtype (str,optional): DataType of the renaming keys. Defaults to str[pyarrow].
+        categories_type_str (str,optional): DataType of the renaming keys. Defaults to str[pyarrow].
 
     Return:
         pd.Series: A new categorical Series with the renamed categories.
@@ -138,20 +136,13 @@ def _renaming_categories(sr, renaming, ordered, categories_dtype="str[pyarrow]")
         ordered=ordered,
     ).cat.rename_categories(renaming)
 
-    if "int" in categories_dtype:
+    if "int" in categories_type_str:
         categories_type_str = find_lowest_int_dtype(sr_renamed.cat.categories.values)
-    elif "bool" in categories_dtype:
+    elif "bool" in categories_type_str:
         categories_type_str = "bool[pyarrow]"
     else:
         categories_type_str = "str[pyarrow]"
 
-    """
-    categories_type_str = (
-        find_lowest_int_dtype(sr_renamed.cat.categories.values)
-        if "int" in categories_dtype
-        else "str[pyarrow]"
-    )
-    """
     category_dtype = pd.CategoricalDtype(
         sr_renamed.cat.categories.astype(categories_type_str),
         ordered,
@@ -165,10 +156,20 @@ def _remove_delimiter_levels(sr, delimiter, nr_identifiers, ordered):
         delimiter,
         nr_identifiers,
     )
-    categories = (
-        pd.Categorical(categories_list).astype("str[pyarrow]").astype("category")
-    )
-    sr_new_categories = sr.cat.set_categories(categories)
+    return _set_new_categories(sr, categories_list, ordered)
+
+
+def _set_new_categories(sr, categories, ordered, categories_type_str="str[pyarrow]"):
+    if "int" in categories_type_str:
+        int_categories_dtype = find_lowest_int_dtype(categories)
+        new_categories = (
+            pd.Categorical(categories).astype(int_categories_dtype).astype("category")
+        )
+    else:
+        new_categories = (
+            pd.Categorical(categories).astype(categories_type_str).astype("category")
+        )
+    sr_new_categories = sr.cat.set_categories(new_categories)
     if ordered:
         return sr_new_categories.cat.as_ordered()
     else:
@@ -219,7 +220,7 @@ def bool_categorical(
             sr,
             renaming,
             ordered,
-            categories_dtype="bool[pyarrow]",
+            categories_type_str="bool[pyarrow]",
         )
     return sr
 
@@ -404,11 +405,18 @@ def agreement_to_int_categorical(
         [sr.cat.categories.to_list(), "int | str"],
     )
     sr_no_missing = _remove_missing_data_categories(sr)
-    return _renaming_categories(
+
+    sr_renamed = _renaming_categories(
         sr_no_missing,
         renaming,
         ordered,
-        categories_dtype="int[pyarrow]",
+        categories_type_str="int[pyarrow]",
+    )
+    return _set_new_categories(
+        sr_renamed,
+        sr_renamed.cat.categories,
+        ordered,
+        categories_type_str="int[pyarrow]",
     )
 
 
