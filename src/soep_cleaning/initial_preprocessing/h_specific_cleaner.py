@@ -183,6 +183,4 @@ def hwealth(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["n022h0"],
         ordered=False,
     )
-    # TODO: should the _a, _b, _c, _d, _e columns be transformed into long format?
-    # tendency to no, see SOEP companion: https://companion.soep.de/Data%20Structure%20of%20SOEPcore/Data%20Sets.html#generated-data
     return hwealth_wide_to_long(out)
