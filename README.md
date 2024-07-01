@@ -85,20 +85,13 @@ The `config.py` specifies global constants and sets the options for modern panda
 
 ## Next steps
 
-- [data catalog](https://pytask-dev.readthedocs.io/en/stable/tutorials/using_a_data_catalog.html)
-- Work on `NaN` values inside categorial columns (of any dtype); currently missing
-  implementation of working conversion to `pd.NA`
-- Some datasets contain columns with integer values, possibly indicating missing values
-  (e.g. dataset `hwealth`, column `finanzverm_hh_a` contains values like "-8" even
-  though not plausible)
+- Currently Work on `NaN` values conversion to `pd.NA` inside categorial columns (of
+  numerical dtype); currently missing
 - Some datasets contain categorical columns with identical category names (after
   cleaning/removing the response code), further discussion needed (e.g. dataset `perg`,
   column `pbrutto`)
 - Should cleaning helpers handle empty series differently? (currently no error being
   raised and an empty `pd.Series` is being returned)
-- Uncertain about implementation of file that contains words that will be ignored by
-  `codespell` (currently `.codespell-wordlist.txt`) -> `.codespell-wordlist.yaml`, but
-  "File must contain 1 word per line."
 - Adaptation to different SOEP versions/waves
 
 ## Credits
