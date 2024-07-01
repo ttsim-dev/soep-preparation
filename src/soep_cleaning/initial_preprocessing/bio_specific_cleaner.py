@@ -19,7 +19,6 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
         float_categorical_to_int(raw_data["cid"]),
     )
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-
     out["n_kids_total"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["sumkids"]),
     )
@@ -34,7 +33,6 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
         )
         out[f"birth_month_child_{i}"] = categorical_to_int_categorical(
             raw_data[f"kidmon{two_digit}"],
-            ordered=False,
             renaming={
                 "[1] Januar": 1,
                 "[2] Februar": 2,
@@ -49,6 +47,8 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
                 "[11] November": 11,
                 "[12] Dezember": 12,
             },
+            filter_renaming=True,
+            ordered=False,
         )
     return biobirth_wide_to_long(out)
 
