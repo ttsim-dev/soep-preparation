@@ -2,39 +2,14 @@ import pandas as pd
 
 from soep_cleaning.initial_preprocessing.helper import (
     biobirth_wide_to_long,
+    bool_categorical,
+    categorical_to_int_categorical,
     float_categorical_to_int,
     int_categorical_to_int,
     int_to_int_categorical,
     str_categorical,
 )
 from soep_cleaning.utilities import apply_lowest_int_dtype
-
-
-def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the bioedu dataset."""
-    out = pd.DataFrame()
-    out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-
-    out["birth_month"] = str_categorical(
-        raw_data["gebmonat"],
-        ordered=False,
-        renaming={
-            "[1] January": 1,
-            "[2] February": 2,
-            "[3] March": 3,
-            "[4] April": 4,
-            "[5] May": 5,
-            "[6] June": 6,
-            "[7] July": 7,
-            "[8] August": 8,
-            "[9] September": 9,
-            "[10] October": 10,
-            "[11] November": 11,
-            "[12] December": 12,
-        },
-    )
-    return out
 
 
 def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -57,12 +32,52 @@ def biobirth(raw_data: pd.DataFrame) -> pd.DataFrame:
         out[f"p_id_child_{i}"] = float_categorical_to_int(
             raw_data[f"kidpnr{two_digit}"],
         )
-        out[f"birth_month_child_{i}"] = str_categorical(
+        out[f"birth_month_child_{i}"] = categorical_to_int_categorical(
             raw_data[f"kidmon{two_digit}"],
             ordered=False,
+            renaming={
+                "[1] Januar": 1,
+                "[2] Februar": 2,
+                "[3] Maerz": 3,
+                "[4] April": 4,
+                "[5] Mai": 5,
+                "[6] Juni": 6,
+                "[7] Juli": 7,
+                "[8] August": 8,
+                "[9] September": 9,
+                "[10] Oktober": 10,
+                "[11] November": 11,
+                "[12] Dezember": 12,
+            },
         )
-
     return biobirth_wide_to_long(out)
+
+
+def bioedu(raw_data: pd.DataFrame) -> pd.DataFrame:
+    """Clean the bioedu dataset."""
+    out = pd.DataFrame()
+    out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+
+    out["birth_month"] = categorical_to_int_categorical(
+        raw_data["gebmonat"],
+        ordered=False,
+        renaming={
+            "[1] January": 1,
+            "[2] February": 2,
+            "[3] March": 3,
+            "[4] April": 4,
+            "[5] May": 5,
+            "[6] June": 6,
+            "[7] July": 7,
+            "[8] August": 8,
+            "[9] September": 9,
+            "[10] October": 10,
+            "[11] November": 11,
+            "[12] December": 12,
+        },
+    )
+    return out
 
 
 def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -81,13 +96,15 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["lb0058"],
         ordered=False,
     )
-    out["birthplace_father"] = str_categorical(
+    out["birthplace_father"] = bool_categorical(
         raw_data["lb0084_h"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
-    out["birthplace_mother"] = str_categorical(
+    out["birthplace_mother"] = bool_categorical(
         raw_data["lb0085_h"],
-        ordered=False,
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
     out["religion_father"] = str_categorical(
         raw_data["lb0124_h"],
@@ -97,5 +114,4 @@ def biol(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["lb0125_h"],
         ordered=False,
     )
-
     return out
