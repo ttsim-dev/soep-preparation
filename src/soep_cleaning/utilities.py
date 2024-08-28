@@ -1,18 +1,40 @@
 """Utilities used in various parts of the project."""
+from importlib.machinery import SourceFileLoader
+from pathlib import Path
+from typing import Annotated
 
 from soep_cleaning.config import pd
+
+
+def list_functions_in_scripts(directory: Annotated[Path, Path]) -> list:
+    manipulator_scripts = list(directory.glob("*manipulator.py"))
+    list_of_modules = [
+        dir(
+            SourceFileLoader(
+                script.resolve().stem,
+                str(script.resolve()),
+            ).load_module(),
+        )
+        for script in manipulator_scripts
+    ]
+    return [
+        module
+        for modules in list_of_modules
+        for module in modules
+        if ("_" not in module) and ("pd" not in module)
+    ]
 
 
 def dataset_script_name(dataset_name: str) -> str:
     """Map the dataset name to the name of the respective script."""
     if dataset_name.startswith("bio"):
-        return "bio_specific_cleaner"
+        return "bio_specific"
     elif dataset_name.startswith("h"):
-        return "h_specific_cleaner"
+        return "h_specific"
     elif dataset_name.startswith("p"):
-        return "p_specific_cleaner"
+        return "p_specific"
     else:
-        return "other_specific_cleaner"
+        return "other_specific"
 
 
 def find_lowest_int_dtype(sr: pd.Series) -> str:

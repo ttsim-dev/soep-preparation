@@ -44,7 +44,7 @@ for dataset in data_catalog["orig"].entries:
             Path(
                 SRC.joinpath(
                     "initial_preprocessing",
-                    f"{dataset_script_name(dataset)}.py",
+                    f"{dataset_script_name(dataset)}_cleaner.py",
                 ).resolve(),
             ),
         ],
@@ -80,6 +80,6 @@ for dataset in data_catalog["orig"].entries:
         return getattr(module, f"{dataset}")(pd.read_stata(orig_data))
 
 
-def _error_handling_task(orig_data, script_path):
-    _fail_if_invalid_input(orig_data, "pathlib.PosixPath")
+def _error_handling_task(data, script_path):
+    _fail_if_invalid_input(data, "pathlib.PosixPath")
     _fail_if_invalid_input(script_path, "pathlib.PosixPath")
