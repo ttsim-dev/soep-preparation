@@ -19,19 +19,69 @@ def pbrutto(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["birth_year"] = int_categorical_to_int(raw_data["geburt_v2"])
     out["befragungs_status"] = str_categorical(raw_data["befstat_h"])
-    out["hh_position_raw"] = str_categorical(raw_data["stell_h"])
-    out["bearbeitungserg"] = raw_data[
-        "perg"
-    ]  # TODO: categories [29] and [39] have identical labels, should be cleaned using str_categorical
-    out["bearbeitungserg_ausf"] = raw_data[
-        "pergz"
-    ]  # TODO: categories [29] and [39] have identical labels, should be cleaned using str_categorical
-    out["hh_position_raw_last_year"] = raw_data[
-        "pzugv"
-    ]  # TODO: categories [29] and [39] have identical labels, should be cleaned using str_categorical
-    out["teilnahmebereitchaft"] = str_categorical(raw_data["ber"])
+    out["hh_position"] = str_categorical(
+        raw_data["stell_h"],
+        ordered=False,
+        renaming={
+            "[0] Haushaltsvorstand,Bezugsperson": "Household head",
+            "[11] Ehegatte/in": "Spouse",
+            "[12] gleichgeschl.Partner/in": "Spouse",
+            "[13] Lebenspartner/in": "Spouse",
+            "[20] Kind/Adoptivkind [bis 2011]": "Child",
+            "[21] Leibliches Kind": "Child",
+            "[22] Stiefkind(Kind d.Ehe-/LPartners)": "Child",
+            "[23] Adoptivkind": "Child",
+            "[24] Pflegekind": "Other",
+            "[25] Enkelkind": "Other relative",
+            "[26] Urenkelkind": "Other",
+            "[27] Schwsohn,-tocher (Ehe-/LPartner v.Kind)": "Other relative",
+            "[30] Eltern [bis 2011]": "Parent",
+            "[31] Leibliche/r Vater,Mutter": "Parent",
+            "[32] Stiefvater,-mutter/Partner v.Vater,Mutter": "Parent",
+            "[33] Adoptivvater,-mutter": "Parent",
+            "[35] Schwiegervater,-mutter,(Ehe-/LPartner v.Eltern)": "Parent",
+            "[36] Grossvater,-mutter": "Other relative",
+            "[40] Geschwister, Schwager/Schwaegerin [bis 2011]": "Other relative",
+            "[41] Leibliche/r Bruder,Schwester": "Other relative",
+            "[42] Halbbruder,-schwester": "Other relative",
+            "[43] Stiefschwester,-bruder(von Elternteilen.verh/lpar)": "Other relative",
+            "[45] Pflegebruder,-schwester": "Other relative",
+            "[51] Schwa(e)ger/in (Ehe-/LPartner v.Geschwistern)": "Other relative",
+            "[52] Schwa(e)ger/in (Geschwister v.Ehe-/LPartner)": "Other relative",
+            "[60] Tante/Onkel, Nichte/Neffe [bis 2011]": "Other relative",
+            "[61] Tante,Onkel": "Other relative",
+            "[62] Nichte/Neffe": "Other relative",
+            "[63] Cousin/Cousine": "Other relative",
+            "[64] Andere Verwandte": "Other relative",
+            "[70] Nicht verwandte/verschwaegerte Person [bis 2011]": "Other",
+            "[71] Sonstige": "Other",
+            "[71] keine Angabe": "Other",
+            "[99] Stellung zu HV unbekannt": "Other",
+        },
+        reduce=True,
+    )
+    out["bearbeitungserg"] = str_categorical(raw_data["perg"], ordered=False)
+    out["bearbeitungserg_ausf"] = str_categorical(
+        raw_data["pergz"],
+        ordered=False,
+        reduce=True,
+    )  # TODO: categories [29] and [39] have identical labels, by reducing we loose some information (seems most in line with old code)
+    out["hh_position_raw_last_year"] = str_categorical(
+        raw_data["pzugv"],
+        ordered=False,
+        reduce=True,
+    )  # TODO: categories [19] and [39] have identical labels, by reducing we loose some information (seems most in line with old code)
+    out["teilnahmebereitschaft"] = str_categorical(
+        raw_data["ber"],
+        ordered=True,
+        renaming={
+            "[4] sehr schlecht": "sehr schlecht",
+            "[3] schlecht": "schlecht",
+            "[2] gut": "gut",
+            "[1] sehr gut": "sehr gut",
+        },
+    )
     out["bearbeitungserg_alt"] = str_categorical(raw_data["hergs"])
-
     return out
 
 
