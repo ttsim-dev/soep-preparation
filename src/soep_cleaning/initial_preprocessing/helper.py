@@ -93,18 +93,6 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
 
 def _reduce_categories(sr, renaming, ordered, categories_type_str="str[pyarrow]"):
     sr_renamed = sr.replace(renaming)
-    """sr_renamed = sr.cat.reorder_categories( renaming,
-
-    ordered=ordered, ).cat.rename_categories(renaming)
-
-    categories_type_str = (
-        find_lowest_int_dtype(sr_renamed.cat.categories.values)
-        if integers
-        else "str[pyarrow]"
-    )
-
-    """
-
     if "int" in categories_type_str:
         categories_type_str = find_lowest_int_dtype(sr_renamed.cat.categories.values)
     elif "bool" in categories_type_str:
@@ -130,6 +118,14 @@ def _renaming_categories(sr, renaming, ordered, categories_type_str="str[pyarrow
         pd.Series: A new categorical Series with the renamed categories.
 
     """
+    # TODO: check if _set_new_categories() is adequate
+    """
+    category_dtype = pd.CategoricalDtype(
+        sr_renamed.cat.categories.astype(categories_type_str),
+        ordered,
+    )
+    return pd.Series(sr_renamed, dtype=category_dtype)
+    """
     sr_renamed = sr.cat.reorder_categories(
         renaming,
         ordered=ordered,
@@ -141,12 +137,12 @@ def _renaming_categories(sr, renaming, ordered, categories_type_str="str[pyarrow
         categories_type_str = "bool[pyarrow]"
     else:
         categories_type_str = "str[pyarrow]"
-
-    category_dtype = pd.CategoricalDtype(
-        sr_renamed.cat.categories.astype(categories_type_str),
+    return _set_new_categories(
+        sr_renamed,
+        sr_renamed.cat.categories,
         ordered,
+        categories_type_str,
     )
-    return pd.Series(sr_renamed, dtype=category_dtype)
 
 
 def _remove_delimiter_levels(sr, delimiter, nr_identifiers, ordered):
@@ -155,24 +151,28 @@ def _remove_delimiter_levels(sr, delimiter, nr_identifiers, ordered):
         delimiter,
         nr_identifiers,
     )
-    return _set_new_categories(sr, categories_list, ordered)
+    categories_mapping = dict(zip(sr.cat.categories, categories_list))
+    return _renaming_categories(sr, categories_mapping, ordered)
 
 
-def _set_new_categories(sr, categories, ordered, categories_type_str="str[pyarrow]"):
+def _set_new_categories(
+    sr,
+    categories,
+    ordered,
+    categories_type_str="str[pyarrow]",
+) -> pd.Series:
     if "int" in categories_type_str:
         int_categories_dtype = find_lowest_int_dtype(categories)
-        new_categories = (
-            pd.Categorical(categories).astype(int_categories_dtype).astype("category")
+        new_categorical = pd.CategoricalDtype(
+            pd.Series(categories, dtype=int_categories_dtype),
+            ordered=ordered,
         )
     else:
-        new_categories = (
-            pd.Categorical(categories).astype(categories_type_str).astype("category")
+        new_categorical = pd.CategoricalDtype(
+            pd.Series(categories, dtype=categories_type_str),
+            ordered=ordered,
         )
-    sr_new_categories = sr.cat.set_categories(new_categories)
-    if ordered:
-        return sr_new_categories.cat.as_ordered()
-    else:
-        return sr_new_categories
+    return pd.Series(sr.cat.rename_categories(categories), dtype=new_categorical)
 
 
 def _categories_remove_nr_delimiter_levels(
