@@ -461,6 +461,30 @@ def float_categorical_to_float(sr: "pd.Series[category]") -> "pd.Series[float]":
     return apply_lowest_float_dtype(sr)
 
 
+def replace_conditionally(
+    sr: pd.Series,
+    conditioning_sr: pd.Series,
+    conditioning_value: str | int | float,
+    replacement_value: str | int | float,
+) -> pd.Series:
+    """Replace values in a series based on a condition in another series.
+
+    Parameters:
+        sr (pd.Series): The series to be cleaned.
+        conditioning_sr (pd.Series): The series that contains the condition.
+        conditioning_value (str | int | float): The value in the conditioning series that triggers the replacement.
+        replacement_value (str | int | float): The value that replaces the values in the series.
+
+    Returns:
+        pd.Series: The series with the replaced values.
+
+    """
+    # TODO: check this replacement style with Hans-Martin
+    new_sr = sr.copy()
+    new_sr.loc[conditioning_sr == conditioning_value] = replacement_value
+    return new_sr
+
+
 def biobirth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
     """Transform the biobirth dataset from wide to long format.
 
@@ -487,7 +511,7 @@ def biobirth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
             "p_id_child": find_lowest_int_dtype(df["p_id_child"]),
             "birth_month_child": "category",
         },
-    )
+    ).reset_index(drop=True)
 
 
 def hwealth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
