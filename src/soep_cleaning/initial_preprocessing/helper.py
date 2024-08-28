@@ -211,7 +211,7 @@ def bool_categorical(
             [sr, "pandas.core.series.Series"],
             [renaming, "dict" if renaming is not None else "None"],
         ],
-        [sr.cat.categories.to_list(), "str"],
+        [sr.cat.categories.to_list(), "str | int"],
     )
     sr = _remove_missing_data_categories(sr)
     if renaming is not None:
@@ -284,6 +284,18 @@ def str_categorical(
     delimiter = " "
 
     if reduce:
+        if renaming is None:
+            renaming = dict(
+                zip(
+                    sr_no_missing.cat.categories.to_list(),
+                    _categories_remove_nr_delimiter_levels(
+                        sr_no_missing,
+                        delimiter,
+                        nr_identifiers,
+                    ),
+                ),
+            )
+
         return _reduce_categories(sr_no_missing, renaming, ordered)
     elif renaming is not None:
         return _renaming_categories(sr_no_missing, renaming, ordered)
@@ -374,15 +386,19 @@ def int_to_int_categorical(
     _fail_if_series_wrong_dtype(sr, "int")
     _fail_if_invalid_input(sr, "pandas.core.series.Series")
     _fail_if_invalid_input(ordered, "bool")
-    sr = apply_lowest_int_dtype(sr)
-    categories_order = sr.sort_values().unique().dropna().tolist()
     sr = sr.astype("category")
-    return sr.cat.set_categories(categories_order, rename=True, ordered=ordered)
+    return _set_new_categories(
+        sr,
+        sr.cat.categories,
+        ordered,
+        categories_type_str="int[pyarrow]",
+    )
 
 
-def agreement_to_int_categorical(
+def categorical_to_int_categorical(
     sr: "pd.Series",
     renaming: dict,
+    filter_renaming=False,
     ordered=True,
 ) -> "pd.Series[int]":
     """Clean the categories of a pd.Series of dtype category with unspecified type
@@ -391,6 +407,7 @@ def agreement_to_int_categorical(
     Parameters:
         sr (pd.Series[str]): The input series with categories to be cleaned.
         renaming (dict): A dictionary to rename the categories.
+        filer_renaming(bool, optional): Whether the renaming dictionary should by filtered against the current categories. Defaults to False
         ordered (bool, optional): Whether the series should be returned as unordered. Defaults to True.
 
     Returns:
@@ -404,16 +421,21 @@ def agreement_to_int_categorical(
         [sr.cat.categories.to_list(), "int | str"],
     )
     sr_no_missing = _remove_missing_data_categories(sr)
-
-    sr_renamed = _renaming_categories(
+    if filter_renaming:
+        current_categories = sr_no_missing.cat.categories.to_list()
+        renaming = {
+            key: value
+            for key, value in renaming.items()
+            if any(category in key for category in current_categories)
+        }
+    """
+    return _set_new_categories(
+        sr_no_missing, renaming, ordered, categories_type_str="int[pyarrow]"
+    )
+    """
+    return _renaming_categories(
         sr_no_missing,
         renaming,
-        ordered,
-        categories_type_str="int[pyarrow]",
-    )
-    return _set_new_categories(
-        sr_renamed,
-        sr_renamed.cat.categories,
         ordered,
         categories_type_str="int[pyarrow]",
     )
