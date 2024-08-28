@@ -1,6 +1,7 @@
 from soep_cleaning.config import pd
 from soep_cleaning.initial_preprocessing.helper import (
     bool_categorical,
+    categorical_to_int_categorical,
     float_categorical_to_float,
     float_categorical_to_int,
     int_categorical_to_int,
@@ -94,6 +95,7 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["gender"] = str_categorical(
         raw_data["d11102ll"],
+        ordered=False,
         renaming={"[1] Male": "male", "[2] Female": "female"},
     )
     out["age"] = int_categorical_to_int(raw_data["d11101"])
@@ -108,11 +110,11 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["bundesland"] = str_categorical(raw_data["l11101"], ordered=False)
     out["earnings_job_1_prev"] = int_categorical_to_int(raw_data["ijob1"])
     out["earnings_job_2_prev"] = int_categorical_to_int(raw_data["ijob2"])
-    out["self_empl_earnings_prev"] = int_categorical_to_int(raw_data["iself"])
+    out["self_empl_earnings_prev"] = int_categorical_to_int(raw_data["iself"]).fillna(0)
     out["arbeitsl_geld_soep_prev"] = int_categorical_to_int(raw_data["iunby"])
     out["arbeitsl_hilfe_soep_prev"] = int_categorical_to_int(raw_data["iunay"])
     out["unterhaltsgeld_soep_prev"] = int_categorical_to_int(raw_data["isuby"])
-    out["übergangsgeld_soep_prev"] = int_categorical_to_int(raw_data["ieret"])
+    out["uebergangsgeld_soep_prev"] = int_categorical_to_int(raw_data["ieret"])
     out["mschaftsgeld_soep_prev"] = int_categorical_to_int(raw_data["imaty"])
     out["student_grants_prev"] = int_categorical_to_int(raw_data["istuy"])
     out["alimony_prev"] = int_categorical_to_int(raw_data["ialim"])
@@ -156,55 +158,69 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schlaganf"] = int_categorical_to_int(
+    out["med_pe_schlaganf"] = bool_categorical(
         raw_data["m11105"],
+        renaming={0: False, 1: True},
+        ordered=True,
     )
-    out["med_pe_bluthdrck"] = int_categorical_to_int(
+    out["med_pe_bluthdrck"] = bool_categorical(
         raw_data["m11106"],
+        renaming={0: False, 1: True},
+        ordered=True,
     )
-    out["med_pe_diabetes"] = int_categorical_to_int(
+    out["med_pe_diabetes"] = bool_categorical(
         raw_data["m11107"],
+        renaming={0: False, 1: True},
+        ordered=True,
     )
-    out["med_pe_krebs"] = int_categorical_to_int(
+    out["med_pe_krebs"] = bool_categorical(
         raw_data["m11108"],
+        renaming={0: False, 1: True},
+        ordered=True,
     )
-    out["med_pe_psych"] = int_categorical_to_int(
+    out["med_pe_psych"] = bool_categorical(
         raw_data["m11109"],
+        renaming={0: False, 1: True},
+        ordered=True,
     )
-    out["med_pe_gelenk"] = int_categorical_to_int(
+    out["med_pe_gelenk"] = bool_categorical(
         raw_data["m11110"],
+        renaming={0: False, 1: True},
+        ordered=True,
     )
-    out["med_pe_herzkr"] = int_categorical_to_int(
+    out["med_pe_herzkr"] = bool_categorical(
         raw_data["m11111"],
+        renaming={0: False, 1: True},
+        ordered=True,
     )
-    out["med_pe_schw_treppen"] = agreement_to_int_categorical(
+    out["med_pe_schw_treppen"] = bool_categorical(
         raw_data["m11113"],
-        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schw_anziehen"] = agreement_to_int_categorical(
+    out["med_pe_schw_anziehen"] = bool_categorical(
         raw_data["m11115"],
-        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schw_bett"] = agreement_to_int_categorical(
+    out["med_pe_schw_bett"] = bool_categorical(
         raw_data["m11116"],
-        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schw_einkauf"] = agreement_to_int_categorical(
+    out["med_pe_schw_einkauf"] = bool_categorical(
         raw_data["m11117"],
-        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schw_hausarb"] = agreement_to_int_categorical(
+    out["med_pe_schw_hausarb"] = bool_categorical(
         raw_data["m11119"],
-        renaming={"[0] Does not apply": 0, "[1] Applies": 1},
+        renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_pe_groesse"] = int_categorical_to_int(raw_data["m11122"])
     out["med_pe_gewicht"] = int_categorical_to_int(raw_data["m11123"])
-    out["med_pe_zufrieden"] = agreement_to_int_categorical(
+    out["med_pe_zufrieden"] = categorical_to_int_categorical(
         raw_data["m11125"],
         renaming={
             "[0] Completely dissatisfied": 0,
@@ -220,8 +236,7 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[10] Completely satisfied": 10,
         },
     )
-    # TODO: renaming to be deleted here
-    out["med_pe_subj_status"] = agreement_to_int_categorical(
+    out["med_pe_subj_status"] = categorical_to_int_categorical(
         raw_data["m11126"],
         renaming={
             "[1] Very good": 1,
@@ -240,7 +255,6 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["divorce_alimony_prev"] = int_categorical_to_int(raw_data["ispou"])
     out["riester_prev"] = int_categorical_to_int(raw_data["irie1"])
     out["riester_widow_prev"] = int_categorical_to_int(raw_data["irie2"])
-
     return out
 
 
