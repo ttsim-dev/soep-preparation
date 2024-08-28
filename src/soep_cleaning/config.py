@@ -15,7 +15,9 @@ BLD = SRC.joinpath("..", "..", "bld").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 
-data_catalog = {name: DataCatalog(name=name) for name in ["orig", "cleaned", "final"]}
+data_catalog = {
+    name: DataCatalog(name=name) for name in ["orig", "cleaned", "manipulated", "final"]
+}
 for dataset in [
     "biobirth",
     "bioedu",

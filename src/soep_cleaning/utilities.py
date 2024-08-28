@@ -1,30 +1,18 @@
 """Utilities used in various parts of the project."""
 
-import yaml
-
 from soep_cleaning.config import pd
 
 
-def read_yaml(path):
-    """Read a YAML file.
-
-    Args:
-        path (str or pathlib.Path): Path to file.
-
-    Returns:
-        dict: The parsed YAML file.
-
-    """
-    with open(path) as stream:
-        try:
-            out = yaml.safe_load(stream)
-        except yaml.YAMLError as error:
-            info = (
-                "The YAML file could not be loaded. Please check that the path points "
-                "to a valid YAML file."
-            )
-            raise ValueError(info) from error
-    return out
+def dataset_script_name(dataset_name: str) -> str:
+    """Map the dataset name to the name of the respective script."""
+    if dataset_name.startswith("bio"):
+        return "bio_specific_cleaner"
+    elif dataset_name.startswith("h"):
+        return "h_specific_cleaner"
+    elif dataset_name.startswith("p"):
+        return "p_specific_cleaner"
+    else:
+        return "other_specific_cleaner"
 
 
 def find_lowest_int_dtype(sr: pd.Series) -> str:

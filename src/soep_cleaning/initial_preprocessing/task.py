@@ -5,6 +5,7 @@ from typing import Annotated
 from pytask import task
 
 from soep_cleaning.config import SRC, data_catalog, pd
+from soep_cleaning.utilities import dataset_script_name
 
 
 def _fail_if_missing_dependency(depends_on: dict[str, Path]):
@@ -25,24 +26,12 @@ def _fail_if_invalid_dependency(depends_on: dict[str, Path]):
             )
 
 
-def _fail_if_invalid_input(inputt, expected_dtype: str):
-    if expected_dtype not in str(type(inputt)):
-        msg = f"Expected {inputt} to be of type {expected_dtype}, got {type(inputt)}"
+def _fail_if_invalid_input(input_, expected_dtype: str):
+    if expected_dtype not in str(type(input_)):
+        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
         raise TypeError(
             msg,
         )
-
-
-def _dataset_script_name(dataset_name: str) -> str:
-    """Map the dataset name to the name of the script that cleans the dataset."""
-    if dataset_name.startswith("bio"):
-        return "bio_specific_cleaner"
-    elif dataset_name.startswith("h"):
-        return "h_specific_cleaner"
-    elif dataset_name.startswith("p"):
-        return "p_specific_cleaner"
-    else:
-        return "other_specific_cleaner"
 
 
 def _create_parametrization(dataset: str) -> dict:
@@ -53,7 +42,7 @@ def _create_parametrization(dataset: str) -> dict:
             "dataset": data_catalog[dataset],
             "script": SRC.joinpath(
                 "initial_preprocessing",
-                f"{_dataset_script_name(dataset)}.py",
+                f"{dataset_script_name(dataset)}.py",
             ).resolve(),
         },
         "dataset_name": dataset,
@@ -70,7 +59,7 @@ for dataset in data_catalog["orig"].entries:
             Path(
                 SRC.joinpath(
                     "initial_preprocessing",
-                    f"{_dataset_script_name(dataset)}.py",
+                    f"{dataset_script_name(dataset)}.py",
                 ).resolve(),
             ),
         ],
@@ -97,7 +86,7 @@ for dataset in data_catalog["orig"].entries:
             script_path.stem,
             str(script_path),
         ).load_module()
-        """With pd.read_stata(orig_data, chunksize=1_000) as itr:
+        """With pd.read_stata(orig_data, chunksize=100_000) as itr:
 
         for chunk in itr:
             getattr(module, f"{dataset}")(chunk)
