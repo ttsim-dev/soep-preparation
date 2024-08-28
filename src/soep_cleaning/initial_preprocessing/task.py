@@ -34,21 +34,6 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-def _create_parametrization(dataset: str) -> dict:
-    """Create the parametrization for the task clean dataset."""
-    _fail_if_invalid_input(dataset, "str")
-    return {
-        "depends_on": {
-            "dataset": data_catalog[dataset],
-            "script": SRC.joinpath(
-                "initial_preprocessing",
-                f"{dataset_script_name(dataset)}.py",
-            ).resolve(),
-        },
-        "dataset_name": dataset,
-    }
-
-
 for dataset in data_catalog["orig"].entries:
 
     @task(id=dataset)
