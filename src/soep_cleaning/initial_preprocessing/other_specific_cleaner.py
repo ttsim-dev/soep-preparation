@@ -1,5 +1,4 @@
-import pandas as pd
-
+from soep_cleaning.config import pd
 from soep_cleaning.initial_preprocessing.helper import (
     int_categorical_to_int,
     str_categorical,

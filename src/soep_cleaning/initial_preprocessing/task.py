@@ -2,10 +2,9 @@ from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import Annotated
 
-import pandas as pd
 from pytask import task
 
-from soep_cleaning.config import SRC, data_catalog
+from soep_cleaning.config import SRC, data_catalog, pd
 
 
 def _fail_if_missing_dependency(depends_on: dict[str, Path]):

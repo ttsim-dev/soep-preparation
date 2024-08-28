@@ -1,5 +1,4 @@
-import pandas as pd
-
+from soep_cleaning.config import pd
 from soep_cleaning.initial_preprocessing.helper import (
     biobirth_wide_to_long,
     bool_categorical,

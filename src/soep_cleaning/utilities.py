@@ -1,7 +1,8 @@
 """Utilities used in various parts of the project."""
 
-import pandas as pd
 import yaml
+
+from soep_cleaning.config import pd
 
 
 def read_yaml(path):

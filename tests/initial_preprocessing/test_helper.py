@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as pd
+from soep_cleaning.config import pd
 from soep_cleaning.initial_preprocessing.helper import (
     _remove_missing_data_categories,
     bool_categorical,
