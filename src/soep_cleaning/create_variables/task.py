@@ -43,7 +43,7 @@ for dataset in data_catalog["cleaned"].entries:
             """Manipulates a dataset using a specified cleaning script.
 
             Parameters:
-                clean_data (Path): The path to the cleaned dataset to be manipulated.
+                clean_data (pd.DataFrame): Cleaned dataset to be manipulated.
                 script_path (Path): The path to the manipulation script.
                 dataset (str): The name of the dataset.
 
@@ -61,7 +61,7 @@ for dataset in data_catalog["cleaned"].entries:
                 script_path.stem,
                 str(script_path),
             ).load_module()
-            return getattr(module, f"{dataset}")(pd.read_stata(clean_data))
+            return getattr(module, f"{dataset}")(clean_data)
 
     else:
         data_catalog["manipulated"].add(
@@ -71,5 +71,5 @@ for dataset in data_catalog["cleaned"].entries:
 
 
 def _error_handling_task(data, script_path):
-    _fail_if_invalid_input(data, "pathlib.PosixPath")
+    _fail_if_invalid_input(data, "pandas.core.frame.DataFrame'")
     _fail_if_invalid_input(script_path, "pathlib.PosixPath")
