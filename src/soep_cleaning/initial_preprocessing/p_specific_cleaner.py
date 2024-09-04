@@ -1,4 +1,5 @@
 from soep_cleaning.config import pd
+from soep_cleaning.initial_preprocessing import month_mapping
 from soep_cleaning.initial_preprocessing.helper import (
     bool_categorical,
     categorical_to_int_categorical,
@@ -330,20 +331,7 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["month_interview"] = categorical_to_int_categorical(
         raw_data["pgmonth"],
-        renaming={
-            "[1] Januar": 1,
-            "[2] Februar": 2,
-            "[3] Maerz": 3,
-            "[4] April": 4,
-            "[5] Mai": 5,
-            "[6] Juni": 6,
-            "[7] Juli": 7,
-            "[8] August": 8,
-            "[9] September": 9,
-            "[10] Oktober": 10,
-            "[11] November": 11,
-            "[12] Dezember": 12,
-        },
+        renaming=month_mapping.de,
     )
     return out
 
@@ -866,21 +854,8 @@ def ppathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["birth_month_ppathl"] = str_categorical(
         raw_data["gebmonat"],
         ordered=False,
-        renaming={
-            "[1] Januar": 1,
-            "[2] Februar": 2,
-            "[3] Maerz": 3,
-            "[4] April": 4,
-            "[5] Mai": 5,
-            "[6] Juni": 6,
-            "[7] Juli": 7,
-            "[8] August": 8,
-            "[9] September": 9,
-            "[10] Oktober": 10,
-            "[11] November": 11,
-            "[12] Dezember": 12,
-        },
-    )  # TODO: agreement_to_int_categorical()?
+        renaming=month_mapping.de,
+    )  # TODO: categorical_to_int_categorical()?
     out["east_west_1989"] = str_categorical(raw_data["loc1989"], ordered=False)
     out["migrationshintergrund"] = str_categorical(raw_data["migback"], ordered=False)
     out["sexual_orientation"] = str_categorical(raw_data["sexor"], ordered=False)
