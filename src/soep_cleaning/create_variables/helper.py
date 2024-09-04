@@ -1,5 +1,6 @@
 import re
 
+import numpy as np
 from soep_cleaning.config import pd
 
 
@@ -114,3 +115,50 @@ def generate_education_variable(casmin: pd.Series, isced: pd.Series, mappings: d
     ]
     cat_type = pd.CategoricalDtype(categories=val_quali, ordered=True)
     return out["education"].astype(cat_type)
+
+
+def manipulate_mschaftsgeld_monate(
+    mschaftsgeld_monate: pd.Series,
+    mschaftsgeld_bezogen: pd.Series,
+) -> pd.Series:
+    # TODO: discuss this logic of mschaftsgeld_monate
+    _error_handling_inputs(
+        [
+            [mschaftsgeld_monate, "pandas.core.series.Series"],
+            [mschaftsgeld_bezogen, "pandas.core.series.Series"],
+        ],
+    )
+    mschaftsgeld_monate_less_four = np.maximum((mschaftsgeld_monate.cat.codes - 3), 0)
+    mschaftsgeld_monate_less_four.loc[mschaftsgeld_bezogen == 0] = 0
+    return mschaftsgeld_monate_less_four
+
+
+def generate_employment_status(
+    data: pd.DataFrame,
+    m: int,
+) -> tuple[pd.Series, pd.Series, pd.Series]:
+    # full_empl_prev_ manipulation
+    data.loc[(data["year"] < 1997), f"full_empl_prev_{m}"] = data[
+        f"full_empl_v1_prev_{m}"
+    ]
+    data.loc[(data["year"] >= 1997), f"full_empl_prev_{m}"] = data[
+        f"full_empl_v2_prev_{m}"
+    ]
+
+    # half_empl_prev_ manipulation
+    data[f"half_empl_b_prev_{m}"] = data[f"half_empl_prev_{m}"].cat.codes.between(0, 1)
+
+    # employed_m_prev_ manipulation
+    data.loc[
+        (
+            (data[f"full_empl_prev_{m}"] == 1)
+            | (data[f"half_empl_b_prev_{m}"])
+            | (data[f"mini_job_prev_{m}"] == 1)
+        ),
+        f"employed_m_prev_{m}",
+    ] = 1
+    return (
+        data[f"full_empl_prev_{m}"],
+        data[f"half_empl_prev_{m}"],
+        data[f"employed_m_prev_{m}"],
+    )

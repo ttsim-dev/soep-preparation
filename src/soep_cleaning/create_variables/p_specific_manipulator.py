@@ -5,6 +5,8 @@ from soep_cleaning.create_variables.helper import (
     create_in_education_dummy_categorical,
     create_selfemployed_occupations,
     generate_education_variable,
+    generate_employment_status,
+    manipulate_mschaftsgeld_monate,
 )
 from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
 
@@ -103,4 +105,33 @@ def pgen(data: pd.DataFrame) -> pd.DataFrame:
         out["education_isced"],
         education_mapping,
     )
+    return out
+
+
+def pkal(data: pd.DataFrame) -> pd.DataFrame:
+    out = data.copy()
+
+    out["unempl_months_prev"] = out["unempl_months_prev"].fillna(0)
+
+    # mschaftsgeld
+    out["mschaftsgeld_monate_prev_1"] = out["mschaftsgeld_monate_prev"]
+    out["mschaftsgeld_monate_prev"] = manipulate_mschaftsgeld_monate(
+        out["mschaftsgeld_monate_prev"],
+        out["mschaftsgeld_bezogen_prev"],
+    )
+
+    # months_empl_prev
+    for m in range(1, 13):
+        out[
+            [
+                f"full_empl_prev{m}",
+                f"half_empl_b_prev_{m}",
+                f"employed_m_prev_{m}",
+            ]
+        ] = generate_employment_status(out, m)
+
+    out["months_empl_prev"] = out[list(out.filter(regex="employed_m_prev_"))].sum(
+        axis=1,
+    )
+
     return out
