@@ -27,6 +27,7 @@ def pequiv(data: pd.DataFrame) -> pd.DataFrame:
         "med_pe_subj_status",
     ]
     out = data[data.columns[~data.columns.isin([med_vars])]]
+    out["self_empl_earnings_prev"] = out["self_empl_earnings_prev"].fillna(0)
     out[med_vars] = data.groupby("p_id")[med_vars].ffill()
     out["bmi_pe"] = apply_lowest_float_dtype(
         data["med_pe_gewicht"] / ((data["med_pe_groesse"] / 100) ** 2),
@@ -51,6 +52,8 @@ def pgen(data: pd.DataFrame) -> pd.DataFrame:
         out["employment_status"] == "Nicht erwerbstätig",
         ["weekly_working_hours_actual", "weekly_working_hours_contract"],
     ] = 0
+    out["curr_earnings_m"] = out["curr_earnings_m"].fillna(0)
+    out["net_wage_m"] = out["curr_earnnet_wage_mngs_m"].fillna(0)
 
     out["german"] = create_dummy(out["nationality_first"], "Deutschland")
     out["retired"] = create_dummy(out["occupation_status"], "NE: Rentner/Rentnerin")

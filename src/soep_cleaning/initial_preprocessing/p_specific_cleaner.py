@@ -112,7 +112,7 @@ def pequiv(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["bundesland"] = str_categorical(raw_data["l11101"], ordered=False)
     out["earnings_job_1_prev"] = int_categorical_to_int(raw_data["ijob1"])
     out["earnings_job_2_prev"] = int_categorical_to_int(raw_data["ijob2"])
-    out["self_empl_earnings_prev"] = int_categorical_to_int(raw_data["iself"]).fillna(0)
+    out["self_empl_earnings_prev"] = int_categorical_to_int(raw_data["iself"])
     out["arbeitsl_geld_soep_prev"] = int_categorical_to_int(raw_data["iunby"])
     out["arbeitsl_hilfe_soep_prev"] = int_categorical_to_int(raw_data["iunay"])
     out["unterhaltsgeld_soep_prev"] = int_categorical_to_int(raw_data["isuby"])
@@ -271,8 +271,8 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["german"] = out["nationality_first"].dropna() == "Deutschland"
     out["status_refugee"] = str_categorical(raw_data["pgstatus_refu"], ordered=False)
     out["marital_status"] = str_categorical(raw_data["pgfamstd"], ordered=False)
-    out["curr_earnings_m"] = float_categorical_to_float(raw_data["pglabgro"]).fillna(0)
-    out["net_wage_m"] = float_categorical_to_float(raw_data["pglabnet"]).fillna(0)
+    out["curr_earnings_m"] = float_categorical_to_float(raw_data["pglabgro"])
+    out["net_wage_m"] = float_categorical_to_float(raw_data["pglabnet"])
     out["occupation_status"] = str_categorical(raw_data["pgstib"], ordered=False)
     out["employment_status"] = str_categorical(
         raw_data["pgemplst"],
@@ -345,7 +345,6 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[12] Dezember": 12,
         },
     )
-
     return out
 
 
@@ -356,92 +355,23 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
     out["year"] = apply_lowest_int_dtype(float_categorical_to_int(raw_data["syear"]))
-    out["full_empl_v1_prev_1"] = bool_categorical(
-        raw_data["kal1a001_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_1"] = str_categorical(raw_data["kal1a001_v2"])
-    out["full_empl_v1_prev_2"] = bool_categorical(
-        raw_data["kal1a002_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_2"] = str_categorical(raw_data["kal1a002_v2"])
-    out["full_empl_v1_prev_3"] = bool_categorical(
-        raw_data["kal1a003_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_3"] = str_categorical(raw_data["kal1a003_v2"])
-    out["full_empl_v1_prev_4"] = bool_categorical(
-        raw_data["kal1a004_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_4"] = str_categorical(raw_data["kal1a004_v2"])
-    out["full_empl_v1_prev_5"] = bool_categorical(
-        raw_data["kal1a005_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_5"] = str_categorical(raw_data["kal1a005_v2"])
-    out["full_empl_v1_prev_6"] = bool_categorical(
-        raw_data["kal1a006_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_6"] = str_categorical(raw_data["kal1a006_v2"])
-    out["full_empl_v1_prev_7"] = bool_categorical(
-        raw_data["kal1a007_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_7"] = str_categorical(raw_data["kal1a007_v2"])
-    out["full_empl_v1_prev_8"] = bool_categorical(
-        raw_data["kal1a008_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_8"] = str_categorical(raw_data["kal1a008_v2"])
-    out["full_empl_v1_prev_9"] = bool_categorical(
-        raw_data["kal1a009_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_9"] = str_categorical(raw_data["kal1a009_v2"])
-    out["full_empl_v1_prev_10"] = bool_categorical(
-        raw_data["kal1a010_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_10"] = str_categorical(raw_data["kal1a010_v2"])
-    out["full_empl_v1_prev_11"] = bool_categorical(
-        raw_data["kal1a011_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_11"] = str_categorical(raw_data["kal1a011_v2"])
-    out["full_empl_v1_prev_12"] = bool_categorical(
-        raw_data["kal1a012_v1"],
-        renaming={"[1] Ja": True},
-    )
-    out["full_empl_v2_prev_12"] = str_categorical(raw_data["kal1a012_v2"])
-    out["half_empl_prev_1"] = str_categorical(raw_data["kal1b001"])
-    out["half_empl_prev_2"] = str_categorical(raw_data["kal1b002"])
-    out["half_empl_prev_3"] = str_categorical(raw_data["kal1b003"])
-    out["half_empl_prev_4"] = str_categorical(raw_data["kal1b004"])
-    out["half_empl_prev_5"] = str_categorical(raw_data["kal1b005"])
-    out["half_empl_prev_6"] = str_categorical(raw_data["kal1b006"])
-    out["half_empl_prev_7"] = str_categorical(raw_data["kal1b007"])
-    out["half_empl_prev_8"] = str_categorical(raw_data["kal1b008"])
-    out["half_empl_prev_9"] = str_categorical(raw_data["kal1b009"])
-    out["half_empl_prev_10"] = str_categorical(raw_data["kal1b010"])
-    out["half_empl_prev_11"] = str_categorical(raw_data["kal1b011"])
-    out["half_empl_prev_12"] = str_categorical(raw_data["kal1b012"])
+
+    for m in range(1, 13):
+        two_digit = f"{m:02d}"
+        out[f"full_empl_v1_prev_{m}"] = bool_categorical(
+            raw_data[f"kal1a0{two_digit}_v1"],
+            renaming={"[1] Ja": True},
+        )
+        out[f"full_empl_v2_prev_{m}"] = str_categorical(
+            raw_data[f"kal1a0{two_digit}_v2"],
+        )
+        out[f"half_empl_prev_{m}"] = str_categorical(raw_data[f"kal1b0{two_digit}"])
+        out[f"mini_job_prev_{m}"] = int_categorical_to_int(
+            raw_data[f"kal1n0{two_digit}"],
+        )
+
     out["unempl_months_prev"] = int_categorical_to_int(raw_data["kal1d02"])
     out["rente_monate_prev"] = int_categorical_to_int(raw_data["kal1e02"])
-    out["mini_job_prev_1"] = int_categorical_to_int(raw_data["kal1n001"])
-    out["mini_job_prev_2"] = int_categorical_to_int(raw_data["kal1n002"])
-    out["mini_job_prev_3"] = int_categorical_to_int(raw_data["kal1n003"])
-    out["mini_job_prev_4"] = int_categorical_to_int(raw_data["kal1n004"])
-    out["mini_job_prev_5"] = int_categorical_to_int(raw_data["kal1n005"])
-    out["mini_job_prev_6"] = int_categorical_to_int(raw_data["kal1n006"])
-    out["mini_job_prev_7"] = int_categorical_to_int(raw_data["kal1n007"])
-    out["mini_job_prev_8"] = int_categorical_to_int(raw_data["kal1n009"])
-    out["mini_job_prev_9"] = int_categorical_to_int(raw_data["kal1n008"])
-    out["mini_job_prev_10"] = int_categorical_to_int(raw_data["kal1n010"])
-    out["mini_job_prev_11"] = int_categorical_to_int(raw_data["kal1n011"])
-    out["mini_job_prev_12"] = int_categorical_to_int(raw_data["kal1n012"])
     out["m_alg_prev"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["kal2f02"]),
     )
@@ -451,7 +381,7 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["mschaftsgeld_monate_prev"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["kal2j02"]),
     )
-    # TODO: transform full_empl, half_empl_prev mini_job_prev into long format?
+    # TODO: discuss/transform full_empl, half_empl_prev mini_job_prev into long format?
     return out
 
 
