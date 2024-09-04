@@ -1,6 +1,10 @@
 from soep_cleaning.config import pd
+from soep_cleaning.create_variables import education_mapping
 from soep_cleaning.create_variables.helper import (
-    create_dummies_for_occupation_and_employment_status,
+    create_dummy,
+    create_in_education_dummy_categorical,
+    create_selfemployed_occupations,
+    generate_education_variable,
 )
 from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
 
@@ -41,4 +45,59 @@ def pequiv(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def pgen(data: pd.DataFrame) -> pd.DataFrame:
-    return pgen_manipulation(data)
+    out = data.copy()
+
+    out.loc[
+        out["employment_status"] == "Nicht erwerbstätig",
+        ["weekly_working_hours_actual", "weekly_working_hours_contract"],
+    ] = 0
+
+    out["german"] = create_dummy(out["nationality_first"], "Deutschland")
+    out["retired"] = create_dummy(out["occupation_status"], "NE: Rentner/Rentnerin")
+    out["in_education"] = create_in_education_dummy_categorical(
+        out["employment_status"],
+        out["occupation_status"],
+    )
+    out["self_employed"] = create_dummy(
+        out["occupation_status"],
+        create_selfemployed_occupations(out["occupation_status"]),
+        "isin",
+    )
+    out["military"] = create_dummy(
+        out["occupation_status"],
+        "NE: Wehr- und Zivildienst",
+    )
+    out["erwerbstätig"] = (
+        create_dummy(out["employment_status"], "Nicht erwerbstätig", "neq")
+    ) & (~out["in_education"].dropna())
+
+    out["nicht_erwerbstätig"] = create_dummy(
+        out["employment_status"],
+        "Nicht erwerbstätig",
+    )
+    out["unemployed"] = create_dummy(
+        out["occupation_status"],
+        "NE: arbeitslos gemeldet",
+    )
+    out["full_time"] = create_dummy(out["employment_status"], "Voll erwerbstätig")
+    out["part_time"] = create_dummy(out["employment_status"], "Teilzeitbeschäftigung")
+    out["geringfügig_erwb"] = create_dummy(
+        out["employment_status"],
+        "Unregelmässig, geringfügig erwerbstät.",
+    )
+    out["werkstatt"] = create_dummy(
+        out["employment_status"],
+        "Werkstatt für behinderte Menschen",
+    )
+    out["beamte"] = out["occupation_status"].str.startswith("Beamte", na=False)
+    out["parental_leave"] = create_dummy(
+        out["laborf_status"],
+        "NE: Mutterschutz/Elternzeit (seit 1991) ",
+    )
+
+    out["education"] = generate_education_variable(
+        out["education_casmin"],
+        out["education_isced"],
+        education_mapping,
+    )
+    return out

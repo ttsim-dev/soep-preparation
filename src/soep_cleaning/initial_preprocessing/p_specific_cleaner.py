@@ -6,7 +6,9 @@ from soep_cleaning.initial_preprocessing.helper import (
     float_categorical_to_int,
     int_categorical_to_int,
     int_to_int_categorical,
+    replace_conditionally,
     str_categorical,
+    str_categorical_to_int_categorical,
 )
 from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
 
@@ -266,37 +268,41 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["nationality_first"] = str_categorical(raw_data["pgnation"], ordered=False)
+    out["german"] = out["nationality_first"].dropna() == "Deutschland"
     out["status_refugee"] = str_categorical(raw_data["pgstatus_refu"], ordered=False)
     out["marital_status"] = str_categorical(raw_data["pgfamstd"], ordered=False)
-    out["curr_earnings_m"] = float_categorical_to_float(raw_data["pglabgro"])
-    out["net_wage_m"] = float_categorical_to_float(raw_data["pglabnet"])
+    out["curr_earnings_m"] = float_categorical_to_float(raw_data["pglabgro"]).fillna(0)
+    out["net_wage_m"] = float_categorical_to_float(raw_data["pglabnet"]).fillna(0)
     out["occupation_status"] = str_categorical(raw_data["pgstib"], ordered=False)
     out["employment_status"] = str_categorical(
         raw_data["pgemplst"],
         ordered=False,
-        renaming={
-            "[1] Voll erwerbstätig": "[1] Voll erwerbstätig",
-            "[2] Teilzeitbeschäftigung": "[2] Teilzeitbeschäftigung",
-            "[3] Ausbildung, Lehre": "[3] Ausbildung, Lehre",
-            "[4] Unregelmässig, geringfügig erwerbstät.": "[4] Unregelmässig, geringfügig erwerbstät.",
-            "[5] Nicht erwerbstätig": "[5] Nicht erwerbstätig",
-            "[6] Werkstatt für behinderte Menschen": "[6] Werkstatt für behinderte Menschen",
-        },
     )
     out["laborf_status"] = str_categorical(raw_data["pglfs"], ordered=False)
     out["dauer_im_betrieb"] = float_categorical_to_float(raw_data["pgerwzeit"])
-    out["weekly_working_hours_actual"] = float_categorical_to_float(
-        raw_data["pgtatzeit"],
+    out["weekly_working_hours_actual"] = replace_conditionally(
+        float_categorical_to_float(
+            raw_data["pgtatzeit"],
+        ),
+        out["employment_status"],
+        "Nicht erwerbstätig",
+        0,
     )
-    out["weekly_working_hours_contract"] = float_categorical_to_float(
-        raw_data["pgvebzeit"],
+    out["weekly_working_hours_contract"] = replace_conditionally(
+        float_categorical_to_float(
+            raw_data["pgvebzeit"],
+        ),
+        out["employment_status"],
+        "Nicht erwerbstätig",
+        0,
     )
-    out["public_service"] = str_categorical(
+    out["public_service"] = bool_categorical(
         raw_data["pgoeffd"],
-        renaming={"[2] nein": "Nein", "[1] ja": "Ja"},
+        renaming={"[2] nein": False, "[1] ja": True},
+        ordered=True,
     )
-    out["size_company_raw"] = str_categorical(raw_data["pgbetr"])
-    out["size_company"] = str_categorical(raw_data["pgallbet"])
+    out["size_company_raw"] = str_categorical(raw_data["pgbetr"], ordered=False)
+    out["size_company"] = str_categorical(raw_data["pgallbet"], ordered=False)
     out["pgen_grund_beschäftigungsende"] = str_categorical(
         raw_data["pgjobend"],
         ordered=False,
@@ -307,36 +313,22 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["education_isced_alt"] = str_categorical(raw_data["pgisced97"])
     out["education_isced"] = str_categorical(
         raw_data["pgisced11"],
-        renaming={
-            "[0] in school": "primary_and_lower_secondary",
-            "[1] Primary education": "primary_and_lower_secondary",
-            "[2] Lower secondary education": "primary_and_lower_secondary",
-            "[3] Upper secondary education": "upper_secondary",
-            "[4] Post-secondary non-tertiary education": "upper_secondary",
-            "[5] Short-cycle tertiary education": "upper_secondary",
-            "[6] Bachelor s or equivalent level": "tertiary",
-            "[7] Master s or equivalent level": "tertiary",
-            "[8] Doctoral or equivalent level": "tertiary",
-        },
-        reduce=True,
+        ordered=True,
+    )
+    out["education_isced_cat"] = str_categorical_to_int_categorical(
+        out["education_isced"],
+        ordered=True,
     )
     out["education_casmin"] = str_categorical(
         raw_data["pgcasmin"],
-        renaming={
-            "[0] (0) in school": "primary_and_lower_secondary",
-            "[1] (1a) inadequately completed": "primary_and_lower_secondary",
-            "[2] (1b) general elementary school": "primary_and_lower_secondary",
-            "[3] (1c) basic vocational qualification": "primary_and_lower_secondary",
-            "[4] (2b) intermediate general qualification": "upper_secondary",
-            "[5] (2a) intermediate vocational": "upper_secondary",
-            "[6] (2c_gen) general maturity certificate": "upper_secondary",
-            "[7] (2c_voc) vocational maturity certificate": "upper_secondary",
-            "[8] (3a) lower tertiary education": "tertiary",
-            "[9] (3b) higher tertiary education": "tertiary",
-        },
-        reduce=True,
+        nr_identifiers=2,
+        ordered=True,
     )
-    out["month_interview"] = str_categorical(
+    out["education_casmin_cat"] = str_categorical_to_int_categorical(
+        out["education_casmin"],
+        ordered=True,
+    )
+    out["month_interview"] = categorical_to_int_categorical(
         raw_data["pgmonth"],
         renaming={
             "[1] Januar": 1,

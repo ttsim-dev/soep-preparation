@@ -204,6 +204,7 @@ def bool_categorical(
         pd.Series: The series with cleaned categories.
 
     """
+    # TODO: discuss if this manipulation on the dataset is acceptable
     _error_handling_categorical(
         sr,
         "category",
@@ -308,7 +309,37 @@ def str_categorical(
         )
 
 
-def int_categorical(sr: "pd.Series[int]", ordered: bool = False) -> "pd.Series[int]":
+def str_categorical_to_int_categorical(
+    sr: "pd.Series[category]",
+    ordered: bool = False,
+) -> "pd.Series[category]":
+    """Transform a pd.Series of dtype category with str entries to dtype int entries.
+
+    Parameters:
+        sr (pd.Series[category]): The input series to be cleaned.
+        ordered (bool, optional): Whether the series should be returned as ordered. Defaults to False.
+
+    Returns:
+        pd.Series[category]: The series with cleaned categories.
+
+    """
+    _error_handling_categorical(
+        sr,
+        "category",
+        [[sr, "pandas.core.series.Series"], [ordered, "bool"]],
+        [sr.cat.categories.to_list(), "str"],
+    )
+    sr = _remove_missing_data_categories(sr)
+    return int_to_int_categorical(
+        apply_lowest_int_dtype(sr.cat.codes.replace({-1: pd.NA})),
+        ordered,
+    )
+
+
+def int_categorical(
+    sr: "pd.Series[int]",
+    ordered: bool = False,
+) -> "pd.Series[category]":
     """Clean the categories of a pd.Series of dtype category with int entries.
 
     Parameters:
