@@ -846,16 +846,26 @@ def ppathl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["soep_hh_id"] = apply_lowest_int_dtype(raw_data["hid"], remove_negatives=True)
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
-    out["current_east_west"] = str_categorical(raw_data["sampreg"], ordered=False)
+    out["current_east_west"] = str_categorical(
+        raw_data["sampreg"],
+        renaming={
+            "[1] Westdeutschland, alte Bundeslaender": "Westdeutschland (alte Bundeslaender)",
+            "[2] Ostdeutschland, neue Bundeslaender": "Ostdeutschland (neue Bundeslaender)",
+        },
+        ordered=False,
+    )
     out["befragungsstatus"] = str_categorical(raw_data["netto"], ordered=False)
-    out["year_immigration"] = apply_lowest_int_dtype(raw_data["immiyear"])
+    out["year_immigration"] = apply_lowest_int_dtype(
+        raw_data["immiyear"],
+        remove_negatives=True,
+    )
     out["born_in_germany"] = str_categorical(raw_data["germborn"], ordered=False)
     out["country_of_birth"] = str_categorical(raw_data["corigin"], ordered=False)
-    out["birth_month_ppathl"] = str_categorical(
+    out["birth_month_ppathl"] = categorical_to_int_categorical(
         raw_data["gebmonat"],
         ordered=False,
         renaming=month_mapping.de,
-    )  # TODO: categorical_to_int_categorical()?
+    )
     out["east_west_1989"] = str_categorical(raw_data["loc1989"], ordered=False)
     out["migrationshintergrund"] = str_categorical(raw_data["migback"], ordered=False)
     out["sexual_orientation"] = str_categorical(raw_data["sexor"], ordered=False)

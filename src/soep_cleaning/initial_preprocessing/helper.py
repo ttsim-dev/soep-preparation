@@ -277,6 +277,8 @@ def str_categorical(
             [sr, "pandas.core.series.Series"],
             [nr_identifiers, "int"],
             [ordered, "bool"],
+            [renaming, "dict" if renaming is not None else "None"],
+            [reduce, "bool"],
         ],
         [sr.cat.categories.to_list(), "str | float"],
     )
@@ -326,12 +328,15 @@ def str_categorical_to_int_categorical(
     _error_handling_categorical(
         sr,
         "category",
-        [[sr, "pandas.core.series.Series"], [ordered, "bool"]],
+        [
+            [sr, "pandas.core.series.Series"],
+            [ordered, "bool"],
+        ],
         [sr.cat.categories.to_list(), "str"],
     )
-    sr = _remove_missing_data_categories(sr)
+    sr_no_missing = _remove_missing_data_categories(sr)
     return int_to_int_categorical(
-        apply_lowest_int_dtype(sr.cat.codes.replace({-1: pd.NA})),
+        apply_lowest_int_dtype(sr_no_missing.cat.codes.replace({-1: pd.NA})),
         ordered,
     )
 
