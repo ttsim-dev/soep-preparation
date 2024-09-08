@@ -1,5 +1,6 @@
 from soep_cleaning.config import pd
 from soep_cleaning.initial_preprocessing.helper import (
+    float_categorical_to_float,
     int_categorical_to_int,
     str_categorical,
 )
@@ -29,9 +30,9 @@ def kidlong(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = int_categorical_to_int(raw_data["pid"])
     out["year"] = int_categorical_to_int(raw_data["syear"])
     out["pointer_mother"] = int_categorical_to_int(raw_data["k_pmum"])
-    out["betreuungskost_einrichtung"] = int_categorical_to_int(
+    out["betreuungskost_einrichtung"] = float_categorical_to_float(
         raw_data["kk_amtp_h"],
     )
-    out["school_costs"] = int_categorical_to_int(raw_data["ks_amtp_h"])
+    out["school_costs"] = float_categorical_to_float(raw_data["ks_amtp_h"])
 
     return out

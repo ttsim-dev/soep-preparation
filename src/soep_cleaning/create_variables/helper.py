@@ -1,7 +1,9 @@
 import re
 
 import numpy as np
+from pandas.api.types import union_categoricals
 from soep_cleaning.config import pd
+from soep_cleaning.utilities import apply_lowest_int_dtype
 
 
 def _fail_if_series_wrong_dtype(sr: pd.Series, expected_dtype: str):
@@ -133,32 +135,29 @@ def manipulate_mschaftsgeld_monate(
     return mschaftsgeld_monate_less_four
 
 
-def generate_employment_status(
-    data: pd.DataFrame,
-    m: int,
-) -> tuple[pd.Series, pd.Series, pd.Series]:
-    # full_empl_prev_ manipulation
-    data.loc[(data["year"] < 1997), f"full_empl_prev_{m}"] = data[
-        f"full_empl_v1_prev_{m}"
-    ]
-    data.loc[(data["year"] >= 1997), f"full_empl_prev_{m}"] = data[
-        f"full_empl_v2_prev_{m}"
-    ]
+def generate_full_empl_prev(data: pd.DataFrame, m: int) -> pd.Series:
+    mask = data["year"] < 1997
+    return pd.Series(
+        union_categoricals(
+            [
+                data.loc[mask, f"full_empl_v1_prev_{m}"],
+                data.loc[~mask, f"full_empl_v2_prev_{m}"],
+            ],
+        ),
+    )
 
-    # half_empl_prev_ manipulation
-    data[f"half_empl_b_prev_{m}"] = data[f"half_empl_prev_{m}"].cat.codes.between(0, 1)
 
-    # employed_m_prev_ manipulation
+def generate_half_empl_prev(data: pd.Series) -> pd.Series:
+    return data.cat.codes.between(0, 1)
+
+
+def generate_empl_m_prev(data: pd.DataFrame, m: int) -> pd.Series:
     data.loc[
         (
             (data[f"full_empl_prev_{m}"] == 1)
-            | (data[f"half_empl_b_prev_{m}"])
+            | (data[f"half_empl_prev_{m}"])
             | (data[f"mini_job_prev_{m}"] == 1)
         ),
         f"employed_m_prev_{m}",
     ] = 1
-    return (
-        data[f"full_empl_prev_{m}"],
-        data[f"half_empl_prev_{m}"],
-        data[f"employed_m_prev_{m}"],
-    )
+    return apply_lowest_int_dtype(data[f"employed_m_prev_{m}"])

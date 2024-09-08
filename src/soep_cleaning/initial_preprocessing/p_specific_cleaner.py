@@ -302,7 +302,10 @@ def pgen(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] nein": False, "[1] ja": True},
         ordered=True,
     )
-    out["size_company_raw"] = str_categorical(raw_data["pgbetr"], ordered=False)
+    out["size_company_raw"] = str_categorical(
+        raw_data["pgbetr"].replace({-5: "[-5] in Fragebogenversion nicht enthalten"}),
+        ordered=False,
+    )  # TODO: report missing encoding here
     out["size_company"] = str_categorical(raw_data["pgallbet"], ordered=False)
     out["pgen_grund_beschäftigungsende"] = str_categorical(
         raw_data["pgjobend"],
@@ -344,16 +347,22 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
     out["year"] = apply_lowest_int_dtype(float_categorical_to_int(raw_data["syear"]))
 
+    three_letter_m = [i.split(" ", 1)[1][:3] for i in month_mapping.de]
     for m in range(1, 13):
         two_digit = f"{m:02d}"
-        out[f"full_empl_v1_prev_{m}"] = bool_categorical(
+        out[f"full_empl_v1_prev_{m}"] = str_categorical(
             raw_data[f"kal1a0{two_digit}_v1"],
-            renaming={"[1] Ja": True},
+            renaming={"[1] Ja": f"{three_letter_m[m-1]} Vollzeit erwerbst."},
+            ordered=False,
         )
         out[f"full_empl_v2_prev_{m}"] = str_categorical(
             raw_data[f"kal1a0{two_digit}_v2"],
+            ordered=False,
         )
-        out[f"half_empl_prev_{m}"] = str_categorical(raw_data[f"kal1b0{two_digit}"])
+        out[f"half_empl_prev_{m}"] = str_categorical(
+            raw_data[f"kal1b0{two_digit}"],
+            ordered=False,
+        )
         out[f"mini_job_prev_{m}"] = int_categorical_to_int(
             raw_data[f"kal1n0{two_digit}"],
         )
@@ -364,8 +373,10 @@ def pkal(raw_data: pd.DataFrame) -> pd.DataFrame:
         float_categorical_to_int(raw_data["kal2f02"]),
     )
     out["mschaftsgeld_bezogen_prev"] = str_categorical(
-        raw_data["kal2j01"],
-    )
+        raw_data["kal2j01_h"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )  # TODO: replaced var kal2j01 by kal2j01_h
     out["mschaftsgeld_monate_prev"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["kal2j02"]),
     )

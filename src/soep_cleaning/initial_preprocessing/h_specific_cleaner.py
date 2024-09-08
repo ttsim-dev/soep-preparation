@@ -1,6 +1,7 @@
 from soep_cleaning.config import pd
 from soep_cleaning.initial_preprocessing.helper import (
     bool_categorical,
+    float_categorical_to_float,
     float_categorical_to_int,
     hwealth_wide_to_long,
     int_categorical_to_int,
@@ -19,22 +20,18 @@ def hgen(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["building_year_hh_max"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgcnstyrmax"]),
-    )  # TODO: keep as categorical?
+    )
     out["building_year_hh_min"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgcnstyrmin"]),
-    )  # TODO: keep as categorical?
-    out["heating_costs_m_hh"] = int_to_int_categorical(
-        float_categorical_to_int(raw_data["hgheat"]),
-    )  # TODO: keep as categorical?
+    )
+    out["heating_costs_m_hh"] = (float_categorical_to_float(raw_data["hgheat"]),)
     out["einzugsjahr"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgmoveyr"]),
-    )  # TODO: keep as categorical?
-    out["bruttokaltmiete_m_hh"] = int_to_int_categorical(
-        float_categorical_to_int(raw_data["hgrent"]),
-    )  # TODO: keep as categorical?
+    )
+    out["bruttokaltmiete_m_hh"] = float_categorical_to_float(raw_data["hgrent"])
     out["living_space_hh"] = int_to_int_categorical(
         float_categorical_to_int(raw_data["hgsize"]),
-    )  # TODO: keep as categorical?
+    )
     out["heizkosten_mi_reason"] = str_categorical(
         raw_data["hgheatinfo"],
         ordered=False,
@@ -66,7 +63,9 @@ def hl(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["kinderzuschlag_hl_m_hh"] = int_categorical_to_int(raw_data["hlc0047_h"])
     out["kinderzuschlag_hl_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0051_h"])
     out["alg2_months_soep_hh_prev"] = int_categorical_to_int(raw_data["hlc0053"])
-    out["arbeitsl_geld_2_soep_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0054"])
+    out["arbeitsl_geld_2_soep_m_hh_prev"] = float_categorical_to_float(
+        raw_data["hlc0054"],
+    )
 
     out["betreu_kosten_pro_kind"] = bool_categorical(
         raw_data["hlc0009"],

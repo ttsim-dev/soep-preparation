@@ -5,7 +5,9 @@ from soep_cleaning.create_variables.helper import (
     create_in_education_dummy_categorical,
     create_selfemployed_occupations,
     generate_education_variable,
-    generate_employment_status,
+    generate_empl_m_prev,
+    generate_full_empl_prev,
+    generate_half_empl_prev,
     manipulate_mschaftsgeld_monate,
 )
 from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
@@ -49,13 +51,12 @@ def pequiv(data: pd.DataFrame) -> pd.DataFrame:
 
 def pgen(data: pd.DataFrame) -> pd.DataFrame:
     out = data.copy()
-
     out.loc[
         out["employment_status"] == "Nicht erwerbstätig",
         ["weekly_working_hours_actual", "weekly_working_hours_contract"],
     ] = 0
     out["curr_earnings_m"] = out["curr_earnings_m"].fillna(0)
-    out["net_wage_m"] = out["curr_earnnet_wage_mngs_m"].fillna(0)
+    out["net_wage_m"] = out["net_wage_m"].fillna(0)
 
     out["german"] = create_dummy(out["nationality_first"], "Deutschland")
     out["retired"] = create_dummy(out["occupation_status"], "NE: Rentner/Rentnerin")
@@ -110,7 +111,6 @@ def pgen(data: pd.DataFrame) -> pd.DataFrame:
 
 def pkal(data: pd.DataFrame) -> pd.DataFrame:
     out = data.copy()
-
     out["unempl_months_prev"] = out["unempl_months_prev"].fillna(0)
 
     # mschaftsgeld
@@ -122,13 +122,19 @@ def pkal(data: pd.DataFrame) -> pd.DataFrame:
 
     # months_empl_prev
     for m in range(1, 13):
-        out[
-            [
-                f"full_empl_prev{m}",
-                f"half_empl_b_prev_{m}",
-                f"employed_m_prev_{m}",
-            ]
-        ] = generate_employment_status(out, m)
+        out[f"full_empl_prev_{m}"] = generate_full_empl_prev(
+            data[["year", f"full_empl_v1_prev_{m}", f"full_empl_v2_prev_{m}"]],
+            m,
+        )
+
+        out[f"half_empl_prev_{m}"] = generate_half_empl_prev(
+            out[f"half_empl_prev_{m}"],
+        )
+
+        out[f"employed_m_prev_{m}"] = generate_empl_m_prev(
+            out[[f"full_empl_prev_{m}", f"half_empl_prev_{m}", f"mini_job_prev_{m}"]],
+            m,
+        )
 
     out["months_empl_prev"] = out[list(out.filter(regex="employed_m_prev_"))].sum(
         axis=1,
