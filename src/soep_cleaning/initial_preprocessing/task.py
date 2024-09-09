@@ -48,6 +48,10 @@ for dataset in data_catalog["orig"].entries:
                 ).resolve(),
             ),
         ],
+        relevant_soep_columns: Annotated[
+            Path,
+            data_catalog["infos"]["relevant_soep_columns"],
+        ],
         dataset: str = dataset,
     ) -> Annotated[pd.DataFrame, data_catalog["cleaned"][dataset]]:
         """Cleans a dataset using a specified cleaning script.
@@ -71,13 +75,25 @@ for dataset in data_catalog["orig"].entries:
             script_path.stem,
             str(script_path),
         ).load_module()
-        """With pd.read_stata(orig_data, chunksize=100_000) as itr:
+        """Different approach iteratively loading the raw dataset.
 
-        for chunk in itr:
-            getattr(module, f"{dataset}")(chunk)
+        with pd.read_stata(orig_data, chunksize=100_000) as itr:
+
+            for chunk in itr:
+                getattr(module, f"{dataset}")(chunk)
 
         """
-        return getattr(module, f"{dataset}")(pd.read_stata(orig_data))
+        """Different approach blindly loading the raw dataset.
+
+        return getattr(module,f"{dataset}")(pd.read_stata(orig_data))
+
+        """
+
+        columns = pd.read_csv(relevant_soep_columns)[dataset]
+        list_of_columns = columns[columns.notna()].to_list()
+        return getattr(module, f"{dataset}")(
+            pd.read_stata(orig_data, columns=list_of_columns),
+        )
 
 
 def _error_handling_task(data, script_path):
