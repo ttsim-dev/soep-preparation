@@ -1,11 +1,13 @@
 from pathlib import Path
 from typing import Annotated
 
-from pytask import task
+from pytask import mark, task
 from soep_cleaning.config import DATASETS, SRC, data_catalog, pd
+from soep_cleaning.dataset_pickling.helper import iteratively_read_one_dataset
 
 for dataset in DATASETS:
 
+    @mark.filterwarnings("ignore:.*:pandas.errors.CategoricalConversionWarning")
     @task(id=dataset)
     def task_pickle_one_dataset(
         orig_data: Annotated[Path, SRC.joinpath(f"data/V38/{dataset}.dta")],
@@ -27,15 +29,9 @@ for dataset in DATASETS:
         """
         columns = pd.read_csv(relevant_soep_columns)[dataset]
         list_of_columns = columns[columns.notna()].to_list()
-
         with pd.read_stata(
             orig_data,
             chunksize=100_000,
             columns=list_of_columns,
         ) as itr:
-            out = pd.DataFrame()
-
-            for chunk in itr:
-                out = pd.concat([out, chunk], ignore_index=True)
-
-        return out
+            return iteratively_read_one_dataset(itr, list_of_columns)
