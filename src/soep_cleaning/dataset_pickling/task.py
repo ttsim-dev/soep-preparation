@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Annotated
 
-from pytask import mark, task
+from pytask import task
 from soep_cleaning.config import DATASETS, SOEP_VERSION, SRC, data_catalog, pd
 
 
@@ -39,7 +39,6 @@ def _iteratively_read_one_dataset(
 
 for dataset in DATASETS:
 
-    @mark.filterwarnings("ignore:.*:pandas.errors.CategoricalConversionWarning")
     @task(id=dataset)
     def task_pickle_one_dataset(
         orig_data: Annotated[Path, SRC.joinpath(f"data/{SOEP_VERSION}/{dataset}.dta")],
@@ -65,13 +64,6 @@ for dataset in DATASETS:
             orig_data,
             chunksize=100_000,
             columns=list_of_columns,
+            convert_categoricals=False,
         ) as itr:
             return _iteratively_read_one_dataset(itr, list_of_columns)
-
-
-if __name__ == "__main__":
-    dataset = "pl"
-    task_pickle_one_dataset(
-        Path(SRC.joinpath(f"data/{SOEP_VERSION}/{dataset}.dta")),
-        Path(data_catalog["infos"]["relevant_soep_columns"]),
-    )
