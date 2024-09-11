@@ -55,27 +55,26 @@ $ pytask -k "dataset_name"
 ## Further Structure Description
 
 The `src/soep_cleaning` directory contains the subdirectories `data`, `dataset_merging`
-and `initial_preprocessing` and the python-scripts `config.py` and `utilities.py`.
-**_Inside `data` place the folder `V37` containing all `.dta` files to be cleaned and
+and `initial_cleaning` and the python-scripts `config.py` and `utilities.py`. **_Inside
+`data` place the folder `V37` containing all `.dta` files to be cleaned and
 processed._**
 
-The `initial_preprocessing` directory contains the scripts for the initial cleaning of
-the datasets. Data cleaning follows the functional form introduced during the lecture
-and creates a task for cleaning and transforming depending on each specified raw
-dataset. For each group of datasets (bio, h, p and other), there is a
-`_specific_cleaner.py` script with the actual implementation of the respective dataset.
-Further the `helper.py` script contains functions to clean the different kinds of
-columns to be found inside the raw data. The usual implementation of cleaning a column
-is:
+The `initial_cleaning` directory contains the scripts for the initial cleaning of the
+datasets. Data cleaning follows the functional form introduced during the lecture and
+creates a task for cleaning and transforming depending on each specified raw dataset.
+For each group of datasets (bio, h, p and other), there is a `_specific_cleaner.py`
+script with the actual implementation of the respective dataset. Further the `helper.py`
+script contains functions to clean the different kinds of columns to be found inside the
+raw data. The usual implementation of cleaning a column is:
 
 ```python
-out["new_name"] = cleaning_function(raw_data["old_name"])
+out["new_name"] = cleaning_function(raw["old_name"])
 ```
 
 where `out` is the dataset created from the bottom up with the results from
 `cleaning_function()`. The latter takes a `pd.Series` as argument (sometimes additional,
-but optional inputs) and return the cleaned series as `pd.Series`. `raw_data` is the
-original and uncleaned dataset currently being cleaned.
+but optional inputs) and return the cleaned series as `pd.Series`. `raw` is the original
+and uncleaned dataset currently being cleaned.
 
 The `dataset_merging` directory contains the scripts for merging the datasets (to be
 implemented).

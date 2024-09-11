@@ -1,6 +1,6 @@
 import numpy as np
 from soep_cleaning.config import pd
-from soep_cleaning.initial_preprocessing.helper import (
+from soep_cleaning.initial_cleaning.helper import (
     _remove_missing_data_categories,
     bool_categorical,
     int_to_int_categorical,

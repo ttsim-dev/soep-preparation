@@ -43,7 +43,7 @@ for dataset in data_catalog["orig"].entries:
             Path,
             Path(
                 SRC.joinpath(
-                    "initial_preprocessing",
+                    "initial_cleaning",
                     f"{dataset_script_name(dataset)}_cleaner.py",
                 ).resolve(),
             ),
