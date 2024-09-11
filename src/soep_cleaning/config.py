@@ -15,6 +15,8 @@ BLD = SRC.joinpath("..", "..", "bld").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 
+SOEP_VERSION = "V38"
+
 DATASETS = [
     "biobirth",
     "bioedu",
@@ -44,4 +46,4 @@ data_catalog["infos"].add(
     node=Path("data/relevant_soep_columns.csv"),
 )
 
-__all__ = ["BLD", "SRC", "TEST_DIR", "DATASETS", "data_catalog"]
+__all__ = ["BLD", "SRC", "TEST_DIR", "SOEP_VERSION", "DATASETS", "data_catalog"]
