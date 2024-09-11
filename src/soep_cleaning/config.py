@@ -31,7 +31,7 @@ DATASETS = [
     "pequiv",
     "pgen",
     "pkal",
-    "pl",  # TODO: finalize cleaning task (extra large)
+    "pl",
     "ppathl",
 ]
 
