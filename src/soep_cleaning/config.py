@@ -15,17 +15,9 @@ BLD = SRC.joinpath("..", "..", "bld").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 
-data_catalog = {
-    name: DataCatalog(name=name)
-    for name in ["orig", "cleaned", "manipulated", "final", "infos"]
-}
+SOEP_VERSION = "V38"
 
-data_catalog["infos"].add(
-    "relevant_soep_columns",
-    node=Path("data/relevant_soep_columns.csv"),
-)
-
-for dataset in [
+DATASETS = [
     "biobirth",
     "bioedu",
     "biol",
@@ -41,7 +33,17 @@ for dataset in [
     "pkal",
     "pl",  # TODO: finalize cleaning task (extra large)
     "ppathl",
-]:
-    data_catalog["orig"].add(name=dataset, node=Path(f"data/V38/{dataset}.dta"))
+]
 
-__all__ = ["BLD", "SRC", "TEST_DIR", "data_catalog"]
+
+data_catalog = {
+    name: DataCatalog(name=name)
+    for name in ["raw", "cleaned", "manipulated", "final", "infos"]
+}
+
+data_catalog["infos"].add(
+    "relevant_soep_columns",
+    node=Path("data/relevant_soep_columns.csv"),
+)
+
+__all__ = ["BLD", "SRC", "TEST_DIR", "SOEP_VERSION", "DATASETS", "data_catalog"]

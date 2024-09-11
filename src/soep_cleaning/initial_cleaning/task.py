@@ -34,11 +34,11 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-for dataset in data_catalog["orig"].entries:
+for dataset in data_catalog["raw"].entries:
 
     @task(id=dataset)
     def task_clean_one_dataset(
-        orig_data: Annotated[Path, data_catalog["orig"][dataset]],
+        raw_data: Annotated[Path, data_catalog["raw"][dataset]],
         script_path: Annotated[
             Path,
             Path(
@@ -48,16 +48,12 @@ for dataset in data_catalog["orig"].entries:
                 ).resolve(),
             ),
         ],
-        relevant_soep_columns: Annotated[
-            Path,
-            data_catalog["infos"]["dataset_mapping"],
-        ],
         dataset: str = dataset,
     ) -> Annotated[pd.DataFrame, data_catalog["cleaned"][dataset]]:
         """Cleans a dataset using a specified cleaning script.
 
         Parameters:
-            orig_data (Path): The path to the dataset to be cleaned.
+            raw_data (Path): The path to the dataset to be cleaned.
             script_path (Path): The path to the cleaning script.
             dataset (str): The name of the dataset.
 
@@ -70,31 +66,16 @@ for dataset in data_catalog["orig"].entries:
             AttributeError: If the cleaning script module does not contain the expected function.
 
         """
-        _error_handling_task(orig_data, script_path)
+        _error_handling_task(raw_data, script_path)
         module = SourceFileLoader(
             script_path.stem,
             str(script_path),
         ).load_module()
-        """Different approach iteratively loading the raw dataset.
-
-        with pd.read_stata(orig_data, chunksize=100_000) as itr:
-
-            for chunk in itr:
-                getattr(module, f"{dataset}")(chunk)
-
-        """
-        """Different approach blindly loading the raw dataset.
-
-        return getattr(module,f"{dataset}")(pd.read_stata(orig_data))
-
-        """
-        columns = relevant_soep_columns.load()[dataset]
-        list_of_columns = columns[columns.notna()].to_list()
         return getattr(module, f"{dataset}")(
-            pd.read_stata(orig_data, columns=list_of_columns),
+            raw_data,
         )
 
 
 def _error_handling_task(data, script_path):
-    _fail_if_invalid_input(data, "pathlib.PosixPath")
+    _fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
     _fail_if_invalid_input(script_path, "pathlib.PosixPath")
