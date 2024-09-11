@@ -50,7 +50,7 @@ for dataset in data_catalog["orig"].entries:
         ],
         relevant_soep_columns: Annotated[
             Path,
-            data_catalog["infos"]["relevant_soep_columns"],
+            data_catalog["infos"]["dataset_mapping"],
         ],
         dataset: str = dataset,
     ) -> Annotated[pd.DataFrame, data_catalog["cleaned"][dataset]]:
@@ -88,8 +88,7 @@ for dataset in data_catalog["orig"].entries:
         return getattr(module,f"{dataset}")(pd.read_stata(orig_data))
 
         """
-
-        columns = pd.read_csv(relevant_soep_columns)[dataset]
+        columns = relevant_soep_columns.load()[dataset]
         list_of_columns = columns[columns.notna()].to_list()
         return getattr(module, f"{dataset}")(
             pd.read_stata(orig_data, columns=list_of_columns),

@@ -6,8 +6,25 @@ from typing import Annotated
 from soep_cleaning.config import pd
 
 
-def list_functions_in_scripts(directory: Annotated[Path, Path]) -> list:
-    manipulator_scripts = list(directory.glob("*manipulator.py"))
+def list_scripts(directory: Annotated[Path, Path], scripts_kind: str) -> list:
+    """List the scripts in a directory.
+
+    Args:
+        directory (Path): The directory to search.
+        scripts_kind (str): The kind of scripts to search for.
+
+    Returns:
+        list: A list of the scripts.
+
+    """
+    return list(directory.glob(f"*{scripts_kind}.py"))
+
+
+def list_functions_in_scripts(
+    directory: Annotated[Path, Path],
+    scripts_kind: str,
+) -> list:
+    list_of_scripts = list_scripts(directory, scripts_kind)
     list_of_modules = [
         dir(
             SourceFileLoader(
@@ -15,7 +32,7 @@ def list_functions_in_scripts(directory: Annotated[Path, Path]) -> list:
                 str(script.resolve()),
             ).load_module(),
         )
-        for script in manipulator_scripts
+        for script in list_of_scripts
     ]
     return [
         module

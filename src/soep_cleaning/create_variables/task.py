@@ -12,6 +12,7 @@ MANIPULATION_SCRIPTS = list_functions_in_scripts(
             "create_variables",
         ),
     ),
+    scripts_kind="manipulator",
 )
 
 
