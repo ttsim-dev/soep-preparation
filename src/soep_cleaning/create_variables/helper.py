@@ -78,7 +78,7 @@ def create_dummy(
 def create_in_education_dummy_categorical(
     employment: pd.Series,
     occupation: pd.Series,
-) -> pd.Series:
+) -> pd.Series:  # TODO: take a dataframe instead of two series as input?
     in_education = [
         "in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
         "in Ausbildung,             inkl. Weiterbildung, Berufsausbildung, Lehre",
@@ -96,20 +96,29 @@ def create_in_education_dummy_categorical(
     return out.fillna(create_dummy(occupation, in_education, "isin"))
 
 
-def create_selfemployed_occupations(occupation: pd.Series) -> list:
+def create_selfemployed_occupations(
+    occupation: pd.Series,
+) -> list:  # TODO: take a dataframe instead of a series as input?
     list_of_occ_names = list(occupation.dropna().unique())
     occs_of_interest = re.compile("^.*Freiberufler.*$|^.*selbstä.*$")
     return list(filter(occs_of_interest.match, list_of_occ_names))
 
 
-def generate_education_variable(casmin: pd.Series, isced: pd.Series, mappings: dict):
+def generate_education_variable(
+    casmin: pd.Series,
+    isced: pd.Series,
+    mappings: dict,
+):  # TODO: take a dataframe instead of two series as input?
     # Generate qualification variables from casmin and isced education variables
     # use casmin in education_mapping to create education
     out = pd.DataFrame()
     out["education"] = casmin.dropna().map(mappings.casmin)
 
     # fill missing values from isced in education_mapping
-    out.loc[out["education"].isnull(), "education"] = isced.dropna().map(mappings.isced)
+    out["education"] = out["education"].where(
+        out["education"].notnull(),
+        isced.dropna().map(mappings.isced),
+    )
     val_quali = [
         "primary_and_lower_secondary",
         "upper_secondary",
@@ -119,24 +128,15 @@ def generate_education_variable(casmin: pd.Series, isced: pd.Series, mappings: d
     return out["education"].astype(cat_type)
 
 
-def manipulate_mschaftsgeld_monate(
-    mschaftsgeld_monate: pd.Series,
-    mschaftsgeld_bezogen: pd.Series,
-) -> pd.Series:
-    # TODO: discuss this logic of mschaftsgeld_monate
-    _error_handling_inputs(
-        [
-            [mschaftsgeld_monate, "pandas.core.series.Series"],
-            [mschaftsgeld_bezogen, "pandas.core.series.Series"],
-        ],
-    )
-    mschaftsgeld_monate_less_four = np.maximum((mschaftsgeld_monate.cat.codes - 3), 0)
-    mschaftsgeld_monate_less_four.loc[mschaftsgeld_bezogen == 0] = 0
-    return mschaftsgeld_monate_less_four
+def manipulate_mschaftsgeld_monate(data: pd.DataFrame) -> pd.Series:
+    # TODO: discuss if this logic is correct (it is not clear to me), just copy-pasted
+    data["mschaftsgeld_monate_prev"] = np.maximum((data.cat.codes - 3), 0)
+    return data["mschaftsgeld_monate_prev"].where(data["mschaftsgeld_bezogen"] != 0, 0)
 
 
 def generate_full_empl_prev(data: pd.DataFrame, m: int) -> pd.Series:
     mask = data["year"] < 1997
+    # TODO: Hans-Martin feedback required.
     return pd.Series(
         union_categoricals(
             [
@@ -147,17 +147,15 @@ def generate_full_empl_prev(data: pd.DataFrame, m: int) -> pd.Series:
     )
 
 
-def generate_half_empl_prev(data: pd.Series) -> pd.Series:
-    return data.cat.codes.between(0, 1)
+def generate_half_empl_prev(sr: pd.Series) -> pd.Series:
+    return sr.cat.codes.between(0, 1)
 
 
 def generate_empl_m_prev(data: pd.DataFrame, m: int) -> pd.Series:
-    data.loc[
-        (
-            (data[f"full_empl_prev_{m}"] == 1)
-            | (data[f"half_empl_prev_{m}"])
-            | (data[f"mini_job_prev_{m}"] == 1)
-        ),
-        f"employed_m_prev_{m}",
-    ] = 1
+    data[f"employed_m_prev_{m}"] = data[f"employed_m_prev_{m}"].where(
+        (data[f"full_empl_prev_{m}"] != 1)
+        | ~(data[f"half_empl_prev_{m}"])
+        | (data[f"mini_job_prev_{m}"] != 1),
+        1,
+    )
     return apply_lowest_int_dtype(data[f"employed_m_prev_{m}"])
