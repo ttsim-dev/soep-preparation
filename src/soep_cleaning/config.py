@@ -11,7 +11,7 @@ pd.set_option("future.no_silent_downcasting", True)
 pd.set_option("plotting.backend", "plotly")
 
 SRC = Path(__file__).parent.resolve()
-BLD = SRC.joinpath("..", "..", "bld").resolve()
+DATA = SRC.joinpath("..", "..", "data").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 
@@ -22,4 +22,4 @@ DATA_CATALOG = {
     name: DataCatalog(name=name) for name in ["raw", "cleaned", "manipulated", "final"]
 }
 
-__all__ = ["BLD", "SRC", "TEST_DIR", "SOEP_VERSION", "DATA_CATALOG"]
+__all__ = ["DATA", "SRC", "TEST_DIR", "SOEP_VERSION", "DATA_CATALOG"]

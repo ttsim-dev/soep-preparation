@@ -60,18 +60,19 @@ module, follow these steps:
 1. Add the Dataset to the Data Directory
 
 Each dataset should be placed in the appropriate data directory (e.g., inside
-soep_cleaning/src/soep_cleaning/data).
+`soep_cleaning/data/V38`).
 
 2. Create a Corresponding Python Script
 
-For each new dataset, create a corresponding Python module (i.e., dataset.py) inside the
-initial_cleaning directory. Each module must include a clean function that takes a
+For each new dataset, create a corresponding Python module (here: `pequiv.py`) inside
+the initial_cleaning directory. Each module must include a clean function that takes a
 pd.DataFrame as input and returns the cleaned dataset.
 
 Example template for the clean function:
 
 ```python
-import pandas as pd
+# to guarantee the correct pandas settings
+from soep_cleaning.config import pd
 
 
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
@@ -84,23 +85,33 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     return out
 ```
 
-- Module Location: Place the new dataset.py script inside the initial_cleaning directory
-- Function Naming: The cleaning function must be named clean, take a pd.DataFrame called
-  raw, and return a pd.DataFrame containing the cleaned data.
+3. Adding more variables from a dataset that is already included
 
-3. Integrate Additional Functions
+If you want to include an additional variable from a dataset that is already being
+cleaned, follow this approach:
 
-When adding new functions to an existing module, follow the same approach. Ensure that
-each cleaning function processes a column or set of columns and that the result is
-assigned to the out DataFrame.
+Each new variable should be created by processing a column (or several columns) from the
+raw data. The results of this processing will then be added to the final dataset that
+the system builds.
 
-Example of additional cleaning:
+Here’s how you can do that:
+
+```
+1.	Identify the raw variable you want to transform or clean from your input data.
+2.	Use or create a function that transforms this raw variable into the final form you need.
+3.	Assign the result of that transformation to the out DataFrame, which represents your cleaned dataset.
+```
+
+Suppose you want to add a new variable, `age`, to your final dataset based on the `raw`
+data. Here’s how the process would look:
 
 ```python
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = cleaning_function(raw["cid"])
-    out["age"] = another_cleaning_function(raw["age_column"])
+
+    # Example: Adding a variable 'age' after processing the 'birth_year' column
+    out["age"] = calculate_age_from_birth_year(raw["birth_year"])
+
     return out
 ```
 
