@@ -11,7 +11,7 @@ from soep_cleaning.config import DATA_CATALOG, SOEP_VERSION, SRC, pd
 from soep_cleaning.utilities import dataset_scripts
 
 
-def _extract_num_from_string(s):
+def _extract_num_from_string(s: str):
     match = re.search(r"\[(-?\d+)\]", s)
     return int(match.group(1)) if match else float("inf")
 
@@ -81,8 +81,26 @@ def _columns_for_dataset(dataset: Path) -> list:
         str(dataset.resolve()),
     ).load_module()
     function_content = inspect.getsource(module.clean)
-    pattern = r'raw\["([^"]+)"\]'
-    return list(dict.fromkeys(re.findall(pattern, function_content)))
+    function_content = re.sub(
+        r'""".*?"""|\'\'\'.*?\'\'\'',
+        "",
+        function_content,
+        flags=re.DOTALL,
+    )
+
+    pattern = r'raw\[\s*(["\'])(.*?)\1\s*\]'
+
+    concatenated_matches = [
+        match[1]
+        .replace("\n", "")
+        .replace(" ", "")
+        .replace('\\"', '"')
+        .replace("\\'", "'")
+        .replace('""', "")
+        for match in re.findall(pattern, function_content, flags=re.DOTALL)
+    ]
+
+    return list(dict.fromkeys(concatenated_matches))
 
 
 for dataset in dataset_scripts(
