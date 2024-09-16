@@ -52,6 +52,58 @@ To clean a single dataset, specify the "dataset_name" by typing:
 $ pytask -k "dataset_name"
 ```
 
+## How to Add a New Dataset Module or Additional Functions
+
+To add a new SOEP dataset to the project or include additional functions in an existing
+module, follow these steps:
+
+1. Add the Dataset to the Data Directory
+
+Each dataset should be placed in the appropriate data directory (e.g., inside
+soep_cleaning/src/soep_cleaning/data).
+
+2. Create a Corresponding Python Script
+
+For each new dataset, create a corresponding Python module (i.e., dataset.py) inside the
+initial_cleaning directory. Each module must include a clean function that takes a
+pd.DataFrame as input and returns the cleaned dataset.
+
+Example template for the clean function:
+
+```python
+import pandas as pd
+
+
+def clean(raw: pd.DataFrame) -> pd.DataFrame:
+    """Clean the <dataset_name> dataset."""
+    out = pd.DataFrame()
+
+    # Apply cleaning steps to raw data
+    out["soep_initial_hh_id"] = cleaning_function(raw["cid"])
+
+    return out
+```
+
+- Module Location: Place the new dataset.py script inside the initial_cleaning directory
+- Function Naming: The cleaning function must be named clean, take a pd.DataFrame called
+  raw, and return a pd.DataFrame containing the cleaned data.
+
+3. Integrate Additional Functions
+
+When adding new functions to an existing module, follow the same approach. Ensure that
+each cleaning function processes a column or set of columns and that the result is
+assigned to the out DataFrame.
+
+Example of additional cleaning:
+
+```python
+def clean(raw: pd.DataFrame) -> pd.DataFrame:
+    out = pd.DataFrame()
+    out["soep_initial_hh_id"] = cleaning_function(raw["cid"])
+    out["age"] = another_cleaning_function(raw["age_column"])
+    return out
+```
+
 ## Further Structure Description
 
 The `src/soep_cleaning` directory contains the subdirectories `data`, `dataset_merging`
