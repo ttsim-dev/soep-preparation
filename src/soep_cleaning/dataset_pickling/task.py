@@ -4,83 +4,106 @@ from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import Annotated
 
+from pandas.api.types import union_categoricals
+from pandas.io.stata import StataReader
 from pytask import task
-from soep_cleaning.config import DATASETS, SOEP_VERSION, SRC, data_catalog, pd
-from soep_cleaning.utilities import dataset_script_name
+from soep_cleaning.config import DATA_CATALOG, SOEP_VERSION, SRC, pd
+from soep_cleaning.utilities import dataset_scripts
 
 
-def _iteratively_read_one_dataset(
-    itr: pd.io.stata.StataReader,
-    list_of_columns: list,
-) -> pd.DataFrame:
-    """Read a dataset in chunks."""
-    value_labels_dict = {col: {} for col in list_of_columns}
+def _extract_num_from_string(s):
+    match = re.search(r"\[(-?\d+)\]", s)
+    return int(match.group(1)) if match else float("inf")
+
+
+def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.DataFrame:
     out = pd.DataFrame()
+    value_labels = {k: v for k, v in itr.value_labels().items() if k in columns}
     for chunk in itr:
-        for col in list_of_columns:
-            value_labels = {}
-            if col in itr.value_labels():
-                value_labels = itr.value_labels()[col]
-            unique_values = {
-                value: value
-                for value in chunk[col].unique()
-                if value not in value_labels.values()
-            }
-            value_labels_dict[col] = (
-                value_labels_dict[col] | value_labels | unique_values
-            )
+        chunk = chunk.replace(value_labels)
+        chunk = chunk.astype("category")
+        if out.empty:
+            out = chunk
+        else:
+            col_dtypes = chunk.dtypes
+            for col in columns:
+                if col_dtypes[col].name == "category":
+                    if out[col].cat.categories.dtype != chunk[col].cat.categories.dtype:
+                        if out[col].cat.categories.dtype.name == "object":
+                            chunk[col] = chunk[col].cat.set_categories(
+                                chunk[col].cat.categories.astype("object"),
+                            )
+                        else:
+                            out[col] = out[col].cat.set_categories(
+                                out[col].cat.categories.astype(
+                                    chunk[col].cat.categories.dtype,
+                                ),
+                            )
+                    union_categorical = union_categoricals(
+                        [out[col], chunk[col]],
+                        ignore_order=True,
+                    )
+                    categories = union_categorical.categories
+                    numeric_categories = sorted(
+                        [x for x in categories if isinstance(x, int | float)],
+                    )
+                    string_categories = sorted(
+                        [x for x in categories if isinstance(x, str)],
+                        key=_extract_num_from_string,
+                    )
+                    sorted_categories = string_categories + numeric_categories
+                    union_categorical = pd.Categorical(
+                        categories.to_list(),
+                        categories=sorted_categories,
+                        ordered=True,
+                    )
+                    union_categories = union_categorical.set_categories(
+                        sorted_categories,
+                        ordered=True,
+                    )
+                    out[col] = out[col].cat.set_categories(
+                        union_categories.categories,
+                        ordered=True,
+                    )
+                    chunk[col] = chunk[col].cat.set_categories(
+                        union_categories.categories,
+                        ordered=True,
+                    )
+                else:
+                    out[col] = chunk[col]
+            out = pd.concat([out, chunk])
+    return out
 
-        out = pd.concat([out, chunk], ignore_index=True)
-    cat_dtypes = {
-        col: pd.CategoricalDtype(
-            categories=list(dict(sorted(value_dict.items())).values()),
-            ordered=True,
-        )
-        for col, value_dict in value_labels_dict.items()
-    }
-    return out.astype(cat_dtypes)
 
-
-def _list_functions_in_script(script_path: Path) -> list:
+def _columns_for_dataset(dataset: Path) -> list:
     module = SourceFileLoader(
-        script_path.resolve().stem,
-        str(script_path.resolve()),
+        dataset.resolve().stem,
+        str(dataset.resolve()),
     ).load_module()
-    return [
-        function
-        for function in dir(module)
-        if ("_" not in function) and ("pd" not in function)
-    ]
+    function_content = inspect.getsource(module.clean)
+    pattern = r'raw\["([^"]+)"\]'
+    return list(dict.fromkeys(re.findall(pattern, function_content)))
 
 
-def _list_columns_from_function(script_path: Path, function_name: str) -> list:
-    module = SourceFileLoader(
-        script_path.resolve().stem,
-        str(script_path.resolve()),
-    ).load_module()
-    function_content = inspect.getsource(getattr(module, f"{function_name}"))
-
-    pattern = r'raw\["([a-zA-Z0-9_]+)"\]'
-    return re.findall(pattern, function_content)
-
-
-def _list_of_columns_for_dataset(dataset_name: str) -> list:
-    script_name = f"{dataset_script_name(dataset_name)}_cleaner.py"
-    script_path = SRC.joinpath("initial_cleaning", script_name).resolve()
-    for function in _list_functions_in_script(script_path):
-        if function == dataset_name:
-            return _list_columns_from_function(script_path, function)
-    msg = f"No function found for dataset {dataset_name}."
-    raise ValueError(msg)
-
-
-for dataset in DATASETS:
+for dataset in dataset_scripts(
+    Path(
+        SRC.joinpath(
+            "initial_cleaning",
+        ).resolve(),
+    ),
+):
 
     @task(id=dataset)
     def task_pickle_one_dataset(
         orig_data: Annotated[Path, SRC.joinpath(f"data/{SOEP_VERSION}/{dataset}.dta")],
-        dataset: str = dataset,
-    ) -> Annotated[pd.DataFrame, data_catalog["raw"][dataset]]:
+        initial_cleaning: Annotated[
+            Path,
+            SRC.joinpath(
+                "initial_cleaning",
+                f"{dataset}.py",
+            ),
+        ],
+    ) -> Annotated[pd.DataFrame, DATA_CATALOG["raw"][dataset]]:
         """Saves the raw dataset to the data catalog in a more efficient procedure.
 
         Parameters:
@@ -91,11 +114,11 @@ for dataset in DATASETS:
             pd.DataFrame: A pandas DataFrame to be saved to the data catalog.
 
         """
-        list_of_columns = _list_of_columns_for_dataset(dataset)
-        with pd.read_stata(
+        columns = _columns_for_dataset(initial_cleaning.resolve())
+        with StataReader(
             orig_data,
             chunksize=100_000,
-            columns=list_of_columns,
+            columns=columns,
             convert_categoricals=False,
         ) as itr:
-            return _iteratively_read_one_dataset(itr, list_of_columns)
+            return _iteratively_read_one_dataset(itr, columns)
