@@ -4,8 +4,7 @@ from typing import Annotated
 
 from pytask import task
 
-from soep_cleaning.config import SRC, data_catalog, pd
-from soep_cleaning.utilities import dataset_script_name
+from soep_cleaning.config import DATA_CATALOG, SRC, pd
 
 
 def _fail_if_missing_dependency(depends_on: dict[str, Path]):
@@ -34,28 +33,26 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-for dataset in data_catalog["raw"].entries:
+for dataset in DATA_CATALOG["raw"].entries:
 
     @task(id=dataset)
     def task_clean_one_dataset(
-        raw_data: Annotated[Path, data_catalog["raw"][dataset]],
+        raw_data: Annotated[Path, DATA_CATALOG["raw"][dataset]],
         script_path: Annotated[
             Path,
             Path(
                 SRC.joinpath(
                     "initial_cleaning",
-                    f"{dataset_script_name(dataset)}_cleaner.py",
+                    f"{dataset}.py",
                 ).resolve(),
             ),
         ],
-        dataset: str = dataset,
-    ) -> Annotated[pd.DataFrame, data_catalog["cleaned"][dataset]]:
+    ) -> Annotated[pd.DataFrame, DATA_CATALOG["cleaned"][dataset]]:
         """Cleans a dataset using a specified cleaning script.
 
         Parameters:
             raw_data (Path): The path to the dataset to be cleaned.
             script_path (Path): The path to the cleaning script.
-            dataset (str): The name of the dataset.
 
         Returns:
             pd.DataFrame: A cleaned pandas DataFrame to be saved to the data catalog.
@@ -71,7 +68,7 @@ for dataset in data_catalog["raw"].entries:
             script_path.stem,
             str(script_path),
         ).load_module()
-        return getattr(module, f"{dataset}")(
+        return module.clean(
             raw_data,
         )
 
