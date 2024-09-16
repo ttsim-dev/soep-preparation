@@ -7,7 +7,7 @@ from typing import Annotated
 from pandas.api.types import union_categoricals
 from pandas.io.stata import StataReader
 from pytask import task
-from soep_cleaning.config import DATA_CATALOG, SOEP_VERSION, SRC, pd
+from soep_cleaning.config import DATA, DATA_CATALOG, SOEP_VERSION, SRC, pd
 from soep_cleaning.utilities import dataset_scripts
 
 
@@ -81,26 +81,10 @@ def _columns_for_dataset(dataset: Path) -> list:
         str(dataset.resolve()),
     ).load_module()
     function_content = inspect.getsource(module.clean)
-    function_content = re.sub(
-        r'""".*?"""|\'\'\'.*?\'\'\'',
-        "",
-        function_content,
-        flags=re.DOTALL,
-    )
-
-    pattern = r'raw\[\s*(["\'])(.*?)\1\s*\]'
-
-    concatenated_matches = [
-        match[1]
-        .replace("\n", "")
-        .replace(" ", "")
-        .replace('\\"', '"')
-        .replace("\\'", "'")
-        .replace('""', "")
-        for match in re.findall(pattern, function_content, flags=re.DOTALL)
-    ]
-
-    return list(dict.fromkeys(concatenated_matches))
+    pattern = r'raw\["([^"]+)"\]|\[\'([^\']+)\'\]'
+    matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
+    # Return unique matches in the order that they appear.
+    return list(dict.fromkeys(matches))
 
 
 for dataset in dataset_scripts(
@@ -113,7 +97,7 @@ for dataset in dataset_scripts(
 
     @task(id=dataset)
     def task_pickle_one_dataset(
-        orig_data: Annotated[Path, SRC.joinpath(f"data/{SOEP_VERSION}/{dataset}.dta")],
+        orig_data: Annotated[Path, DATA.joinpath(f"{SOEP_VERSION}/{dataset}.dta")],
         initial_cleaning: Annotated[
             Path,
             SRC.joinpath(

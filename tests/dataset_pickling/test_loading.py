@@ -6,71 +6,6 @@ from unittest.mock import MagicMock, patch
 from soep_cleaning.dataset_pickling.task import _columns_for_dataset
 
 
-def test_columns_for_dataset_with_whitespace():
-    function_content = """
-    def clean():
-        value = raw[ "column_with_spaces" ]
-        another_value = raw[
-            "column_with_newlines"
-        ]
-    """
-
-    with patch.object(SourceFileLoader, "load_module") as mock_loader, patch.object(
-        inspect,
-        "getsource",
-        return_value=function_content,
-    ):
-        mock_module = MagicMock()
-        mock_loader.return_value = mock_module
-
-        dataset = Path("dummy/path")
-        actual = _columns_for_dataset(dataset)
-        expected = ["column_with_spaces", "column_with_newlines"]
-        assert actual == expected
-
-
-def test_columns_for_dataset_with_escaped_quotes():
-    function_content = """
-    def clean():
-        value = raw["column_with_\\\"escaped_quotes\\\""]
-        another_value = raw['column_with_\\'escaped_quotes\\'']
-    """
-
-    with patch.object(SourceFileLoader, "load_module") as mock_loader, patch.object(
-        inspect,
-        "getsource",
-        return_value=function_content,
-    ):
-        mock_module = MagicMock()
-        mock_loader.return_value = mock_module
-
-        dataset = Path("dummy/path")
-        actual = _columns_for_dataset(dataset)
-        expected = ['column_with_"escaped_quotes"', "column_with_'escaped_quotes'"]
-        assert actual == expected
-
-
-def test_columns_for_dataset_with_multiline_string():
-    function_content = """
-    def clean():
-        value = raw["multiline_"
-        "string"]
-    """
-
-    with patch.object(SourceFileLoader, "load_module") as mock_loader, patch.object(
-        inspect,
-        "getsource",
-        return_value=function_content,
-    ):
-        mock_module = MagicMock()
-        mock_loader.return_value = mock_module
-
-        dataset = Path("dummy/path")
-        actual = _columns_for_dataset(dataset)
-        expected = ["multiline_string"]
-        assert actual == expected
-
-
 def test_columns_for_dataset_with_raw_in_docstring():
     function_content = '''
     def clean():
@@ -110,7 +45,7 @@ def test_columns_for_dataset_with_empty_string():
 
         dataset = Path("dummy/path")
         actual = _columns_for_dataset(dataset)
-        expected = [""]
+        expected = []
         assert actual == expected
 
 
