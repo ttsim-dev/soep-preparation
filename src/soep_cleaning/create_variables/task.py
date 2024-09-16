@@ -3,17 +3,8 @@ from pathlib import Path
 from typing import Annotated
 
 from pytask import task
-from soep_cleaning.config import SRC, data_catalog, pd
-from soep_cleaning.utilities import dataset_script_name, list_functions_in_scripts
-
-MANIPULATION_SCRIPTS = list_functions_in_scripts(
-    Path(
-        SRC.joinpath(
-            "create_variables",
-        ),
-    ),
-    scripts_kind="manipulator",
-)
+from soep_cleaning.config import DATA_CATALOG, SRC, pd
+from soep_cleaning.utilities import dataset_scripts
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):
@@ -24,23 +15,29 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-for dataset in data_catalog["cleaned"].entries:
-    if dataset in MANIPULATION_SCRIPTS:
+for dataset in DATA_CATALOG["cleaned"].entries:
+    if dataset in dataset_scripts(
+        Path(
+            SRC.joinpath(
+                "create_variables",
+            ).resolve(),
+        ),
+    ):
 
         @task(id=dataset)
         def task_manipulate_one_dataset(
-            clean_data: Annotated[Path, data_catalog["cleaned"][dataset]],
+            clean_data: Annotated[Path, DATA_CATALOG["cleaned"][dataset]],
             script_path: Annotated[
                 Path,
                 Path(
                     SRC.joinpath(
                         "create_variables",
-                        f"{dataset_script_name(dataset)}_manipulator.py",
+                        f"{dataset}.py",
                     ).resolve(),
                 ),
             ],
             dataset: str = dataset,
-        ) -> Annotated[pd.DataFrame, data_catalog["manipulated"][dataset]]:  #
+        ) -> Annotated[pd.DataFrame, DATA_CATALOG["manipulated"][dataset]]:  #
             """Manipulates a dataset using a specified cleaning script.
 
             Parameters:
@@ -62,12 +59,12 @@ for dataset in data_catalog["cleaned"].entries:
                 script_path.stem,
                 str(script_path),
             ).load_module()
-            return getattr(module, f"{dataset}")(clean_data)
+            return module.manipulate(clean_data)
 
     else:
-        data_catalog["manipulated"].add(
+        DATA_CATALOG["manipulated"].add(
             name=dataset,
-            node=data_catalog["cleaned"][dataset],
+            node=DATA_CATALOG["cleaned"][dataset],
         )
 
 
