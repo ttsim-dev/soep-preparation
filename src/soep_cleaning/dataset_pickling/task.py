@@ -80,7 +80,15 @@ def _columns_for_dataset(dataset: Path) -> list:
         dataset.resolve().stem,
         str(dataset.resolve()),
     ).load_module()
-    function_content = inspect.getsource(module.clean)
+    function_with_docstring = inspect.getsource(module.clean)
+    # Remove the docstring, if existent.
+    function_content = re.sub(
+        r'""".*?"""|\'\'\'.*?\'\'\'',
+        "",
+        function_with_docstring,
+        flags=re.DOTALL,
+    )
+    # Find all occurrences of raw["column_name"] or ['column_name'].
     pattern = r'raw\["([^"]+)"\]|\[\'([^\']+)\'\]'
     matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
     # Return unique matches in the order that they appear.
