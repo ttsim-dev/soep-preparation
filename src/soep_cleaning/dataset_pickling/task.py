@@ -75,7 +75,7 @@ def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.Da
     return out
 
 
-def _columns_for_dataset(dataset: Path) -> list:
+def _columns_for_dataset(dataset: Path) -> list[str]:
     module = SourceFileLoader(
         dataset.resolve().stem,
         str(dataset.resolve()),
@@ -96,22 +96,15 @@ def _columns_for_dataset(dataset: Path) -> list:
 
 
 for dataset in dataset_scripts(
-    Path(
-        SRC.joinpath(
-            "initial_cleaning",
-        ).resolve(),
-    ),
+    (SRC / "initial_cleaning").resolve(),
 ):
 
     @task(id=dataset)
     def task_pickle_one_dataset(
-        orig_data: Annotated[Path, DATA.joinpath(f"{SOEP_VERSION}/{dataset}.dta")],
+        orig_data: Annotated[Path, DATA / f"{SOEP_VERSION}" / f"{dataset}.dta"],
         initial_cleaning: Annotated[
             Path,
-            SRC.joinpath(
-                "initial_cleaning",
-                f"{dataset}.py",
-            ),
+            SRC / "initial_cleaning" / f"{dataset}.py",
         ],
     ) -> Annotated[pd.DataFrame, DATA_CATALOG["raw"][dataset]]:
         """Saves the raw dataset to the data catalog in a more efficient procedure.
