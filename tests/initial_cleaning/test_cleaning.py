@@ -1,7 +1,7 @@
 import numpy as np
 import pyarrow as pa
 from soep_cleaning.config import pd
-from soep_cleaning.initial_cleaning.helper import (
+from soep_cleaning.utilities import (
     _remove_missing_data_categories,
     bool_categorical,
     int_to_int_categorical,
@@ -90,7 +90,7 @@ def test_str_categorical_assert_dtype():
             pd.array(["[0] Cat 0", "[10] Cat 10"], dtype=pd.ArrowDtype(pa.string())),
         ),
     )
-    actual = str_categorical(sr, nr_identifiers=1).dtype
+    actual = str_categorical(sr, nr_identifiers=1, ordered=True).dtype
     assert actual == expected
 
 
@@ -105,7 +105,7 @@ def test_str_categorical_assert_renaming_1_identifier():
             pd.array(["[0] Cat 0", "[10] Cat 10"], dtype=pd.ArrowDtype(pa.string())),
         ),
     )
-    actual = str_categorical(sr, nr_identifiers=1)
+    actual = str_categorical(sr, nr_identifiers=1, ordered=True)
     pd.testing.assert_series_equal(actual, expected)
 
 
@@ -123,7 +123,7 @@ def test_str_categorical_assert_renaming_2_identifier():
             ),
         ),
     )
-    actual = str_categorical(sr, nr_identifiers=2)
+    actual = str_categorical(sr, nr_identifiers=2, ordered=True)
     pd.testing.assert_series_equal(actual, expected)
 
 

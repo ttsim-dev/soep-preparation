@@ -1,5 +1,5 @@
 ---
-name: soep_cleaning
+name: soep_preparation
 channels: [conda-forge, nodefaults]
 dependencies:
   - conda-lock

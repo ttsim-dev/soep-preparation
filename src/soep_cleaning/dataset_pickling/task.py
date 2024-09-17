@@ -7,11 +7,11 @@ from typing import Annotated
 from pandas.api.types import union_categoricals
 from pandas.io.stata import StataReader
 from pytask import task
-from soep_cleaning.config import DATA_CATALOG, SOEP_VERSION, SRC, pd
+from soep_cleaning.config import DATA, DATA_CATALOG, SOEP_VERSION, SRC, pd
 from soep_cleaning.utilities import dataset_scripts
 
 
-def _extract_num_from_string(s):
+def _extract_num_from_string(s: str):
     match = re.search(r"\[(-?\d+)\]", s)
     return int(match.group(1)) if match else float("inf")
 
@@ -80,9 +80,19 @@ def _columns_for_dataset(dataset: Path) -> list:
         dataset.resolve().stem,
         str(dataset.resolve()),
     ).load_module()
-    function_content = inspect.getsource(module.clean)
-    pattern = r'raw\["([^"]+)"\]'
-    return list(dict.fromkeys(re.findall(pattern, function_content)))
+    function_with_docstring = inspect.getsource(module.clean)
+    # Remove the docstring, if existent.
+    function_content = re.sub(
+        r'""".*?"""|\'\'\'.*?\'\'\'',
+        "",
+        function_with_docstring,
+        flags=re.DOTALL,
+    )
+    # Find all occurrences of raw["column_name"] or ['column_name'].
+    pattern = r'raw\["([^"]+)"\]|\[\'([^\']+)\'\]'
+    matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
+    # Return unique matches in the order that they appear.
+    return list(dict.fromkeys(matches))
 
 
 for dataset in dataset_scripts(
@@ -95,7 +105,7 @@ for dataset in dataset_scripts(
 
     @task(id=dataset)
     def task_pickle_one_dataset(
-        orig_data: Annotated[Path, SRC.joinpath(f"data/{SOEP_VERSION}/{dataset}.dta")],
+        orig_data: Annotated[Path, DATA.joinpath(f"{SOEP_VERSION}/{dataset}.dta")],
         initial_cleaning: Annotated[
             Path,
             SRC.joinpath(
