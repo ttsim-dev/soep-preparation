@@ -11,51 +11,69 @@ from soep_cleaning.config import DATA, DATA_CATALOG, SOEP_VERSION, SRC, pd
 from soep_cleaning.utilities import dataset_scripts
 
 
+def _columns_for_dataset(dataset: Path) -> list[str]:
+    module = SourceFileLoader(
+        dataset.resolve().stem,
+        str(dataset.resolve()),
+    ).load_module()
+    function_with_docstring = inspect.getsource(module.clean)
+    # Remove the docstring, if existent.
+    function_content = re.sub(
+        r'""".*?"""|\'\'\'.*?\'\'\'',
+        "",
+        function_with_docstring,
+        flags=re.DOTALL,
+    )
+    # Find all occurrences of raw["column_name"] or ['column_name'].
+    pattern = r'raw\["([^"]+)"\]|\[\'([^\']+)\'\]'
+    matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
+    # Return unique matches in the order that they appear.
+    return list(dict.fromkeys(matches))
+
+
 def _extract_num_from_string(s: str):
     match = re.search(r"\[(-?\d+)\]", s)
     return int(match.group(1)) if match else float("inf")
 
 
 def _create_categorical_column(out, chunk, col):
+    # If the categories are not of the same type, we convert them to the same type.
     if out[col].cat.categories.dtype != chunk[col].cat.categories.dtype:
+        # Converting the column's categories dtype in the chunk to object (the same as in out).
         if out[col].cat.categories.dtype.name == "object":
             chunk[col] = chunk[col].cat.set_categories(
                 chunk[col].cat.categories.astype("object"),
             )
         else:
+            # Converting the column's categories dtype of out to the same as of the chunk.
             out[col] = out[col].cat.set_categories(
                 out[col].cat.categories.astype(
                     chunk[col].cat.categories.dtype,
                 ),
             )
-    union_categorical = union_categoricals(
+    # Union of the categories of the two columns.
+    orig_categories_union = union_categoricals(
         [out[col], chunk[col]],
         ignore_order=True,
+    ).categories.to_list()
+    orig_numeric_categories = sorted(
+        [x for x in orig_categories_union if isinstance(x, int | float)],
     )
-    categories = union_categorical.categories
-    numeric_categories = sorted(
-        [x for x in categories if isinstance(x, int | float)],
-    )
-    string_categories = sorted(
-        [x for x in categories if isinstance(x, str)],
+    orig_string_categories = sorted(
+        [x for x in orig_categories_union if isinstance(x, str)],
         key=_extract_num_from_string,
     )
-    sorted_categories = string_categories + numeric_categories
-    union_categorical = pd.Categorical(
-        categories.to_list(),
-        categories=sorted_categories,
-        ordered=True,
-    )
-    union_categories = union_categorical.set_categories(
-        sorted_categories,
-        ordered=True,
-    )
-    return out[col].cat.set_categories(
-        union_categories.categories,
-        ordered=True,
-    ), chunk[col].cat.set_categories(
-        union_categories.categories,
-        ordered=True,
+    # First the string categories, afterwards the numerical.
+    sorted_categories = orig_string_categories + orig_numeric_categories
+    return (
+        out[col].cat.set_categories(
+            sorted_categories,
+            ordered=True,
+        ),
+        chunk[col].cat.set_categories(
+            sorted_categories,
+            ordered=True,
+        ),
     )
 
 
@@ -76,26 +94,6 @@ def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.Da
                     out[col] = chunk[col]
             out = pd.concat([out, chunk])
     return out
-
-
-def _columns_for_dataset(dataset: Path) -> list[str]:
-    module = SourceFileLoader(
-        dataset.resolve().stem,
-        str(dataset.resolve()),
-    ).load_module()
-    function_with_docstring = inspect.getsource(module.clean)
-    # Remove the docstring, if existent.
-    function_content = re.sub(
-        r'""".*?"""|\'\'\'.*?\'\'\'',
-        "",
-        function_with_docstring,
-        flags=re.DOTALL,
-    )
-    # Find all occurrences of raw["column_name"] or ['column_name'].
-    pattern = r'raw\["([^"]+)"\]|\[\'([^\']+)\'\]'
-    matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
-    # Return unique matches in the order that they appear.
-    return list(dict.fromkeys(matches))
 
 
 for dataset in dataset_scripts(
