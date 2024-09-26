@@ -45,9 +45,9 @@ def _education(
         isced.dropna().map(education_mapping.isced),
     )
     val_quali = [
-        "primary_and_lower_secondary",
-        "upper_secondary",
-        "tertiary",
+        "PRIMARY_AND_LOWER_SECONDARY",
+        "UPPER_SECONDARY",
+        "TERTIARY",
     ]
     cat_type = pd.CategoricalDtype(categories=val_quali, ordered=True)
     return out.astype(cat_type)
