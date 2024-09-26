@@ -16,6 +16,49 @@ def _extract_num_from_string(s: str):
     return int(match.group(1)) if match else float("inf")
 
 
+def _create_categorical_column(out, chunk, col):
+    if out[col].cat.categories.dtype != chunk[col].cat.categories.dtype:
+        if out[col].cat.categories.dtype.name == "object":
+            chunk[col] = chunk[col].cat.set_categories(
+                chunk[col].cat.categories.astype("object"),
+            )
+        else:
+            out[col] = out[col].cat.set_categories(
+                out[col].cat.categories.astype(
+                    chunk[col].cat.categories.dtype,
+                ),
+            )
+    union_categorical = union_categoricals(
+        [out[col], chunk[col]],
+        ignore_order=True,
+    )
+    categories = union_categorical.categories
+    numeric_categories = sorted(
+        [x for x in categories if isinstance(x, int | float)],
+    )
+    string_categories = sorted(
+        [x for x in categories if isinstance(x, str)],
+        key=_extract_num_from_string,
+    )
+    sorted_categories = string_categories + numeric_categories
+    union_categorical = pd.Categorical(
+        categories.to_list(),
+        categories=sorted_categories,
+        ordered=True,
+    )
+    union_categories = union_categorical.set_categories(
+        sorted_categories,
+        ordered=True,
+    )
+    return out[col].cat.set_categories(
+        union_categories.categories,
+        ordered=True,
+    ), chunk[col].cat.set_categories(
+        union_categories.categories,
+        ordered=True,
+    )
+
+
 def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.DataFrame:
     out = pd.DataFrame()
     value_labels = {k: v for k, v in itr.value_labels().items() if k in columns}
@@ -28,47 +71,7 @@ def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.Da
             col_dtypes = chunk.dtypes
             for col in columns:
                 if col_dtypes[col].name == "category":
-                    if out[col].cat.categories.dtype != chunk[col].cat.categories.dtype:
-                        if out[col].cat.categories.dtype.name == "object":
-                            chunk[col] = chunk[col].cat.set_categories(
-                                chunk[col].cat.categories.astype("object"),
-                            )
-                        else:
-                            out[col] = out[col].cat.set_categories(
-                                out[col].cat.categories.astype(
-                                    chunk[col].cat.categories.dtype,
-                                ),
-                            )
-                    union_categorical = union_categoricals(
-                        [out[col], chunk[col]],
-                        ignore_order=True,
-                    )
-                    categories = union_categorical.categories
-                    numeric_categories = sorted(
-                        [x for x in categories if isinstance(x, int | float)],
-                    )
-                    string_categories = sorted(
-                        [x for x in categories if isinstance(x, str)],
-                        key=_extract_num_from_string,
-                    )
-                    sorted_categories = string_categories + numeric_categories
-                    union_categorical = pd.Categorical(
-                        categories.to_list(),
-                        categories=sorted_categories,
-                        ordered=True,
-                    )
-                    union_categories = union_categorical.set_categories(
-                        sorted_categories,
-                        ordered=True,
-                    )
-                    out[col] = out[col].cat.set_categories(
-                        union_categories.categories,
-                        ordered=True,
-                    )
-                    chunk[col] = chunk[col].cat.set_categories(
-                        union_categories.categories,
-                        ordered=True,
-                    )
+                    out[col], chunk[col] = _create_categorical_column(out, chunk, col)
                 else:
                     out[col] = chunk[col]
             out = pd.concat([out, chunk])
