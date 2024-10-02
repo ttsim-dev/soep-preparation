@@ -65,14 +65,6 @@ repos:
         args:
           - --extra-keys
           - metadata.kernelspec metadata.language_info.version metadata.vscode
-  - repo: https://github.com/nbQA-dev/nbQA
-    rev: 1.7.0
-    hooks:
-      - id: nbqa-black
-        additional_dependencies: [black==23.9.1]
-      - id: nbqa-ruff
-        additional_dependencies: [ruff==v0.0.292]
-        args: ['--ignore=B018,T201']
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.17
     hooks:
@@ -92,9 +84,5 @@ repos:
     hooks:
       - id: codespell
         args: [--skip="**.ipynb", --ignore-words=.codespell-wordlist.txt]
-  - repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v2.2.0
-    hooks:
-      - id: setup-cfg-fmt
 ci:
   autoupdate_schedule: monthly

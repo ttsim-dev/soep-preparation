@@ -1,8 +1,73 @@
-[build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.0"]
+# ======================================================================================
+# Project metadata
+# ======================================================================================
 
-[tool.setuptools_scm]
-write_to = "src/soep_cleaning/_version.py"
+[project]
+name = "soep_cleaning"
+description = "Data management (Prof. von Gaudecker)"
+requires-python = ">=3.11"
+dependencies = [
+    "pytask",
+]
+dynamic = ["version"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+authors = [
+    { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
+]
+maintainers = [
+    { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+file = "LICENSE"
+
+[project.urls]
+Repository = "https://github.com/opensourceeconomics/soep_cleaning"
+Github = "https://github.com/opensourceeconomics/soep_cleaning"
+Tracker = "https://github.com/OpenSourceEconomics/soep_cleaning/issues"
+
+
+# ======================================================================================
+# Build system configuration
+# ======================================================================================
+
+[build-system]
+requires = ["hatchling", "hatch_vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/soep_cleaning/_version.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["tests"]
+only-packages = true
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src"]
+sources = ["src"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+
+# ======================================================================================
+# Ruff configuration
+# ======================================================================================
 
 [tool.ruff]
 target-version = "py311"
@@ -22,11 +87,9 @@ lint.extend-ignore = [
 convention = "google"
 
 
-[tool.nbqa.config]
-black = "pyproject.toml"
-
-[tool.nbqa.mutate]
-black = 1
+# ======================================================================================
+# pytask configuration
+# ======================================================================================
 
 [tool.pytask.ini_options]
 paths = ["./src/soep_cleaning"]
@@ -34,6 +97,10 @@ pdbcls = "pdbp:Pdb"
 editor_url_scheme = "vscode"
 task_files = ["task_*.py", "task.py", "tasks.py"]
 
+
+# ======================================================================================
+# pytest configuration
+# ======================================================================================
 
 [tool.pytest.ini_options]
 addopts = "--pdbcls=pdbp:Pdb"
@@ -45,6 +112,11 @@ markers = [
     "end_to_end: Flag for tests that cover the whole program.",
 ]
 norecursedirs = ["docs"]
+
+
+# ======================================================================================
+# yamlfix configuration
+# ======================================================================================
 
 [tool.yamlfix]
 line_length = 88
