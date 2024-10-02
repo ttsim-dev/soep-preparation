@@ -26,12 +26,10 @@ jobs:
           pixi-version: v0.29.0
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-          environments: test
-          activate-environment: true
           frozen: true
       - name: Run pytest
         shell: bash {0}
-        run: pixi run -e test tests
+        run: pixi run tests-with-cov
       - name: Upload coverage report
         if: runner.os == 'Linux' && matrix.python-version == '3.11'
         uses: codecov/codecov-action@v4
