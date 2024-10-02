@@ -33,5 +33,5 @@ jobs:
         shell: bash {0}
         run: pixi run -e test tests
       - name: Upload coverage report
-        if: runner.os == 'Linux' && matrix.python-version == '3.12'
+        if: runner.os == 'Linux' && matrix.python-version == '3.11'
         uses: codecov/codecov-action@v4
