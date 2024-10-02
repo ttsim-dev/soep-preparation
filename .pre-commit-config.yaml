@@ -32,32 +32,21 @@ repos:
       - id: trailing-whitespace
       - id: check-ast
       - id: check-docstring-first
-  - repo: https://github.com/psf/black
-    rev: 24.8.0
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.35.1
     hooks:
-      - id: black
-        language_version: python3.11
-  - repo: https://github.com/asottile/blacken-docs
-    rev: 1.18.0
-    hooks:
-      - id: blacken-docs
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
-    hooks:
-      - id: docformatter
-        args:
-          - --in-place
-          - --wrap-summaries
-          - '88'
-          - --wrap-descriptions
-          - '88'
-          - --blank
+      - id: yamllint
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.8
     hooks:
+      # Run the linter.
       - id: ruff
-      #   args:
-      #     - --verbose
+        types_or: [python, jupyter]
+        args:
+          - --fix
+      # Run the formatter.
+      - id: ruff-format
+        types_or: [python, jupyter]
   - repo: https://github.com/kynan/nbstripout
     rev: 0.7.1
     hooks:
@@ -69,14 +58,14 @@ repos:
     rev: 0.7.17
     hooks:
       - id: mdformat
-        additional_dependencies: [mdformat-gfm, mdformat-black]
+        additional_dependencies: [mdformat-gfm, mdformat-gfm-alerts, mdformat-ruff]
         args: [--wrap, '88']
         files: (README\.md)
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.17
     hooks:
       - id: mdformat
-        additional_dependencies: [mdformat-myst, mdformat-black]
+        additional_dependencies: [mdformat-myst, mdformat-ruff]
         args: [--wrap, '88']
         files: (docs/.)
   - repo: https://github.com/codespell-project/codespell
