@@ -133,6 +133,9 @@ fix-only = true # No linting errors will be reported
 lint.extend-ignore = [
     "S101", # Use of `assert` detected.
     "ANN",  # Missing type annotations
+    # Avoid conflict with ruff-format
+    "COM812",
+    "ISC001",
 ]
 
 [tool.ruff.lint.per-file-ignores]
