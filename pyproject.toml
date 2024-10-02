@@ -118,7 +118,7 @@ explanation-notebooks = "jupyter execute explanations/*.ipynb"
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.environments]
-test-cpu = {features = ["test"], solve-group = "default"}
+test = {features = ["test"], solve-group = "default"}
 
 
 # ======================================================================================

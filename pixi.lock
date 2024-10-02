@@ -1097,7 +1097,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/5a/dc/491b7661614ab97483abf2056be1deee4dc2490ecbf7bff9ab5cdbac86e1/pyreadline3-3.5.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/88/49/4483a16bf846a75d5999c7a54ad16b7b87a95bca77b3b5d5497f72c4e753/tabcompleter-1.3.3-py3-none-any.whl
       - pypi: .
-  test-cpu:
+  test:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
     indexes:
@@ -13914,9 +13914,9 @@ packages:
   timestamp: 1708953086199
 - kind: pypi
   name: soep-cleaning
-  version: 0.1.dev104+g2c82cf0.d20241002
+  version: 0.1.dev105+g5e3b6be.d20241002
   path: .
-  sha256: 74c9dad7d4947a8b71c1fb65eea7f19941ec9ae4672cc1d06d29a2cb89e022e3
+  sha256: 9ea17646292199ea53a5eee442d6f9f52ac805c1f7c4800d4e9ca63188cfb7ef
   requires_dist:
   - pytask
   requires_python: '>=3.11'
