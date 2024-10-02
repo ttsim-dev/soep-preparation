@@ -66,6 +66,62 @@ allow-direct-references = true
 
 
 # ======================================================================================
+# Pixi
+# ======================================================================================
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+# Development Dependencies (conda)
+# --------------------------------------------------------------------------------------
+
+[tool.pixi.dependencies]
+python = "3.11"
+jupyterlab = "*"
+plotly = ">=5.24,<6"
+pre-commit = "*"
+ipykernel = "*"
+pandas = ">=2.1"
+pyarrow = ">=13.0"
+pygraphviz = "*"
+pytask-latex = ">=0.4.0"
+pytask-parallel = ">=0.4.0"
+pytask = ">=0.4.7"
+python-graphviz = "*"
+pyyaml = "*"
+statsmodels = "*"
+toml = "*"
+
+# Development Dependencies (pypi)
+# --------------------------------------------------------------------------------------
+
+[tool.pixi.pypi-dependencies]
+soep_cleaning = {path = ".", editable = true}
+kaleido = "*"
+pdbp = "*"
+
+# Features and Tasks
+# --------------------------------------------------------------------------------------
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+
+[tool.pixi.feature.test.tasks]
+tests = "pytest tests"
+tests-with-cov = "pytest tests --cov-report=xml --cov=./"
+explanation-notebooks = "jupyter execute explanations/*.ipynb"
+
+# Environments
+# --------------------------------------------------------------------------------------
+
+[tool.pixi.environments]
+test-cpu = {features = ["test"], solve-group = "default"}
+
+
+# ======================================================================================
 # Ruff configuration
 # ======================================================================================
 
