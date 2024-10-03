@@ -115,7 +115,6 @@ pytest-xdist = "*"
 [tool.pixi.feature.test.tasks]
 tests = "pytest tests"
 tests-with-cov = "pytest tests --cov-report=xml --cov=./"
-explanation-notebooks = "jupyter execute explanations/*.ipynb"
 
 # Environments
 # --------------------------------------------------------------------------------------
