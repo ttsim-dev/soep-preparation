@@ -38,11 +38,12 @@ def _dataset_script_name(dataset_name: str) -> str:
     """Map the dataset name to the name of the script that cleans the dataset."""
     if dataset_name.startswith("bio"):
         return "bio_specific_cleaner"
-    if dataset_name.startswith("h"):
+    elif dataset_name.startswith("h"):
         return "h_specific_cleaner"
-    if dataset_name.startswith("p"):
+    elif dataset_name.startswith("p"):
         return "p_specific_cleaner"
-    return "other_specific_cleaner"
+    else:
+        return "other_specific_cleaner"
 
 
 def _create_parametrization(dataset: str) -> dict:

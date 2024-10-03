@@ -95,7 +95,8 @@ def bool_categorical(
         sr = sr.cat.rename_categories(renaming)
     if ordered:
         return sr.cat.reorder_categories(list(renaming.values()), ordered=True)
-    return sr.cat.as_unordered()
+    else:
+        return sr.cat.as_unordered()
 
 
 def str_categorical(
