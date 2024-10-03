@@ -101,6 +101,9 @@ soep_cleaning = {path = ".", editable = true}
 kaleido = "*"
 pdbp = "*"
 
+[tool.pixi.target.win-64.pypi-dependencies]
+kaleido = ">=0.1.0.post1,<=0.1.0.post1"
+
 # Features and Tasks
 # --------------------------------------------------------------------------------------
 
