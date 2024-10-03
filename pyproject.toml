@@ -4,7 +4,7 @@
 
 [project]
 name = "soep_cleaning"
-description = "Data management (Prof. von Gaudecker)"
+description = "Prepare the SOEP data for analysis."
 requires-python = ">=3.11"
 dependencies = [
     "pytask",
@@ -34,9 +34,9 @@ content-type = "text/markdown"
 file = "LICENSE"
 
 [project.urls]
-Repository = "https://github.com/opensourceeconomics/soep_cleaning"
-Github = "https://github.com/opensourceeconomics/soep_cleaning"
-Tracker = "https://github.com/OpenSourceEconomics/soep_cleaning/issues"
+Repository = "https://github.com/OpenSourceEconomics/soep-preparation"
+Github = "https://github.com/OpenSourceEconomics/soep-preparation"
+Tracker = "https://github.com/OpenSourceEconomics/soep-preparation/issues"
 
 
 # ======================================================================================
