@@ -7,8 +7,15 @@ from typing import Annotated
 from pandas.api.types import union_categoricals
 from pandas.io.stata import StataReader
 from pytask import task
-from soep_cleaning.config import DATA, DATA_CATALOG, SOEP_VERSION, SRC, pd
-from soep_cleaning.utilities import dataset_scripts
+from soep_cleaning.config import DATA, DATA_CATALOG, SOEP_VERSION, SRC, get_datasets, pd
+
+
+def _fail_if_invalid_input(input_, expected_dtype: str):
+    if expected_dtype not in str(type(input_)):
+        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
+        raise TypeError(
+            msg,
+        )
 
 
 def _columns_for_dataset(dataset: Path) -> list[str]:
@@ -96,14 +103,14 @@ def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.Da
     return out
 
 
-for dataset in dataset_scripts(
+for dataset in get_datasets(
     (SRC / "initial_cleaning").resolve(),
 ):
 
     @task(id=dataset)
     def task_pickle_one_dataset(
         orig_data: Annotated[Path, DATA / f"{SOEP_VERSION}" / f"{dataset}.dta"],
-        initial_cleaning: Annotated[
+        cleaning_script: Annotated[
             Path,
             SRC / "initial_cleaning" / f"{dataset}.py",
         ],
@@ -118,7 +125,8 @@ for dataset in dataset_scripts(
             pd.DataFrame: A pandas DataFrame to be saved to the data catalog.
 
         """
-        columns = _columns_for_dataset(initial_cleaning.resolve())
+        _error_handling_task(orig_data, cleaning_script)
+        columns = _columns_for_dataset(cleaning_script.resolve())
         with StataReader(
             orig_data,
             chunksize=100_000,
@@ -126,3 +134,8 @@ for dataset in dataset_scripts(
             convert_categoricals=False,
         ) as itr:
             return _iteratively_read_one_dataset(itr, columns)
+
+
+def _error_handling_task(data, script_path):
+    _fail_if_invalid_input(data, "pathlib.PosixPath")
+    _fail_if_invalid_input(script_path, "pathlib.PosixPath")
