@@ -32,6 +32,8 @@ repos:
       - id: trailing-whitespace
       - id: check-ast
       - id: check-docstring-first
+      - id: no-commit-to-branch
+        args: [--branch, main]
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.35.1
     hooks:
