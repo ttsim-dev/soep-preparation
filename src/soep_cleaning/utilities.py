@@ -1,5 +1,4 @@
 """Utilities used in various parts of the project."""
-from pathlib import Path
 
 import numpy as np
 
@@ -103,15 +102,14 @@ def _remove_missing_data_categories(sr: pd.Series) -> pd.Series:
 
 
 def _reduce_categories(sr, renaming, ordered, categories_type_str="str[pyarrow]"):
-    # TODO: adjust replace method
-    sr_renamed = sr.replace(renaming)
+    sr_renamed = sr.astype(categories_type_str).replace(renaming)
     if "int" in categories_type_str:
-        categories_type_str = find_lowest_int_dtype(sr_renamed.cat.categories.values)
+        categories_type_str = find_lowest_int_dtype(sr_renamed)
     elif "bool" in categories_type_str:
         categories_type_str = "bool[pyarrow]"
     category_dtype = pd.CategoricalDtype(
-        sr_renamed.cat.categories.astype(categories_type_str),
-        ordered,
+        categories=sr_renamed.dropna().unique().astype(categories_type_str),
+        ordered=ordered,
     )
     return pd.Series(sr_renamed, dtype=category_dtype)
 
@@ -216,15 +214,14 @@ def create_dummy(
         ],
     )
     if kind == "equality":
-        bool_sr = sr.dropna() == true_value
+        return (sr == true_value).mask(sr.isna(), pd.NA).astype("bool[pyarrow]")
     elif kind == "neq":
-        bool_sr = sr.dropna() != true_value
+        return (sr != true_value).mask(sr.isna(), pd.NA).astype("bool[pyarrow]")
     elif kind == "isin":
-        bool_sr = sr.dropna().isin(true_value)
+        return sr.isin(true_value).mask(sr.isna(), pd.NA).astype("bool[pyarrow]")
     else:
         msg = f"Unknown kind '{kind}' of dummy creation"
         raise ValueError(msg)
-    return bool_sr.astype("bool[pyarrow]")
 
 
 def agreement_to_int_categorical(
@@ -356,7 +353,7 @@ def str_categorical(
         if renaming is None:
             renaming = dict(
                 zip(
-                    sr_no_missing.tolist(),
+                    sr_no_missing.cat.categories.tolist(),
                     _categories_remove_nr_delimiter_levels(
                         sr_no_missing,
                         delimiter,
@@ -649,11 +646,3 @@ def apply_lowest_int_dtype(
 def apply_lowest_float_dtype(sr: pd.Series) -> pd.Series:
     """Apply the lowest integer dtype to a series."""
     return pd.to_numeric(sr, downcast="float", dtype_backend="pyarrow")
-
-
-def dataset_scripts(directory: Path) -> list[str]:
-    return [
-        file.stem
-        for file in directory.glob("*.py")
-        if file.name not in ["__init__.py", "task.py"]
-    ]
