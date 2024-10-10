@@ -3,8 +3,7 @@ from pathlib import Path
 from typing import Annotated
 
 from pytask import task
-from soep_cleaning.config import DATA_CATALOG, SRC, pd
-from soep_cleaning.utilities import dataset_scripts
+from soep_cleaning.config import DATA_CATALOG, SRC, get_datasets, pd
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):
@@ -15,29 +14,17 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-for dataset in DATA_CATALOG["cleaned"].entries:
-    if dataset in dataset_scripts(
-        Path(
-            SRC.joinpath(
-                "create_variables",
-            ).resolve(),
-        ),
-    ):
+for dataset in get_datasets((SRC / "create_variables").resolve()):
+    if dataset in DATA_CATALOG["cleaned"].entries:
 
         @task(id=dataset)
         def task_manipulate_one_dataset(
             clean_data: Annotated[Path, DATA_CATALOG["cleaned"][dataset]],
             script_path: Annotated[
                 Path,
-                Path(
-                    SRC.joinpath(
-                        "create_variables",
-                        f"{dataset}.py",
-                    ).resolve(),
-                ),
+                SRC / "create_variables" / f"{dataset}.py",
             ],
-            dataset: str = dataset,
-        ) -> Annotated[pd.DataFrame, DATA_CATALOG["manipulated"][dataset]]:  #
+        ) -> Annotated[pd.DataFrame, DATA_CATALOG["manipulated"][dataset]]:
             """Manipulates a dataset using a specified cleaning script.
 
             Parameters:
@@ -62,10 +49,8 @@ for dataset in DATA_CATALOG["cleaned"].entries:
             return module.manipulate(clean_data)
 
     else:
-        DATA_CATALOG["manipulated"].add(
-            name=dataset,
-            node=DATA_CATALOG["cleaned"][dataset],
-        )
+        msg = f"Dataset {dataset} not found in cleaned data catalog."
+        raise AttributeError(msg)
 
 
 def _error_handling_task(data, script_path):

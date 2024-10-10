@@ -1,6 +1,5 @@
 import re
 
-from soep_cleaning import education_mapping
 from soep_cleaning.config import pd
 from soep_cleaning.utilities import create_dummy
 
@@ -11,7 +10,6 @@ def _in_education(
 ) -> "pd.Series[pd.Categorical]":
     in_education = [
         "in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
-        "in Ausbildung,             inkl. Weiterbildung, Berufsausbildung, Lehre",
         "Auszubildende (bis 1999)",
         "Auszubildende, gewerblich-technisch",
         "Auszubildende, gewerblich-technisch (ab 2000)",
@@ -21,12 +19,12 @@ def _in_education(
         "NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
     ]
     out = create_dummy(employment, "Ausbildung, Lehre")
-    # Don't use employment status to determine in_education if not working
+    # Set in_education to missing if out of the labor force -- could mean anything.
     out = out.where(employment != "Nicht erwerbstätig", pd.NA)
     return out.fillna(create_dummy(occupation, in_education, "isin"))
 
 
-def _selfemployed_occupations(
+def _self_employed_occupations(
     occupation: "pd.Series[pd.Categorical]",
 ) -> list:
     occ_names = list(occupation.dropna().unique())
@@ -38,18 +36,34 @@ def _education(
     casmin: "pd.Series[pd.Categorical]",
     isced: "pd.Series[pd.Categorical]",
 ) -> "pd.Series[pd.Categorical]":
-    out = pd.Series()
-    out = casmin.dropna().map(education_mapping.casmin)
-    out = out.where(
-        out.notnull(),
-        isced.dropna().map(education_mapping.isced),
+    out = casmin.combine_first(isced).map(
+        {
+            "in school": "PRIMARY_AND_LOWER_SECONDARY",
+            "inadequately completed": "PRIMARY_AND_LOWER_SECONDARY",
+            "general elementary school": "PRIMARY_AND_LOWER_SECONDARY",
+            "basic vocational qualification": "PRIMARY_AND_LOWER_SECONDARY",
+            "intermediate vocational": "UPPER_SECONDARY",
+            "intermediate general qualification": "UPPER_SECONDARY",
+            "general maturity certificate": "UPPER_SECONDARY",
+            "vocational maturity certificate": "UPPER_SECONDARY",
+            "lower tertiary education": "TERTIARY",
+            "higher tertiary education": "TERTIARY",
+            "Primary education": "PRIMARY_AND_LOWER_SECONDARY",
+            "Lower secondary education": "PRIMARY_AND_LOWER_SECONDARY",
+            "Upper secondary education": "UPPER_SECONDARY",
+            "Post-secondary non-tertiary education": "UPPER_SECONDARY",
+            "Short-cycle tertiary education": "UPPER_SECONDARY",
+            "Bachelor s or equivalent level": "TERTIARY",
+            "Master s or equivalent level": "TERTIARY",
+            "Doctoral or equivalent level": "TERTIARY",
+        },
     )
-    val_quali = [
-        "PRIMARY_AND_LOWER_SECONDARY",
-        "UPPER_SECONDARY",
-        "TERTIARY",
-    ]
-    cat_type = pd.CategoricalDtype(categories=val_quali, ordered=True)
+    cat_type = pd.CategoricalDtype(
+        categories=pd.Series(
+            ["PRIMARY_AND_LOWER_SECONDARY", "UPPER_SECONDARY", "TERTIARY"],
+        ).astype("str[pyarrow]"),
+        ordered=True,
+    )
     return out.astype(cat_type)
 
 
@@ -63,7 +77,7 @@ def manipulate(data: pd.DataFrame) -> pd.DataFrame:
     )
     out["self_employed"] = create_dummy(
         out["occupation_status"],
-        _selfemployed_occupations(out["occupation_status"]),
+        _self_employed_occupations(out["occupation_status"]),
         "isin",
     )
     out["military"] = create_dummy(
@@ -72,7 +86,7 @@ def manipulate(data: pd.DataFrame) -> pd.DataFrame:
     )
     out["erwerbstätig"] = (
         create_dummy(out["employment_status"], "Nicht erwerbstätig", "neq")
-    ) & (~out["in_education"].dropna())
+    ) & (~out["in_education"])
 
     out["nicht_erwerbstätig"] = create_dummy(
         out["employment_status"],
@@ -97,7 +111,6 @@ def manipulate(data: pd.DataFrame) -> pd.DataFrame:
         out["laborf_status"],
         "NE: Mutterschutz/Elternzeit (seit 1991) ",
     )
-
     out["education"] = _education(
         out["education_casmin"],
         out["education_isced"],
