@@ -1,5 +1,5 @@
-from soep_cleaning import month_mapping
 from soep_cleaning.config import pd
+from soep_cleaning.initial_cleaning import month_mapping
 from soep_cleaning.utilities import (
     _fail_if_invalid_input,
     categorical_to_int_categorical,

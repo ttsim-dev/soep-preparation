@@ -1,5 +1,5 @@
-from soep_cleaning import month_mapping
 from soep_cleaning.config import pd
+from soep_cleaning.initial_cleaning import month_mapping
 from soep_cleaning.utilities import (
     apply_lowest_int_dtype,
     bool_categorical,
@@ -36,7 +36,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["nationality_first"] = str_categorical(
         raw["pgnation"],
         reduce=True,
-    )  # TODO: there are multiple categories for ['Kurdistan', 'Malaysia', 'Montenegro'], see also here: https://paneldata.org/soep-is/datasets/pgen/pgnation
+    )  # there are multiple categories for ['Kurdistan', 'Malaysia', 'Montenegro'], they have been reduced
     out["german"] = out["nationality_first"].dropna() == "Deutschland"
     out["status_refugee"] = str_categorical(raw["pgstatus_refu"])
     out["marital_status"] = str_categorical(raw["pgfamstd"])
@@ -65,13 +65,13 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
         raw["pgbetr"].cat.rename_categories(
             {-5: "[-5] in Fragebogenversion nicht enthalten"},
         ),
-    )  # TODO: report missing encoding here
+    )
     out["size_company"] = str_categorical(raw["pgallbet"])
     out["pgen_grund_beschäftigungsende"] = str_categorical(raw["pgjobend"])
     out["exp_full_time"] = float_categorical_to_float(raw["pgexpft"])
     out["exp_part_time"] = float_categorical_to_float(raw["pgexppt"])
     out["exp_unempl"] = float_categorical_to_float(raw["pgexpue"])
-    out["education_isced_alt"] = str_categorical(raw["pgisced97"])
+    out["education_isced_old"] = str_categorical(raw["pgisced97"])
     out["education_isced"] = str_categorical(
         raw["pgisced11"],
         ordered=True,

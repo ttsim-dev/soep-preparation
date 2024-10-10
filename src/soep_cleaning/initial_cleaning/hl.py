@@ -12,7 +12,7 @@ def _kindergeld_aktuell_hl_m_hh(
 ) -> "pd.Series[int]":
     out = int_categorical_to_int(aktuell)
     return out.where(
-        ~(aktuell.isnull()) & (bezug_aktuell.notna()),
+        ~(aktuell.isnull()) & (bezug_aktuell.astype("bool[pyarrow]")),
         0,
     )
 
@@ -31,7 +31,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     )
     out["kindergeld_aktuell_hl_m_hh"] = _kindergeld_aktuell_hl_m_hh(
         raw["hlc0045_h"],
-        out["kindergeld_hl_m_hh_prev"],
+        out["kindergeld_bezug_aktuell"],
     )
     out["kinderzuschlag_hl_m_hh"] = int_categorical_to_int(raw["hlc0047_h"])
     out["kinderzuschlag_hl_m_hh_prev"] = int_categorical_to_int(raw["hlc0051_h"])

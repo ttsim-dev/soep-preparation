@@ -12,11 +12,10 @@ from soep_cleaning.utilities import (
 )
 
 
-def _mschaftsgeld_monate_prev(
+def _mutterschaftsgeld_monate_prev(
     monate_prev: "pd.Series[pd.Categorical]",
     bezogen_prev: "pd.Series[pd.Categorical]",
 ) -> "pd.Series[int]":
-    # TODO: discuss if this logic is correct (it is not clear to me), just copy-pasted
     out = pd.Series(
         np.maximum(
             (float_categorical_to_int(monate_prev) - 3),
@@ -161,16 +160,16 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["m_alg_prev"] = int_to_int_categorical(
         float_categorical_to_int(raw["kal2f02"]),
     )
-    out["mschaftsgeld_bezogen_prev"] = bool_categorical(
+    out["mutterschaftsgeld_bezogen_prev"] = bool_categorical(
         raw["kal2j01_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )  # TODO: replaced var kal2j01 by kal2j01_h
-    out["mschaftsgeld_monate_prev_inconsistent"] = int_to_int_categorical(
+    out["mutterschaftsgeld_monate_prev_inconsistent"] = int_to_int_categorical(
         float_categorical_to_int(raw["kal2j02"]),
     )
-    out["mschaftsgeld_monate_prev"] = _mschaftsgeld_monate_prev(
+    out["mutterschaftsgeld_monate_prev"] = _mutterschaftsgeld_monate_prev(
         raw["kal2j02"],
-        out["mschaftsgeld_bezogen_prev"],
+        out["mutterschaftsgeld_bezogen_prev"],
     )
     return _wide_to_long(out)

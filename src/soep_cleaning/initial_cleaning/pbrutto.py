@@ -34,12 +34,14 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
             "[31] Leibliche/r Vater,Mutter": "Parent",
             "[32] Stiefvater,-mutter/Partner v.Vater,Mutter": "Parent",
             "[33] Adoptivvater,-mutter": "Parent",
+            "[34] Pflegevater,-mutter": "Parent",
             "[35] Schwiegervater,-mutter,(Ehe-/LPartner v.Eltern)": "Parent",
             "[36] Grossvater,-mutter": "Other relative",
             "[40] Geschwister, Schwager/Schwaegerin [bis 2011]": "Other relative",
             "[41] Leibliche/r Bruder,Schwester": "Other relative",
             "[42] Halbbruder,-schwester": "Other relative",
             "[43] Stiefschwester,-bruder(von Elternteilen.verh/lpar)": "Other relative",
+            "[44] Adoptivbruder,-schwester": "Other relative",
             "[45] Pflegebruder,-schwester": "Other relative",
             "[51] Schwa(e)ger/in (Ehe-/LPartner v.Geschwistern)": "Other relative",
             "[52] Schwa(e)ger/in (Geschwister v.Ehe-/LPartner)": "Other relative",
@@ -59,11 +61,11 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["bearbeitungserg_ausf"] = str_categorical(
         raw["pergz"],
         reduce=True,
-    )  # TODO: categories [29] and [39] have identical labels, by reducing we loose some information (seems most in line with old code)
+    )  # categories [29] and [39] have identical missing data labels which are reduced to one
     out["hh_position_raw_last_year"] = str_categorical(
         raw["pzugv"],
         reduce=True,
-    )  # TODO: categories [19] and [39] have identical labels, by reducing we loose some information (seems most in line with old code)
+    )  # categories [19] and [39] have identical missing data labels which are reduced to one
     out["teilnahmebereitschaft"] = str_categorical(
         raw["ber"],
         ordered=True,
@@ -74,5 +76,5 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
             "[1] sehr gut": "sehr gut",
         },
     )
-    out["bearbeitungserg_alt"] = str_categorical(raw["hergs"])
+    out["bearbeitungserg_old"] = str_categorical(raw["hergs"])
     return out

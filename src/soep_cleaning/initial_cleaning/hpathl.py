@@ -13,7 +13,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["year"] = apply_lowest_int_dtype(raw["syear"])
     out["hh_soep_sample"] = str_categorical(
         raw["hsample"],
-    )  # TODO: Remove the additional alphabetical identifier level?
+    )
     out["hh_bleibe_wkeit"] = apply_lowest_float_dtype(raw["hbleib"])
     out["hh_gewicht"] = apply_lowest_float_dtype(raw["hhrf"])
     out["hh_gewicht_nur_neue"] = apply_lowest_float_dtype(raw["hhrf0"])

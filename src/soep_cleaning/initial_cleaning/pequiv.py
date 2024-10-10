@@ -37,7 +37,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["arbeitsl_hilfe_soep_prev"] = int_categorical_to_int(raw["iunay"])
     out["unterhaltsgeld_soep_prev"] = int_categorical_to_int(raw["isuby"])
     out["uebergangsgeld_soep_prev"] = int_categorical_to_int(raw["ieret"])
-    out["mschaftsgeld_soep_prev"] = int_categorical_to_int(raw["imaty"])
+    out["mutterschaftsgeld_soep_prev"] = int_categorical_to_int(raw["imaty"])
     out["student_grants_prev"] = int_categorical_to_int(raw["istuy"])
     out["alimony_prev"] = int_categorical_to_int(raw["ialim"])
     out["other_transfers_prev"] = int_categorical_to_int(raw["ielse"])

@@ -59,7 +59,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["wage_employee_m_prev"] = float_categorical_to_float(
         raw["plb0471_h"],
     )
-    out["mschaftsgeld_prev"] = bool_categorical(
+    out["mutterschaftsgeld_prev"] = bool_categorical(
         raw["plc0126_v1"],
         renaming={"[1] Ja": True},
     )
@@ -69,14 +69,14 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["arbeitslosengeld_m3_m5_empf"] = str_categorical(raw["plc0130_v2"])
-    out["mschaftsgeld_vorm_pl"] = bool_categorical(
+    out["mutterschaftsgeld_vorm_pl"] = bool_categorical(
         raw["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
-    out["mschaftsgeld_brutto_m"] = float_categorical_to_float(
+    out["mutterschaftsgeld_brutto_m"] = float_categorical_to_float(
         raw["plc0153_h"],
     )
-    out["mschaftsgeld_betrag_pl_prev"] = float_categorical_to_float(
+    out["mutterschaftsgeld_betrag_pl_prev"] = float_categorical_to_float(
         raw["plc0155_h"],
     )
     out["child_alimony_before_2016"] = int_categorical_to_int(

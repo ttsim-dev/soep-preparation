@@ -1,5 +1,5 @@
-from soep_cleaning import month_mapping
 from soep_cleaning.config import pd
+from soep_cleaning.initial_cleaning import month_mapping
 from soep_cleaning.utilities import (
     apply_lowest_float_dtype,
     apply_lowest_int_dtype,
@@ -26,7 +26,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["year_immigration"] = int_categorical_to_int(raw["immiyear"])
     out["born_in_germany"] = str_categorical(raw["germborn"])
     out["country_of_birth"] = str_categorical(raw["corigin"])
-    out["birth_month_ppathl"] = categorical_to_int_categorical(
+    out["birth_month_from_ppathl"] = categorical_to_int_categorical(
         raw["gebmonat"],
         ordered=False,
         renaming=month_mapping.de,
