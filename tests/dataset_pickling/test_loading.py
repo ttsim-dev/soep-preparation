@@ -15,10 +15,13 @@ def test_columns_for_dataset_with_raw_in_docstring():
         value = raw["real_column"]
     '''
 
-    with patch.object(SourceFileLoader, "load_module") as mock_loader, patch.object(
-        inspect,
-        "getsource",
-        return_value=function_content,
+    with (
+        patch.object(SourceFileLoader, "load_module") as mock_loader,
+        patch.object(
+            inspect,
+            "getsource",
+            return_value=function_content,
+        ),
     ):
         mock_module = MagicMock()
         mock_loader.return_value = mock_module
@@ -35,10 +38,13 @@ def test_columns_for_dataset_with_empty_string():
         value = raw[""]
     """
 
-    with patch.object(SourceFileLoader, "load_module") as mock_loader, patch.object(
-        inspect,
-        "getsource",
-        return_value=function_content,
+    with (
+        patch.object(SourceFileLoader, "load_module") as mock_loader,
+        patch.object(
+            inspect,
+            "getsource",
+            return_value=function_content,
+        ),
     ):
         mock_module = MagicMock()
         mock_loader.return_value = mock_module
@@ -57,10 +63,13 @@ def test_columns_for_dataset_valid_cases():
         something_else = raw["third_column"]
     """
 
-    with patch.object(SourceFileLoader, "load_module") as mock_loader, patch.object(
-        inspect,
-        "getsource",
-        return_value=function_content,
+    with (
+        patch.object(SourceFileLoader, "load_module") as mock_loader,
+        patch.object(
+            inspect,
+            "getsource",
+            return_value=function_content,
+        ),
     ):
         mock_module = MagicMock()
         mock_loader.return_value = mock_module
@@ -79,10 +88,13 @@ def test_columns_for_dataset_mixed_cases():
         another_valid = raw['another_valid_column']
     """
 
-    with patch.object(SourceFileLoader, "load_module") as mock_loader, patch.object(
-        inspect,
-        "getsource",
-        return_value=function_content,
+    with (
+        patch.object(SourceFileLoader, "load_module") as mock_loader,
+        patch.object(
+            inspect,
+            "getsource",
+            return_value=function_content,
+        ),
     ):
         mock_module = MagicMock()
         mock_loader.return_value = mock_module

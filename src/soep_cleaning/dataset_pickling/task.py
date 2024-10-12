@@ -7,6 +7,7 @@ from typing import Annotated
 from pandas.api.types import union_categoricals
 from pandas.io.stata import StataReader
 from pytask import task
+
 from soep_cleaning.config import DATA, DATA_CATALOG, SOEP_VERSION, SRC, get_datasets, pd
 
 

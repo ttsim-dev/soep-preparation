@@ -1,4 +1,5 @@
 from pandas.api.types import union_categoricals
+
 from soep_cleaning.config import pd
 from soep_cleaning.utilities import apply_lowest_int_dtype
 

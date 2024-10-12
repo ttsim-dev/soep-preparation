@@ -1,5 +1,6 @@
 import numpy as np
 import pyarrow as pa
+
 from soep_cleaning.config import pd
 from soep_cleaning.utilities import (
     _remove_missing_data_categories,
