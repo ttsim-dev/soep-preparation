@@ -3,7 +3,7 @@
 # ======================================================================================
 
 [project]
-name = "soep_cleaning"
+name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
 requires-python = ">=3.11"
 dependencies = [
@@ -48,7 +48,7 @@ requires = ["hatchling", "hatch_vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "src/soep_cleaning/_version.py"
+version-file = "src/soep_preparation/_version.py"
 
 [tool.hatch.build.targets.sdist]
 exclude = ["tests"]
@@ -97,7 +97,7 @@ toml = "*"
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.pypi-dependencies]
-soep_cleaning = {path = ".", editable = true}
+soep_preparation = {path = ".", editable = true}
 kaleido = "*"
 pdbp = "*"
 
@@ -153,7 +153,7 @@ convention = "google"
 # ======================================================================================
 
 [tool.pytask.ini_options]
-paths = ["./src/soep_cleaning"]
+paths = ["./src/soep_preparation"]
 pdbcls = "pdbp:Pdb"
 editor_url_scheme = "vscode"
 task_files = ["task_*.py", "task.py", "tasks.py"]

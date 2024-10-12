@@ -1,15 +1,15 @@
 ---
 name: Bug Report
-about: Create a bug report to help us improve soep_cleaning
+about: Create a bug report to help us improve soep_preparation
 title: "BUG:"
 labels: "bug"
 ---
 
 - [ ] I have checked that this issue has not already been reported.
 
-- [ ] I have confirmed this bug exists on the latest version of soep_cleaning.
+- [ ] I have confirmed this bug exists on the latest version of soep_preparation.
 
-- [ ] (optional) I have confirmed this bug exists on the `main` branch of soep_cleaning.
+- [ ] (optional) I have confirmed this bug exists on the `main` branch of soep_preparation.
 
 ---
 
