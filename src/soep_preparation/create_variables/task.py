@@ -4,7 +4,7 @@ from typing import Annotated
 
 from pytask import task
 
-from soep_cleaning.config import DATA_CATALOG, SRC, get_datasets, pd
+from soep_preparation.config import DATA_CATALOG, SRC, get_datasets, pd
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):

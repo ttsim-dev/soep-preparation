@@ -1,5 +1,5 @@
-from soep_cleaning.config import pd
-from soep_cleaning.utilities import (
+from soep_preparation.config import pd
+from soep_preparation.utilities import (
     apply_lowest_int_dtype,
     bool_categorical,
     categorical_to_int_categorical,

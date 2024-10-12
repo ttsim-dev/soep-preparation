@@ -1,7 +1,7 @@
 import numpy as np
 
-from soep_cleaning.config import pd
-from soep_cleaning.utilities import (
+from soep_preparation.config import pd
+from soep_preparation.utilities import (
     _fail_if_invalid_input,
     apply_lowest_int_dtype,
     bool_categorical,

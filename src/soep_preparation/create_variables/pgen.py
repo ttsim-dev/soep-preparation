@@ -1,7 +1,7 @@
 import re
 
-from soep_cleaning.config import pd
-from soep_cleaning.utilities import create_dummy
+from soep_preparation.config import pd
+from soep_preparation.utilities import create_dummy
 
 
 def _in_education(

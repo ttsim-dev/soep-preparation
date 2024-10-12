@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from soep_cleaning.config import pd
+from soep_preparation.config import pd
 
 
 def _fail_if_series_wrong_dtype(sr: pd.Series, expected_dtype: str):

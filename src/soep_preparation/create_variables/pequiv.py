@@ -1,5 +1,5 @@
-from soep_cleaning.config import pd
-from soep_cleaning.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
+from soep_preparation.config import pd
+from soep_preparation.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
 
 
 def manipulate(data: pd.DataFrame) -> pd.DataFrame:

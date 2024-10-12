@@ -3,7 +3,7 @@ from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from soep_cleaning.dataset_pickling.task import _columns_for_dataset
+from soep_preparation.dataset_pickling.task import _columns_for_dataset
 
 
 def test_columns_for_dataset_with_raw_in_docstring():
