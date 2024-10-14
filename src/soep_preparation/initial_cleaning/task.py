@@ -29,7 +29,7 @@ def _fail_if_cleaning_module_missing(script_path):
         )
 
 
-for dataset in DATA_CATALOG["raw"].entries:
+for dataset in DATA_CATALOG["raw"]._entries:
 
     @task(id=dataset)
     def task_clean_one_dataset(
