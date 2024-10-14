@@ -28,7 +28,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the pl dataset."""
     out = pd.DataFrame()
     out["p_id"] = int_categorical_to_int(raw["pid"])
-    out["soep_hh_id"] = apply_lowest_int_dtype(raw["hid"])
+    out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
     out["lfd_pnr"] = int_categorical_to_int(raw["pnr"])
     out["year"] = int_categorical_to_int(raw["syear"])
     out["altersteilzeit_02_14"] = bool_categorical(

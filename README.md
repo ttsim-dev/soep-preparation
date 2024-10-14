@@ -75,7 +75,7 @@ module, follow these steps:
        out = pd.DataFrame()
 
        # Apply cleaning steps to raw data
-       out["soep_initial_hh_id"] = cleaning_function(raw["cid"])
+       out["hh_id_orig"] = cleaning_function(raw["cid"])
 
        return out
    ```

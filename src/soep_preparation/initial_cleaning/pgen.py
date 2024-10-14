@@ -29,8 +29,8 @@ def _weekly_working_hours_contract(
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the pgen dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw["cid"])
-    out["soep_hh_id"] = apply_lowest_int_dtype(raw["hid"])
+    out["hh_id_orig"] = apply_lowest_int_dtype(raw["cid"])
+    out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
     out["year"] = apply_lowest_int_dtype(raw["syear"])
     out["nationality_first"] = str_categorical(

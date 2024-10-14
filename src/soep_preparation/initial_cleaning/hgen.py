@@ -19,8 +19,8 @@ def _bruttokaltmiete_m_hh(
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the hgen dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw["cid"])
-    out["soep_hh_id"] = apply_lowest_int_dtype(raw["hid"])
+    out["hh_id_orig"] = apply_lowest_int_dtype(raw["cid"])
+    out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
 
     out["year"] = apply_lowest_int_dtype(raw["syear"])
     out["building_year_hh_max"] = int_to_int_categorical(

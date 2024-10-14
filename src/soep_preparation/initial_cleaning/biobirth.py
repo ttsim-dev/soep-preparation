@@ -15,7 +15,7 @@ def _wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
     df = pd.wide_to_long(
         df,
         stubnames=prev_wide_cols,
-        i=["soep_initial_hh_id", "p_id"],
+        i=["hh_id_orig", "p_id"],
         j="child_number",
         sep="_",
     ).reset_index()
@@ -32,7 +32,7 @@ def _wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the biobirth dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = float_categorical_to_int(raw["cid"])
+    out["hh_id_orig"] = float_categorical_to_int(raw["cid"])
     out["p_id"] = float_categorical_to_int(raw["pid"])
     out["n_kids_total"] = int_to_int_categorical(
         float_categorical_to_int(raw["sumkids"]),

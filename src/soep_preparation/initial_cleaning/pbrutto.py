@@ -10,8 +10,8 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the pbrutto dataset."""
     out = pd.DataFrame()
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
-    out["soep_initial_hh_id"] = int_categorical_to_int(raw["cid"])
-    out["soep_hh_id"] = int_categorical_to_int(raw["hid"])
+    out["hh_id_orig"] = int_categorical_to_int(raw["cid"])
+    out["hh_id"] = int_categorical_to_int(raw["hid"])
     out["year"] = int_categorical_to_int(raw["syear"])
     out["birth_year"] = int_categorical_to_int(raw["geburt_v2"])
     out["befragungs_status"] = str_categorical(raw["befstat_h"])

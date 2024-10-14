@@ -43,7 +43,7 @@ def _wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
     out = pd.wide_to_long(
         df,
         stubnames=prev_wide_cols,
-        i=["soep_initial_hh_id", "soep_hh_id", "p_id", "year"],
+        i=["hh_id_orig", "hh_id", "p_id", "year"],
         j="month",
         sep="_",
     ).reset_index()
@@ -62,8 +62,8 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the pkal dataset."""
     out = pd.DataFrame()
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
-    out["soep_hh_id"] = apply_lowest_int_dtype(raw["hid"])
-    out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw["cid"])
+    out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
+    out["hh_id_orig"] = apply_lowest_int_dtype(raw["cid"])
     out["year"] = apply_lowest_int_dtype(float_categorical_to_int(raw["syear"]))
 
     out["full_empl_v1_prev_1"] = str_categorical(

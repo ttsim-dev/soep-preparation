@@ -20,7 +20,7 @@ def _kindergeld_aktuell_hl_m_hh(
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the hl dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = int_categorical_to_int(raw["hid"])
+    out["hh_id"] = int_categorical_to_int(raw["hid"])
     out["year"] = int_categorical_to_int(raw["syear"])
 
     out["kindergeld_hl_m_hh_prev"] = int_categorical_to_int(raw["hlc0042_h"])

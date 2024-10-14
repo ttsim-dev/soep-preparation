@@ -22,7 +22,7 @@ def _hwealth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
     df = pd.wide_to_long(
         df,
         stubnames=prev_wide_cols,
-        i=["year", "soep_hh_id"],
+        i=["year", "hh_id"],
         j="var",
         sep="_",
         suffix=r"\w+",
@@ -45,7 +45,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the hwealth dataset."""
     out = pd.DataFrame()
     out["year"] = apply_lowest_int_dtype(raw["syear"])
-    out["soep_hh_id"] = apply_lowest_int_dtype(raw["hid"])
+    out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
 
     out["wohnsitz_immobilienverm_hh_a"] = apply_lowest_float_dtype(raw["p010ha"])
     out["wohnsitz_immobilienverm_hh_b"] = apply_lowest_float_dtype(raw["p010hb"])

@@ -10,7 +10,7 @@ from soep_preparation.utilities import (
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = int_categorical_to_int(raw["hid"])
+    out["hh_id"] = int_categorical_to_int(raw["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
 
     out["year"] = int_categorical_to_int(raw["syear"])

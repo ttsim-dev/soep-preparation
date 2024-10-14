@@ -9,7 +9,7 @@ from soep_preparation.utilities import (
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the hpathl dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = apply_lowest_int_dtype(raw["hid"])
+    out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
     out["year"] = apply_lowest_int_dtype(raw["syear"])
     out["hh_soep_sample"] = str_categorical(
         raw["hsample"],

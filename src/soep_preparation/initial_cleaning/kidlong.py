@@ -8,7 +8,7 @@ from soep_preparation.utilities import (
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the kidlong dataset."""
     out = pd.DataFrame()
-    out["soep_hh_id"] = int_categorical_to_int(raw["hid"])
+    out["hh_id"] = int_categorical_to_int(raw["hid"])
     out["p_id"] = int_categorical_to_int(raw["pid"])
     out["year"] = int_categorical_to_int(raw["syear"])
     out["pointer_mother"] = int_categorical_to_int(raw["k_pmum"])

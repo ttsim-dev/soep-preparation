@@ -8,7 +8,7 @@ from soep_preparation.utilities import (
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the biol dataset."""
     out = pd.DataFrame()
-    out["soep_initial_hh_id"] = apply_lowest_int_dtype(raw["cid"])
+    out["hh_id"] = apply_lowest_int_dtype(raw["cid"])
     out["hh_random_group"] = apply_lowest_int_dtype(raw["rgroup"])
     out["hh_strat"] = apply_lowest_int_dtype(raw["strat"])
 
