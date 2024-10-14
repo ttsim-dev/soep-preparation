@@ -130,8 +130,6 @@ test = {features = ["test"], solve-group = "default"}
 [tool.ruff]
 target-version = "py311"
 lint.select = ["ALL"]
-fix = true
-fix-only = true # No linting errors will be reported
 lint.extend-ignore = [
     "S101", # Use of `assert` detected.
     "ANN",  # Missing type annotations
@@ -139,6 +137,8 @@ lint.extend-ignore = [
     "COM812",
     "ISC001",
 ]
+fix = true
+fix-only = true # No linting errors will be reported
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "PD011"]
