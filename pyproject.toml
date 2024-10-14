@@ -1,8 +1,131 @@
-[build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.0"]
+# ======================================================================================
+# Project metadata
+# ======================================================================================
 
-[tool.setuptools_scm]
-write_to = "src/soep_cleaning/_version.py"
+[project]
+name = "soep_preparation"
+description = "Prepare the SOEP data for analysis."
+requires-python = ">=3.11"
+dependencies = [
+    "pytask",
+]
+dynamic = ["version"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+authors = [
+    { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
+]
+maintainers = [
+    { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.license]
+file = "LICENSE"
+
+[project.urls]
+Repository = "https://github.com/OpenSourceEconomics/soep-preparation"
+Github = "https://github.com/OpenSourceEconomics/soep-preparation"
+Tracker = "https://github.com/OpenSourceEconomics/soep-preparation/issues"
+
+
+# ======================================================================================
+# Build system configuration
+# ======================================================================================
+
+[build-system]
+requires = ["hatchling", "hatch_vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/soep_preparation/_version.py"
+
+[tool.hatch.build.targets.sdist]
+exclude = ["tests"]
+only-packages = true
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src"]
+sources = ["src"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+
+# ======================================================================================
+# Pixi
+# ======================================================================================
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+# Development Dependencies (conda)
+# --------------------------------------------------------------------------------------
+
+[tool.pixi.dependencies]
+python = "3.11"
+jupyterlab = "*"
+plotly = ">=5.24,<6"
+pre-commit = "*"
+ipykernel = "*"
+pandas = ">=2.1"
+pyarrow = ">=13.0"
+pygraphviz = "*"
+pytask-latex = ">=0.4.0"
+pytask-parallel = ">=0.4.0"
+pytask = ">=0.4.7"
+python-graphviz = "*"
+pyyaml = "*"
+statsmodels = "*"
+toml = "*"
+
+# Development Dependencies (pypi)
+# --------------------------------------------------------------------------------------
+
+[tool.pixi.pypi-dependencies]
+soep_preparation = {path = ".", editable = true}
+kaleido = "*"
+pdbp = "*"
+
+[tool.pixi.target.win-64.pypi-dependencies]
+kaleido = ">=0.1.0.post1,<=0.1.0.post1"
+
+# Features and Tasks
+# --------------------------------------------------------------------------------------
+
+[tool.pixi.feature.test.dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+
+[tool.pixi.feature.test.tasks]
+tests = "pytest tests"
+tests-with-cov = "pytest tests --cov-report=xml --cov=./"
+
+# Environments
+# --------------------------------------------------------------------------------------
+
+[tool.pixi.environments]
+test = {features = ["test"], solve-group = "default"}
+
+
+# ======================================================================================
+# Ruff configuration
+# ======================================================================================
 
 [tool.ruff]
 target-version = "py311"
@@ -12,6 +135,9 @@ fix-only = true # No linting errors will be reported
 lint.extend-ignore = [
     "S101", # Use of `assert` detected.
     "ANN",  # Missing type annotations
+    # Avoid conflict with ruff-format
+    "COM812",
+    "ISC001",
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -22,18 +148,20 @@ lint.extend-ignore = [
 convention = "google"
 
 
-[tool.nbqa.config]
-black = "pyproject.toml"
-
-[tool.nbqa.mutate]
-black = 1
+# ======================================================================================
+# pytask configuration
+# ======================================================================================
 
 [tool.pytask.ini_options]
-paths = ["./src/soep_cleaning"]
+paths = ["./src/soep_preparation"]
 pdbcls = "pdbp:Pdb"
 editor_url_scheme = "vscode"
 task_files = ["task_*.py", "task.py", "tasks.py"]
 
+
+# ======================================================================================
+# pytest configuration
+# ======================================================================================
 
 [tool.pytest.ini_options]
 addopts = "--pdbcls=pdbp:Pdb"
@@ -45,6 +173,11 @@ markers = [
     "end_to_end: Flag for tests that cover the whole program.",
 ]
 norecursedirs = ["docs"]
+
+
+# ======================================================================================
+# yamlfix configuration
+# ======================================================================================
 
 [tool.yamlfix]
 line_length = 88

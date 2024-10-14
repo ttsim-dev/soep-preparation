@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from soep_cleaning.config import pd
+from soep_preparation.config import pd
 
 
 def _fail_if_series_wrong_dtype(sr: pd.Series, expected_dtype: str):
@@ -163,7 +163,7 @@ def _remove_delimiter_levels(sr, delimiter, nr_identifiers, ordered):
         delimiter,
         nr_identifiers,
     )
-    categories_mapping = dict(zip(sr.cat.categories, categories_list))
+    categories_mapping = dict(zip(sr.cat.categories, categories_list, strict=False))
     return _renaming_categories(sr, categories_mapping, ordered)
 
 
@@ -215,13 +215,12 @@ def create_dummy(
     )
     if kind == "equality":
         return (sr == true_value).mask(sr.isna(), pd.NA).astype("bool[pyarrow]")
-    elif kind == "neq":
+    if kind == "neq":
         return (sr != true_value).mask(sr.isna(), pd.NA).astype("bool[pyarrow]")
-    elif kind == "isin":
+    if kind == "isin":
         return sr.isin(true_value).mask(sr.isna(), pd.NA).astype("bool[pyarrow]")
-    else:
-        msg = f"Unknown kind '{kind}' of dummy creation"
-        raise ValueError(msg)
+    msg = f"Unknown kind '{kind}' of dummy creation"
+    raise ValueError(msg)
 
 
 def agreement_to_int_categorical(
@@ -359,19 +358,19 @@ def str_categorical(
                         delimiter,
                         nr_identifiers,
                     ),
+                    strict=False,
                 ),
             )
 
         return _reduce_categories(sr_no_missing, renaming, ordered)
-    elif renaming is not None:
+    if renaming is not None:
         return _renaming_categories(sr_no_missing, renaming, ordered)
-    else:
-        return _remove_delimiter_levels(
-            sr_no_missing,
-            delimiter,
-            nr_identifiers,
-            ordered,
-        )
+    return _remove_delimiter_levels(
+        sr_no_missing,
+        delimiter,
+        nr_identifiers,
+        ordered,
+    )
 
 
 def str_categorical_to_int_categorical(
@@ -404,13 +403,12 @@ def str_categorical_to_int_categorical(
     if renaming is not None:
         if reduce:
             return _reduce_categories(sr_no_missing, renaming, ordered)
-        else:
-            return _renaming_categories(
-                sr_no_missing,
-                renaming,
-                ordered,
-                "int[pyarrow]",
-            )
+        return _renaming_categories(
+            sr_no_missing,
+            renaming,
+            ordered,
+            "int[pyarrow]",
+        )
 
     return int_to_int_categorical(
         apply_lowest_int_dtype(sr_no_missing),

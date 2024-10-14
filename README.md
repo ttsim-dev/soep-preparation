@@ -27,15 +27,8 @@ dependencies and the configuration for the pre-commit hooks is in
 
 ## Usage
 
-To get started, create and activate the environment with
-
-```console
-$ conda/mamba env create -f environment.yml
-$ conda activate soep_preparation
-```
-
-To include further dependencies, add them to the `environment.yml` file and (re-)create
-the environment as specified above.
+To get started, install [pixi](https://prefix.dev/docs/pixi/overview#installation) if
+you haven't already.
 
 **_Inside the directory `soep_preparation/src/soep_preparation/data` place the folder
 `V37` containing the raw `.dta` datafiles._**
@@ -43,13 +36,13 @@ the environment as specified above.
 To build the project, type
 
 ```console
-$ pytask
+$ pixi run pytask
 ```
 
 To clean a single dataset, specify the "dataset_name" by typing:
 
 ```console
-$ pytask -k "dataset_name"
+$ pixi run pytask -k "dataset_name"
 ```
 
 ## How to Add a New Dataset Module or Additional Functions

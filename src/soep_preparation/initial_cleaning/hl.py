@@ -1,5 +1,5 @@
-from soep_cleaning.config import pd
-from soep_cleaning.utilities import (
+from soep_preparation.config import pd
+from soep_preparation.utilities import (
     bool_categorical,
     float_categorical_to_float,
     int_categorical_to_int,

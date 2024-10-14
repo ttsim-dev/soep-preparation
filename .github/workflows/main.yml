@@ -20,22 +20,18 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ['3.11']
     steps:
-      - uses: actions/checkout@v3
-      - name: create build environment
-        uses: mamba-org/provision-with-micromamba@main
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.8.1
         with:
-          environment-file: environment.yml
-          environment-name: gha-testing
-          cache-env: true
-          extra-specs: |
-            python=${{ matrix.python-version }}
-      - name: run pytest
-        shell: bash -l {0}
-        run: |
-          micromamba activate gha-testing
-          pytest --cov-report=xml --cov=./
-      - name: Upload coverage report.
+          pixi-version: v0.29.0
+          cache: true
+          cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+          frozen: true
+      - name: Run pytest
+        shell: bash {0}
+        run: pixi run tests-with-cov
+      - name: Upload coverage report
         if: runner.os == 'Linux' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v3
-        # with:
-        #   token: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

@@ -1,6 +1,6 @@
-from soep_cleaning.config import pd
-from soep_cleaning.initial_cleaning import month_mapping
-from soep_cleaning.utilities import (
+from soep_preparation.config import pd
+from soep_preparation.initial_cleaning import month_mapping
+from soep_preparation.utilities import (
     apply_lowest_int_dtype,
     categorical_to_int_categorical,
 )

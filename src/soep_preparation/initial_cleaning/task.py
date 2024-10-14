@@ -5,7 +5,7 @@ from typing import Annotated
 
 from pytask import task
 
-from soep_cleaning.config import DATA_CATALOG, SRC, pd
+from soep_preparation.config import DATA_CATALOG, SRC, pd
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):
@@ -29,7 +29,7 @@ def _fail_if_cleaning_module_missing(script_path):
         )
 
 
-for dataset in DATA_CATALOG["raw"].entries:
+for dataset in DATA_CATALOG["raw"]._entries:
 
     @task(id=dataset)
     def task_clean_one_dataset(

@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import Annotated
 
 from pytask import task
-from soep_cleaning.config import DATA_CATALOG, SRC, get_datasets, pd
+
+from soep_preparation.config import DATA_CATALOG, SRC, get_datasets, pd
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):
@@ -15,7 +16,7 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
 
 
 for dataset in get_datasets((SRC / "create_variables").resolve()):
-    if dataset in DATA_CATALOG["cleaned"].entries:
+    if dataset in DATA_CATALOG["cleaned"]._entries:
 
         @task(id=dataset)
         def task_manipulate_one_dataset(

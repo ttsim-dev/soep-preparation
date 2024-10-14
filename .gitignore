@@ -12,6 +12,9 @@
 # bld
 bld/
 
+# pixi
+.pixi/
+
 # latex
 *.aux
 *.bbl

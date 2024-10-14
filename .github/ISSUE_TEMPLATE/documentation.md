@@ -1,6 +1,6 @@
 ---
 name: Documentation Improvement
-about: Report wrong or missing documentation in soep_cleaning
+about: Report wrong or missing documentation in soep_preparation
 title: "DOC:"
 labels: "documentation"
 ---
@@ -10,7 +10,7 @@ labels: "documentation"
 Provide the location of the documentation, e.g. an URL of the documentation.
 
 **Note**: You can check the latest versions of the docs on `main`
-[here](https://soep_cleaning.readthedocs.io/en/latest).
+[here](https://soep_preparation.readthedocs.io/en/latest).
 
 #### Documentation problem
 
