@@ -135,7 +135,14 @@ DATASETS = get_cleaned_datasets(DATA_CATALOGS)
 def task_merge_datasets(
     datasets: Annotated[dict, DATASETS],
 ) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["merged_dataset"]]:
-    """Merge datasets."""
+    """Merge datasets, initially on obsvervational level and time-varying level, then aggregate.
+
+    Args:
+        datasets (dict): Dictionary containing the datasets to be merged.
+
+    Returns:
+        pd.DataFrame: Merged dataset.
+    """
     datasets_kind = get_datasets_kind(datasets)
     datasets_with_origin_dummy = get_datasets_with_origin_dummy(datasets_kind)
     return merge_datasets(datasets_with_origin_dummy)
