@@ -73,7 +73,15 @@ def get_datasets_with_origin_dummy(
     return datasets
 
 
-def get_merged_dataset(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
+def merge_duplicate_columns(data_merged: pd.DataFrame) -> pd.DataFrame:
+    out = data_merged.copy()
+    out["birth_month"] = out["birth_month_from_bioedu"].fillna(
+        out["birth_month_from_ppathl"]
+    )
+    return out
+
+
+def merge_datasets(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     dataset_individual_constant = reduce(
         lambda left, right: left.combine_first(right),
         datasets["individual-time-constant"].values(),
@@ -112,6 +120,9 @@ def get_merged_dataset(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     # Set the final index
     data_merged = data_merged.set_index(["p_id", "year"]).sort_index()
 
+    # Merge duplicate columns originating from distinct datasets
+    data_merged = merge_duplicate_columns(data_merged)
+
     # Fill missing values with zeros for columns with pattern "in_dataset_*"
     cols_to_fill = data_merged.filter(regex="in_dataset_.*").columns
     data_merged[cols_to_fill] = data_merged[cols_to_fill].fillna(0)
@@ -127,4 +138,4 @@ def task_merge_datasets(
     """Merge datasets."""
     datasets_kind = get_datasets_kind(datasets)
     datasets_with_origin_dummy = get_datasets_with_origin_dummy(datasets_kind)
-    return get_merged_dataset(datasets_with_origin_dummy)
+    return merge_datasets(datasets_with_origin_dummy)
