@@ -29,16 +29,20 @@ def _fail_if_cleaning_module_missing(script_path):
         )
 
 
-for dataset in DATA_CATALOGS["raw"]._entries:
+for dataset in DATA_CATALOGS["single_datasets"].keys():
 
     @task(id=dataset)
     def task_clean_one_dataset(
-        raw_data: Annotated[Path, DATA_CATALOGS["raw"][dataset]],
+        raw_data: Annotated[
+            Path, DATA_CATALOGS["single_datasets"][dataset][f"{dataset}_raw"]
+        ],
         cleaning_script: Annotated[
             Path,
             SRC / "initial_cleaning" / f"{dataset}.py",
         ],
-    ) -> Annotated[pd.DataFrame, DATA_CATALOGS["cleaned"][dataset]]:
+    ) -> Annotated[
+        pd.DataFrame, DATA_CATALOGS["single_datasets"][dataset][f"{dataset}_cleaned"]
+    ]:
         """Cleans a dataset using a specified cleaning script.
 
         Parameters:

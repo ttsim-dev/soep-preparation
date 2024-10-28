@@ -13,7 +13,6 @@ from soep_preparation.config import (
     DATA_CATALOGS,
     SOEP_VERSION,
     SRC,
-    get_datasets,
     pd,
 )
 
@@ -111,9 +110,7 @@ def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.Da
     return out
 
 
-for dataset in get_datasets(
-    (SRC / "initial_cleaning").resolve(),
-):
+for dataset in DATA_CATALOGS["single_datasets"].keys():
 
     @task(id=dataset)
     def task_pickle_one_dataset(
@@ -122,7 +119,9 @@ for dataset in get_datasets(
             Path,
             SRC / "initial_cleaning" / f"{dataset}.py",
         ],
-    ) -> Annotated[pd.DataFrame, DATA_CATALOGS["raw"][dataset]]:
+    ) -> Annotated[
+        pd.DataFrame, DATA_CATALOGS["single_datasets"][dataset][f"{dataset}_raw"]
+    ]:
         """Saves the raw dataset to the data catalog in a more efficient procedure.
 
         Parameters:

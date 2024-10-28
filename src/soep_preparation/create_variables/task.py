@@ -16,16 +16,21 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
 
 
 for dataset in get_datasets((SRC / "create_variables").resolve()):
-    if dataset in DATA_CATALOGS["cleaned"]._entries:
+    if f"{dataset}_cleaned" in DATA_CATALOGS["single_datasets"][dataset]._entries:
 
         @task(id=dataset)
         def task_manipulate_one_dataset(
-            clean_data: Annotated[Path, DATA_CATALOGS["cleaned"][dataset]],
+            clean_data: Annotated[
+                Path, DATA_CATALOGS["single_datasets"][dataset][f"{dataset}_cleaned"]
+            ],
             script_path: Annotated[
                 Path,
                 SRC / "create_variables" / f"{dataset}.py",
             ],
-        ) -> Annotated[pd.DataFrame, DATA_CATALOGS["manipulated"][dataset]]:
+        ) -> Annotated[
+            pd.DataFrame,
+            DATA_CATALOGS["single_datasets"][dataset][f"{dataset}_manipulated"],
+        ]:
             """Manipulates a dataset using a specified cleaning script.
 
             Parameters:
@@ -50,7 +55,7 @@ for dataset in get_datasets((SRC / "create_variables").resolve()):
             return module.manipulate(clean_data)
 
     else:
-        msg = f"Dataset {dataset} not found in cleaned data catalog."
+        msg = f"Cleaned dataset {dataset}_cleaned not found in data catalog."
         raise AttributeError(msg)
 
 

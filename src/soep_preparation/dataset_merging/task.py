@@ -8,14 +8,22 @@ def get_cleaned_datasets(data_catalogs) -> dict[str, pd.DataFrame]:
     datasets = {}
     for dataset in get_datasets((SRC / "initial_cleaning").resolve()):
         if (
-            dataset in data_catalogs["cleaned"]._entries
-            and dataset not in data_catalogs["manipulated"]._entries
+            f"{dataset}_cleaned" in data_catalogs["single_datasets"][dataset]._entries
+            and f"{dataset}_manipulated"
+            not in data_catalogs["single_datasets"][dataset]._entries
         ):
-            datasets[dataset] = data_catalogs["cleaned"][dataset]
-        elif dataset in data_catalogs["manipulated"]._entries:
-            datasets[dataset] = data_catalogs["manipulated"][dataset]
+            datasets[dataset] = data_catalogs["single_datasets"][dataset][
+                f"{dataset}_cleaned"
+            ]
+        elif (
+            f"{dataset}_manipulated"
+            in data_catalogs["single_datasets"][dataset]._entries
+        ):
+            datasets[dataset] = data_catalogs["single_datasets"][dataset][
+                f"{dataset}_manipulated"
+            ]
         else:
-            msg = f"Dataset {dataset} not found in cleaned or manipulated data catalog."
+            msg = f"Neither cleaned nor manipulated dataset {dataset} found in data catalog."
             raise AttributeError(msg)
     return datasets
 

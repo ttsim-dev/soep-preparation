@@ -1,9 +1,13 @@
+from pathlib import Path
 from typing import Annotated
 
-from soep_preparation.config import DATA, DATA_CATALOGS, pd
+import pytask
+
+from soep_preparation.config import DATA_CATALOGS, pd
 
 
+@pytask.mark.skip()
 def task_merge_datasets(
-    data: Annotated[dict, DATA / "merged" / "merged_dataset"],
-) -> Annotated[pd.DataFrame, DATA_CATALOGS["cleaned"]["merged_cleaned"]]:
+    data: Annotated[Path, DATA_CATALOGS["merged"]["merged_dataset"]],
+) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["merged_cleaned"]]:
     return pd.DataFrame()
