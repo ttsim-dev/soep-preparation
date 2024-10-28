@@ -39,3 +39,6 @@ data/
 
 # ignore notebooks
 *.ipynb
+
+# ignore sandbox directory
+sandbox/
