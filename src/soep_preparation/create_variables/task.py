@@ -28,13 +28,7 @@ for dataset in get_datasets((SRC / "create_variables").resolve()):
         ) -> Annotated[pd.DataFrame, DATA_CATALOG["manipulated"][dataset]]:
             """Manipulates a dataset using a specified cleaning script.
 
-            Parameters:
                 clean_data (pd.DataFrame): Cleaned dataset to be manipulated.
-                script_path (Path): The path to the manipulation script.
-                dataset (str): The name of the dataset.
-
-            Returns:
-                pd.DataFrame: A manipulated pandas DataFrame to be saved to the data catalog.
 
             Raises:
                 FileNotFoundError: If the dataset file or cleaning script file does not exist.
