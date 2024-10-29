@@ -10,7 +10,7 @@ from pytask import task
 
 from soep_preparation.config import (
     DATA,
-    DATA_CATALOGS,
+    DATA_CATALOG,
     SOEP_VERSION,
     SRC,
     pd,
@@ -119,9 +119,7 @@ for dataset in DATA_CATALOGS["single_datasets"].keys():
             Path,
             SRC / "initial_cleaning" / f"{dataset}.py",
         ],
-    ) -> Annotated[
-        pd.DataFrame, DATA_CATALOGS["single_datasets"][dataset][f"{dataset}_raw"]
-    ]:
+    ) -> Annotated[pd.DataFrame, DATA_CATALOG["raw"][dataset]]:
         """Saves the raw dataset to the data catalog in a more efficient procedure.
 
         Parameters:

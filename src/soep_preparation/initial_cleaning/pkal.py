@@ -164,7 +164,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
         raw["kal2j01_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
-    )  # replaced var kal2j01 by kal2j01_h
+    )  # TODO: replaced var kal2j01 by kal2j01_h
     out["mutterschaftsgeld_monate_prev_inconsistent"] = int_to_int_categorical(
         float_categorical_to_int(raw["kal2j02"]),
     )

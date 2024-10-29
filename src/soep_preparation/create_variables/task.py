@@ -4,7 +4,7 @@ from typing import Annotated
 
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOGS, SRC, get_datasets, pd
+from soep_preparation.config import DATA_CATALOG, SRC, get_datasets, pd
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):
@@ -16,21 +16,16 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
 
 
 for dataset in get_datasets((SRC / "create_variables").resolve()):
-    if f"{dataset}_cleaned" in DATA_CATALOGS["single_datasets"][dataset]._entries:
+    if dataset in DATA_CATALOG["cleaned"]._entries:
 
         @task(id=dataset)
         def task_manipulate_one_dataset(
-            clean_data: Annotated[
-                Path, DATA_CATALOGS["single_datasets"][dataset][f"{dataset}_cleaned"]
-            ],
+            clean_data: Annotated[Path, DATA_CATALOG["cleaned"][dataset]],
             script_path: Annotated[
                 Path,
                 SRC / "create_variables" / f"{dataset}.py",
             ],
-        ) -> Annotated[
-            pd.DataFrame,
-            DATA_CATALOGS["single_datasets"][dataset][f"{dataset}_manipulated"],
-        ]:
+        ) -> Annotated[pd.DataFrame, DATA_CATALOG["manipulated"][dataset]]:
             """Manipulates a dataset using a specified cleaning script.
 
             Parameters:

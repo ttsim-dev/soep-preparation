@@ -128,6 +128,14 @@ def _renaming_categories(sr, renaming, ordered, categories_type_str="str[pyarrow
         pd.Series: A new categorical Series with the renamed categories.
 
     """
+    # TODO: check if _set_new_categories() is adequate
+    """
+    category_dtype = pd.CategoricalDtype(
+        sr_renamed.cat.categories.astype(categories_type_str),
+        ordered,
+    )
+    return pd.Series(sr_renamed, dtype=category_dtype)
+    """
     sr_renamed = sr.cat.reorder_categories(
         renaming,
         ordered=ordered,
@@ -258,6 +266,7 @@ def bool_categorical(
         pd.Series: The series with cleaned categories.
 
     """
+    # TODO: discuss if this manipulation on the dataset is acceptable
     _error_handling_categorical(
         sr,
         "category",
@@ -405,6 +414,9 @@ def str_categorical_to_int_categorical(
         apply_lowest_int_dtype(sr_no_missing),
         ordered,
     )
+
+
+# TODO: inspect if replace should be changed to rename_categories
 
 
 def int_categorical(
@@ -582,6 +594,7 @@ def replace_conditionally(
         pd.Series: The series with the replaced values.
 
     """
+    # TODO: check this replacement style with Hans-Martin
     new_sr = sr.copy()
     new_sr.loc[conditioning_sr == conditioning_value] = replacement_value
     return new_sr
