@@ -4,7 +4,7 @@ from typing import Annotated
 
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOG, SRC, get_datasets, pd
+from soep_preparation.config import DATA_CATALOGS, SRC, get_dataset_names, pd
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):
@@ -15,17 +15,18 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-for dataset in get_datasets((SRC / "create_variables").resolve()):
-    if dataset in DATA_CATALOG["cleaned"]._entries:
+for name in get_dataset_names(SRC / "create_variables"):
+    if name in DATA_CATALOGS["single_variables"].keys():
+        catalog = DATA_CATALOGS["single_variables"][name]
 
-        @task(id=dataset)
+        @task(id=name)
         def task_manipulate_one_dataset(
-            clean_data: Annotated[Path, DATA_CATALOG["cleaned"][dataset]],
+            clean_data: Annotated[Path, catalog["cleaned"]],
             script_path: Annotated[
                 Path,
-                SRC / "create_variables" / f"{dataset}.py",
+                SRC / "create_variables" / f"{name}.py",
             ],
-        ) -> Annotated[pd.DataFrame, DATA_CATALOG["manipulated"][dataset]]:
+        ) -> Annotated[pd.DataFrame, catalog["manipulated"]]:
             """Manipulates a dataset using a specified cleaning script.
 
             Parameters:
@@ -50,7 +51,7 @@ for dataset in get_datasets((SRC / "create_variables").resolve()):
             return module.manipulate(clean_data)
 
     else:
-        msg = f"Dataset {dataset} not found in cleaned data catalog."
+        msg = f"Corresponding script to create variables for dataset {name} from data catalog not found."
         raise AttributeError(msg)
 
 
