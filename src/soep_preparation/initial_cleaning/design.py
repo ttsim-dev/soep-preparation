@@ -12,7 +12,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["hh_random_group"] = apply_lowest_int_dtype(raw["rgroup"])
     out["hh_strat"] = apply_lowest_int_dtype(raw["strat"])
 
-    out["hh_soep_sample"] = str_categorical(
+    out["hh_soep_sample_from_design"] = str_categorical(
         raw["hsample"],
         nr_identifiers=2,
     )
