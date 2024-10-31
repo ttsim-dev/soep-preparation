@@ -1,6 +1,8 @@
 from functools import reduce
 from typing import Annotated
 
+from pandas.api.types import union_categoricals
+
 from soep_preparation.config import DATA_CATALOGS, SRC, get_datasets, pd
 
 
@@ -78,43 +80,109 @@ def merge_duplicate_columns(data_merged: pd.DataFrame) -> pd.DataFrame:
     out["birth_month"] = out["birth_month_from_bioedu"].fillna(
         out["birth_month_from_ppathl"]
     )
+
+    categories = union_categoricals(
+        [out["hh_soep_sample_from_design"], out["hh_soep_sample_from_hpathl"]]
+    ).categories
+    sr = (
+        out["hh_soep_sample_from_design"]
+        .astype("str[pyarrow]")
+        .fillna(out["hh_soep_sample_from_hpathl"].astype("str[pyarrow]"))
+    )
+    categorical = pd.Categorical(sr, categories=categories, ordered=False)
+    out["hh_soep_sample"] = pd.Series(categorical, index=out.index)
+    out.drop(
+        columns=["hh_soep_sample_from_design", "hh_soep_sample_from_hpathl"],
+        inplace=True,
+    )
     return out
+
+
+def merge_and_fillna_shared_cols(df_left, df_right, merge_on=None, how="outer"):
+    """Merge two DataFrames on specified columns and fill missing values.
+
+    Args:
+        df_left (DataFrame): Left DataFrame (values in this DataFrame have priority).
+        df_right (DataFrame): Right DataFrame.
+        merge_on (list): List of columns to merge on. If None, defaults to all shared columns.
+        how (string): Merge method (e.g., 'outer', 'inner').
+
+    Returns:
+        DataFrame: Merged DataFrame with filled values, without _x and _y columns.
+    """
+    # Default to all shared columns if merge_on is None
+    if merge_on is None:
+        merge_on = [c for c in df_left.columns if c in df_right.columns]
+
+    if not merge_on:
+        raise ValueError("No shared columns specified or found to merge on.")
+
+    # Identify shared columns not in merge_on
+    extra_shared_cols = [
+        c for c in df_left.columns if c in df_right.columns and c not in merge_on
+    ]
+
+    # Perform the merge on the specified columns
+    res = pd.merge(df_left, df_right, on=merge_on, how=how, suffixes=("_x", "_y"))
+
+    # Fill missing values for merged columns in merge_on
+    for c in merge_on:
+        if c in res.columns and f"{c}_y" in res.columns:
+            res[c] = res[c].fillna(res[f"{c}_y"])
+            res.drop(columns=f"{c}_y", inplace=True)
+
+    # Fill NaN values in '_x' columns with '_y' counterparts and drop the old columns
+    for c in extra_shared_cols:
+        res[c] = res[c + "_x"].fillna(res[c + "_y"])
+        res.drop(columns=[c + "_x", c + "_y"], inplace=True)
+
+    return res
 
 
 def merge_datasets(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     dataset_individual_constant = reduce(
-        lambda left, right: left.combine_first(right),
+        lambda left, right: merge_and_fillna_shared_cols(left, right),
         datasets["individual-time-constant"].values(),
     )
     dataset_individual_varying = reduce(
-        lambda left, right: left.combine_first(right),
+        lambda left, right: merge_and_fillna_shared_cols(left, right),
         datasets["individual-time-varying"].values(),
     )
-    dataset_household_constant = reduce(
-        lambda left, right: left.combine_first(right),
-        datasets["household-time-constant"].values(),
-    )
+    dataset_individual_varying["hh_id_orig"] = dataset_individual_varying.groupby(
+        "p_id"
+    )["hh_id_orig"].ffill()
     dataset_household_varying = reduce(
-        lambda left, right: left.combine_first(right),
+        lambda left, right: merge_and_fillna_shared_cols(left, right),
         datasets["household-time-varying"].values(),
     )
-
+    dataset_household_varying["hh_id_orig"] = dataset_household_varying.groupby(
+        "hh_id"
+    )["hh_id_orig"].ffill()
+    dataset_household_constant = reduce(
+        lambda left, right: merge_and_fillna_shared_cols(left, right),
+        datasets["household-time-constant"].values(),
+    )
     # Initialize with the first dataset
-    data_merged = dataset_individual_varying.reset_index()
+    data_merged = dataset_individual_varying.reset_index(drop=True)
 
     # Merge household-varying data
-    data_merged = pd.merge(
-        data_merged, dataset_household_varying, on=["hh_id", "year"], how="left"
+    data_merged = merge_and_fillna_shared_cols(
+        data_merged, dataset_household_varying, merge_on=["hh_id", "year"], how="left"
     )
 
     # Merge individual-constant data
-    data_merged = pd.merge(
-        data_merged, dataset_individual_constant, on=["p_id"], how="left"
+    data_merged = merge_and_fillna_shared_cols(
+        data_merged,
+        dataset_individual_constant,
+        merge_on=["hh_id_orig", "p_id"],
+        how="left",
     )
-
     # Merge household-constant data
-    data_merged = pd.merge(
-        data_merged, dataset_household_constant, on=["hh_id"], how="left"
+    data_merged = merge_and_fillna_shared_cols(
+        data_merged,
+        dataset_household_constant,
+        merge_on=["hh_id"],
+        how="left",
     )
 
     # Set the final index
@@ -123,9 +191,6 @@ def merge_datasets(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     # Merge duplicate columns originating from distinct datasets
     data_merged = merge_duplicate_columns(data_merged)
 
-    # Fill missing values with zeros for columns with pattern "in_dataset_*"
-    cols_to_fill = data_merged.filter(regex="in_dataset_.*").columns
-    data_merged[cols_to_fill] = data_merged[cols_to_fill].fillna(0)
     return data_merged
 
 
