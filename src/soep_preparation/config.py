@@ -17,12 +17,8 @@ TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 
 SOEP_VERSION = "V38"
 
-DATA_CATALOG = {
-    name: DataCatalog(name=name) for name in ["raw", "cleaned", "manipulated", "final"]
-}
 
-
-def get_datasets(directory: Path) -> list[str]:
+def get_dataset_names(directory: Path) -> list[str]:
     """Get all dataset names based on the script names in the given directory.
 
     Args:
@@ -40,4 +36,19 @@ def get_datasets(directory: Path) -> list[str]:
     ]
 
 
-__all__ = ["DATA", "SRC", "TEST_DIR", "SOEP_VERSION", "DATA_CATALOG", "get_datasets"]
+DATA_CATALOGS = {
+    "single_variables": {
+        dataset_name: DataCatalog(name=dataset_name)
+        for dataset_name in get_dataset_names(SRC / "initial_cleaning")
+    },
+    "merged": DataCatalog(name="merged"),
+}
+
+__all__ = [
+    "DATA",
+    "SRC",
+    "TEST_DIR",
+    "SOEP_VERSION",
+    "DATA_CATALOGS",
+    "get_dataset_names",
+]

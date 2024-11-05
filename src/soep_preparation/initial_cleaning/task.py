@@ -5,7 +5,7 @@ from typing import Annotated
 
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOG, SRC, pd
+from soep_preparation.config import DATA_CATALOGS, SRC, pd
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):
@@ -29,16 +29,16 @@ def _fail_if_cleaning_module_missing(script_path):
         )
 
 
-for dataset in DATA_CATALOG["raw"]._entries:
+for name, catalog in DATA_CATALOGS["single_variables"].items():
 
-    @task(id=dataset)
+    @task(id=name)
     def task_clean_one_dataset(
-        raw_data: Annotated[Path, DATA_CATALOG["raw"][dataset]],
+        raw_data: Annotated[Path, catalog["raw"]],
         cleaning_script: Annotated[
             Path,
-            SRC / "initial_cleaning" / f"{dataset}.py",
+            SRC / "initial_cleaning" / f"{name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, DATA_CATALOG["cleaned"][dataset]]:
+    ) -> Annotated[pd.DataFrame, catalog["cleaned"]]:
         """Cleans a dataset using a specified cleaning script.
 
         Parameters:

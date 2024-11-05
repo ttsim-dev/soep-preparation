@@ -10,10 +10,9 @@ from pytask import task
 
 from soep_preparation.config import (
     DATA,
-    DATA_CATALOG,
+    DATA_CATALOGS,
     SOEP_VERSION,
     SRC,
-    get_datasets,
     pd,
 )
 
@@ -111,18 +110,16 @@ def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.Da
     return out
 
 
-for dataset in get_datasets(
-    (SRC / "initial_cleaning").resolve(),
-):
+for name, catalog in DATA_CATALOGS["single_variables"].items():
 
-    @task(id=dataset)
+    @task(id=name)
     def task_pickle_one_dataset(
-        orig_data: Annotated[Path, DATA / f"{SOEP_VERSION}" / f"{dataset}.dta"],
+        orig_data: Annotated[Path, DATA / f"{SOEP_VERSION}" / f"{name}.dta"],
         cleaning_script: Annotated[
             Path,
-            SRC / "initial_cleaning" / f"{dataset}.py",
+            SRC / "initial_cleaning" / f"{name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, DATA_CATALOG["raw"][dataset]]:
+    ) -> Annotated[pd.DataFrame, catalog["raw"]]:
         """Saves the raw dataset to the data catalog in a more efficient procedure.
 
         Parameters:
