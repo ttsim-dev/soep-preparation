@@ -16,43 +16,42 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
 
 
 for name in get_dataset_names(SRC / "create_variables"):
-    if name in DATA_CATALOGS["single_variables"].keys():
-        catalog = DATA_CATALOGS["single_variables"][name]
+    assert (
+        name in DATA_CATALOGS["single_variables"]
+    ), f"There is no data catalog entry corresponding to {SRC / 'create_variables' / name}"
 
-        @task(id=name)
-        def task_manipulate_one_dataset(
-            clean_data: Annotated[Path, catalog["cleaned"]],
-            script_path: Annotated[
-                Path,
-                SRC / "create_variables" / f"{name}.py",
-            ],
-        ) -> Annotated[pd.DataFrame, catalog["manipulated"]]:
-            """Manipulates a dataset using a specified cleaning script.
+    catalog = DATA_CATALOGS["single_variables"][name]
 
-            Parameters:
-                clean_data (pd.DataFrame): Cleaned dataset to be manipulated.
-                script_path (Path): The path to the manipulation script.
-                dataset (str): The name of the dataset.
+    @task(id=name)
+    def task_manipulate_one_dataset(
+        clean_data: Annotated[Path, catalog["cleaned"]],
+        script_path: Annotated[
+            Path,
+            SRC / "create_variables" / f"{name}.py",
+        ],
+    ) -> Annotated[pd.DataFrame, catalog["manipulated"]]:
+        """Manipulates a dataset using a specified cleaning script.
 
-            Returns:
-                pd.DataFrame: A manipulated pandas DataFrame to be saved to the data catalog.
+        Parameters:
+            clean_data (pd.DataFrame): Cleaned dataset to be manipulated.
+            script_path (Path): The path to the manipulation script.
+            dataset (str): The name of the dataset.
 
-            Raises:
-                FileNotFoundError: If the dataset file or cleaning script file does not exist.
-                ImportError: If there is an error loading the manipulation script module.
-                AttributeError: If the manipulation script module does not contain the expected function.
+        Returns:
+            pd.DataFrame: A manipulated pandas DataFrame to be saved to the data catalog.
 
-            """
-            _error_handling_task(clean_data, script_path)
-            module = SourceFileLoader(
-                script_path.stem,
-                str(script_path),
-            ).load_module()
-            return module.manipulate(clean_data)
+        Raises:
+            FileNotFoundError: If the dataset file or cleaning script file does not exist.
+            ImportError: If there is an error loading the manipulation script module.
+            AttributeError: If the manipulation script module does not contain the expected function.
 
-    else:
-        msg = f"Corresponding script to create variables for dataset {name} from data catalog not found."
-        raise AttributeError(msg)
+        """
+        _error_handling_task(clean_data, script_path)
+        module = SourceFileLoader(
+            script_path.stem,
+            str(script_path),
+        ).load_module()
+        return module.manipulate(clean_data)
 
 
 def _error_handling_task(data, script_path):
