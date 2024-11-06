@@ -7,23 +7,21 @@ from pandas.api.types import union_categoricals
 from soep_preparation.config import DATA_CATALOGS
 
 
-def get_cleaned_datasets(data_catalogs) -> dict[str, pd.DataFrame]:
+def datasets_to_merge(data_catalogs) -> dict[str, pd.DataFrame]:
     datasets = {}
-    for dataset in get_datasets((SRC / "initial_cleaning").resolve()):
-        if (
-            dataset in data_catalogs["cleaned"]._entries
-            and dataset not in data_catalogs["manipulated"]._entries
-        ):
-            datasets[dataset] = data_catalogs["cleaned"][dataset]
-        elif dataset in data_catalogs["manipulated"]._entries:
-            datasets[dataset] = data_catalogs["manipulated"][dataset]
-        else:
-            msg = f"Dataset {dataset} not found in cleaned or manipulated data catalog."
-            raise AttributeError(msg)
+    for name, catalog in data_catalogs["single_variables"].items():
+        assert (
+            "cleaned" in catalog._entries or "manipulated" in catalog._entries
+        ), f"Neither cleaned nor manipulated dataset {name} found in the respective data catalog."
+        datasets[name] = (
+            catalog["manipulated"]
+            if "manipulated" in catalog._entries
+            else catalog["cleaned"]
+        )
     return datasets
 
 
-def get_dataset_kind(dataset: pd.DataFrame) -> str:
+def dataset_category(dataset: pd.DataFrame) -> str:
     if "p_id" in dataset.columns:
         if "year" in dataset.columns:
             return "individual-time-varying"
@@ -48,24 +46,24 @@ def reorder_dict(original_dict, priority_keys):
     return ordered_dict
 
 
-def get_datasets_kind(
+def categorize_datasets(
     datasets: dict[str, pd.DataFrame],
 ) -> dict[str, dict[str, pd.DataFrame]]:
-    datasets_kind = {}
+    categorized_datasets = {}
     for dataset in datasets:
-        kind = get_dataset_kind(datasets[dataset])
-        if kind not in datasets_kind:
-            datasets_kind[kind] = {dataset: datasets[dataset]}
+        category = dataset_category(datasets[dataset])
+        if category not in categorized_datasets:
+            categorized_datasets[category] = {dataset: datasets[dataset]}
         else:
-            datasets_kind[kind][dataset] = datasets[dataset]
+            categorized_datasets[category][dataset] = datasets[dataset]
     # Change order of datasets to make sure datasets with most reliable information on hh_id are merged first
-    datasets_kind["individual-time-varying"] = reorder_dict(
-        datasets_kind["individual-time-varying"], ["pequiv", "pgen", "pl"]
+    categorized_datasets["individual-time-varying"] = reorder_dict(
+        categorized_datasets["individual-time-varying"], ["pequiv", "pgen", "pl"]
     )
-    return datasets_kind
+    return categorized_datasets
 
 
-def get_datasets_with_origin_dummy(
+def categorize_datasets_with_origin_dummy(
     datasets: dict[str, dict[str, pd.DataFrame]],
 ) -> dict[str, pd.DataFrame]:
     for dataset_group in datasets:
@@ -195,7 +193,7 @@ def merge_datasets(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     return data_merged
 
 
-DATASETS = get_cleaned_datasets(DATA_CATALOGS)
+DATASETS = datasets_to_merge(DATA_CATALOGS)
 
 
 def task_merge_datasets(
@@ -209,6 +207,8 @@ def task_merge_datasets(
     Returns:
         pd.DataFrame: Merged dataset.
     """
-    datasets_kind = get_datasets_kind(datasets)
-    datasets_with_origin_dummy = get_datasets_with_origin_dummy(datasets_kind)
+    categorized_datasets = categorize_datasets(datasets)
+    datasets_with_origin_dummy = categorize_datasets_with_origin_dummy(
+        categorized_datasets
+    )
     return merge_datasets(datasets_with_origin_dummy)
