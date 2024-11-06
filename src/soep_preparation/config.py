@@ -45,7 +45,6 @@ DATA_CATALOGS = {
 }
 
 __all__ = [
-    "pd",
     "DATA",
     "SRC",
     "TEST_DIR",

@@ -1,4 +1,5 @@
-from soep_preparation.config import pd
+import pandas as pd
+
 from soep_preparation.initial_cleaning import month_mapping
 from soep_preparation.utilities import (
     _fail_if_invalid_input,

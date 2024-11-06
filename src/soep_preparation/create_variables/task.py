@@ -2,9 +2,10 @@ from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import Annotated
 
+import pandas as pd
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOGS, SRC, get_dataset_names, pd
+from soep_preparation.config import DATA_CATALOGS, SRC, get_dataset_names
 
 
 def _fail_if_invalid_input(input_, expected_dtype: str):

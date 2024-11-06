@@ -1,8 +1,7 @@
 """Utilities used in various parts of the project."""
 
 import numpy as np
-
-from soep_preparation.config import pd
+import pandas as pd
 
 
 def _fail_if_series_wrong_dtype(sr: pd.Series, expected_dtype: str):

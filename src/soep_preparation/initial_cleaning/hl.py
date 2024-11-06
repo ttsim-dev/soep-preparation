@@ -1,4 +1,5 @@
-from soep_preparation.config import pd
+import pandas as pd
+
 from soep_preparation.utilities import (
     bool_categorical,
     float_categorical_to_float,

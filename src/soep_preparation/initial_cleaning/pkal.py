@@ -1,6 +1,6 @@
 import numpy as np
+import pandas as pd
 
-from soep_preparation.config import pd
 from soep_preparation.utilities import (
     _fail_if_invalid_input,
     apply_lowest_int_dtype,

@@ -4,6 +4,7 @@ from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import Annotated
 
+import pandas as pd
 from pandas.api.types import union_categoricals
 from pandas.io.stata import StataReader
 from pytask import task
@@ -13,7 +14,6 @@ from soep_preparation.config import (
     DATA_CATALOGS,
     SOEP_VERSION,
     SRC,
-    pd,
 )
 
 

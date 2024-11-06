@@ -1,6 +1,7 @@
 import re
 
-from soep_preparation.config import pd
+import pandas as pd
+
 from soep_preparation.utilities import create_dummy
 
 

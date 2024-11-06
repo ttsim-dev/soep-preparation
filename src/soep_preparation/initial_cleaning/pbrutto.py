@@ -1,4 +1,5 @@
-from soep_preparation.config import pd
+import pandas as pd
+
 from soep_preparation.utilities import (
     apply_lowest_int_dtype,
     int_categorical_to_int,

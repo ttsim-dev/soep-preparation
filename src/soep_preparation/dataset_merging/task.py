@@ -1,9 +1,10 @@
 from functools import reduce
 from typing import Annotated
 
+import pandas as pd
 from pandas.api.types import union_categoricals
 
-from soep_preparation.config import DATA_CATALOGS, SRC, get_datasets, pd
+from soep_preparation.config import DATA_CATALOGS
 
 
 def get_cleaned_datasets(data_catalogs) -> dict[str, pd.DataFrame]:
