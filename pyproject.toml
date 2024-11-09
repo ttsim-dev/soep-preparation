@@ -136,13 +136,18 @@ lint.extend-ignore = [
     # Avoid conflict with ruff-format
     "COM812",
     "ISC001",
-    "SLF001", # Private functions accessed
 ]
 fix = true
 
+[tool.ruff.lint.pylint]
+max-statements = 100
+
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "PD011"]
-"task_*.py" = ["ANN"]
+"**/task.py" = [
+    "ANN",
+    "SLF001", # We need to loop over data_catalog._entries
+    ]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

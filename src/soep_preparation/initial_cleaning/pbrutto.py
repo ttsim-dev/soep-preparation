@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw pbrutto dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.utilities import (
@@ -13,7 +22,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
     out["hh_id_orig"] = int_categorical_to_int(raw["cid"])
     out["hh_id"] = int_categorical_to_int(raw["hid"])
-    out["year"] = int_categorical_to_int(raw["syear"])
+    out["survey_year"] = int_categorical_to_int(raw["syear"])
     out["birth_year"] = int_categorical_to_int(raw["geburt_v2"])
     out["befragungs_status"] = str_categorical(raw["befstat_h"])
     out["hh_position"] = str_categorical(
@@ -59,14 +68,18 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
         reduce=True,
     )
     out["bearbeitungserg"] = str_categorical(raw["perg"])
+    # categories [29] and [39] have identical missing data labels
+    # they are reduced to one
     out["bearbeitungserg_ausf"] = str_categorical(
         raw["pergz"],
         reduce=True,
-    )  # categories [29] and [39] have identical missing data labels which are reduced to one
+    )
+    # categories [19] and [39] have identical missing data labels
+    # they are reduced to one
     out["hh_position_raw_last_year"] = str_categorical(
         raw["pzugv"],
         reduce=True,
-    )  # categories [19] and [39] have identical missing data labels which are reduced to one
+    )
     out["teilnahmebereitschaft"] = str_categorical(
         raw["ber"],
         ordered=True,

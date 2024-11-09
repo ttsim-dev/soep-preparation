@@ -1,3 +1,5 @@
+"""Mapping of months in german and english."""
+
 de = {
     "[1] Januar": 1,
     "[2] Februar": 2,

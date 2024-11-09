@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw ppathl dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.initial_cleaning import month_mapping
@@ -15,12 +24,16 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["hh_id"] = int_categorical_to_int(raw["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
-    out["year"] = apply_lowest_int_dtype(raw["syear"])
+    out["survey_year"] = apply_lowest_int_dtype(raw["syear"])
     out["current_east_west"] = str_categorical(
         raw["sampreg"],
         renaming={
-            "[1] Westdeutschland, alte Bundeslaender": "Westdeutschland (alte Bundeslaender)",
-            "[2] Ostdeutschland, neue Bundeslaender": "Ostdeutschland (neue Bundeslaender)",
+            "[1] Westdeutschland, alte Bundeslaender": (
+                "Westdeutschland (alte Bundeslaender)"
+            ),
+            "[2] Ostdeutschland, neue Bundeslaender": (
+                "Ostdeutschland (neue Bundeslaender)"
+            ),
         },
     )
     out["befragungsstatus"] = str_categorical(raw["netto"])

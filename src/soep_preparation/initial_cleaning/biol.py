@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw biol dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.utilities import (
@@ -14,7 +23,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["hh_id"] = int_categorical_to_int(raw["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
 
-    out["year"] = int_categorical_to_int(raw["syear"])
+    out["survey_year"] = int_categorical_to_int(raw["syear"])
 
     out["birthplace"] = str_categorical(raw["lb0013_h"])
     out["res_childhood"] = str_categorical(raw["lb0058"])

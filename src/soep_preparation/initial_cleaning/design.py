@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw design dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.utilities import (

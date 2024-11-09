@@ -1,25 +1,46 @@
+"""Functions to create variables for a pre-processed pl dataset.
+
+Functions:
+- manipulate: Coordinates the variable creation process for the dataset.
+
+Usage:
+    Import this module and call manipulate to generate new variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.utilities import (
     apply_lowest_int_dtype,
 )
 
+MAX_BMI = 30
+SUBJ_HEALTH_THRESHOLD = 5
+
 
 def _priv_rentenv_beitr(
     beitr_2013_m: pd.Series,
     beitr_2018_m: pd.Series,
-    year: pd.Series,
+    survey_year: pd.Series,
 ) -> pd.Series:
     out = beitr_2013_m
-    return out.where(year != 2018, beitr_2018_m)
+    other_survey_year = 2018
+    return out.where(survey_year != other_survey_year, beitr_2018_m)
 
 
 def manipulate(data: pd.DataFrame) -> pd.DataFrame:
+    """Manipulate the pl dataset.
+
+    Args:
+        data (pd.DataFrame): The dataset to be manipulated.
+
+    Returns:
+        pd.DataFrame: The manipulated dataset.
+    """
     out = data.copy()
     out["priv_rentenv_beitr_m"] = _priv_rentenv_beitr(
         out["prv_rente_beitr_2013_m"],
         out["prv_rente_beitr_2018_m"],
-        out["year"],
+        out["survey_year"],
     )
     med_vars = [
         "med_pl_schw_treppen",
@@ -43,11 +64,11 @@ def manipulate(data: pd.DataFrame) -> pd.DataFrame:
     out[med_vars] = out[med_vars].apply(apply_lowest_int_dtype, axis=0)
     out[med_vars] = out.groupby("p_id")[med_vars].ffill()
     out["bmi_pl"] = out["med_pl_gewicht"] / ((out["med_pl_groesse"] / 100) ** 2)
-    out["bmi_pl_dummy"] = apply_lowest_int_dtype(out["bmi_pl"] >= 30)
-    out["med_pl_subj_status__numerical_dummy"] = apply_lowest_int_dtype(
-        out["med_pl_subj_status"] >= 3,
+    out["bmi_pl_dummy"] = apply_lowest_int_dtype(out["bmi_pl"] >= MAX_BMI)
+    out["med_pl_subj_status_numerical_dummy"] = apply_lowest_int_dtype(
+        out["med_pl_subj_status"] >= SUBJ_HEALTH_THRESHOLD,
     )
-    med_vars.append("med_pl_subj_status__numerical_dummy")
+    med_vars.append("med_pl_subj_status_numerical_dummy")
     med_vars.remove("med_pl_subj_status")
     out["frailty_pl"] = out[med_vars].mean(axis=1)
     return out

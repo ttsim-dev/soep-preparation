@@ -22,11 +22,11 @@ def _datasets_to_merge(data_catalogs) -> dict[str, pd.DataFrame]:
 
 def _dataset_level(dataset: pd.DataFrame) -> str:
     if "p_id" in dataset.columns:
-        if "year" in dataset.columns:
+        if "survey_year" in dataset.columns:
             return "individual-time-varying"
         return "individual-time-constant"
     if "hh_id" in dataset.columns or "hh_id_orig" in dataset.columns:
-        if "year" in dataset.columns:
+        if "survey_year" in dataset.columns:
             return "household-time-varying"
         return "household-time-constant"
     msg = "Dataset does not contain a valid level."
@@ -196,7 +196,10 @@ def merge_datasets(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
 
     # Merge household-varying data
     data_merged = merge_and_fillna_shared_cols(
-        data_merged, dataset_household_varying, merge_on=["hh_id", "year"], how="left"
+        data_merged,
+        dataset_household_varying,
+        merge_on=["hh_id", "survey_year"],
+        how="left",
     )
 
     # Merge individual-constant data
@@ -215,7 +218,7 @@ def merge_datasets(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     )
 
     # Set the final index
-    data_merged = data_merged.set_index(["p_id", "year"]).sort_index()
+    data_merged = data_merged.set_index(["p_id", "survey_year"]).sort_index()
 
     # Merge duplicate columns originating from distinct datasets
     return combine_similar_information_from_different_columns(data_merged)

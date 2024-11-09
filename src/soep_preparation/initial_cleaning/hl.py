@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw hl dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.utilities import (
@@ -13,7 +22,7 @@ def _kindergeld_aktuell_hl_m_hh(
 ) -> "pd.Series[int]":
     out = int_categorical_to_int(aktuell)
     return out.where(
-        ~(aktuell.isnull()) & (bezug_aktuell.astype("bool[pyarrow]")),
+        ~(aktuell.isna()) & (bezug_aktuell.astype("bool[pyarrow]")),
         0,
     )
 
@@ -22,7 +31,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the hl dataset."""
     out = pd.DataFrame()
     out["hh_id"] = int_categorical_to_int(raw["hid"])
-    out["year"] = int_categorical_to_int(raw["syear"])
+    out["survey_year"] = int_categorical_to_int(raw["syear"])
 
     out["kindergeld_hl_m_hh_prev"] = int_categorical_to_int(raw["hlc0042_h"])
     out["kindergeld_bezug_aktuell"] = bool_categorical(

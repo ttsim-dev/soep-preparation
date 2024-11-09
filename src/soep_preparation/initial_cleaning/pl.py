@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw pl dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.utilities import (
@@ -14,9 +23,10 @@ def _prv_rente_beitr_year(
     prv_rente_beitr_year: "pd.Series[int]",
     eingezahlte_monate: "pd.Series[int]",
     eingezahlt: "pd.Series[pd.Categorical]",
-    year: int,
+    survey_year: int,
 ) -> "pd.Series[int]":
-    if year == 2018:
+    relevant_suvery_year = 2018
+    if survey_year == relevant_suvery_year:
         out = int_categorical_to_int(prv_rente_beitr_year)
         out /= 100
     else:
@@ -31,7 +41,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = int_categorical_to_int(raw["pid"])
     out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
     out["lfd_pnr"] = int_categorical_to_int(raw["pnr"])
-    out["year"] = int_categorical_to_int(raw["syear"])
+    out["survey_year"] = int_categorical_to_int(raw["syear"])
     out["altersteilzeit_02_14"] = bool_categorical(
         raw["plb0103"],
         renaming={"[2] Nein": False, "[1] Ja": True},

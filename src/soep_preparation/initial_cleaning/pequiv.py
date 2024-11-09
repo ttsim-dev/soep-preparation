@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw biobirth dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.utilities import (
@@ -15,7 +24,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["hh_id_orig"] = apply_lowest_int_dtype(raw["cid"])
     out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
-    out["year"] = apply_lowest_int_dtype(raw["syear"])
+    out["survey_year"] = apply_lowest_int_dtype(raw["syear"])
     out["gender"] = str_categorical(
         raw["d11102ll"],
         ordered=False,

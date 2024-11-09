@@ -1,3 +1,13 @@
+"""Functions to create variables for pre-processed datasets.
+
+Functions:
+- task_manipulate_one_dataset: Calls the dataset specific script.
+
+Usage:
+    Import this module and call task_manipulate_one_dataset
+    to generate new variables for the relevant datasets.
+"""
+
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import Annotated
@@ -17,9 +27,10 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
 
 
 for name in get_dataset_names(SRC / "create_variables"):
-    assert (
-        name in DATA_CATALOGS["single_variables"]
-    ), f"There is no data catalog entry corresponding to {SRC / 'create_variables' / name}"
+    assert name in DATA_CATALOGS["single_variables"], (
+        f"There is no data catalog entry corresponding to\n"
+        f"{SRC / 'create_variables' / name}"
+    )
 
     catalog = DATA_CATALOGS["single_variables"][name]
 
@@ -39,12 +50,12 @@ for name in get_dataset_names(SRC / "create_variables"):
             dataset (str): The name of the dataset.
 
         Returns:
-            pd.DataFrame: A manipulated pandas DataFrame to be saved to the data catalog.
+            pd.DataFrame: Manipulated pandas DataFrame to be saved to the data catalog.
 
         Raises:
-            FileNotFoundError: If the dataset file or cleaning script file does not exist.
+            FileNotFoundError: If dataset or cleaning script file do not exist.
             ImportError: If there is an error loading the manipulation script module.
-            AttributeError: If the manipulation script module does not contain the expected function.
+            AttributeError: If expected function not in manipulation script.
 
         """
         _error_handling_task(clean_data, script_path)

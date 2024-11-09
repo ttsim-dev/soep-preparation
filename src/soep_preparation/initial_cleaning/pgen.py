@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw pgen dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.initial_cleaning import month_mapping
@@ -33,11 +42,13 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["hh_id_orig"] = apply_lowest_int_dtype(raw["cid"])
     out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
-    out["year"] = apply_lowest_int_dtype(raw["syear"])
+    out["survey_year"] = apply_lowest_int_dtype(raw["syear"])
+    # there are multiple categories for ['Kurdistan', 'Malaysia', 'Montenegro']
+    # they have been reduced into one category each
     out["nationality_first"] = str_categorical(
         raw["pgnation"],
         reduce=True,
-    )  # there are multiple categories for ['Kurdistan', 'Malaysia', 'Montenegro'], they have been reduced
+    )
     out["german"] = out["nationality_first"].dropna() == "Deutschland"
     out["status_refugee"] = str_categorical(raw["pgstatus_refu"])
     out["marital_status"] = str_categorical(raw["pgfamstd"])

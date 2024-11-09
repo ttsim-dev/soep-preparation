@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw hwealth dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.utilities import (
@@ -9,8 +18,8 @@ from soep_preparation.utilities import (
 )
 
 
-def _hwealth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
-    _fail_if_invalid_input(df, "pandas.core.frame.DataFrame")
+def _hwealth_wide_to_long(data_wide: pd.DataFrame) -> pd.DataFrame:
+    _fail_if_invalid_input(data_wide, "pandas.core.frame.DataFrame")
     prev_wide_cols = [
         "wohnsitz_immobilienverm_hh",
         "finanzverm_hh",
@@ -20,22 +29,24 @@ def _hwealth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
         "bruttoverm_inkl_fahrz_hh",
         "nettoverm_fahrz_kredit_hh",
     ]
-    df = pd.wide_to_long(
-        df,
+    data_long = pd.wide_to_long(
+        data_wide,
         stubnames=prev_wide_cols,
-        i=["year", "hh_id"],
+        i=["survey_year", "hh_id"],
         j="var",
         sep="_",
         suffix=r"\w+",
     ).reset_index()
-    df = df.dropna(subset=prev_wide_cols, how="all")
-    return df.astype(
+    data_long_no_missings = data_long.dropna(subset=prev_wide_cols, how="all")
+    return data_long_no_missings.astype(
         {
             "wohnsitz_immobilienverm_hh": "float64[pyarrow]",
             "finanzverm_hh": "float64[pyarrow]",
             "bruttoverm_hh": "float64[pyarrow]",
             "nettoverm_hh": "float64[pyarrow]",
-            "wert_fahrzeuge": find_lowest_int_dtype(df["wert_fahrzeuge"]),
+            "wert_fahrzeuge": (
+                find_lowest_int_dtype(data_long_no_missings["wert_fahrzeuge"])
+            ),
             "bruttoverm_inkl_fahrz_hh": "float64[pyarrow]",
             "nettoverm_fahrz_kredit_hh": "float64[pyarrow]",
         },
@@ -45,7 +56,7 @@ def _hwealth_wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Clean the hwealth dataset."""
     out = pd.DataFrame()
-    out["year"] = apply_lowest_int_dtype(raw["syear"])
+    out["survey_year"] = apply_lowest_int_dtype(raw["syear"])
     out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
 
     out["wohnsitz_immobilienverm_hh_a"] = apply_lowest_float_dtype(raw["p010ha"])

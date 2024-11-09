@@ -1,3 +1,12 @@
+"""Functions to create variables for a pre-processed pgen dataset.
+
+Functions:
+- manipulate: Coordinates the variable creation process for the dataset.
+
+Usage:
+    Import this module and call manipulate to generate new variables.
+"""
+
 import re
 
 import pandas as pd
@@ -69,6 +78,14 @@ def _education(
 
 
 def manipulate(data: pd.DataFrame) -> pd.DataFrame:
+    """Manipulate the pgen dataset.
+
+    Args:
+        data (pd.DataFrame): The dataset to be manipulated.
+
+    Returns:
+        pd.DataFrame: The manipulated dataset.
+    """
     out = data.copy()
     out["german"] = create_dummy(out["nationality_first"], "Deutschland")
     out["retired"] = create_dummy(out["occupation_status"], "NE: Rentner/Rentnerin")

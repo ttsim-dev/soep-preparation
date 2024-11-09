@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw pkal dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import numpy as np
 import pandas as pd
 
@@ -28,7 +37,7 @@ def _mutterschaftsgeld_monate_prev(
 def _categorical_dtype_ordered(df: pd.DataFrame, col_group: str) -> pd.CategoricalDtype:
     columns = [f"{col_group}_{i}" for i in range(1, 13)]
     return pd.CategoricalDtype(
-        [value for col in columns for value in df[col].cat.categories.values],
+        [value for col in columns for value in df[col].cat.categories.to_numpy()],
     )
 
 
@@ -43,7 +52,7 @@ def _wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
     out = pd.wide_to_long(
         df,
         stubnames=prev_wide_cols,
-        i=["hh_id_orig", "hh_id", "p_id", "year"],
+        i=["hh_id_orig", "hh_id", "p_id", "survey_year"],
         j="month",
         sep="_",
     ).reset_index()
@@ -64,7 +73,7 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = apply_lowest_int_dtype(raw["pid"])
     out["hh_id"] = apply_lowest_int_dtype(raw["hid"])
     out["hh_id_orig"] = apply_lowest_int_dtype(raw["cid"])
-    out["year"] = apply_lowest_int_dtype(float_categorical_to_int(raw["syear"]))
+    out["survey_year"] = apply_lowest_int_dtype(float_categorical_to_int(raw["syear"]))
 
     out["full_empl_v1_prev_1"] = str_categorical(
         raw["kal1a001_v1"],

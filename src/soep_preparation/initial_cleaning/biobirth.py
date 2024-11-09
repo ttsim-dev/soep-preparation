@@ -1,3 +1,12 @@
+"""Functions to pre-process variables for a raw biobirth dataset.
+
+Functions:
+- clean: Coordinates the pre-processing for the dataset.
+
+Usage:
+    Import this module and call clean to pre-process variables.
+"""
+
 import pandas as pd
 
 from soep_preparation.initial_cleaning import month_mapping
@@ -10,21 +19,23 @@ from soep_preparation.utilities import (
 )
 
 
-def _wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
-    _fail_if_invalid_input(df, "pandas.core.frame.DataFrame")
+def _wide_to_long(data_wide: pd.DataFrame) -> pd.DataFrame:
+    _fail_if_invalid_input(data_wide, "pandas.core.frame.DataFrame")
     prev_wide_cols = ["birth_year_child", "p_id_child", "birth_month_child"]
-    df = pd.wide_to_long(
-        df,
+    data_long = pd.wide_to_long(
+        data_wide,
         stubnames=prev_wide_cols,
         i=["hh_id_orig", "p_id"],
         j="child_number",
         sep="_",
     ).reset_index()
-    df = df.dropna(subset=prev_wide_cols, how="all")
-    return df.astype(
+    data_long_no_missings = data_long.dropna(subset=prev_wide_cols, how="all")
+    return data_long_no_missings.astype(
         {
-            "birth_year_child": find_lowest_int_dtype(df["birth_year_child"]),
-            "p_id_child": find_lowest_int_dtype(df["p_id_child"]),
+            "birth_year_child": find_lowest_int_dtype(
+                data_long_no_missings["birth_year_child"]
+            ),
+            "p_id_child": find_lowest_int_dtype(data_long_no_missings["p_id_child"]),
             "birth_month_child": "category",
         },
     ).reset_index(drop=True)
