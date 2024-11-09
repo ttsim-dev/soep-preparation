@@ -136,9 +136,9 @@ lint.extend-ignore = [
     # Avoid conflict with ruff-format
     "COM812",
     "ISC001",
+    "SLF001", # Private functions accessed
 ]
 fix = true
-fix-only = true # No linting errors will be reported
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "PD011"]
