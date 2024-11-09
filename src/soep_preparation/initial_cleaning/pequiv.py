@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw biobirth dataset.
+"""Functions to pre-process variables for a raw pequiv dataset.
 
 Functions:
 - clean: Coordinates the pre-processing for the dataset.

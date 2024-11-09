@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw b dataset.
+"""Functions to pre-process variables for a raw bioedu dataset.
 
 Functions:
 - clean: Coordinates the pre-processing for the dataset.

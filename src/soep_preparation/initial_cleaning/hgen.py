@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw h dataset.
+"""Functions to pre-process variables for a raw hgen dataset.
 
 Functions:
 - clean: Coordinates the pre-processing for the dataset.
