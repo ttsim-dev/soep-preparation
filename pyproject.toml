@@ -77,7 +77,7 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.dependencies]
-python = "3.11"
+python = "3.11.0.*"
 jupyterlab = "*"
 plotly = ">=5.24,<6"
 pre-commit = "*"
@@ -98,6 +98,7 @@ toml = "*"
 
 [tool.pixi.pypi-dependencies]
 soep_preparation = {path = ".", editable = true}
+gettsim = {git = "https://github.com/iza-institute-of-labor-economics/gettsim.git", rev = "31bf89f"}
 kaleido = "*"
 pdbp = "*"
 
