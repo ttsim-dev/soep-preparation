@@ -32,7 +32,7 @@ def _prv_rente_beitr_year(
     else:
         out = float_categorical_to_float(prv_rente_beitr_year)
     out *= eingezahlte_monate / 12
-    return out.where(~eingezahlt.astype("bool[pyarrow]"), 0)
+    return out.where(eingezahlt.astype("bool[pyarrow]"), 0)
 
 
 def clean(raw: pd.DataFrame) -> pd.DataFrame:

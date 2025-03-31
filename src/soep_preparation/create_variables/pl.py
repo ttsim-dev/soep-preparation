@@ -17,14 +17,13 @@ MAX_BMI = 30
 SUBJ_HEALTH_THRESHOLD = 5
 
 
-def _priv_rentenv_beitr(
-    beitr_2013_m: pd.Series,
-    beitr_2018_m: pd.Series,
-    survey_year: pd.Series,
-) -> pd.Series:
-    out = beitr_2013_m
+def _priv_rentenv_beitr(data: pd.DataFrame) -> pd.Series:
     other_survey_year = 2018
-    return out.where(survey_year != other_survey_year, beitr_2018_m)
+    data["priv_rentenv_beitr_m"] = data["prv_rente_beitr_2013_m"].where(
+        data["survey_year"] != other_survey_year, data["prv_rente_beitr_2018_m"]
+    )
+    data["priv_rentenv_beitr_m"] = data.groupby("p_id")["priv_rentenv_beitr_m"].ffill()
+    return data["priv_rentenv_beitr_m"]
 
 
 def manipulate(data: pd.DataFrame) -> pd.DataFrame:
@@ -38,9 +37,7 @@ def manipulate(data: pd.DataFrame) -> pd.DataFrame:
     """
     out = data.copy()
     out["priv_rentenv_beitr_m"] = _priv_rentenv_beitr(
-        out["prv_rente_beitr_2013_m"],
-        out["prv_rente_beitr_2018_m"],
-        out["survey_year"],
+        out[["p_id", "survey_year", "prv_rente_beitr_2013_m", "prv_rente_beitr_2018_m"]]
     )
     med_vars = [
         "med_pl_schw_treppen",
