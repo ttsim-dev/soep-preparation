@@ -19,18 +19,18 @@ from soep_preparation.utilities import (
 )
 
 
-def _prv_rente_beitr_year(
-    prv_rente_beitr_year: "pd.Series[int]",
+def _priv_rente_beitr_year(
+    priv_rente_beitr_year: "pd.Series[int]",
     eingezahlte_monate: "pd.Series[int]",
     eingezahlt: "pd.Series[pd.Categorical]",
     survey_year: int,
 ) -> "pd.Series[int]":
     relevant_suvery_year = 2018
     if survey_year == relevant_suvery_year:
-        out = int_categorical_to_int(prv_rente_beitr_year)
+        out = int_categorical_to_int(priv_rente_beitr_year)
         out /= 100
     else:
-        out = float_categorical_to_float(prv_rente_beitr_year)
+        out = float_categorical_to_float(priv_rente_beitr_year)
     out *= eingezahlte_monate / 12
     return out.where(eingezahlt.astype("bool[pyarrow]"), 0)
 
@@ -101,13 +101,13 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     out["in_priv_rente_eingezahlt_monate"] = int_categorical_to_int(
         raw["plc0438"],
     )
-    out["prv_rente_beitr_2013_m"] = _prv_rente_beitr_year(
+    out["priv_rente_beitr_2013_m"] = _priv_rente_beitr_year(
         raw["plc0439_v1"],
         out["in_priv_rente_eingezahlt_monate"],
         out["in_priv_rente_eingezahlt"],
         2013,
     )
-    out["prv_rente_beitr_2018_m"] = _prv_rente_beitr_year(
+    out["priv_rente_beitr_2018_m"] = _priv_rente_beitr_year(
         raw["plc0439_v2"],
         out["in_priv_rente_eingezahlt_monate"],
         out["in_priv_rente_eingezahlt"],

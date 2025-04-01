@@ -14,7 +14,7 @@ def _datasets_to_merge(data_catalogs) -> dict[str, pd.DataFrame]:
     for name, catalog in data_catalogs["single_variables"].items():
         datasets[name] = (
             catalog["manipulated"]
-            if "manipulated" in catalog._entries
+            if "manipulated" in catalog._entries  # noqa: SLF001
             else catalog["cleaned"]
         )
     return datasets
@@ -41,7 +41,7 @@ def _reorder_dict(original_dict, priority_keys):
 
     # Add the remaining keys that were not in the priority list
     ordered_dict.update(
-        {key: original_dict[key] for key in original_dict if key not in ordered_dict}
+        {key: original_dict[key] for key in original_dict if key not in ordered_dict},
     )
 
     return ordered_dict
@@ -68,7 +68,8 @@ def structure_datasets_by_level(
     # Change order of datasets to make sure datasets with most reliable information on
     # hh_id are merged first
     datasets_by_level["individual-time-varying"] = _reorder_dict(
-        datasets_by_level["individual-time-varying"], ["pequiv", "pgen", "pl"]
+        datasets_by_level["individual-time-varying"],
+        ["pequiv", "pgen", "pl"],
     )
     return datasets_by_level
 
@@ -79,7 +80,8 @@ def _add_origin_dummy(
     for dataset_group in datasets:
         for dataset in datasets[dataset_group]:
             datasets[dataset_group][dataset][f"from_{dataset}"] = pd.Series(
-                [1] * len(datasets[dataset_group][dataset]), dtype="uint8[pyarrow]"
+                [1] * len(datasets[dataset_group][dataset]),
+                dtype="uint8[pyarrow]",
             )
     return datasets
 
@@ -97,11 +99,11 @@ def combine_similar_information_from_different_columns(
     """
     out = data_merged.copy()
     out["birth_month"] = out["birth_month_from_bioedu"].fillna(
-        out["birth_month_from_ppathl"]
+        out["birth_month_from_ppathl"],
     )
 
     categories = union_categoricals(
-        [out["hh_soep_sample_from_design"], out["hh_soep_sample_from_hpathl"]]
+        [out["hh_soep_sample_from_design"], out["hh_soep_sample_from_hpathl"]],
     ).categories
     sr = (
         out["hh_soep_sample_from_design"]
@@ -117,7 +119,10 @@ def combine_similar_information_from_different_columns(
 
 
 def merge_and_fillna_shared_cols(
-    df_left: pd.DataFrame, df_right: pd.DataFrame, merge_on=None, how="outer"
+    df_left: pd.DataFrame,
+    df_right: pd.DataFrame,
+    merge_on=None,
+    how="outer",
 ):
     """Merge two DataFrames on specified columns and fill missing values.
 
@@ -178,14 +183,14 @@ def merge_datasets(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
         datasets["individual-time-varying"].values(),
     )
     dataset_individual_varying["hh_id_orig"] = dataset_individual_varying.groupby(
-        "p_id"
+        "p_id",
     )["hh_id_orig"].ffill()
     dataset_household_varying = reduce(
         lambda left, right: merge_and_fillna_shared_cols(left, right),
         datasets["household-time-varying"].values(),
     )
     dataset_household_varying["hh_id_orig"] = dataset_household_varying.groupby(
-        "hh_id"
+        "hh_id",
     )["hh_id_orig"].ffill()
     dataset_household_constant = reduce(
         lambda left, right: merge_and_fillna_shared_cols(left, right),

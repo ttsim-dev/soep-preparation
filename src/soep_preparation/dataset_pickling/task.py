@@ -1,3 +1,5 @@
+"""Functions to store raw SOEP datasets."""
+
 import inspect
 import re
 from importlib.machinery import SourceFileLoader
@@ -25,10 +27,10 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-def _columns_for_dataset(dataset: Path) -> list[str]:
+def _get_relevant_column_names(script: Path) -> list[str]:
     module = SourceFileLoader(
-        dataset.resolve().stem,
-        str(dataset.resolve()),
+        script.resolve().stem,
+        str(script.resolve()),
     ).load_module()
     function_with_docstring = inspect.getsource(module.clean)
     # Remove the docstring, if existent.
@@ -53,13 +55,15 @@ def _extract_num_from_string(s: str):
 def _create_categorical_column(out, chunk, col):
     # If the categories are not of the same type, we convert them to the same type.
     if out[col].cat.categories.dtype != chunk[col].cat.categories.dtype:
-        # Converting the column's categories dtype in the chunk to object (the same as in out).
+        # Converting the column's categories dtype
+        # in the chunk to object (the same as in out).
         if out[col].cat.categories.dtype.name == "object":
             chunk[col] = chunk[col].cat.set_categories(
                 chunk[col].cat.categories.astype("object"),
             )
         else:
-            # Converting the column's categories dtype of out to the same as of the chunk.
+            # Converting the column's categories dtype
+            # of out to the same as of the chunk.
             out[col] = out[col].cat.set_categories(
                 out[col].cat.categories.astype(
                     chunk[col].cat.categories.dtype,
@@ -91,21 +95,31 @@ def _create_categorical_column(out, chunk, col):
     )
 
 
-def _iteratively_read_one_dataset(itr: StataReader, columns: list[str]) -> pd.DataFrame:
+def _iteratively_read_one_dataset(
+    iterator: StataReader,
+    relevant_columns: list[str],
+) -> pd.DataFrame:
     out = pd.DataFrame()
-    value_labels = {k: v for k, v in itr.value_labels().items() if k in columns}
-    for chunk in itr:
-        chunk = chunk.replace(value_labels)
-        chunk = chunk.astype("category")
+    value_labels = {
+        k: v for k, v in iterator.value_labels().items() if k in relevant_columns
+    }
+    for chunk in iterator:
+        value_chunk = chunk.replace(value_labels)
+        raw_chunk = value_chunk.astype("category")
         if out.empty:
-            out = chunk
+            out = raw_chunk
         else:
-            col_dtypes = chunk.dtypes
-            for col in columns:
-                if col_dtypes[col].name == "category":
-                    out[col], chunk[col] = _create_categorical_column(out, chunk, col)
+            col_dtypes = raw_chunk.dtypes
+            for column in relevant_columns:
+                out_chunk = pd.DataFrame(index=raw_chunk.index)
+                if col_dtypes[column].name == "category":
+                    out[column], out_chunk[column] = _create_categorical_column(
+                        out,
+                        raw_chunk,
+                        column,
+                    )
                 else:
-                    out[col] = chunk[col]
+                    out_chunk[column] = chunk[column]
             out = pd.concat([out, chunk])
     return out
 
@@ -114,31 +128,31 @@ for name, catalog in DATA_CATALOGS["single_variables"].items():
 
     @task(id=name)
     def task_pickle_one_dataset(
-        orig_data: Annotated[Path, DATA / f"{SOEP_VERSION}" / f"{name}.dta"],
+        stata_data: Annotated[Path, DATA / f"{SOEP_VERSION}" / f"{name}.dta"],
         cleaning_script: Annotated[
             Path,
             SRC / "initial_cleaning" / f"{name}.py",
         ],
     ) -> Annotated[pd.DataFrame, catalog["raw"]]:
-        """Saves the raw dataset to the data catalog in a more efficient procedure.
+        """Saves the raw dataset to the data catalog.
 
         Parameters:
-            orig_data (Path): The path to the original dataset.
-            dataset (str): The name of the dataset.
+            stata_data (Path): The path to the original STATA dataset.
+            cleaning_script (Path): The path to the respective cleaning script.
 
         Returns:
             pd.DataFrame: A pandas DataFrame to be saved to the data catalog.
 
         """
-        _error_handling_task(orig_data, cleaning_script)
-        columns = _columns_for_dataset(cleaning_script.resolve())
+        _error_handling_task(stata_data, cleaning_script)
+        relevant_columns = _get_relevant_column_names(cleaning_script)
         with StataReader(
-            orig_data,
+            stata_data,
             chunksize=100_000,
-            columns=columns,
+            columns=relevant_columns,
             convert_categoricals=False,
-        ) as itr:
-            return _iteratively_read_one_dataset(itr, columns)
+        ) as stata_iterator:
+            return _iteratively_read_one_dataset(stata_iterator, relevant_columns)
 
 
 def _error_handling_task(data, script_path):

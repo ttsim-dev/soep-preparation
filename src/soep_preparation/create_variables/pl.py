@@ -13,14 +13,12 @@ from soep_preparation.utilities import (
     apply_lowest_int_dtype,
 )
 
-MAX_BMI = 30
-SUBJ_HEALTH_THRESHOLD = 5
-
 
 def _priv_rentenv_beitr(data: pd.DataFrame) -> pd.Series:
     other_survey_year = 2018
-    data["priv_rentenv_beitr_m"] = data["prv_rente_beitr_2013_m"].where(
-        data["survey_year"] != other_survey_year, data["prv_rente_beitr_2018_m"]
+    data["priv_rentenv_beitr_m"] = data["priv_rente_beitr_2013_m"].where(
+        data["survey_year"] != other_survey_year,
+        data["priv_rente_beitr_2018_m"],
     )
     data["priv_rentenv_beitr_m"] = data.groupby("p_id")["priv_rentenv_beitr_m"].ffill()
     return data["priv_rentenv_beitr_m"]
@@ -37,7 +35,14 @@ def manipulate(data: pd.DataFrame) -> pd.DataFrame:
     """
     out = data.copy()
     out["priv_rentenv_beitr_m"] = _priv_rentenv_beitr(
-        out[["p_id", "survey_year", "prv_rente_beitr_2013_m", "prv_rente_beitr_2018_m"]]
+        out[
+            [
+                "p_id",
+                "survey_year",
+                "priv_rente_beitr_2013_m",
+                "priv_rente_beitr_2018_m",
+            ]
+        ],
     )
     med_vars = [
         "med_pl_schw_treppen",
@@ -61,9 +66,9 @@ def manipulate(data: pd.DataFrame) -> pd.DataFrame:
     out[med_vars] = out[med_vars].apply(apply_lowest_int_dtype, axis=0)
     out[med_vars] = out.groupby("p_id")[med_vars].ffill()
     out["bmi_pl"] = out["med_pl_gewicht"] / ((out["med_pl_groesse"] / 100) ** 2)
-    out["bmi_pl_dummy"] = apply_lowest_int_dtype(out["bmi_pl"] >= MAX_BMI)
+    out["bmi_pl_dummy"] = apply_lowest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
     out["med_pl_subj_status_numerical_dummy"] = apply_lowest_int_dtype(
-        out["med_pl_subj_status"] >= SUBJ_HEALTH_THRESHOLD,
+        out["med_pl_subj_status"] >= 5,  # noqa: PLR2004
     )
     med_vars.append("med_pl_subj_status_numerical_dummy")
     med_vars.remove("med_pl_subj_status")

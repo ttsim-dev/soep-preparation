@@ -7,7 +7,7 @@ name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
 requires-python = ">=3.11"
 dependencies = [
-    "pytask",
+    "pytask", "memray>=1.16.0,<2",
 ]
 dynamic = ["version"]
 classifiers = [
@@ -92,6 +92,7 @@ python-graphviz = "*"
 pyyaml = "*"
 statsmodels = "*"
 toml = "*"
+tqdm = ">=4.67.1,<5"
 
 # Development Dependencies (pypi)
 # --------------------------------------------------------------------------------------
@@ -134,9 +135,6 @@ lint.select = ["ALL"]
 lint.extend-ignore = [
     "S101", # Use of `assert` detected.
     "ANN",  # Missing type annotations
-    # Avoid conflict with ruff-format
-    "COM812",
-    "ISC001",
 ]
 fix = true
 
@@ -147,7 +145,6 @@ max-statements = 100
 "tests/*" = ["D", "PD011"]
 "**/task.py" = [
     "ANN",
-    "SLF001", # We need to loop over data_catalog._entries
     ]
 
 [tool.ruff.lint.pydocstyle]

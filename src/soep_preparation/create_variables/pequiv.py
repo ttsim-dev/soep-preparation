@@ -11,9 +11,6 @@ import pandas as pd
 
 from soep_preparation.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
 
-MAX_BMI = 30
-SUBJ_HEALTH_THRESHOLD = 5
-
 
 def manipulate(data: pd.DataFrame) -> pd.DataFrame:
     """Manipulate the pequiv dataset.
@@ -45,9 +42,9 @@ def manipulate(data: pd.DataFrame) -> pd.DataFrame:
     out["bmi_pe"] = apply_lowest_float_dtype(
         out["med_pe_gewicht"] / ((out["med_pe_groesse"] / 100) ** 2),
     )
-    out["bmi_pe_dummy"] = apply_lowest_int_dtype(out["bmi_pe"] >= MAX_BMI)
+    out["bmi_pe_dummy"] = apply_lowest_int_dtype(out["bmi_pe"] >= 30)  # noqa: PLR2004
     out["med_pe_subj_status_dummy"] = apply_lowest_int_dtype(
-        data["med_pe_subj_status"] <= SUBJ_HEALTH_THRESHOLD,
+        data["med_pe_subj_status"] <= 5,  # noqa: PLR2004
     )
 
     med_vars.append("bmi_pe_dummy")

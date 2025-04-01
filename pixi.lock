@@ -52,6 +52,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/click-8.1.7-unix_pyh707e725_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/click-default-group-1.2.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cloudpickle-3.1.0-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/comm-0.2.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/debugpy-1.8.9-py311hfdbb021_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -254,6 +255,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/toml-0.10.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tornado-6.4.1-py311h9ecbd09_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/types-python-dateutil-2.9.0.20241003-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.12.2-hd8ed1ab_0.conda
@@ -292,12 +294,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/22/2d/9c0b76f2f9cc0ebede1b9371b6f317243028ed60b90705863d493bae622e/ipywidgets-8.1.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ae/b3/a0f0f4faac229b0011d8c4a7ee6da7c2dca0b6fd08039c95920846f23ca4/kaleido-0.2.1-py2.py3-none-manylinux1_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/9e/5d/857dfa82ba323e5f897def2014812b60a7babc534a0eb225b380ec8907c4/memray-1.16.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a4/42/230a3fc58aa50ce28649f3f9162d83bbf3d77e29fdd397a4766d8a88409f/numpy_groupies-0.11.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/29/93/d56fb9ba5569dc29d8263c72e46d21a2fd38741339ebf03f54cf7561828c/pdbp-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6b/77/7440a06a8ead44c7757a64362dd22df5760f9b12dc5f11b6188cd2fc27a0/pytest-8.3.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl
       - pypi: .
       osx-64:
@@ -345,6 +349,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/click-8.1.7-unix_pyh707e725_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/click-default-group-1.2.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cloudpickle-3.1.0-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/comm-0.2.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/debugpy-1.8.9-py311hc356e98_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -540,6 +545,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/toml-0.10.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tornado-6.4.1-py311h3336109_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/types-python-dateutil-2.9.0.20241003-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.12.2-hd8ed1ab_0.conda
@@ -570,12 +576,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/22/2d/9c0b76f2f9cc0ebede1b9371b6f317243028ed60b90705863d493bae622e/ipywidgets-8.1.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e0/f7/0ccaa596ec341963adbb4f839774c36d5659e75a0812d946732b927d480e/kaleido-0.2.1-py2.py3-none-macosx_10_11_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/5b/6e/04dd11f265b8f029bcb005d234f4b3fd02d217fa08318b05db81b55bd07c/memray-1.16.0-cp311-cp311-macosx_10_14_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a4/42/230a3fc58aa50ce28649f3f9162d83bbf3d77e29fdd397a4766d8a88409f/numpy_groupies-0.11.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/29/93/d56fb9ba5569dc29d8263c72e46d21a2fd38741339ebf03f54cf7561828c/pdbp-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6b/77/7440a06a8ead44c7757a64362dd22df5760f9b12dc5f11b6188cd2fc27a0/pytest-8.3.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl
       - pypi: .
       osx-arm64:
@@ -623,6 +631,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/click-8.1.7-unix_pyh707e725_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/click-default-group-1.2.4-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/cloudpickle-3.1.0-pyhd8ed1ab_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/comm-0.2.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/debugpy-1.8.9-py311h155a34a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/decorator-5.1.1-pyhd8ed1ab_0.tar.bz2
@@ -818,6 +827,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/toml-0.10.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.4.1-py311h460d6c5_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/types-python-dateutil-2.9.0.20241003-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.12.2-hd8ed1ab_0.conda
@@ -848,12 +858,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/22/2d/9c0b76f2f9cc0ebede1b9371b6f317243028ed60b90705863d493bae622e/ipywidgets-8.1.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/45/8e/4297556be5a07b713bb42dde0f748354de9a6918dee251c0e6bdcda341e7/kaleido-0.2.1-py2.py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/3f/b0/66bcc272f8c782fe423b95a76c8b0ada8ec58b36252ca24ab421d5533653/memray-1.16.0-cp311-cp311-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a4/42/230a3fc58aa50ce28649f3f9162d83bbf3d77e29fdd397a4766d8a88409f/numpy_groupies-0.11.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/29/93/d56fb9ba5569dc29d8263c72e46d21a2fd38741339ebf03f54cf7561828c/pdbp-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6b/77/7440a06a8ead44c7757a64362dd22df5760f9b12dc5f11b6188cd2fc27a0/pytest-8.3.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl
       - pypi: .
       win-64:
@@ -1082,6 +1094,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/toml-0.10.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/tornado-6.4.1-py311he736701_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/types-python-dateutil-2.9.0.20241003-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.12.2-hd8ed1ab_0.conda
@@ -1127,6 +1140,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/22/2d/9c0b76f2f9cc0ebede1b9371b6f317243028ed60b90705863d493bae622e/ipywidgets-8.1.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/41/90/51523adbedc808e03271c7448fd71da1660cc02603eaaf10b9ab4f102146/kaleido-0.1.0.post1-py2.py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/22/82/61c74f5bde38a57b3087f8838bcdb4d91c11860f03f56e7f9fb829ef045f/memray-1.16.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a4/42/230a3fc58aa50ce28649f3f9162d83bbf3d77e29fdd397a4766d8a88409f/numpy_groupies-0.11.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl
@@ -1134,6 +1148,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/5a/dc/491b7661614ab97483abf2056be1deee4dc2490ecbf7bff9ab5cdbac86e1/pyreadline3-3.5.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/6b/77/7440a06a8ead44c7757a64362dd22df5760f9b12dc5f11b6188cd2fc27a0/pytest-8.3.3-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl
       - pypi: .
   test:
@@ -1397,6 +1412,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/toml-0.10.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tornado-6.4.1-py311h9ecbd09_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/types-python-dateutil-2.9.0.20241003-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.12.2-hd8ed1ab_0.conda
@@ -1434,11 +1450,13 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/22/2d/9c0b76f2f9cc0ebede1b9371b6f317243028ed60b90705863d493bae622e/ipywidgets-8.1.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ae/b3/a0f0f4faac229b0011d8c4a7ee6da7c2dca0b6fd08039c95920846f23ca4/kaleido-0.2.1-py2.py3-none-manylinux1_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/9e/5d/857dfa82ba323e5f897def2014812b60a7babc534a0eb225b380ec8907c4/memray-1.16.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a4/42/230a3fc58aa50ce28649f3f9162d83bbf3d77e29fdd397a4766d8a88409f/numpy_groupies-0.11.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/29/93/d56fb9ba5569dc29d8263c72e46d21a2fd38741339ebf03f54cf7561828c/pdbp-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl
       - pypi: .
       osx-64:
@@ -1688,6 +1706,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/toml-0.10.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/tornado-6.4.1-py311h3336109_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/types-python-dateutil-2.9.0.20241003-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.12.2-hd8ed1ab_0.conda
@@ -1717,11 +1736,13 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/22/2d/9c0b76f2f9cc0ebede1b9371b6f317243028ed60b90705863d493bae622e/ipywidgets-8.1.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/e0/f7/0ccaa596ec341963adbb4f839774c36d5659e75a0812d946732b927d480e/kaleido-0.2.1-py2.py3-none-macosx_10_11_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/5b/6e/04dd11f265b8f029bcb005d234f4b3fd02d217fa08318b05db81b55bd07c/memray-1.16.0-cp311-cp311-macosx_10_14_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a4/42/230a3fc58aa50ce28649f3f9162d83bbf3d77e29fdd397a4766d8a88409f/numpy_groupies-0.11.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/29/93/d56fb9ba5569dc29d8263c72e46d21a2fd38741339ebf03f54cf7561828c/pdbp-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl
       - pypi: .
       osx-arm64:
@@ -1971,6 +1992,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/toml-0.10.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.4.1-py311h460d6c5_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/types-python-dateutil-2.9.0.20241003-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.12.2-hd8ed1ab_0.conda
@@ -2000,11 +2022,13 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/22/2d/9c0b76f2f9cc0ebede1b9371b6f317243028ed60b90705863d493bae622e/ipywidgets-8.1.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/45/8e/4297556be5a07b713bb42dde0f748354de9a6918dee251c0e6bdcda341e7/kaleido-0.2.1-py2.py3-none-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/3f/b0/66bcc272f8c782fe423b95a76c8b0ada8ec58b36252ca24ab421d5533653/memray-1.16.0-cp311-cp311-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a4/42/230a3fc58aa50ce28649f3f9162d83bbf3d77e29fdd397a4766d8a88409f/numpy_groupies-0.11.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/29/93/d56fb9ba5569dc29d8263c72e46d21a2fd38741339ebf03f54cf7561828c/pdbp-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl
       - pypi: .
       win-64:
@@ -2239,6 +2263,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/toml-0.10.2-pyhd8ed1ab_0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/tomli-2.1.0-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/tornado-6.4.1-py311he736701_1.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/traitlets-5.14.3-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/types-python-dateutil-2.9.0.20241003-pyhff2d567_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/typing-extensions-4.12.2-hd8ed1ab_0.conda
@@ -2283,12 +2308,14 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/22/2d/9c0b76f2f9cc0ebede1b9371b6f317243028ed60b90705863d493bae622e/ipywidgets-8.1.5-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a9/93/858e87edc634d628e5d752ba944c2833133a28fa87bb093e6832ced36a3e/jupyterlab_widgets-3.0.13-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/41/90/51523adbedc808e03271c7448fd71da1660cc02603eaaf10b9ab4f102146/kaleido-0.1.0.post1-py2.py3-none-win_amd64.whl
+      - pypi: https://files.pythonhosted.org/packages/22/82/61c74f5bde38a57b3087f8838bcdb4d91c11860f03f56e7f9fb829ef045f/memray-1.16.0.tar.gz
       - pypi: https://files.pythonhosted.org/packages/b9/54/dd730b32ea14ea797530a4479b2ed46a6fb250f682a9cfb997e968bf0261/networkx-3.4.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a4/42/230a3fc58aa50ce28649f3f9162d83bbf3d77e29fdd397a4766d8a88409f/numpy_groupies-0.11.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/29/93/d56fb9ba5569dc29d8263c72e46d21a2fd38741339ebf03f54cf7561828c/pdbp-1.6.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/5a/dc/491b7661614ab97483abf2056be1deee4dc2490ecbf7bff9ab5cdbac86e1/pyreadline3-3.5.4-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/65/44/bb509c3d2c0b5a87e7a5af1d5917a402a32ff026f777a6d7cb6990746cbb/tabcompleter-1.4.0-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/21/02/88b65cc394961a60c43c70517066b6b679738caf78506a5da7b88ffcb643/widgetsnbextension-4.0.13-py3-none-any.whl
       - pypi: .
 packages:
@@ -4656,6 +4683,24 @@ packages:
   - pkg:pypi/colorama?source=hash-mapping
   size: 25170
   timestamp: 1666700778190
+- kind: conda
+  name: colorama
+  version: 0.4.6
+  build: pyhd8ed1ab_1
+  build_number: 1
+  subdir: noarch
+  noarch: python
+  url: https://conda.anaconda.org/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
+  sha256: ab29d57dc70786c1269633ba3dff20288b81664d3ff8d21af995742e2bb03287
+  md5: 962b9857ee8e7018c22f2776ffa0b2d7
+  depends:
+  - python >=3.9
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/colorama?source=hash-mapping
+  size: 27011
+  timestamp: 1733218222191
 - kind: conda
   name: comm
   version: 0.2.2
@@ -10938,6 +10983,218 @@ packages:
   - pkg:pypi/mdurl?source=hash-mapping
   size: 14680
   timestamp: 1704317789138
+- kind: pypi
+  name: memray
+  version: 1.16.0
+  url: https://files.pythonhosted.org/packages/22/82/61c74f5bde38a57b3087f8838bcdb4d91c11860f03f56e7f9fb829ef045f/memray-1.16.0.tar.gz
+  sha256: 57319f74333a58a9b3d5fba411b0bff3f2974a37e362a09a577e7c6fe1d29a36
+  requires_dist:
+  - jinja2>=2.9
+  - typing-extensions ; python_full_version < '3.8'
+  - rich>=11.2.0
+  - textual>=0.41.0
+  - cython ; extra == 'test'
+  - greenlet ; python_full_version < '3.14' and extra == 'test'
+  - pytest ; extra == 'test'
+  - pytest-cov ; extra == 'test'
+  - ipython ; extra == 'test'
+  - setuptools ; python_full_version >= '3.12' and extra == 'test'
+  - pytest-textual-snapshot ; extra == 'test'
+  - textual!=0.65.2,!=0.66,>=0.43 ; extra == 'test'
+  - packaging ; extra == 'test'
+  - ipython ; extra == 'docs'
+  - bump2version ; extra == 'docs'
+  - sphinx ; extra == 'docs'
+  - furo ; extra == 'docs'
+  - sphinx-argparse ; extra == 'docs'
+  - towncrier ; extra == 'docs'
+  - black ; extra == 'lint'
+  - flake8 ; extra == 'lint'
+  - isort ; extra == 'lint'
+  - mypy ; extra == 'lint'
+  - check-manifest ; extra == 'lint'
+  - asv ; extra == 'benchmark'
+  - cython ; extra == 'dev'
+  - greenlet ; python_full_version < '3.14' and extra == 'dev'
+  - pytest ; extra == 'dev'
+  - pytest-cov ; extra == 'dev'
+  - ipython ; extra == 'dev'
+  - setuptools ; python_full_version >= '3.12' and extra == 'dev'
+  - pytest-textual-snapshot ; extra == 'dev'
+  - textual!=0.65.2,!=0.66,>=0.43 ; extra == 'dev'
+  - packaging ; extra == 'dev'
+  - black ; extra == 'dev'
+  - flake8 ; extra == 'dev'
+  - isort ; extra == 'dev'
+  - mypy ; extra == 'dev'
+  - check-manifest ; extra == 'dev'
+  - ipython ; extra == 'dev'
+  - bump2version ; extra == 'dev'
+  - sphinx ; extra == 'dev'
+  - furo ; extra == 'dev'
+  - sphinx-argparse ; extra == 'dev'
+  - towncrier ; extra == 'dev'
+  - asv ; extra == 'dev'
+  requires_python: '>=3.7.0'
+- kind: pypi
+  name: memray
+  version: 1.16.0
+  url: https://files.pythonhosted.org/packages/3f/b0/66bcc272f8c782fe423b95a76c8b0ada8ec58b36252ca24ab421d5533653/memray-1.16.0-cp311-cp311-macosx_11_0_arm64.whl
+  sha256: 64da3712d57a634bd129c31ba66f8fe7d7f4fa7a08031d6bf79d94ded9411537
+  requires_dist:
+  - jinja2>=2.9
+  - typing-extensions ; python_full_version < '3.8'
+  - rich>=11.2.0
+  - textual>=0.41.0
+  - cython ; extra == 'test'
+  - greenlet ; python_full_version < '3.14' and extra == 'test'
+  - pytest ; extra == 'test'
+  - pytest-cov ; extra == 'test'
+  - ipython ; extra == 'test'
+  - setuptools ; python_full_version >= '3.12' and extra == 'test'
+  - pytest-textual-snapshot ; extra == 'test'
+  - textual!=0.65.2,!=0.66,>=0.43 ; extra == 'test'
+  - packaging ; extra == 'test'
+  - ipython ; extra == 'docs'
+  - bump2version ; extra == 'docs'
+  - sphinx ; extra == 'docs'
+  - furo ; extra == 'docs'
+  - sphinx-argparse ; extra == 'docs'
+  - towncrier ; extra == 'docs'
+  - black ; extra == 'lint'
+  - flake8 ; extra == 'lint'
+  - isort ; extra == 'lint'
+  - mypy ; extra == 'lint'
+  - check-manifest ; extra == 'lint'
+  - asv ; extra == 'benchmark'
+  - cython ; extra == 'dev'
+  - greenlet ; python_full_version < '3.14' and extra == 'dev'
+  - pytest ; extra == 'dev'
+  - pytest-cov ; extra == 'dev'
+  - ipython ; extra == 'dev'
+  - setuptools ; python_full_version >= '3.12' and extra == 'dev'
+  - pytest-textual-snapshot ; extra == 'dev'
+  - textual!=0.65.2,!=0.66,>=0.43 ; extra == 'dev'
+  - packaging ; extra == 'dev'
+  - black ; extra == 'dev'
+  - flake8 ; extra == 'dev'
+  - isort ; extra == 'dev'
+  - mypy ; extra == 'dev'
+  - check-manifest ; extra == 'dev'
+  - ipython ; extra == 'dev'
+  - bump2version ; extra == 'dev'
+  - sphinx ; extra == 'dev'
+  - furo ; extra == 'dev'
+  - sphinx-argparse ; extra == 'dev'
+  - towncrier ; extra == 'dev'
+  - asv ; extra == 'dev'
+  requires_python: '>=3.7.0'
+- kind: pypi
+  name: memray
+  version: 1.16.0
+  url: https://files.pythonhosted.org/packages/5b/6e/04dd11f265b8f029bcb005d234f4b3fd02d217fa08318b05db81b55bd07c/memray-1.16.0-cp311-cp311-macosx_10_14_x86_64.whl
+  sha256: e8a7d5602fe654a77de1847b068fad0e40728fa44f066106c5f4e867f8a09e47
+  requires_dist:
+  - jinja2>=2.9
+  - typing-extensions ; python_full_version < '3.8'
+  - rich>=11.2.0
+  - textual>=0.41.0
+  - cython ; extra == 'test'
+  - greenlet ; python_full_version < '3.14' and extra == 'test'
+  - pytest ; extra == 'test'
+  - pytest-cov ; extra == 'test'
+  - ipython ; extra == 'test'
+  - setuptools ; python_full_version >= '3.12' and extra == 'test'
+  - pytest-textual-snapshot ; extra == 'test'
+  - textual!=0.65.2,!=0.66,>=0.43 ; extra == 'test'
+  - packaging ; extra == 'test'
+  - ipython ; extra == 'docs'
+  - bump2version ; extra == 'docs'
+  - sphinx ; extra == 'docs'
+  - furo ; extra == 'docs'
+  - sphinx-argparse ; extra == 'docs'
+  - towncrier ; extra == 'docs'
+  - black ; extra == 'lint'
+  - flake8 ; extra == 'lint'
+  - isort ; extra == 'lint'
+  - mypy ; extra == 'lint'
+  - check-manifest ; extra == 'lint'
+  - asv ; extra == 'benchmark'
+  - cython ; extra == 'dev'
+  - greenlet ; python_full_version < '3.14' and extra == 'dev'
+  - pytest ; extra == 'dev'
+  - pytest-cov ; extra == 'dev'
+  - ipython ; extra == 'dev'
+  - setuptools ; python_full_version >= '3.12' and extra == 'dev'
+  - pytest-textual-snapshot ; extra == 'dev'
+  - textual!=0.65.2,!=0.66,>=0.43 ; extra == 'dev'
+  - packaging ; extra == 'dev'
+  - black ; extra == 'dev'
+  - flake8 ; extra == 'dev'
+  - isort ; extra == 'dev'
+  - mypy ; extra == 'dev'
+  - check-manifest ; extra == 'dev'
+  - ipython ; extra == 'dev'
+  - bump2version ; extra == 'dev'
+  - sphinx ; extra == 'dev'
+  - furo ; extra == 'dev'
+  - sphinx-argparse ; extra == 'dev'
+  - towncrier ; extra == 'dev'
+  - asv ; extra == 'dev'
+  requires_python: '>=3.7.0'
+- kind: pypi
+  name: memray
+  version: 1.16.0
+  url: https://files.pythonhosted.org/packages/9e/5d/857dfa82ba323e5f897def2014812b60a7babc534a0eb225b380ec8907c4/memray-1.16.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+  sha256: 1619f5822712e8f7f96fed581d48ed5038df752596698021b21c305a12582896
+  requires_dist:
+  - jinja2>=2.9
+  - typing-extensions ; python_full_version < '3.8'
+  - rich>=11.2.0
+  - textual>=0.41.0
+  - cython ; extra == 'test'
+  - greenlet ; python_full_version < '3.14' and extra == 'test'
+  - pytest ; extra == 'test'
+  - pytest-cov ; extra == 'test'
+  - ipython ; extra == 'test'
+  - setuptools ; python_full_version >= '3.12' and extra == 'test'
+  - pytest-textual-snapshot ; extra == 'test'
+  - textual!=0.65.2,!=0.66,>=0.43 ; extra == 'test'
+  - packaging ; extra == 'test'
+  - ipython ; extra == 'docs'
+  - bump2version ; extra == 'docs'
+  - sphinx ; extra == 'docs'
+  - furo ; extra == 'docs'
+  - sphinx-argparse ; extra == 'docs'
+  - towncrier ; extra == 'docs'
+  - black ; extra == 'lint'
+  - flake8 ; extra == 'lint'
+  - isort ; extra == 'lint'
+  - mypy ; extra == 'lint'
+  - check-manifest ; extra == 'lint'
+  - asv ; extra == 'benchmark'
+  - cython ; extra == 'dev'
+  - greenlet ; python_full_version < '3.14' and extra == 'dev'
+  - pytest ; extra == 'dev'
+  - pytest-cov ; extra == 'dev'
+  - ipython ; extra == 'dev'
+  - setuptools ; python_full_version >= '3.12' and extra == 'dev'
+  - pytest-textual-snapshot ; extra == 'dev'
+  - textual!=0.65.2,!=0.66,>=0.43 ; extra == 'dev'
+  - packaging ; extra == 'dev'
+  - black ; extra == 'dev'
+  - flake8 ; extra == 'dev'
+  - isort ; extra == 'dev'
+  - mypy ; extra == 'dev'
+  - check-manifest ; extra == 'dev'
+  - ipython ; extra == 'dev'
+  - bump2version ; extra == 'dev'
+  - sphinx ; extra == 'dev'
+  - furo ; extra == 'dev'
+  - sphinx-argparse ; extra == 'dev'
+  - towncrier ; extra == 'dev'
+  - asv ; extra == 'dev'
+  requires_python: '>=3.7.0'
 - kind: conda
   name: mistune
   version: 3.0.2
@@ -14006,10 +14263,11 @@ packages:
   timestamp: 1708953086199
 - kind: pypi
   name: soep-preparation
-  version: 0.1.dev126+g5a4a483.d20250331
+  version: 0.1.dev127+g692655f.d20250401
   path: .
-  sha256: 19242f8b8c8980e643518f2df30e6d54ac11105023cd848afe4fa199270fcc3c
+  sha256: c2f82b6c4b7fe0b367b362f83c09e9f68de98f05726c5f6cfcbddcd14db43254
   requires_dist:
+  - memray<2,>=1.16.0
   - pytask
   requires_python: '>=3.11'
   editable: true
@@ -14337,6 +14595,33 @@ packages:
   - pkg:pypi/terminado?source=hash-mapping
   size: 22883
   timestamp: 1710262943966
+- kind: pypi
+  name: textual
+  version: 3.0.1
+  url: https://files.pythonhosted.org/packages/49/57/6242ff473b0991055bbc7ab7e313dc6f1aa184c03326a252f1236162a875/textual-3.0.1-py3-none-any.whl
+  sha256: 99daade46a3209c2f25a7ea210485192ebf8a3340108731c1a4600676f188619
+  requires_dist:
+  - markdown-it-py[linkify,plugins]>=2.1.0
+  - platformdirs>=3.6.0,<5
+  - rich>=13.3.3
+  - tree-sitter>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-bash>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-css>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-go>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-html>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-java>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-javascript>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-json>=0.24.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-markdown>=0.3.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-python>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-regex>=0.24.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-rust>=0.23.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-sql>=0.3.0,<0.3.8 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-toml>=0.6.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-xml>=0.7.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - tree-sitter-yaml>=0.6.0 ; python_full_version >= '3.9' and extra == 'syntax'
+  - typing-extensions>=4.4.0,<5.0.0
+  requires_python: '>=3.8.1,<4.0.0'
 - kind: conda
   name: tinycss2
   version: 1.4.0
@@ -14536,6 +14821,24 @@ packages:
   - pkg:pypi/tornado?source=hash-mapping
   size: 860730
   timestamp: 1724956581349
+- kind: conda
+  name: tqdm
+  version: 4.67.1
+  build: pyhd8ed1ab_1
+  build_number: 1
+  subdir: noarch
+  noarch: python
+  url: https://conda.anaconda.org/conda-forge/noarch/tqdm-4.67.1-pyhd8ed1ab_1.conda
+  sha256: 11e2c85468ae9902d24a27137b6b39b4a78099806e551d390e394a8c34b48e40
+  md5: 9efbfdc37242619130ea42b1cc4ed861
+  depends:
+  - colorama
+  - python >=3.9
+  license: MPL-2.0 or MIT
+  purls:
+  - pkg:pypi/tqdm?source=hash-mapping
+  size: 89498
+  timestamp: 1735661472632
 - kind: conda
   name: traitlets
   version: 5.14.3
