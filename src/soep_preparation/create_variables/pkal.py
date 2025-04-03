@@ -12,8 +12,6 @@ from pandas.api.types import union_categoricals
 
 from soep_preparation.utilities import apply_lowest_int_dtype
 
-THRESHOLD_YEAR = 1997
-
 
 def _full_empl_prev_m(
     v1_prev_m: "pd.Series[pd.Categorical]",
@@ -24,7 +22,7 @@ def _full_empl_prev_m(
     return pd.Series(
         union_categoricals(
             [
-                v1_prev_m_aligned.where(survey_year < THRESHOLD_YEAR, v2_prev_m),
+                v1_prev_m_aligned.where(survey_year < 1997, v2_prev_m),  # noqa: PLR2004
                 v2_prev_m,
             ],
         ),
