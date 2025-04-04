@@ -35,22 +35,21 @@ for name in get_dataset_names(SRC / "create_variables"):
     catalog = DATA_CATALOGS["single_variables"][name]
 
     @task(id=name)
-    def task_manipulate_one_dataset(
+    def task_create_derived_variables(
         clean_data: Annotated[Path, catalog["cleaned"]],
         script_path: Annotated[
             Path,
             SRC / "create_variables" / f"{name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, catalog["manipulated"]]:
-        """Manipulates a dataset using a specified cleaning script.
+    ) -> Annotated[pd.DataFrame, catalog["derived_variables"]]:
+        """Creates derived variables for a dataset using a specified script.
 
         Parameters:
-            clean_data (pd.DataFrame): Cleaned dataset to be manipulated.
-            script_path (Path): The path to the manipulation script.
-            dataset (str): The name of the dataset.
+            clean_data (pd.DataFrame): Cleaned dataset to derive variables for.
+            script_path (Path): The path to the script.
 
         Returns:
-            pd.DataFrame: Manipulated pandas DataFrame to be saved to the data catalog.
+            pd.DataFrame: Derived variables to store in the data catalog.
 
         Raises:
             FileNotFoundError: If dataset or cleaning script file do not exist.
@@ -63,7 +62,7 @@ for name in get_dataset_names(SRC / "create_variables"):
             script_path.stem,
             str(script_path),
         ).load_module()
-        return module.manipulate(clean_data)
+        return module.create_derived_variables(data=clean_data)
 
 
 def _error_handling_task(data, script_path):

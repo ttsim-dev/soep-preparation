@@ -12,14 +12,14 @@ import pandas as pd
 from soep_preparation.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
 
 
-def manipulate(data: pd.DataFrame) -> pd.DataFrame:
-    """Manipulate the pequiv dataset.
+def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
+    """Create derived variables for the pequiv dataset.
 
     Args:
-        data (pd.DataFrame): The dataset to be manipulated.
+        data (pd.DataFrame): The dataset required.
 
     Returns:
-        pd.DataFrame: The manipulated dataset.
+        pd.DataFrame: The dataset of derived variables.
     """
     med_vars = [
         "med_pe_schw_anziehen",

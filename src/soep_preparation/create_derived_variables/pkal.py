@@ -39,26 +39,26 @@ def _empl_m_prev(
     return apply_lowest_int_dtype(out)
 
 
-def manipulate(data: pd.DataFrame) -> pd.DataFrame:
-    """Manipulate the pkal dataset.
+def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
+    """Create derived variables for the pkal dataset.
 
     Args:
-        data (pd.DataFrame): The dataset to be manipulated.
+        data (pd.DataFrame): The dataset required.
 
     Returns:
-        pd.DataFrame: The manipulated dataset.
+        pd.DataFrame: The dataset of derived variables.
     """
-    out = data.copy()
+    out = pd.DataFrame(index=data.index)
     out["full_empl_prev"] = _full_empl_prev_m(
         data["full_empl_v1_prev"],
         data["full_empl_v2_prev"],
         data["survey_year"],
     )
-    out["half_empl_prev"] = out["half_empl_prev"].cat.codes.between(0, 1)
+    out["half_empl_prev"] = data["half_empl_prev"].cat.codes.between(0, 1)
     out["employed_m_prev"] = _empl_m_prev(
         out["full_empl_prev"],
-        out["half_empl_prev"],
-        out["mini_job_prev"],
+        data["half_empl_prev"],
+        data["mini_job_prev"],
     )
     out["months_empl_prev"] = out.groupby(["p_id", "survey_year"])[
         "employed_m_prev"

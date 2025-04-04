@@ -77,60 +77,60 @@ def _education(
     return out.astype(cat_type)
 
 
-def manipulate(data: pd.DataFrame) -> pd.DataFrame:
-    """Manipulate the pgen dataset.
+def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
+    """Create derived variables for the pgen dataset.
 
     Args:
-        data (pd.DataFrame): The dataset to be manipulated.
+        data (pd.DataFrame): The dataset required.
 
     Returns:
-        pd.DataFrame: The manipulated dataset.
+        pd.DataFrame: The dataset of derived variables.
     """
-    out = data.copy()
-    out["german"] = create_dummy(out["nationality_first"], "Deutschland")
-    out["retired"] = create_dummy(out["occupation_status"], "NE: Rentner/Rentnerin")
+    out = pd.DataFrame(index=data.index)
+    out["german"] = create_dummy(data["nationality_first"], "Deutschland")
+    out["retired"] = create_dummy(data["occupation_status"], "NE: Rentner/Rentnerin")
     out["in_education"] = _in_education(
-        out["employment_status"],
-        out["occupation_status"],
+        data["employment_status"],
+        data["occupation_status"],
     )
     out["self_employed"] = create_dummy(
-        out["occupation_status"],
-        _self_employed_occupations(out["occupation_status"]),
+        data["occupation_status"],
+        _self_employed_occupations(data["occupation_status"]),
         "isin",
     )
     out["military"] = create_dummy(
-        out["occupation_status"],
+        data["occupation_status"],
         "NE: Wehr- und Zivildienst",
     )
     out["erwerbstätig"] = (
-        create_dummy(out["employment_status"], "Nicht erwerbstätig", "neq")
+        create_dummy(data["employment_status"], "Nicht erwerbstätig", "neq")
     ) & (~out["in_education"])
 
     out["nicht_erwerbstätig"] = create_dummy(
-        out["employment_status"],
+        data["employment_status"],
         "Nicht erwerbstätig",
     )
     out["unemployed"] = create_dummy(
-        out["occupation_status"],
+        data["occupation_status"],
         "NE: arbeitslos gemeldet",
     )
-    out["full_time"] = create_dummy(out["employment_status"], "Voll erwerbstätig")
-    out["part_time"] = create_dummy(out["employment_status"], "Teilzeitbeschäftigung")
+    out["full_time"] = create_dummy(data["employment_status"], "Voll erwerbstätig")
+    out["part_time"] = create_dummy(data["employment_status"], "Teilzeitbeschäftigung")
     out["geringfügig_erwb"] = create_dummy(
-        out["employment_status"],
+        data["employment_status"],
         "Unregelmässig, geringfügig erwerbstät.",
     )
     out["werkstatt"] = create_dummy(
-        out["employment_status"],
+        data["employment_status"],
         "Werkstatt für behinderte Menschen",
     )
-    out["beamte"] = out["occupation_status"].str.startswith("Beamte", na=False)
+    out["beamte"] = data["occupation_status"].str.startswith("Beamte", na=False)
     out["parental_leave"] = create_dummy(
-        out["laborf_status"],
+        data["laborf_status"],
         "NE: Mutterschutz/Elternzeit (seit 1991) ",
     )
     out["education"] = _education(
-        out["education_casmin"],
-        out["education_isced"],
+        data["education_casmin"],
+        data["education_isced"],
     )
     return out

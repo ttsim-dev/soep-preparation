@@ -1,3 +1,5 @@
+"""Function to clean existing variables in the SOEP dataset."""
+
 import importlib.util
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
@@ -24,7 +26,8 @@ def _fail_if_cleaning_module_missing(script_path):
     spec.loader.exec_module(module)
 
     if not hasattr(module, "clean"):
-        msg = f"The cleaning script {script_path} does not contain the expected cleaning function."
+        msg = f"""The cleaning script {script_path}
+          does not contain the expected cleaning function."""
         raise AttributeError(
             msg,
         )
@@ -37,7 +40,7 @@ for name, catalog in DATA_CATALOGS["single_variables"].items():
         raw_data: Annotated[Path, catalog["raw"]],
         cleaning_script: Annotated[
             Path,
-            SRC / "initial_cleaning" / f"{name}.py",
+            SRC / "clean_existing_variables" / f"{name}.py",
         ],
     ) -> Annotated[pd.DataFrame, catalog["cleaned"]]:
         """Cleans a dataset using a specified cleaning script.
@@ -51,8 +54,10 @@ for name, catalog in DATA_CATALOGS["single_variables"].items():
 
         Raises:
             ImportError: If there is an error loading the cleaning script module.
-            TypeError: If the input data is not a pandas DataFrame or the script path is not a pathlib.Path object.
-            AttributeError: If the cleaning script module does not contain the expected function.
+            TypeError: If raw_data is not a pandas.DataFrame or
+            cleaning_script is not a pathlib.Path object.
+            AttributeError: If cleaning script module does not
+            contain expected function.
 
         """
         _error_handling_task(raw_data, cleaning_script)
@@ -61,7 +66,7 @@ for name, catalog in DATA_CATALOGS["single_variables"].items():
             str(cleaning_script),
         ).load_module()
         return module.clean(
-            raw_data,
+            raw_data=raw_data,
         )
 
 

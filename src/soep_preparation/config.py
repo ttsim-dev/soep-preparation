@@ -5,9 +5,9 @@ from pathlib import Path
 import pandas as pd
 from pytask import DataCatalog
 
-pd.set_option("mode.copy_on_write", True)
-pd.set_option("future.infer_string", True)
-pd.set_option("future.no_silent_downcasting", True)
+pd.set_option("mode.copy_on_write", True)  # noqa: FBT003
+pd.set_option("future.infer_string", True)  # noqa: FBT003
+pd.set_option("future.no_silent_downcasting", True)  # noqa: FBT003
 pd.set_option("plotting.backend", "plotly")
 
 SRC = Path(__file__).parent.resolve()
@@ -39,7 +39,7 @@ def get_dataset_names(directory: Path) -> list[str]:
 DATA_CATALOGS = {
     "single_variables": {
         dataset_name: DataCatalog(name=dataset_name)
-        for dataset_name in get_dataset_names(SRC / "initial_cleaning")
+        for dataset_name in get_dataset_names(SRC / "clean_existing_variables")
     },
     "merged": DataCatalog(name="merged"),
 }

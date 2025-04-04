@@ -15,16 +15,16 @@ from soep_preparation.utilities import (
 )
 
 
-def clean(raw: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the kidlong dataset."""
     out = pd.DataFrame()
-    out["hh_id"] = int_categorical_to_int(raw["hid"])
-    out["p_id"] = int_categorical_to_int(raw["pid"])
-    out["survey_year"] = int_categorical_to_int(raw["syear"])
-    out["pointer_mother"] = int_categorical_to_int(raw["k_pmum"])
+    out["hh_id"] = int_categorical_to_int(raw_data["hid"])
+    out["p_id"] = int_categorical_to_int(raw_data["pid"])
+    out["survey_year"] = int_categorical_to_int(raw_data["syear"])
+    out["pointer_mother"] = int_categorical_to_int(raw_data["k_pmum"])
     out["betreuungskost_einrichtung"] = float_categorical_to_float(
-        raw["kk_amtp_h"],
+        raw_data["kk_amtp_h"],
     )
-    out["school_costs"] = float_categorical_to_float(raw["ks_amtp_h"])
+    out["school_costs"] = float_categorical_to_float(raw_data["ks_amtp_h"])
 
     return out

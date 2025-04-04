@@ -27,56 +27,56 @@ def _kindergeld_aktuell_hl_m_hh(
     )
 
 
-def clean(raw: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the hl dataset."""
     out = pd.DataFrame()
-    out["hh_id"] = int_categorical_to_int(raw["hid"])
-    out["survey_year"] = int_categorical_to_int(raw["syear"])
+    out["hh_id"] = int_categorical_to_int(raw_data["hid"])
+    out["survey_year"] = int_categorical_to_int(raw_data["syear"])
 
-    out["kindergeld_hl_m_hh_prev"] = int_categorical_to_int(raw["hlc0042_h"])
+    out["kindergeld_hl_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0042_h"])
     out["kindergeld_bezug_aktuell"] = bool_categorical(
-        raw["hlc0044_h"],
+        raw_data["hlc0044_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["kindergeld_aktuell_hl_m_hh"] = _kindergeld_aktuell_hl_m_hh(
-        raw["hlc0045_h"],
+        raw_data["hlc0045_h"],
         out["kindergeld_bezug_aktuell"],
     )
-    out["kinderzuschlag_hl_m_hh"] = int_categorical_to_int(raw["hlc0047_h"])
-    out["kinderzuschlag_hl_m_hh_prev"] = int_categorical_to_int(raw["hlc0051_h"])
-    out["alg2_months_soep_hh_prev"] = int_categorical_to_int(raw["hlc0053"])
+    out["kinderzuschlag_hl_m_hh"] = int_categorical_to_int(raw_data["hlc0047_h"])
+    out["kinderzuschlag_hl_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0051_h"])
+    out["alg2_months_soep_hh_prev"] = int_categorical_to_int(raw_data["hlc0053"])
     out["arbeitsl_geld_2_soep_m_hh_prev"] = float_categorical_to_float(
-        raw["hlc0054"],
+        raw_data["hlc0054"],
     )
     out["betreu_kosten_pro_kind"] = bool_categorical(
-        raw["hlc0009"],
+        raw_data["hlc0009"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["kinderzuschlag_aktuell_hh"] = bool_categorical(
-        raw["hlc0046_h"],
+        raw_data["hlc0046_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["kinderzuschlag_hl_hh_prev"] = bool_categorical(
-        raw["hlc0049_h"],
+        raw_data["hlc0049_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["alg2_etc_aktuell_hh"] = bool_categorical(
-        raw["hlc0064_h"],
+        raw_data["hlc0064_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["hilfe_lebensunterh_aktuell_hh"] = bool_categorical(
-        raw["hlc0067_h"],
+        raw_data["hlc0067_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["wohngeld_soep_m_hh_prev"] = int_categorical_to_int(raw["hlc0082_h"])
+    out["wohngeld_soep_m_hh_prev"] = int_categorical_to_int(raw_data["hlc0082_h"])
     out["wohngeld_aktuell_hh"] = bool_categorical(
-        raw["hlc0083_h"],
+        raw_data["hlc0083_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )

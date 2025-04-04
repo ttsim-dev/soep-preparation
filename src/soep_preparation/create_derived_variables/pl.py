@@ -24,14 +24,14 @@ def _priv_rentenv_beitr(data: pd.DataFrame) -> pd.Series:
     return data["priv_rentenv_beitr_m"]
 
 
-def manipulate(data: pd.DataFrame) -> pd.DataFrame:
-    """Manipulate the pl dataset.
+def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
+    """Create derived variables for the pl dataset.
 
     Args:
-        data (pd.DataFrame): The dataset to be manipulated.
+        data (pd.DataFrame): The dataset required.
 
     Returns:
-        pd.DataFrame: The manipulated dataset.
+        pd.DataFrame: The dataset of derived variables.
     """
     out = data.copy()
     out["priv_rentenv_beitr_m"] = _priv_rentenv_beitr(

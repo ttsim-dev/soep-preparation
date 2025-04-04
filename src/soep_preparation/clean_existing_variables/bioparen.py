@@ -12,14 +12,14 @@ import pandas as pd
 from soep_preparation.utilities import apply_lowest_int_dtype, float_categorical_to_int
 
 
-def clean(raw: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the biobirth dataset."""
     out = pd.DataFrame()
-    out["p_id"] = apply_lowest_int_dtype(raw["pid"])
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["p_id_father"] = float_categorical_to_int(
-        raw["fnr"]
+        raw_data["fnr"],
     )  # social father personal id
     out["p_id_mother"] = float_categorical_to_int(
-        raw["mnr"]
+        raw_data["mnr"],
     )  # social mother personal id
     return out
