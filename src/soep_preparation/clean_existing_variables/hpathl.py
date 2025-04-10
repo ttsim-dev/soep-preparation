@@ -1,18 +1,11 @@
-"""Functions to pre-process variables for a raw hpathl dataset.
-
-Functions:
-- clean: Coordinates the pre-processing for the dataset.
-
-Usage:
-    Import this module and call clean to pre-process variables.
-"""
+"""Functions to pre-process variables for a raw hpathl dataset."""
 
 import pandas as pd
 
 from soep_preparation.utilities import (
     apply_lowest_float_dtype,
     apply_lowest_int_dtype,
-    str_categorical,
+    object_to_str_categorical,
 )
 
 
@@ -21,11 +14,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
-    out["hh_soep_sample_from_hpathl"] = str_categorical(
-        raw_data["hsample"].cat.rename_categories(
+
+    out["hh_soep_sample_from_hpathl"] = object_to_str_categorical(
+        raw_data["hsample"].replace(
             {
-                "1994/5 Migration (1984-92/94 West)": (
-                    "1994/5 Migration (1984-92/94, West)"
+                "[4] D 1994/5 Migration (1984-92/94 West)": (
+                    "[4] D 1994/5 Migration (1984-92/94, West)"
                 ),
             },
         ),
@@ -34,5 +28,5 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_bleibe_wkeit"] = apply_lowest_float_dtype(raw_data["hbleib"])
     out["hh_gewicht"] = apply_lowest_float_dtype(raw_data["hhrf"])
     out["hh_gewicht_nur_neue"] = apply_lowest_float_dtype(raw_data["hhrf0"])
-    out["hh_gewicht_ohne_neue"] = apply_lowest_float_dtype(raw_data["hhrf0"])
+    out["hh_gewicht_ohne_neue"] = apply_lowest_float_dtype(raw_data["hhrf1"])
     return out

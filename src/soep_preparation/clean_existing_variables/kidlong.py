@@ -1,30 +1,24 @@
-"""Functions to pre-process variables for a raw kidlong dataset.
-
-Functions:
-- clean: Coordinates the pre-processing for the dataset.
-
-Usage:
-    Import this module and call clean to pre-process variables.
-"""
+"""Functions to pre-process variables for a raw kidlong dataset."""
 
 import pandas as pd
 
 from soep_preparation.utilities import (
-    float_categorical_to_float,
-    int_categorical_to_int,
+    apply_lowest_int_dtype,
+    object_to_int,
 )
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the kidlong dataset."""
     out = pd.DataFrame()
-    out["hh_id"] = int_categorical_to_int(raw_data["hid"])
-    out["p_id"] = int_categorical_to_int(raw_data["pid"])
-    out["survey_year"] = int_categorical_to_int(raw_data["syear"])
-    out["pointer_mother"] = int_categorical_to_int(raw_data["k_pmum"])
-    out["betreuungskost_einrichtung"] = float_categorical_to_float(
+
+    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
+    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["pointer_mother"] = object_to_int(raw_data["k_pmum"])
+    out["betreuungskost_einrichtung"] = object_to_int(
         raw_data["kk_amtp_h"],
     )
-    out["school_costs"] = float_categorical_to_float(raw_data["ks_amtp_h"])
+    out["school_costs"] = object_to_int(raw_data["ks_amtp_h"])
 
     return out

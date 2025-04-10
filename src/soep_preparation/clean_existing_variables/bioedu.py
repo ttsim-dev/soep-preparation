@@ -1,18 +1,11 @@
-"""Functions to pre-process variables for a raw bioedu dataset.
-
-Functions:
-- clean: Coordinates the pre-processing for the dataset.
-
-Usage:
-    Import this module and call clean to pre-process variables.
-"""
+"""Functions to pre-process variables for a raw bioedu dataset."""
 
 import pandas as pd
 
 from soep_preparation.clean_existing_variables import month_mapping
 from soep_preparation.utilities import (
     apply_lowest_int_dtype,
-    categorical_to_int_categorical,
+    object_to_int_categorical,
 )
 
 
@@ -21,9 +14,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["birth_month_from_bioedu"] = categorical_to_int_categorical(
+    out["birth_month_from_bioedu"] = object_to_int_categorical(
         raw_data["gebmonat"],
-        ordered=False,
         renaming=month_mapping.en,
+        ordered=False,
     )
     return out

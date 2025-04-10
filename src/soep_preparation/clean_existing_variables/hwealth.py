@@ -1,11 +1,4 @@
-"""Functions to pre-process variables for a raw hwealth dataset.
-
-Functions:
-- clean: Coordinates the pre-processing for the dataset.
-
-Usage:
-    Import this module and call clean to pre-process variables.
-"""
+"""Functions to pre-process variables for a raw hwealth dataset."""
 
 import pandas as pd
 
@@ -14,7 +7,7 @@ from soep_preparation.utilities import (
     apply_lowest_float_dtype,
     apply_lowest_int_dtype,
     find_lowest_int_dtype,
-    str_categorical,
+    object_to_str_categorical,
 )
 
 
@@ -101,5 +94,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["nettoverm_fahrz_kredit_hh_d"] = apply_lowest_float_dtype(raw_data["n011hd"])
     out["nettoverm_fahrz_kredit_hh_e"] = apply_lowest_float_dtype(raw_data["n011he"])
 
-    out["flag_netwealth"] = str_categorical(raw_data["n022h0"])
+    out["flag_netwealth"] = object_to_str_categorical(raw_data["n022h0"])
+
     return _hwealth_wide_to_long(out)

@@ -1,31 +1,26 @@
-"""Functions to pre-process variables for a raw pbrutto dataset.
-
-Functions:
-- clean: Coordinates the pre-processing for the dataset.
-
-Usage:
-    Import this module and call clean to pre-process variables.
-"""
+"""Functions to pre-process variables for a raw pbrutto dataset."""
 
 import pandas as pd
 
 from soep_preparation.utilities import (
     apply_lowest_int_dtype,
-    int_categorical_to_int,
-    str_categorical,
+    object_to_int,
+    object_to_str_categorical,
 )
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pbrutto dataset."""
     out = pd.DataFrame()
+
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["hh_id_orig"] = int_categorical_to_int(raw_data["cid"])
-    out["hh_id"] = int_categorical_to_int(raw_data["hid"])
-    out["survey_year"] = int_categorical_to_int(raw_data["syear"])
-    out["birth_year"] = int_categorical_to_int(raw_data["geburt_v2"])
-    out["befragungs_status"] = str_categorical(raw_data["befstat_h"])
-    out["hh_position"] = str_categorical(
+    out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
+    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
+    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["birth_year"] = object_to_int(raw_data["geburt_v2"])
+    out["befragungs_status"] = object_to_str_categorical(raw_data["befstat_h"])
+
+    out["hh_position"] = object_to_str_categorical(
         raw_data["stell_h"],
         renaming={
             "[0] Haushaltsvorstand,Bezugsperson": "Household head",
@@ -65,22 +60,19 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[71] keine Angabe": "Other",
             "[99] Stellung zu HV unbekannt": "Other",
         },
-        reduce=True,
     )
-    out["bearbeitungserg"] = str_categorical(raw_data["perg"])
+    out["bearbeitungserg"] = object_to_str_categorical(raw_data["perg"])
     # categories [29] and [39] have identical missing data labels
     # they are reduced to one
-    out["bearbeitungserg_ausf"] = str_categorical(
+    out["bearbeitungserg_ausf"] = object_to_str_categorical(
         raw_data["pergz"],
-        reduce=True,
     )
     # categories [19] and [39] have identical missing data labels
     # they are reduced to one
-    out["hh_position_raw_last_year"] = str_categorical(
+    out["hh_position_raw_last_year"] = object_to_str_categorical(
         raw_data["pzugv"],
-        reduce=True,
     )
-    out["teilnahmebereitschaft"] = str_categorical(
+    out["teilnahmebereitschaft"] = object_to_str_categorical(
         raw_data["ber"],
         ordered=True,
         renaming={
@@ -90,5 +82,5 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[1] sehr gut": "sehr gut",
         },
     )
-    out["bearbeitungserg_old"] = str_categorical(raw_data["hergs"])
+    out["bearbeitungserg_old"] = object_to_str_categorical(raw_data["hergs"])
     return out
