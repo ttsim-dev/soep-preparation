@@ -40,7 +40,7 @@ def _get_relevant_column_names(script: Path) -> list[str]:
         flags=re.DOTALL,
     )
     # Find all occurrences of raw["column_name"] or ['column_name'].
-    pattern = r'raw\["([^"]+)"\]|\[\'([^\']+)\'\]'
+    pattern = r'raw_data\["([^"]+)"\]|\[\'([^\']+)\'\]'
     matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
     # Return unique matches in the order that they appear.
     return list(dict.fromkeys(matches))
