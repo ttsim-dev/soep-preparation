@@ -61,7 +61,7 @@ def _iteratively_read_one_dataset(
     return pd.concat(processed_chunks)
 
 
-for name, catalog in DATA_CATALOGS["single_variables"].items():
+for name, catalog in DATA_CATALOGS["single_datasets"].items():
 
     @task(id=name)
     def task_read_one_dataset(

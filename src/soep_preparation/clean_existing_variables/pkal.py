@@ -77,7 +77,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["full_empl_v1_prev_3"] = object_to_str_categorical(
         raw_data["kal1a003_v1"],
-        renaming={"[1] Ja": "Mär Vollzeit erwerbst."},
+        renaming={"[1] Ja": "Mar Vollzeit erwerbst."},
     )
     out["full_empl_v1_prev_4"] = object_to_str_categorical(
         raw_data["kal1a004_v1"],
@@ -152,7 +152,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["mini_job_prev_3"] = object_to_str_categorical(
         raw_data["kal1n003"],
-        renaming={1: "Mär"},
+        renaming={1: "Mar"},
     )
     out["mini_job_prev_4"] = object_to_str_categorical(
         raw_data["kal1n004"],

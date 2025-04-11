@@ -1,11 +1,4 @@
-"""Functions to create variables for a pre-processed pgen dataset.
-
-Functions:
-- manipulate: Coordinates the variable creation process for the dataset.
-
-Usage:
-    Import this module and call manipulate to generate new variables.
-"""
+"""Functions to create datasets for a pre-processed pgen dataset."""
 
 import re
 

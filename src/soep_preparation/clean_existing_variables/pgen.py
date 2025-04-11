@@ -41,7 +41,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["nationality_first"] = object_to_str_categorical(
         raw_data["pgnation"],
     )
-    out["german"] = out["nationality_first"].dropna() == "Deutschland"
     out["status_refugee"] = object_to_str_categorical(raw_data["pgstatus_refu"])
     out["marital_status"] = object_to_str_categorical(raw_data["pgfamstd"])
     out["curr_earnings_m"] = object_to_float(raw_data["pglabgro"]).fillna(0)

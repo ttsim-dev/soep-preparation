@@ -12,6 +12,21 @@ from soep_preparation.utilities import (
 )
 
 
+def _create_med_var_column(
+    pid_sr: pd.Series,
+    var_sr: pd.Series,
+    renaming: dict,
+    ordered: bool,  # noqa: FBT001
+) -> pd.Series:
+    data = pd.DataFrame({"pid": pid_sr, var_sr.name: var_sr})
+    data[var_sr.name] = object_to_int_categorical(
+        data[var_sr.name],
+        renaming=renaming,
+        ordered=ordered,
+    )
+    return data.groupby("pid")[var_sr.name].ffill()
+
+
 def _priv_rente_beitr_year(
     priv_rente_beitr_year: "pd.Series[int]",
     eingezahlte_monate: "pd.Series[int]",
@@ -111,12 +126,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         2018,
     )
 
-    out["med_pl_schw_treppen"] = object_to_int_categorical(
+    out["med_pl_schw_treppen"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0004"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
     )
-    out["med_pl_schw_taten"] = object_to_int_categorical(
+    out["med_pl_schw_taten"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0005"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
@@ -127,7 +144,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["med_pl_gewicht"] = object_to_int(
         raw_data["ple0007"],
     )
-    out["med_pl_subj_status"] = object_to_int_categorical(
+    out["med_pl_subj_status"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0008"],
         renaming={
             "[1] Sehr gut": 1,
@@ -138,62 +156,86 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
         ordered=True,
     )
-    out["med_pl_schlaf"] = object_to_bool_categorical(
+    out["med_pl_schlaf"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0011"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
+        ordered=False,
     )
-    out["med_pl_diabetes"] = object_to_bool_categorical(
+    out["med_pl_diabetes"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0012"],
         renaming={"[1] Ja": True},
+        ordered=False,
     )
-    out["med_pl_asthma"] = object_to_bool_categorical(
+    out["med_pl_asthma"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0013"],
         renaming={"[1] Ja": True},
+        ordered=False,
     )
-    out["med_pl_herzkr"] = object_to_bool_categorical(
+    out["med_pl_herzkr"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0014"],
         renaming={"[1] Ja": True},
+        ordered=False,
     )
-    out["med_pl_krebs"] = object_to_bool_categorical(
+    out["med_pl_krebs"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0015"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
+        ordered=False,
     )
-    out["med_pl_schlaganf"] = object_to_bool_categorical(
+    out["med_pl_schlaganf"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0016"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
+        ordered=False,
     )
-    out["med_pl_migraene"] = object_to_bool_categorical(
+    out["med_pl_migraene"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0017"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
+        ordered=False,
     )
-    out["med_pl_bluthdrck"] = object_to_bool_categorical(
+    out["med_pl_bluthdrck"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0018"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
+        ordered=False,
     )
-    out["med_pl_depressiv"] = object_to_bool_categorical(
+    out["med_pl_depressiv"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0019"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
+        ordered=False,
     )
-    out["med_pl_demenz"] = object_to_bool_categorical(
+    out["med_pl_demenz"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0020"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
+        ordered=False,
     )
     out["med_pl_gelenk"] = object_to_bool_categorical(
         raw_data["ple0021"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
     )
     out["med_pl_ruecken"] = object_to_bool_categorical(
         raw_data["ple0022"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
     )
-    out["med_pl_sonst"] = object_to_bool_categorical(
+    out["med_pl_sonst"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0023"],
-        renaming={"[1] Ja": True},
+        renaming={"[1] Ja": 1},
+        ordered=False,
     )
     out["disability_degree"] = object_to_int(raw_data["ple0041"]).fillna(0)
-    out["med_pl_raucher"] = object_to_bool_categorical(
+    out["med_pl_raucher"] = _create_med_var_column(
+        raw_data["pid"],
         raw_data["ple0081_h"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        renaming={"[2] Nein": 0, "[1] Ja": 1},
+        ordered=True,
     )
     out["art_kv"] = object_to_str_categorical(raw_data["ple0097"])
     out["politics_left_right"] = object_to_int_categorical(

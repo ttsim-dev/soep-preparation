@@ -11,6 +11,36 @@ from soep_preparation.utilities import (
 )
 
 
+def _create_med_var_column(
+    pid_sr: pd.Series,
+    var_sr: pd.Series,
+    renaming: dict,
+    ordered: bool,  # noqa: FBT001
+) -> pd.Series:
+    data = pd.DataFrame({"pid": pid_sr, var_sr.name: var_sr})
+    data[var_sr.name] = object_to_bool_categorical(
+        data[var_sr.name],
+        renaming=renaming,
+        ordered=ordered,
+    )
+    return data.groupby("pid")[var_sr.name].ffill()
+
+
+def _create_med_pe_subj_status_column(
+    pid_sr: pd.Series,
+    var_sr: pd.Series,
+    renaming: dict,
+    ordered: bool,  # noqa: FBT001
+) -> pd.Series:
+    data = pd.DataFrame({"pid": pid_sr, var_sr.name: var_sr})
+    data[var_sr.name] = object_to_int_categorical(
+        data[var_sr.name],
+        renaming=renaming,
+        ordered=ordered,
+    )
+    return data.groupby("pid")[var_sr.name].ffill()
+
+
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pequiv dataset."""
     out = pd.DataFrame()
@@ -90,68 +120,81 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["private_pen_widow_prev"] = object_to_int(raw_data["iprv2"])
     out["riester_widow_prev"] = object_to_int(raw_data["irie2"])
 
-    out["med_pe_krnkhaus"] = object_to_bool_categorical(
-        raw_data["m11101"],
+    out["med_pe_krnkhaus"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11101"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schlaganf"] = object_to_bool_categorical(
-        raw_data["m11105"],
+    out["med_pe_schlaganf"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11105"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pe_bluthdrck"] = object_to_bool_categorical(
-        raw_data["m11106"],
+    out["med_pe_bluthdrck"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11106"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pe_diabetes"] = object_to_bool_categorical(
-        raw_data["m11107"],
+    out["med_pe_diabetes"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11107"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pe_krebs"] = object_to_bool_categorical(
-        raw_data["m11108"],
+    out["med_pe_krebs"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11108"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pe_psych"] = object_to_bool_categorical(
-        raw_data["m11109"],
+    out["med_pe_psych"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11109"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pe_gelenk"] = object_to_bool_categorical(
-        raw_data["m11110"],
+    out["med_pe_gelenk"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11110"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pe_herzkr"] = object_to_bool_categorical(
-        raw_data["m11111"],
+    out["med_pe_herzkr"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11111"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pe_schw_treppen"] = object_to_bool_categorical(
-        raw_data["m11113"],
+    out["med_pe_schw_treppen"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11113"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schw_anziehen"] = object_to_bool_categorical(
-        raw_data["m11115"],
+    out["med_pe_schw_anziehen"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11115"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schw_bett"] = object_to_bool_categorical(
-        raw_data["m11116"],
+    out["med_pe_schw_bett"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11116"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schw_einkauf"] = object_to_bool_categorical(
-        raw_data["m11117"],
+    out["med_pe_schw_einkauf"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11117"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pe_schw_hausarb"] = object_to_bool_categorical(
-        raw_data["m11119"],
+    out["med_pe_schw_hausarb"] = _create_med_var_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11119"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
@@ -174,8 +217,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[10] Completely satisfied": 10,
         },
     )
-    out["med_pe_subj_status"] = object_to_int_categorical(
-        raw_data["m11126"],
+
+    out["med_pe_subj_status"] = _create_med_pe_subj_status_column(
+        pid_sr=raw_data["pid"],
+        var_sr=raw_data["m11126"],
         renaming={
             "[1] Very good": 1,
             "[2] Good": 2,
@@ -183,6 +228,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Poor": 4,
             "[5] Bad": 5,
         },
+        ordered=True,
     )
     out["soc_assist_eld_hh_prev"] = object_to_int(raw_data["ssold"])
     out["arbeitsl_geld_2_soep_hh_prev"] = object_to_int(raw_data["alg2"])
@@ -191,5 +237,4 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["childcare_subsidy_hh_prev"] = object_to_int(raw_data["chsub"])
     out["caregiver_alimony_prev"] = object_to_int(raw_data["ichsu"])
     out["divorce_alimony_prev"] = object_to_int(raw_data["ispou"])
-
     return out

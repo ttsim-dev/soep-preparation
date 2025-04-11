@@ -93,7 +93,6 @@ pyyaml = "*"
 statsmodels = "*"
 toml = "*"
 tqdm = ">=4.67.1,<5"
-markdown-it-py = ">=3.0.0,<4"
 
 # Development Dependencies (pypi)
 # --------------------------------------------------------------------------------------
@@ -132,23 +131,25 @@ test = {features = ["test"], solve-group = "default"}
 
 [tool.ruff]
 target-version = "py311"
-lint.select = ["ALL"]
-lint.extend-ignore = [
+fix = true
+
+[tool.ruff.lint]
+select = ["ALL"]
+extend-ignore = [
     "S101", # Use of `assert` detected.
     "ANN",  # Missing type annotations
 ]
-fix = true
 
-[tool.ruff.pylint]
+[tool.ruff.lint.pylint]
 max-statements = 100
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "PD011"]
 "**/task.py" = [
     "ANN",
     ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
 

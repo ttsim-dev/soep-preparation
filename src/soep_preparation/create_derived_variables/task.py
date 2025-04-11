@@ -1,4 +1,4 @@
-"""Functions to create variables for pre-processed datasets.
+"""Functions to create datasets for pre-processed datasets.
 
 Functions:
 - task_manipulate_one_dataset: Calls the dataset specific script.
@@ -26,20 +26,20 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-for name in get_dataset_names(SRC / "create_variables"):
-    assert name in DATA_CATALOGS["single_variables"], (
+for name in get_dataset_names(SRC / "create_derived_variables"):
+    assert name in DATA_CATALOGS["single_datasets"], (
         f"There is no data catalog entry corresponding to\n"
-        f"{SRC / 'create_variables' / name}"
+        f"{SRC / 'create_derived_variables' / name}"
     )
 
-    catalog = DATA_CATALOGS["single_variables"][name]
+    catalog = DATA_CATALOGS["single_datasets"][name]
 
     @task(id=name)
     def task_create_derived_variables(
         clean_data: Annotated[Path, catalog["cleaned"]],
         script_path: Annotated[
             Path,
-            SRC / "create_variables" / f"{name}.py",
+            SRC / "create_derived_variables" / f"{name}.py",
         ],
     ) -> Annotated[pd.DataFrame, catalog["derived_variables"]]:
         """Creates derived variables for a dataset using a specified script.
@@ -63,6 +63,23 @@ for name in get_dataset_names(SRC / "create_variables"):
             str(script_path),
         ).load_module()
         return module.create_derived_variables(data=clean_data)
+
+    # TODO (@hmgaudecker): should this be here or in the merge directory?
+    @task(id=name)
+    def task_merge_derived_variables(
+        clean_data: Annotated[Path, catalog["cleaned"]],
+        derived_variables: Annotated[pd.DataFrame, catalog["derived_variables"]],
+    ) -> Annotated[Path, catalog["merged"]]:
+        """Merge the cleaned and derived variables datasets.
+
+        Args:
+            clean_data (pd.DataFrame): The cleaned dataset.
+            derived_variables (pd.DataFrame): The derived variables dataset.
+
+        Returns:
+            pd.DataFrame: The merged dataset.
+        """
+        return pd.concat([clean_data, derived_variables], axis=1)
 
 
 def _error_handling_task(data, script_path):

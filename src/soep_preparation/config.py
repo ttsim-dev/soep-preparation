@@ -37,7 +37,7 @@ def get_dataset_names(directory: Path) -> list[str]:
 
 
 DATA_CATALOGS = {
-    "single_variables": {
+    "single_datasets": {
         dataset_name: DataCatalog(name=dataset_name)
         for dataset_name in get_dataset_names(SRC / "clean_existing_variables")
     },

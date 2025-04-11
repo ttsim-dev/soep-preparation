@@ -33,7 +33,7 @@ def _fail_if_cleaning_module_missing(script_path):
         )
 
 
-for name, catalog in DATA_CATALOGS["single_variables"].items():
+for name, catalog in DATA_CATALOGS["single_datasets"].items():
 
     @task(id=name)
     def task_clean_one_dataset(

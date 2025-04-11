@@ -1,11 +1,4 @@
-"""Functions to create variables for a pre-processed pequiv dataset.
-
-Functions:
-- manipulate: Coordinates the variable creation process for the dataset.
-
-Usage:
-    Import this module and call manipulate to generate new variables.
-"""
+"""Functions to create datasets for a pre-processed pequiv dataset."""
 
 import pandas as pd
 
@@ -35,21 +28,20 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         "med_pe_schlaganf",
         "med_pe_gelenk",
         "med_pe_psych",
-        "med_pe_subj_status",
     ]
-    out = data[data.columns[~data.columns.isin([med_vars])]]
-    out[med_vars] = data.groupby("p_id")[med_vars].ffill()
+
+    out = pd.DataFrame(index=data.index)
+
     out["bmi_pe"] = apply_lowest_float_dtype(
-        out["med_pe_gewicht"] / ((out["med_pe_groesse"] / 100) ** 2),
+        data["med_pe_gewicht"] / ((data["med_pe_groesse"] / 100) ** 2),
     )
     out["bmi_pe_dummy"] = apply_lowest_int_dtype(out["bmi_pe"] >= 30)  # noqa: PLR2004
     out["med_pe_subj_status_dummy"] = apply_lowest_int_dtype(
         data["med_pe_subj_status"] <= 5,  # noqa: PLR2004
     )
-
-    med_vars.append("bmi_pe_dummy")
-    med_vars.append("med_pe_subj_status_dummy")
-    med_vars.remove("med_pe_subj_status")
-
-    out["frailty_pe"] = apply_lowest_float_dtype(out[med_vars].mean(axis=1))
+    med_var_data = pd.concat(
+        [data[med_vars], out[["bmi_pe_dummy", "med_pe_subj_status_dummy"]]],
+        axis=1,
+    )
+    out["frailty_pequiv"] = apply_lowest_float_dtype(med_var_data.mean(axis=1))
     return out
