@@ -7,7 +7,7 @@ name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
 requires-python = ">=3.11"
 dependencies = [
-    "pytask", "memray>=1.16.0,<2",
+    "pytask", "memray>=1.16.0,<2", "gettsim==0.7.0", "linkify>=1.4,<2", "markdown-it-py", "iniconfig",
 ]
 dynamic = ["version"]
 classifiers = [
@@ -93,13 +93,14 @@ pyyaml = "*"
 statsmodels = "*"
 toml = "*"
 tqdm = ">=4.67.1,<5"
+pytest = ">=8.3.5,<9"
+iniconfig = ">=2.0.0,<3"
 
 # Development Dependencies (pypi)
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.pypi-dependencies]
 soep_preparation = {path = ".", editable = true}
-gettsim = {git = "https://github.com/iza-institute-of-labor-economics/gettsim.git", rev = "31bf89f"}
 kaleido = "*"
 pdbp = "*"
 

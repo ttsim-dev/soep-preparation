@@ -43,8 +43,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["country_of_birth"] = object_to_str_categorical(raw_data["corigin"])
     out["birth_month_from_ppathl"] = object_to_int_categorical(
         raw_data["gebmonat"],
-        ordered=False,
         renaming=month_mapping.de,
+        ordered=False,
     )
     out["east_west_1989"] = object_to_str_categorical(raw_data["loc1989"])
     out["migrationshintergrund"] = object_to_str_categorical(raw_data["migback"])

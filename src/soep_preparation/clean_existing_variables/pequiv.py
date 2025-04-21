@@ -45,10 +45,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Clean the pequiv dataset."""
     out = pd.DataFrame()
 
-    out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
     out["gender"] = object_to_str_categorical(
         raw_data["d11102ll"],
         ordered=False,
