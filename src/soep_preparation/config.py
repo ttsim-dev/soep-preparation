@@ -17,6 +17,19 @@ TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 
 SOEP_VERSION = "V38"
 
+if SOEP_VERSION == "V38":
+    SURVEY_YEARS = [*range(1984, 2021 + 1)]
+else:
+    SURVEY_YEARS = [*range(1984, 2020 + 1)]
+
+
+def _get_variable_names(directory: Path) -> list[str]:
+    return [
+        file.stem
+        for file in directory.glob("*.py")
+        if file.name not in ["__init__.py", "task.py"]
+    ]
+
 
 def get_dataset_names(directory: Path) -> list[str]:
     """Get all dataset names based on the script names in the given directory.
@@ -41,6 +54,10 @@ DATA_CATALOGS = {
         dataset_name: DataCatalog(name=dataset_name)
         for dataset_name in get_dataset_names(SRC / "clean_existing_variables")
     },
+    "multiple_datasets": {
+        variable_name: DataCatalog(name=variable_name)
+        for variable_name in _get_variable_names(SRC / "create_merged_variables")
+    },
     "merged": DataCatalog(name="merged"),
 }
 
@@ -49,6 +66,7 @@ __all__ = [
     "SRC",
     "TEST_DIR",
     "SOEP_VERSION",
+    "SURVEY_YEARS",
     "DATA_CATALOGS",
     "get_dataset_names",
 ]
