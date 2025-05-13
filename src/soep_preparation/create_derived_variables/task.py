@@ -64,12 +64,11 @@ for name in get_dataset_names(SRC / "create_derived_variables"):
         ).load_module()
         return module.create_derived_variables(data=clean_data)
 
-    # TODO (@hmgaudecker): should this be here or in the merge directory?
     @task(id=name)
     def task_merge_derived_variables(
-        clean_data: Annotated[Path, catalog["cleaned"]],
+        clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
         derived_variables: Annotated[pd.DataFrame, catalog["derived_variables"]],
-    ) -> Annotated[Path, catalog["merged"]]:
+    ) -> Annotated[pd.DataFrame, catalog["merged"]]:
         """Merge the cleaned and derived variables datasets.
 
         Args:
@@ -79,7 +78,7 @@ for name in get_dataset_names(SRC / "create_derived_variables"):
         Returns:
             pd.DataFrame: The merged dataset.
         """
-        return pd.concat([clean_data, derived_variables], axis=1)
+        return pd.concat(objs=[clean_data, derived_variables], axis=1)
 
 
 def _error_handling_task(data, script_path):
