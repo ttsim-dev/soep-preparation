@@ -8,7 +8,7 @@
 
 ## Project Overview
 
-This project aims to pre-process the SOEP data for usage with
+This project aims to pre-process the SOEP-Core data for usage with
 [GETTSIM](https://github.com/iza-institute-of-labor-economics/gettsim). The raw data is
 provided by the German Institute for Economic Research (DIW Berlin) and is a panel
 dataset that follows the same individuals over time. The data is collected annually and
@@ -31,7 +31,7 @@ To get started, install [pixi](https://prefix.dev/docs/pixi/overview#installatio
 you haven't already.
 
 **_Inside the directory `soep_preparation/src/soep_preparation/data` place the folder
-`V37` containing the raw `.dta` datafiles._**
+`V38` containing the raw `.dta` datafiles._**
 
 To build the project, type
 
@@ -45,15 +45,64 @@ To clean a single dataset, specify the "dataset_name" by typing:
 $ pixi run pytask -k "dataset_name"
 ```
 
-## How to Add a New Dataset Module or Additional Functions
+## Working with the Data and Modules
 
-To add a new SOEP dataset to the project or include additional functions in an existing
-module, follow these steps:
+The SOEP data is available in different waves, with the latest being wave 39.
+
+### Understanding the SOEP-Core Data
+
+To understand which variables are additionally available for a dataset, the URL
+`https://paneldata.org/soep-core/datasets/{dataset_name}` might be helpful. Here you can
+use the GUI to search for variable names.
+
+If one wants to find out what the variable `hh_id_orig` contains, one searches in the
+directory `src/soep_preparation` for the corresponding script and `raw_data` variable
+name e.g. `biobirth.py`and `cid`. From here one can use the URL
+`https://paneldata.org/soep-core/datasets/biobirth/cid` to get an understanding of the
+variable. The "Codebook (PDF)" might be helpful in understanding. The URL takes hence
+the general form:
+`https://paneldata.org/soep-core/datasets/{dataset_name}/{variable_name}`
+
+### Additional Variables from an Existing Dataset
+
+If you want to include an additional variable from a dataset that is already being
+cleaned, follow this approach:
+
+Each new variable should be created by processing a column (or several columns) from the
+raw data. The results of this processing will then be added to the final dataset that
+the system builds.
+
+Here’s how you can do that:
+
+1. Identify the raw variable you want to transform or clean from your input data.
+
+1. Use or create a function that transforms this raw variable into the final form you
+   need.
+
+1. Assign the result of that transformation to the out DataFrame, which represents your
+   cleaned dataset.
+
+Suppose you want to add a new variable, `age`, to your final dataset based on the `raw`
+data. Here’s how the process would look:
+
+```python
+def clean(raw: pd.DataFrame) -> pd.DataFrame:
+    out = pd.DataFrame()
+
+    # Example: Adding a variable 'age' after processing the 'birth_year' column
+    out["age"] = calculate_age_from_birth_year(raw["birth_year"])
+
+    return out
+```
+
+### Adding a New Dataset Module
+
+To add a new SOEP-Core dataset to the project, follow these steps:
 
 1. Add the Dataset to the Data Directory
 
    Each dataset should be placed in appropriate data directory (e.g., inside
-   `soep_preparation/data/V38`). As an theexample, say you want to add the dataset
+   `soep_preparation/data/V38`). As an example, say you want to add the dataset
    `pequiv.dta` (nevermind this already exists).
 
 1. Create a Corresponding Python Script
@@ -80,37 +129,14 @@ module, follow these steps:
        return out
    ```
 
-1. Adding more variables from a dataset that is already included
+## Creating a Merged Panel Dataset
 
-   If you want to include an additional variable from a dataset that is already being
-   cleaned, follow this approach:
-
-   Each new variable should be created by processing a column (or several columns) from
-   the raw data. The results of this processing will then be added to the final dataset
-   that the system builds.
-
-   Here’s how you can do that:
-
-   1. Identify the raw variable you want to transform or clean from your input data.
-
-   1. Use or create a function that transforms this raw variable into the final form you
-      need.
-
-   1. Assign the result of that transformation to the out DataFrame, which represents
-      your cleaned dataset.
-
-   Suppose you want to add a new variable, `age`, to your final dataset based on the
-   `raw` data. Here’s how the process would look:
-
-   ```python
-   def clean(raw: pd.DataFrame) -> pd.DataFrame:
-       out = pd.DataFrame()
-
-       # Example: Adding a variable 'age' after processing the 'birth_year' column
-       out["age"] = calculate_age_from_birth_year(raw["birth_year"])
-
-       return out
-   ```
+To create a merged dataset with columns from different pre-processed datasets, you can
+inspect the example in the directory `src/soep_preparation/dataset_merging`. For merging
+datasets, the columns and survey years of interest need to be specified. Other
+components of the merging process are handled via the implemented helper functions. Do
+not include any of the ID variables (`survey_year`, `hh_id`, `hh_orig_id`, `p_id`) in
+the columns list, as these are automatically included.
 
 ## Further Structure Description
 

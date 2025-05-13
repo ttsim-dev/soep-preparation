@@ -2,6 +2,7 @@
 
 import pandas as pd
 from pandas.api.types import CategoricalDtype
+from pytask import DataCatalog, PickleNode
 
 
 def _fail_if_series_wrong_dtype(sr: pd.Series, expected_dtype: str):
@@ -384,3 +385,21 @@ def _get_sorted_not_na_unique_values(sr: pd.Series) -> pd.Series:
     not_na_unique_values = unique_values[pd.notna(unique_values)]
     sorted_not_na_unique_values = sorted(not_na_unique_values)
     return pd.Series(sorted_not_na_unique_values)
+
+
+def get_cleaned_and_potentially_merged_dataset(
+    dataset_specific_datacatalog: dict[str, DataCatalog],
+) -> PickleNode:
+    """Get the cleaned and potentially merged with derived variables dataset.
+
+    Args:
+        dataset_specific_datacatalog (dict): The corresponding Datacatalog.
+
+    Returns:
+        pd.DataFrame: The cleaned and potentially merged dataset.
+    """
+    return (
+        dataset_specific_datacatalog["merged"]
+        if "merged" in dataset_specific_datacatalog._entries  # noqa: SLF001
+        else dataset_specific_datacatalog["cleaned"]
+    )

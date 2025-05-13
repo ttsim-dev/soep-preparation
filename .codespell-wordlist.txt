@@ -12,3 +12,4 @@ september
 oktober
 november
 dezember
+astroid
