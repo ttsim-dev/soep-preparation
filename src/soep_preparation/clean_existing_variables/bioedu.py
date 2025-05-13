@@ -17,6 +17,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["birth_month_from_bioedu"] = object_to_int_categorical(
         raw_data["gebmonat"],
         renaming=month_mapping.en,
-        ordered=False,
+        ordered=True,
     )
     return out

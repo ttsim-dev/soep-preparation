@@ -103,81 +103,81 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["birth_month_child_1"] = object_to_int_categorical(
         raw_data["kidmon01"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_2"] = object_to_int_categorical(
         raw_data["kidmon02"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_3"] = object_to_int_categorical(
         raw_data["kidmon03"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_4"] = object_to_int_categorical(
         raw_data["kidmon04"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_5"] = object_to_int_categorical(
         raw_data["kidmon05"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_6"] = object_to_int_categorical(
         raw_data["kidmon06"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_7"] = object_to_int_categorical(
         raw_data["kidmon07"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_8"] = object_to_int_categorical(
         raw_data["kidmon08"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_9"] = object_to_int_categorical(
         raw_data["kidmon09"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_10"] = object_to_int_categorical(
         raw_data["kidmon10"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_11"] = object_to_int_categorical(
         raw_data["kidmon11"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_12"] = object_to_int_categorical(
         raw_data["kidmon12"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_13"] = object_to_int_categorical(
         raw_data["kidmon13"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_14"] = object_to_int_categorical(
         raw_data["kidmon14"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_15"] = object_to_int_categorical(
         raw_data["kidmon15"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     out["birth_month_child_16"] = object_to_int_categorical(
         raw_data["kidmon16"],
         renaming=month_mapping.de,
-        ordered=False,
+        ordered=True,
     )
     return _wide_to_long(out)

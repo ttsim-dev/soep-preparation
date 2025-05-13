@@ -94,5 +94,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["month_interview"] = object_to_int_categorical(
         raw_data["pgmonth"],
         renaming=month_mapping.de,
+        ordered=True,
     )
     return out
