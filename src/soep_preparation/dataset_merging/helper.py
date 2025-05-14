@@ -68,13 +68,20 @@ def _fail_if_empty(input_: dict | list):
         raise ValueError(msg)
 
 
-def _fail_if_invalid_survey_years(
+def _fail_if_survey_years_not_valid(
     survey_years: list[int] | tuple[int],
     valid_survey_years: list[int],
 ):
     if not all(year in valid_survey_years for year in survey_years):
         msg = f"""Expected survey years to be in {valid_survey_years},
         got {survey_years} instead."""
+        raise ValueError(msg)
+
+
+def _fail_if_min_larger_max(min_and_max_survey_years: tuple[int, int]):
+    if min_and_max_survey_years[0] > min_and_max_survey_years[1]:
+        msg = f"""Expected min survey year to be smaller than max survey year,
+        got {min_and_max_survey_years} instead."""
         raise ValueError(msg)
 
 
@@ -245,8 +252,9 @@ def _error_handling(
     _fail_if_empty(columns_to_dataset_mapping["multiple_datasets"])
     _fail_if_empty(columns)
     if survey_years is not None:
-        _fail_if_invalid_survey_years(survey_years, SURVEY_YEARS)
+        _fail_if_survey_years_not_valid(survey_years, SURVEY_YEARS)
     else:
-        _fail_if_invalid_survey_years(min_and_max_survey_years, SURVEY_YEARS)
+        _fail_if_survey_years_not_valid(min_and_max_survey_years, SURVEY_YEARS)
+        _fail_if_min_larger_max(min_and_max_survey_years)
     _fail_if_invalid_column(columns, columns_to_dataset_mapping)
     _fail_if_invalid_merging_behavior(merging_behavior)
