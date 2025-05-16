@@ -18,13 +18,11 @@ from pytask import task
 from soep_preparation.config import DATA_CATALOGS, SRC, get_dataset_names
 from soep_preparation.utilities.error_handling import fail_if_invalid_input
 
-for name in get_dataset_names(SRC / "create_derived_variables"):
-    assert name in DATA_CATALOGS["single_datasets"], (
-        f"There is no data catalog entry corresponding to\n"
-        f"{SRC / 'create_derived_variables' / name}"
-    )
-
-    catalog = DATA_CATALOGS["single_datasets"][name]
+dataset_names = get_dataset_names(SRC / "create_derived_variables")
+for name, catalog in DATA_CATALOGS["single_datasets"].items():
+    if name not in dataset_names:
+        # skipping datasets that do not have a derive variables script
+        continue
 
     @task(id=name)
     def task_create_derived_variables(

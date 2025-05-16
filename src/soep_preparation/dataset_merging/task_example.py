@@ -31,7 +31,7 @@ def task_merge_columns(
         columns (list[str]): A list of column names to be used for merging.
 
     Returns:
-        pd.DataFrame: The merged dataset.
+        pd.DataFrame: The columns merged into a panel dataset.
     """
     _error_handling_task(columns_to_dataset_mapping, columns)
     return create_panel_dataset(
