@@ -6,7 +6,7 @@ import pandas as pd
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.dataset_merging.helper import create_panel_dataset
-from src.soep_preparation.utilities import fail_if_invalid_input
+from soep_preparation.utilities.error_handling import fail_if_invalid_input
 
 COLUMNS = [
     "age",

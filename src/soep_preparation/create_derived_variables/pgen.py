@@ -4,7 +4,7 @@ import re
 
 import pandas as pd
 
-from soep_preparation.utilities import create_dummy
+from soep_preparation.utilities.series_manipulator import create_dummy
 
 
 def _in_education(

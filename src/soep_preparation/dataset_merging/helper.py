@@ -5,10 +5,12 @@ from difflib import get_close_matches
 import pandas as pd
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
-from soep_preparation.utilities import (
+from soep_preparation.utilities.dataset_manipulator import (
+    get_cleaned_and_potentially_merged_dataset,
+)
+from soep_preparation.utilities.error_handling import (
     fail_if_invalid_input,
     fail_if_invalid_inputs,
-    get_cleaned_and_potentially_merged_dataset,
 )
 
 

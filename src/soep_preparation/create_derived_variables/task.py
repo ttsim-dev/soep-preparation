@@ -16,7 +16,7 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS, SRC, get_dataset_names
-from soep_preparation.utilities import fail_if_invalid_input
+from soep_preparation.utilities.error_handling import fail_if_invalid_input
 
 for name in get_dataset_names(SRC / "create_derived_variables"):
     assert name in DATA_CATALOGS["single_datasets"], (

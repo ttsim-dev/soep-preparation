@@ -9,7 +9,7 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS, SRC
-from soep_preparation.utilities import fail_if_invalid_input
+from soep_preparation.utilities.error_handling import fail_if_invalid_input
 
 
 def _fail_if_cleaning_module_missing(script_path):

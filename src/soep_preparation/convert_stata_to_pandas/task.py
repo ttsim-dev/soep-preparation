@@ -16,7 +16,7 @@ from soep_preparation.config import (
     SOEP_VERSION,
     SRC,
 )
-from soep_preparation.utilities import fail_if_invalid_input
+from soep_preparation.utilities.error_handling import fail_if_invalid_input
 
 
 def _get_relevant_column_names(script: Path) -> list[str]:

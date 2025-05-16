@@ -3,8 +3,10 @@
 import pandas as pd
 
 from soep_preparation.clean_existing_variables import month_mapping
-from soep_preparation.utilities import (
+from soep_preparation.utilities.error_handling import (
     fail_if_invalid_input,
+)
+from soep_preparation.utilities.series_manipulator import (
     find_lowest_int_dtype,
     float_to_int,
     object_to_int,

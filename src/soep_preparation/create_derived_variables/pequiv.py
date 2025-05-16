@@ -2,7 +2,10 @@
 
 import pandas as pd
 
-from soep_preparation.utilities import apply_lowest_float_dtype, apply_lowest_int_dtype
+from soep_preparation.utilities.series_manipulator import (
+    apply_lowest_float_dtype,
+    apply_lowest_int_dtype,
+)
 
 
 def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:

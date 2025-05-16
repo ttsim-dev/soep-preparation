@@ -6,9 +6,11 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS
-from soep_preparation.utilities import (
-    fail_if_invalid_input,
+from soep_preparation.utilities.dataset_manipulator import (
     get_cleaned_and_potentially_merged_dataset,
+)
+from soep_preparation.utilities.error_handling import (
+    fail_if_invalid_input,
 )
 
 

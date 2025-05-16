@@ -2,7 +2,10 @@
 
 import pandas as pd
 
-from soep_preparation.utilities import apply_lowest_int_dtype, float_to_int
+from soep_preparation.utilities.series_manipulator import (
+    apply_lowest_int_dtype,
+    float_to_int,
+)
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:

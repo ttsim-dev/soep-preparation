@@ -3,9 +3,9 @@
 import numpy as np
 import pandas as pd
 
-from soep_preparation.utilities import (
+from soep_preparation.utilities.error_handling import fail_if_invalid_input
+from soep_preparation.utilities.series_manipulator import (
     apply_lowest_int_dtype,
-    fail_if_invalid_input,
     object_to_bool_categorical,
     object_to_int,
     object_to_str_categorical,

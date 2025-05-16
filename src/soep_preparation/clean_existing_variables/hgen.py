@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from soep_preparation.utilities import (
+from soep_preparation.utilities.series_manipulator import (
     apply_lowest_int_dtype,
     float_to_int,
     object_to_float,

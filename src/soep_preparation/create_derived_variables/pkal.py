@@ -3,7 +3,7 @@
 import pandas as pd
 from pandas.api.types import union_categoricals
 
-from soep_preparation.utilities import apply_lowest_int_dtype
+from soep_preparation.utilities.series_manipulator import apply_lowest_int_dtype
 
 
 def _full_empl_prev_m(

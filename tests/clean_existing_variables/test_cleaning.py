@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 
-from soep_preparation.utilities import (
+from soep_preparation.utilities.series_manipulator import (
     _remove_missing_data_values,
     object_to_bool_categorical,
     object_to_int_categorical,

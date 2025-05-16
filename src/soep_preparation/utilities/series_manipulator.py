@@ -1,104 +1,87 @@
-"""Utilities used in various parts of the project."""
-
-from typing import Any
+"""Utilities for manipulating pandas Series."""
 
 import pandas as pd
 from pandas.api.types import CategoricalDtype
-from pytask import DataCatalog, PickleNode
+
+from soep_preparation.utilities.error_handling import (
+    error_handling_sr_transformation,
+    fail_if_invalid_input,
+    fail_if_invalid_inputs,
+)
 
 
-def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str):
-    if expected_dtype not in series.dtype.name:
-        msg = f"Expected dtype {expected_dtype}, got {series.dtype.name}"
-        raise TypeError(msg)
+def _remove_missing_data_values(series: pd.Series) -> pd.Series:
+    """Remove values representing missing data or no response to the questionnaire.
 
+    Parameters:
+        series (pd.Series): The pandas.Series to be manipulated.
 
-def fail_if_invalid_input(input_: Any, expected_dtype: str):
-    """Fail if the input is not of the expected type.
+    Returns:
+        pd.Series: A new pd.Series with the missing data values replaced with NA.
 
-    Args:
-        input_ (Any): The input to check.
-        expected_dtype (str): The expected type of the input.
-
-    Raises:
-        TypeError: If the input is not of the expected type.
     """
-    if expected_dtype not in str(type(input_)):
-        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
-        raise TypeError(
-            msg,
-        )
+    values_to_remove = _get_values_to_remove(series)
+    return series.replace(values_to_remove, pd.NA)
 
 
-def fail_if_invalid_inputs(input_: Any, expected_dtypes: str):
-    """Fail if the input is not of any of the expected types.
+def _get_values_to_remove(series: pd.Series) -> list:
+    """Identify values representing missing data or no response in a pd.Series.
 
-    Args:
-        input_ (Any): The input to check.
-        expected_dtypes (str): The expected types of the input.
+    Parameters:
+        series (pd.Series): The pandas.Series to analyze.
 
-    Raises:
-        TypeError: If the input is not of any of the expected types.
+    Returns:
+        list: A list of values to be treated as missing data.
     """
-    if " | " in expected_dtypes:
-        if not any(
-            expected_dtype in str(type(input_))
-            for expected_dtype in expected_dtypes.split(" | ")
-        ):
-            msg = (
-                f"Expected {input_} to be of type {expected_dtypes}, got {type(input_)}"
-            )
-            raise TypeError(
-                msg,
-            )
+    unique_values = series.unique()
 
-    else:
-        fail_if_invalid_input(input_, expected_dtypes)
+    str_values_to_remove = [
+        value
+        for value in unique_values
+        if isinstance(value, str)
+        and value.startswith("[-")
+        and len(value) > 3  # noqa: PLR2004
+        and value[3] == "]"
+    ]
+    num_values_to_remove = [
+        value
+        for value in unique_values
+        if isinstance(value, (int | float)) and -9 < value < 0  # noqa: PLR2004
+    ]
 
-
-def _error_handling_inputs(
-    input_expected_types: list[list] | None = None,
-):
-    if input_expected_types is None:
-        input_expected_types = [[]]
-    [fail_if_invalid_inputs(*item) for item in input_expected_types]
+    return str_values_to_remove + num_values_to_remove
 
 
-def _error_handling_object(
-    series: pd.Series,
-    expected_sr_dtype: str,
-    input_expected_types: list[list] | None = None,
-    entries_expected_types: list | None = None,
-):
-    if input_expected_types is None:
-        input_expected_types = [[]]
-    _fail_if_series_wrong_dtype(series, expected_sr_dtype)
-    if entries_expected_types is not None:
-        dtype = entries_expected_types[1]
-        [
-            fail_if_invalid_inputs(unique_entry, dtype)
-            for unique_entry in entries_expected_types[0]
-        ]
-    else:
-        msg = (
-            "Did not receive a list of unique entries and their expected dtype, "
-            "even though object dtype of series was specified."
-        )
-        raise Warning(
-            msg,
-        )
-    [fail_if_invalid_input(*item) for item in input_expected_types]
+def _get_sorted_not_na_unique_values(series: pd.Series) -> pd.Series:
+    unique_values = series.unique()
+    not_na_unique_values = unique_values[pd.notna(unique_values)]
+    sorted_not_na_unique_values = sorted(not_na_unique_values)
+    return pd.Series(sorted_not_na_unique_values)
 
 
 def apply_lowest_float_dtype(series: pd.Series) -> pd.Series:
-    """Apply the lowest integer dtype to a series."""
+    """Apply the lowest float dtype to a series.
+
+    Args:
+        series (pd.Series): The series to convert.
+
+    Returns:
+        pd.Series: The series with the lowest float dtype applied.
+    """
     return pd.to_numeric(series, downcast="float", dtype_backend="pyarrow")
 
 
 def apply_lowest_int_dtype(
     series: pd.Series,
 ) -> pd.Series:
-    """Apply the lowest integer dtype to a series."""
+    """Apply the lowest integer dtype to a series.
+
+    Args:
+        series (pd.Series): The series to convert.
+
+    Returns:
+        pd.Series: The series with the lowest integer dtype applied.
+    """
     try:
         return pd.to_numeric(series, downcast="unsigned", dtype_backend="pyarrow")
     except ValueError:
@@ -152,13 +135,9 @@ def create_dummy(
     Returns:
         pd.Series: A boolean series indicating the condition.
     """
-    _error_handling_inputs(
-        [
-            [series, "pandas.core.series.Series"],
-            [true_value, "bool | str | list"],
-            [kind, "str"],
-        ],
-    )
+    fail_if_invalid_input(series, "pandas.core.series.Series")
+    fail_if_invalid_inputs(true_value, "bool | str | list")
+    fail_if_invalid_input(kind, "str")
     if kind == "equality":
         return (series == true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
     if kind == "neq":
@@ -208,7 +187,7 @@ def object_to_bool_categorical(
     Returns:
         pd.Series: The series with cleaned entries and transformed dtype.
     """
-    _error_handling_object(
+    error_handling_sr_transformation(
         series,
         "object",
         [
@@ -240,7 +219,7 @@ def object_to_float(series: pd.Series) -> pd.Series:
     Returns:
         pd.Series: The series with cleaned entries and transformed dtype.
     """
-    _error_handling_object(
+    error_handling_sr_transformation(
         series,
         "object",
         [[series, "pandas.core.series.Series"]],
@@ -259,7 +238,7 @@ def object_to_int(series: pd.Series) -> pd.Series:
     Returns:
         pd.Series: The series with cleaned entries and transformed dtype.
     """
-    _error_handling_object(
+    error_handling_sr_transformation(
         series,
         "object",
         [[series, "pandas.core.series.Series"]],
@@ -286,7 +265,7 @@ def object_to_int_categorical(
     Returns:
         pd.Series: The series with cleaned entries and transformed dtype.
     """
-    _error_handling_object(
+    error_handling_sr_transformation(
         series,
         "object",
         [
@@ -331,7 +310,7 @@ def object_to_str_categorical(
     Returns:
         pd.Series: The series with cleaned entries and transformed dtype.
     """
-    _error_handling_object(
+    error_handling_sr_transformation(
         series,
         "object",
         [
@@ -358,70 +337,3 @@ def object_to_str_categorical(
         ordered=ordered,
     )
     return sr_str.astype(raw_cat_dtype)
-
-
-def _remove_missing_data_values(series: pd.Series) -> pd.Series:
-    """Remove values representing missing data or no response to the questionnaire.
-
-    Parameters:
-        series (pd.Series): The pandas.Series to be manipulated.
-
-    Returns:
-        pd.Series: A new pd.Series with the missing data values replaced with NA.
-
-    """
-    values_to_remove = _get_values_to_remove(series)
-    return series.replace(values_to_remove, pd.NA)
-
-
-def _get_values_to_remove(series: pd.Series) -> list:
-    """Identify values representing missing data or no response in a pd.Series.
-
-    Parameters:
-        series (pd.Series): The pandas.Series to analyze.
-
-    Returns:
-        list: A list of values to be treated as missing data.
-    """
-    unique_values = series.unique()
-
-    str_values_to_remove = [
-        value
-        for value in unique_values
-        if isinstance(value, str)
-        and value.startswith("[-")
-        and len(value) > 3  # noqa: PLR2004
-        and value[3] == "]"
-    ]
-    num_values_to_remove = [
-        value
-        for value in unique_values
-        if isinstance(value, (int | float)) and -9 < value < 0  # noqa: PLR2004
-    ]
-
-    return str_values_to_remove + num_values_to_remove
-
-
-def _get_sorted_not_na_unique_values(series: pd.Series) -> pd.Series:
-    unique_values = series.unique()
-    not_na_unique_values = unique_values[pd.notna(unique_values)]
-    sorted_not_na_unique_values = sorted(not_na_unique_values)
-    return pd.Series(sorted_not_na_unique_values)
-
-
-def get_cleaned_and_potentially_merged_dataset(
-    dataset_specific_datacatalog: dict[str, DataCatalog],
-) -> PickleNode:
-    """Get the cleaned and potentially merged with derived variables dataset.
-
-    Args:
-        dataset_specific_datacatalog (dict): The corresponding Datacatalog.
-
-    Returns:
-        pd.DataFrame: The cleaned and potentially merged dataset.
-    """
-    return (
-        dataset_specific_datacatalog["merged"]
-        if "merged" in dataset_specific_datacatalog._entries  # noqa: SLF001
-        else dataset_specific_datacatalog["cleaned"]
-    )
