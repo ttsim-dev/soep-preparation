@@ -5,7 +5,7 @@
 [project]
 name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 dynamic = ["version"]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -75,24 +75,23 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.dependencies]
-python = "3.11.0.*"
-jupyterlab = ">=4.4.1,<5"
-plotly = ">=6.0.1,<7"
+python = "~=3.13"
+jupyterlab = "*"
+plotly = ">=6.0.1"
 pre-commit = ">=4.2.0,<5"
 ipykernel = ">=6.29.5,<7"
 pandas = ">=2.2.3,<3"
 pyarrow = ">=20.0.0,<21"
-pygraphviz = ">=1.14,<2"
-pytask-latex = ">=0.4.2,<0.5"
-pytask-parallel = ">=0.5.1,<0.6"
-pytask = ">=0.5.2,<0.6"
+pygraphviz = ">=1.14"
+pytask-latex = "*"
+pytask-parallel = "*"
+pytask = ">=0.5.2"
 python-graphviz = ">=0.20.3,<0.21"
 pyyaml = ">=6.0.2,<7"
 statsmodels = ">=0.14.4,<0.15"
-toml = ">=0.10.2,<0.11"
-tqdm = ">=4.67.1,<5"
-pytest = ">=8.3.5,<9"
-iniconfig = ">=2.0.0,<3"
+toml = "*"
+tqdm = "*"
+pytest = "*"
 
 # Development Dependencies (pypi)
 # --------------------------------------------------------------------------------------
@@ -130,7 +129,7 @@ test = {features = ["test"], solve-group = "default"}
 # ======================================================================================
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py313"
 fix = true
 
 [tool.ruff.lint]

@@ -63,10 +63,10 @@ DATA_CATALOGS = {
 
 __all__ = [
     "DATA",
-    "SRC",
-    "TEST_DIR",
-    "SOEP_VERSION",
-    "SURVEY_YEARS",
     "DATA_CATALOGS",
+    "SOEP_VERSION",
+    "SRC",
+    "SURVEY_YEARS",
+    "TEST_DIR",
     "get_dataset_names",
 ]
