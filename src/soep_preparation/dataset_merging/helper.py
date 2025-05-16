@@ -75,7 +75,7 @@ def _fail_if_invalid_merging_behavior(merging_behavior: str):
 
 
 def _get_dataset_to_columns_mapping(
-    columns_to_dataset_mapping: dict[str, list[str]],
+    columns_to_dataset_mapping: dict[str, str],
     columns: list[str],
 ) -> dict[str, list[str]]:
     dataset_columns_mapping = {}
@@ -109,12 +109,9 @@ def _fix_user_input(
         survey_years = [
             *range(min_and_max_survey_years[0], min_and_max_survey_years[1] + 1),
         ]
-    if any([["hh_id", "hh_id_orig", "p_id", "survey_year"] in columns]):
-        columns = [
-            col
-            for col in columns
-            if col not in ["hh_id", "hh_id_orig", "p_id", "survey_year"]
-        ]
+    id_columns = ["hh_id", "hh_id_orig", "p_id", "survey_year"]
+    if any(id_column in columns for id_column in id_columns):
+        columns = [col for col in columns if col not in id_columns]
     return survey_years, columns
 
 
