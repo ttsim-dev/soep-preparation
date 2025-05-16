@@ -13,3 +13,5 @@ oktober
 november
 dezember
 astroid
+als
+missings

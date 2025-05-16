@@ -3,16 +3,16 @@ from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from soep_preparation.dataset_pickling.task import _columns_for_dataset
+from soep_preparation.convert_stata_to_pandas.task import _get_relevant_column_names
 
 
-def test_columns_for_dataset_with_raw_in_docstring():
+def test_get_relevant_column_names_with_raw_data_in_docstring():
     function_content = '''
     def clean():
         """
-        Some documentation containing raw["not_a_real_column"]
+        Some documentation containing raw_data["not_a_real_column"]
         """
-        value = raw["real_column"]
+        value = raw_data["real_column"]
     '''
 
     with (
@@ -27,15 +27,15 @@ def test_columns_for_dataset_with_raw_in_docstring():
         mock_loader.return_value = mock_module
 
         dataset = Path("dummy/path")
-        actual = _columns_for_dataset(dataset)
+        actual = _get_relevant_column_names(dataset)
         expected = ["real_column"]
         assert actual == expected
 
 
-def test_columns_for_dataset_with_empty_string():
+def test_get_relevant_column_names_with_empty_string():
     function_content = """
     def clean():
-        value = raw[""]
+        value = raw_data[""]
     """
 
     with (
@@ -50,17 +50,17 @@ def test_columns_for_dataset_with_empty_string():
         mock_loader.return_value = mock_module
 
         dataset = Path("dummy/path")
-        actual = _columns_for_dataset(dataset)
+        actual = _get_relevant_column_names(dataset)
         expected = []
         assert actual == expected
 
 
-def test_columns_for_dataset_valid_cases():
+def test_get_relevant_column_names_valid_cases():
     function_content = """
     def clean():
-        value = raw["column_name"]
-        another = raw['another_column']
-        something_else = raw["third_column"]
+        value = raw_data["column_name"]
+        another = raw_data['another_column']
+        something_else = raw_data["third_column"]
     """
 
     with (
@@ -75,17 +75,17 @@ def test_columns_for_dataset_valid_cases():
         mock_loader.return_value = mock_module
 
         dataset = Path("dummy/path")
-        actual = _columns_for_dataset(dataset)
+        actual = _get_relevant_column_names(dataset)
         expected = ["column_name", "another_column", "third_column"]
         assert actual == expected
 
 
-def test_columns_for_dataset_mixed_cases():
+def test_get_relevant_column_names_mixed_cases():
     function_content = """
     def clean():
-        valid_case = raw["valid_column"]
-        invalid_case = raw[column_name]  # no quotes
-        another_valid = raw['another_valid_column']
+        valid_case = raw_data["valid_column"]
+        invalid_case = raw_data[column_name]  # no quotes
+        another_valid = raw_data['another_valid_column']
     """
 
     with (
@@ -100,6 +100,6 @@ def test_columns_for_dataset_mixed_cases():
         mock_loader.return_value = mock_module
 
         dataset = Path("dummy/path")
-        actual = _columns_for_dataset(dataset)
+        actual = _get_relevant_column_names(dataset)
         expected = ["valid_column", "another_valid_column"]
         assert actual == expected
