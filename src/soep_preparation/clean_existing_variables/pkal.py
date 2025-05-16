@@ -25,15 +25,22 @@ def _mutterschaftsgeld_monate_prev(
     return apply_lowest_int_dtype(out.where(bezogen_prev != 0, 0))
 
 
-def _categorical_dtype_ordered(df: pd.DataFrame, col_group: str) -> pd.CategoricalDtype:
+def _categorical_dtype_ordered(
+    dataframe: pd.DataFrame,
+    col_group: str,
+) -> pd.CategoricalDtype:
     columns = [f"{col_group}_{i}" for i in range(1, 13)]
     return pd.CategoricalDtype(
-        [value for col in columns for value in df[col].cat.categories.to_numpy()],
+        [
+            value
+            for col in columns
+            for value in dataframe[col].cat.categories.to_numpy()
+        ],
     )
 
 
-def _wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
-    _fail_if_invalid_input(df, "pandas.core.frame.DataFrame")
+def _wide_to_long(dataframe: pd.DataFrame) -> pd.DataFrame:
+    _fail_if_invalid_input(dataframe, "pandas.core.frame.DataFrame")
     prev_wide_cols = [
         "full_empl_v1_prev",
         "full_empl_v2_prev",
@@ -41,7 +48,7 @@ def _wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
         "mini_job_prev",
     ]
     out = pd.wide_to_long(
-        df,
+        dataframe,
         stubnames=prev_wide_cols,
         i=["hh_id_orig", "hh_id", "p_id", "survey_year"],
         j="month",
@@ -50,10 +57,16 @@ def _wide_to_long(df: pd.DataFrame) -> pd.DataFrame:
     out = out.dropna(subset=prev_wide_cols, how="all")
     return out.astype(
         {
-            "full_empl_v1_prev": _categorical_dtype_ordered(df, "full_empl_v1_prev"),
-            "full_empl_v2_prev": _categorical_dtype_ordered(df, "full_empl_v2_prev"),
-            "half_empl_prev": _categorical_dtype_ordered(df, "half_empl_prev"),
-            "mini_job_prev": _categorical_dtype_ordered(df, "mini_job_prev"),
+            "full_empl_v1_prev": _categorical_dtype_ordered(
+                dataframe,
+                "full_empl_v1_prev",
+            ),
+            "full_empl_v2_prev": _categorical_dtype_ordered(
+                dataframe,
+                "full_empl_v2_prev",
+            ),
+            "half_empl_prev": _categorical_dtype_ordered(dataframe, "half_empl_prev"),
+            "mini_job_prev": _categorical_dtype_ordered(dataframe, "mini_job_prev"),
         },
     ).reset_index(drop=True)
 

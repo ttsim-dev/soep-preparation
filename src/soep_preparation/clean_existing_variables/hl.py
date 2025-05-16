@@ -74,4 +74,5 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
+    out["grundsicherung_im_alter_aktuell_hh"] = object_to_int(raw_data["hlc0071"])
     return out
