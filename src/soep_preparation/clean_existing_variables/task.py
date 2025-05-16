@@ -72,5 +72,5 @@ for name, catalog in DATA_CATALOGS["single_datasets"].items():
 
 def _error_handling_task(data, cleaning_script):
     _fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
-    _fail_if_invalid_input(cleaning_script, "pathlib.PosixPath")
+    _fail_if_invalid_input(cleaning_script, "pathlib._local.PosixPath")
     _fail_if_cleaning_module_missing(cleaning_script)

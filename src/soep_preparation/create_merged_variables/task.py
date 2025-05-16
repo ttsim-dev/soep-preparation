@@ -82,4 +82,4 @@ for variable_name, catalog in DATA_CATALOGS["multiple_datasets"].items():
 def _error_handling_task(datasets, script_path):
     _fail_if_invalid_input(datasets, "dict")
     _fail_if_too_many_or_few_datasets(datasets, 2)
-    _fail_if_invalid_input(script_path, "pathlib.PosixPath")
+    _fail_if_invalid_input(script_path, "pathlib._local.PosixPath")

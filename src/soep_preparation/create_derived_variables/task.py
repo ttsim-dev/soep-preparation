@@ -83,4 +83,4 @@ for name in get_dataset_names(SRC / "create_derived_variables"):
 
 def _error_handling_task(data, script_path):
     _fail_if_invalid_input(data, "pandas.core.frame.DataFrame'")
-    _fail_if_invalid_input(script_path, "pathlib.PosixPath")
+    _fail_if_invalid_input(script_path, "pathlib._local.PosixPath")

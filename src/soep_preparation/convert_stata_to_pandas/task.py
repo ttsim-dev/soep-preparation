@@ -1,4 +1,4 @@
-"""Functions to store raw SOEP datasets."""
+"""Task to read STATA datasets and store them as pandas DataFrames."""
 
 import inspect
 import re
@@ -93,5 +93,5 @@ for name, catalog in DATA_CATALOGS["single_datasets"].items():
 
 
 def _error_handling_task(data, script_path):
-    _fail_if_invalid_input(data, "pathlib.PosixPath")
-    _fail_if_invalid_input(script_path, "pathlib.PosixPath")
+    _fail_if_invalid_input(data, "pathlib._local.PosixPath")
+    _fail_if_invalid_input(script_path, "pathlib._local.PosixPath")
