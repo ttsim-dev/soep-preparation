@@ -1,5 +1,7 @@
 """Utilities used in various parts of the project."""
 
+from typing import Any
+
 import pandas as pd
 from pandas.api.types import CategoricalDtype
 from pytask import DataCatalog, PickleNode
@@ -11,7 +13,16 @@ def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str):
         raise TypeError(msg)
 
 
-def _fail_if_invalid_input(input_, expected_dtype: str):
+def fail_if_invalid_input(input_: Any, expected_dtype: str):
+    """Fail if the input is not of the expected type.
+
+    Args:
+        input_ (Any): The input to check.
+        expected_dtype (str): The expected type of the input.
+
+    Raises:
+        TypeError: If the input is not of the expected type.
+    """
     if expected_dtype not in str(type(input_)):
         msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
         raise TypeError(
@@ -19,7 +30,16 @@ def _fail_if_invalid_input(input_, expected_dtype: str):
         )
 
 
-def _fail_if_invalid_inputs(input_, expected_dtypes: str):
+def fail_if_invalid_inputs(input_: Any, expected_dtypes: str):
+    """Fail if the input is not of any of the expected types.
+
+    Args:
+        input_ (Any): The input to check.
+        expected_dtypes (str): The expected types of the input.
+
+    Raises:
+        TypeError: If the input is not of any of the expected types.
+    """
     if " | " in expected_dtypes:
         if not any(
             expected_dtype in str(type(input_))
@@ -33,7 +53,7 @@ def _fail_if_invalid_inputs(input_, expected_dtypes: str):
             )
 
     else:
-        _fail_if_invalid_input(input_, expected_dtypes)
+        fail_if_invalid_input(input_, expected_dtypes)
 
 
 def _error_handling_inputs(
@@ -41,7 +61,7 @@ def _error_handling_inputs(
 ):
     if input_expected_types is None:
         input_expected_types = [[]]
-    [_fail_if_invalid_inputs(*item) for item in input_expected_types]
+    [fail_if_invalid_inputs(*item) for item in input_expected_types]
 
 
 def _error_handling_object(
@@ -56,7 +76,7 @@ def _error_handling_object(
     if entries_expected_types is not None:
         dtype = entries_expected_types[1]
         [
-            _fail_if_invalid_inputs(unique_entry, dtype)
+            fail_if_invalid_inputs(unique_entry, dtype)
             for unique_entry in entries_expected_types[0]
         ]
     else:
@@ -67,7 +87,7 @@ def _error_handling_object(
         raise Warning(
             msg,
         )
-    [_fail_if_invalid_input(*item) for item in input_expected_types]
+    [fail_if_invalid_input(*item) for item in input_expected_types]
 
 
 def apply_lowest_float_dtype(series: pd.Series) -> pd.Series:

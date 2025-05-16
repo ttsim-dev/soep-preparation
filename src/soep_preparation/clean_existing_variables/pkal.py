@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 
 from soep_preparation.utilities import (
-    _fail_if_invalid_input,
     apply_lowest_int_dtype,
+    fail_if_invalid_input,
     object_to_bool_categorical,
     object_to_int,
     object_to_str_categorical,
@@ -40,7 +40,7 @@ def _categorical_dtype_ordered(
 
 
 def _wide_to_long(dataframe: pd.DataFrame) -> pd.DataFrame:
-    _fail_if_invalid_input(dataframe, "pandas.core.frame.DataFrame")
+    fail_if_invalid_input(dataframe, "pandas.core.frame.DataFrame")
     prev_wide_cols = [
         "full_empl_v1_prev",
         "full_empl_v2_prev",

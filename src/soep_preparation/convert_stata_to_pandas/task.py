@@ -16,14 +16,7 @@ from soep_preparation.config import (
     SOEP_VERSION,
     SRC,
 )
-
-
-def _fail_if_invalid_input(input_, expected_dtype: str):
-    if expected_dtype not in str(type(input_)):
-        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
-        raise TypeError(
-            msg,
-        )
+from soep_preparation.utilities import fail_if_invalid_input
 
 
 def _get_relevant_column_names(script: Path) -> list[str]:
@@ -93,5 +86,5 @@ for name, catalog in DATA_CATALOGS["single_datasets"].items():
 
 
 def _error_handling_task(data, script_path):
-    _fail_if_invalid_input(data, "pathlib._local.PosixPath")
-    _fail_if_invalid_input(script_path, "pathlib._local.PosixPath")
+    fail_if_invalid_input(data, "pathlib._local.PosixPath")
+    fail_if_invalid_input(script_path, "pathlib._local.PosixPath")

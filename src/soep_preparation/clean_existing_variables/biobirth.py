@@ -4,7 +4,7 @@ import pandas as pd
 
 from soep_preparation.clean_existing_variables import month_mapping
 from soep_preparation.utilities import (
-    _fail_if_invalid_input,
+    fail_if_invalid_input,
     find_lowest_int_dtype,
     float_to_int,
     object_to_int,
@@ -13,7 +13,7 @@ from soep_preparation.utilities import (
 
 
 def _wide_to_long(data_wide: pd.DataFrame) -> pd.DataFrame:
-    _fail_if_invalid_input(data_wide, "pandas.core.frame.DataFrame")
+    fail_if_invalid_input(data_wide, "pandas.core.frame.DataFrame")
     prev_wide_cols = ["birth_year_child", "p_id_child", "birth_month_child"]
     data_long = pd.wide_to_long(
         data_wide,

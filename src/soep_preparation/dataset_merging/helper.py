@@ -5,32 +5,11 @@ from difflib import get_close_matches
 import pandas as pd
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
-from soep_preparation.utilities import get_cleaned_and_potentially_merged_dataset
-
-
-def _fail_if_invalid_input(input_, expected_dtype: str):
-    if expected_dtype not in str(type(input_)):
-        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
-        raise TypeError(
-            msg,
-        )
-
-
-def _fail_if_invalid_inputs(input_, expected_dtypes: str):
-    if " | " in expected_dtypes:
-        if not any(
-            expected_dtype in str(type(input_))
-            for expected_dtype in expected_dtypes.split(" | ")
-        ):
-            msg = (
-                f"Expected {input_} to be of type {expected_dtypes}, got {type(input_)}"
-            )
-            raise TypeError(
-                msg,
-            )
-
-    else:
-        _fail_if_invalid_input(input_, expected_dtypes)
+from soep_preparation.utilities import (
+    fail_if_invalid_input,
+    fail_if_invalid_inputs,
+    get_cleaned_and_potentially_merged_dataset,
+)
 
 
 def _fail_if_invalid_column(
@@ -243,11 +222,11 @@ def _error_handling(
     survey_years: list[int] | None,
     merging_behavior: str,
 ):
-    _fail_if_invalid_input(columns_to_dataset_mapping, "dict")
-    _fail_if_invalid_input(columns, "list")
-    _fail_if_invalid_inputs(min_and_max_survey_years, "tuple | None")
-    _fail_if_invalid_inputs(survey_years, "list | None")
-    _fail_if_invalid_input(merging_behavior, "str")
+    fail_if_invalid_input(columns_to_dataset_mapping, "dict")
+    fail_if_invalid_input(columns, "list")
+    fail_if_invalid_inputs(min_and_max_survey_years, "tuple | None")
+    fail_if_invalid_inputs(survey_years, "list | None")
+    fail_if_invalid_input(merging_behavior, "str")
     _fail_if_empty(columns_to_dataset_mapping["single_datasets"])
     _fail_if_empty(columns_to_dataset_mapping["multiple_datasets"])
     _fail_if_empty(columns)

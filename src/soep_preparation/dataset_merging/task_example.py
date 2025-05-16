@@ -6,6 +6,7 @@ import pandas as pd
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.dataset_merging.helper import create_panel_dataset
+from src.soep_preparation.utilities import fail_if_invalid_input
 
 COLUMNS = [
     "age",
@@ -32,8 +33,14 @@ def task_merge_columns(
     Returns:
         pd.DataFrame: The merged dataset.
     """
+    _error_handling_task(columns_to_dataset_mapping, columns)
     return create_panel_dataset(
         columns_to_dataset_mapping=columns_to_dataset_mapping,
         columns=columns,
         min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
     )
+
+
+def _error_handling_task(mapping, columns):
+    fail_if_invalid_input(mapping, "dict")
+    fail_if_invalid_input(columns, "list")

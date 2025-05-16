@@ -9,14 +9,7 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS, SRC
-
-
-def _fail_if_invalid_input(input_, expected_dtype: str):
-    if expected_dtype not in str(type(input_)):
-        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
-        raise TypeError(
-            msg,
-        )
+from soep_preparation.utilities import fail_if_invalid_input
 
 
 def _fail_if_cleaning_module_missing(script_path):
@@ -71,6 +64,6 @@ for name, catalog in DATA_CATALOGS["single_datasets"].items():
 
 
 def _error_handling_task(data, cleaning_script):
-    _fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
-    _fail_if_invalid_input(cleaning_script, "pathlib._local.PosixPath")
+    fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
+    fail_if_invalid_input(cleaning_script, "pathlib._local.PosixPath")
     _fail_if_cleaning_module_missing(cleaning_script)

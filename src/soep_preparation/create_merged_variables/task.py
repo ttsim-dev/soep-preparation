@@ -8,15 +8,10 @@ import pandas as pd
 from pytask import PickleNode, task
 
 from soep_preparation.config import DATA_CATALOGS, SRC
-from soep_preparation.utilities import get_cleaned_and_potentially_merged_dataset
-
-
-def _fail_if_invalid_input(input_, expected_dtype: str):
-    if expected_dtype not in str(type(input_)):
-        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
-        raise TypeError(
-            msg,
-        )
+from soep_preparation.utilities import (
+    fail_if_invalid_input,
+    get_cleaned_and_potentially_merged_dataset,
+)
 
 
 def _fail_if_too_many_or_few_datasets(datasets: dict, expected_entries: int):
@@ -27,11 +22,14 @@ def _fail_if_too_many_or_few_datasets(datasets: dict, expected_entries: int):
         )
 
 
-def _get_datasets_containing_variable(variable_name: str) -> dict[str, PickleNode]:
+def _get_datasets_containing_variable(
+    variable_name: str,
+    script: Path,
+) -> dict[str, PickleNode]:
     # corresponding module for the variable name (e.g. birth_month.py)
     module = SourceFileLoader(
         variable_name,
-        str(SRC / "create_merged_variables" / f"{variable_name}.py"),
+        str(script),
     ).load_module()
     # arguments to the merge_variable function (datasets required for the variable)
     dataset_names = [
@@ -48,16 +46,14 @@ def _get_datasets_containing_variable(variable_name: str) -> dict[str, PickleNod
     }
 
 
-for variable_name, catalog in DATA_CATALOGS["multiple_datasets"].items():
-    datasets = _get_datasets_containing_variable(variable_name)
+for name, catalog in DATA_CATALOGS["multiple_datasets"].items():
+    script_path = SRC / "create_merged_variables" / f"{name}.py"
+    datasets = _get_datasets_containing_variable(variable_name=name, script=script_path)
 
-    @task(id=variable_name)
+    @task(id=name)
     def task_merge_variable(
         datasets: Annotated[dict[str, pd.DataFrame], datasets],
-        script_path: Annotated[
-            Path,
-            SRC / "create_merged_variables" / f"{variable_name}.py",
-        ],
+        script_path: Annotated[Path, script_path],
     ) -> Annotated[
         pd.DataFrame,
         catalog["merged"],
@@ -80,6 +76,6 @@ for variable_name, catalog in DATA_CATALOGS["multiple_datasets"].items():
 
 
 def _error_handling_task(datasets, script_path):
-    _fail_if_invalid_input(datasets, "dict")
+    fail_if_invalid_input(datasets, "dict")
     _fail_if_too_many_or_few_datasets(datasets, 2)
-    _fail_if_invalid_input(script_path, "pathlib._local.PosixPath")
+    fail_if_invalid_input(script_path, "pathlib._local.PosixPath")

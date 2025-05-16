@@ -3,16 +3,16 @@
 import pandas as pd
 
 from soep_preparation.utilities import (
-    _fail_if_invalid_input,
     apply_lowest_float_dtype,
     apply_lowest_int_dtype,
+    fail_if_invalid_input,
     find_lowest_int_dtype,
     object_to_str_categorical,
 )
 
 
 def _hwealth_wide_to_long(data_wide: pd.DataFrame) -> pd.DataFrame:
-    _fail_if_invalid_input(data_wide, "pandas.core.frame.DataFrame")
+    fail_if_invalid_input(data_wide, "pandas.core.frame.DataFrame")
     prev_wide_cols = [
         "wohnsitz_immobilienverm_hh",
         "finanzverm_hh",

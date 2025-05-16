@@ -6,7 +6,10 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS
-from soep_preparation.utilities import get_cleaned_and_potentially_merged_dataset
+from soep_preparation.utilities import (
+    fail_if_invalid_input,
+    get_cleaned_and_potentially_merged_dataset,
+)
 
 
 def _get_index_columns(
@@ -71,6 +74,7 @@ for dataset_kind in ["single_datasets", "multiple_datasets"]:
             Returns:
                 dict: Metadata information for single dataset.
             """
+            fail_if_invalid_input(dataset, "pandas.core.frame.DataFrame")
             potential_index_columns = ["p_id", "hh_id", "hh_id_orig", "survey_year"]
             index_columns = _get_index_columns(dataset, potential_index_columns)
             column_dtypes = _get_column_dtypes(dataset, potential_index_columns)
@@ -96,7 +100,19 @@ def task_create_column_to_dataset_mapping(
     Returns:
         dict: Mapping column names to list of dataset names that contain those columns.
     """
+    _error_handling_mapping_task(single_datasets, multiple_datasets)
     return {
         "single_datasets": _columns_to_dataset_mapping(single_datasets),
         "multiple_datasets": _columns_to_dataset_mapping(multiple_datasets),
     }
+
+
+def _error_handling_mapping_task(single_datasets, multiple_datasets):
+    fail_if_invalid_input(single_datasets, "dict")
+    fail_if_invalid_input(multiple_datasets, "dict")
+    for dataset_catalog in single_datasets.values():
+        fail_if_invalid_input(dataset_catalog, "_pytask.data_catalog.DataCatalog")
+        fail_if_invalid_input(dataset_catalog["metadata"], "_pytask.nodes.PickleNode")
+    for dataset_catalog in multiple_datasets.values():
+        fail_if_invalid_input(dataset_catalog, "_pytask.data_catalog.DataCatalog")
+        fail_if_invalid_input(dataset_catalog["metadata"], "_pytask.nodes.PickleNode")

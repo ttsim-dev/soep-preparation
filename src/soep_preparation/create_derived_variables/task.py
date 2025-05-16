@@ -16,15 +16,7 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS, SRC, get_dataset_names
-
-
-def _fail_if_invalid_input(input_, expected_dtype: str):
-    if expected_dtype not in str(type(input_)):
-        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
-        raise TypeError(
-            msg,
-        )
-
+from soep_preparation.utilities import fail_if_invalid_input
 
 for name in get_dataset_names(SRC / "create_derived_variables"):
     assert name in DATA_CATALOGS["single_datasets"], (
@@ -36,7 +28,7 @@ for name in get_dataset_names(SRC / "create_derived_variables"):
 
     @task(id=name)
     def task_create_derived_variables(
-        clean_data: Annotated[Path, catalog["cleaned"]],
+        clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
         script_path: Annotated[
             Path,
             SRC / "create_derived_variables" / f"{name}.py",
@@ -50,14 +42,8 @@ for name in get_dataset_names(SRC / "create_derived_variables"):
 
         Returns:
             pd.DataFrame: Derived variables to store in the data catalog.
-
-        Raises:
-            FileNotFoundError: If dataset or cleaning script file do not exist.
-            ImportError: If there is an error loading the manipulation script module.
-            AttributeError: If expected function not in manipulation script.
-
         """
-        _error_handling_task(clean_data, script_path)
+        _error_handling_creation_task(clean_data, script_path)
         module = SourceFileLoader(
             script_path.stem,
             str(script_path),
@@ -78,9 +64,15 @@ for name in get_dataset_names(SRC / "create_derived_variables"):
         Returns:
             pd.DataFrame: The merged dataset.
         """
+        _error_handling_merging_task(clean_data, derived_variables)
         return pd.concat(objs=[clean_data, derived_variables], axis=1)
 
 
-def _error_handling_task(data, script_path):
-    _fail_if_invalid_input(data, "pandas.core.frame.DataFrame'")
-    _fail_if_invalid_input(script_path, "pathlib._local.PosixPath")
+def _error_handling_creation_task(data, script_path):
+    fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
+    fail_if_invalid_input(script_path, "pathlib._local.PosixPath")
+
+
+def _error_handling_merging_task(data, variables):
+    fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
+    fail_if_invalid_input(variables, "pandas.core.frame.DataFrame")
