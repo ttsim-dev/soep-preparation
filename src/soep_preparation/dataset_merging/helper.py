@@ -17,7 +17,7 @@ from soep_preparation.utilities.error_handling import (
 def _fail_if_invalid_column(
     columns: list[str],
     columns_to_dataset_mapping: dict[str, list[str]],
-):
+) -> None:
     all_columns_to_dataset_mapping = (
         columns_to_dataset_mapping["single_datasets"]
         | columns_to_dataset_mapping["multiple_datasets"]
@@ -43,7 +43,7 @@ def _fail_if_invalid_column(
             raise ValueError(msg)
 
 
-def _fail_if_empty(input_: dict | list):
+def _fail_if_empty(input_: dict | list) -> None:
     if len(input_) == 0:
         msg = f"Expected {input_} to be non-empty."
         raise ValueError(msg)
@@ -52,21 +52,21 @@ def _fail_if_empty(input_: dict | list):
 def _fail_if_survey_years_not_valid(
     survey_years: list[int] | tuple[int],
     valid_survey_years: list[int],
-):
+) -> None:
     if not all(year in valid_survey_years for year in survey_years):
         msg = f"""Expected survey years to be in {valid_survey_years},
         got {survey_years} instead."""
         raise ValueError(msg)
 
 
-def _fail_if_min_larger_max(min_and_max_survey_years: tuple[int, int]):
+def _fail_if_min_larger_max(min_and_max_survey_years: tuple[int, int]) -> None:
     if min_and_max_survey_years[0] > min_and_max_survey_years[1]:
         msg = f"""Expected min survey year to be smaller than max survey year,
         got {min_and_max_survey_years} instead."""
         raise ValueError(msg)
 
 
-def _fail_if_invalid_merging_behavior(merging_behavior: str):
+def _fail_if_invalid_merging_behavior(merging_behavior: str) -> None:
     valid_merging_behaviors = ["left", "right", "outer", "inner", "cross"]
     if merging_behavior not in valid_merging_behaviors:
         msg = f"""Expected merging behavior to be in {valid_merging_behaviors},
@@ -220,7 +220,7 @@ def _error_handling(
     min_and_max_survey_years: tuple[int, int] | None,
     survey_years: list[int] | None,
     merging_behavior: str,
-):
+) -> None:
     fail_if_invalid_input(columns_to_dataset_mapping, "dict")
     fail_if_invalid_input(columns, "list")
     fail_if_invalid_inputs(min_and_max_survey_years, "tuple | None")

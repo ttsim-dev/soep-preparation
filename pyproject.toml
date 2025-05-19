@@ -136,17 +136,17 @@ fix = true
 select = ["ALL"]
 extend-ignore = [
     "S101", # Use of `assert` detected.
-    "ANN",  # Missing type annotations
+    "COM812", # Avoid conflict with ruff-format
+    "ISC001", # Avoid conflict with ruff-format
+
 ]
 
 [tool.ruff.lint.pylint]
 max-statements = 100
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "PD011"]
-"**/task.py" = [
-    "ANN",
-    ]
+"tests/*" = ["D", "PD011", "ANN201"]
+"**/task.py" = ["ANN"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

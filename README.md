@@ -8,22 +8,21 @@
 
 ## Project Overview
 
-This project aims to pre-process the SOEP-Core data for usage with
-[GETTSIM](https://github.com/iza-institute-of-labor-economics/gettsim). The raw data is
-provided by the German Institute for Economic Research (DIW Berlin) and is a panel
-dataset that follows the same individuals over time. The data is collected annually and
-contains information on various topics such as income, employment, and health. The data
-is available for scientific use, for more information visit the
+This project processes the SOEP-Core data for use with
+[GETTSIM](https://gettsim.readthedocs.io/en/stable/). The raw data is provided by the
+German Institute for Economic Research (DIW Berlin) and is a panel dataset that follows
+the same individuals over time. The data is collected annually and contains information
+on various topics such as income, employment, and health. The data is available for
+scientific use, for more information visit the
 [Research Data Center SOEP](https://www.diw.de/en/diw_01.c.678568.en/research_data_center_soep.html).
 
-The project is structured as follows: Inside the `soep_preparation` directory, there are
-directories for the source code `src`, tests of the source code `tests`, and the build
-directory `bld`. The `src` directory contains the main source code. and raw data for the
-project, while the `tests` directory contains the tests for the source code. Inside the
-`bld` directory there are processed files and outputs of the code. The `pyproject.toml`
-file contains the project configuration, while `environment.yml` includes the
-dependencies and the configuration for the pre-commit hooks is in
-`.pre-commit-config.yaml`.
+The top-level directory is structured as follows:
+
+- `src`: source code and raw data
+- `tests`: tests of the source code
+- `bld`: build directory with processed data (will be created automatically)
+- other files include the environment configuration, pre-commit hooks, and some
+  meta-files like this README
 
 ## Usage
 
@@ -37,12 +36,6 @@ To build the project, type
 
 ```console
 $ pixi run pytask
-```
-
-To clean a single dataset, specify the "dataset_name" by typing:
-
-```console
-$ pixi run pytask -k "dataset_name"
 ```
 
 ## Working with the Data and Modules

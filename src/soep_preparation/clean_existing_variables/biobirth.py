@@ -46,9 +46,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = float_to_int(raw_data["pid"])
     out["n_kids_total"] = float_to_int(raw_data["sumkids"])
 
-    out["birth_year_child_1"] = object_to_int(
-        raw_data["kidgeb01"],
-    )
+    out["birth_year_child_1"] = object_to_int(raw_data["kidgeb01"])
     out["birth_year_child_2"] = object_to_int(
         raw_data["kidgeb02"],
     )
