@@ -5,13 +5,13 @@ from typing import Any
 import pandas as pd
 
 
-def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str):
+def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str) -> None:
     if expected_dtype not in series.dtype.name:
         msg = f"Expected dtype {expected_dtype}, got {series.dtype.name}"
         raise TypeError(msg)
 
 
-def fail_if_invalid_input(input_: Any, expected_dtype: str):
+def fail_if_invalid_input(input_: Any, expected_dtype: str) -> None:  # noqa: ANN401
     """Fail if the input is not of the expected type.
 
     Args:
@@ -28,7 +28,7 @@ def fail_if_invalid_input(input_: Any, expected_dtype: str):
         )
 
 
-def fail_if_invalid_inputs(input_: Any, expected_dtypes: str):
+def fail_if_invalid_inputs(input_: Any, expected_dtypes: str) -> None:  # noqa: ANN401
     """Fail if the input is not of any of the expected types.
 
     Args:
@@ -59,7 +59,7 @@ def error_handling_sr_transformation(
     expected_sr_dtype: str,
     input_expected_types: list[list] | None = None,
     entries_expected_types: list | None = None,
-):
+) -> None:
     """Check the dtype of a series and its entries.
 
     Args:

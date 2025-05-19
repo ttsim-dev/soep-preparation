@@ -1,6 +1,6 @@
 """Example task to create a merged panel dataset."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 import pandas as pd
 
@@ -41,6 +41,6 @@ def task_merge_columns(
     )
 
 
-def _error_handling_task(mapping, columns):
+def _error_handling_task(mapping: Any, columns: Any) -> None:  # noqa: ANN401
     fail_if_invalid_input(mapping, "dict")
     fail_if_invalid_input(columns, "list")
