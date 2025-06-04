@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw kidlong dataset."""
+"""Clean and convert SOEP kidlong variables to appropriate data types."""
 
 import pandas as pd
 
@@ -9,9 +9,15 @@ from soep_preparation.utilities.series_manipulator import (
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the kidlong dataset."""
-    out = pd.DataFrame()
+    """Create cleaned and sensible data type variables from the kidlong file.
 
+    Args:
+        raw_data (pd.DataFrame): The raw kidlong data.
+
+    Returns:
+        pd.DataFrame: The processed kidlong data.
+    """
+    out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])

@@ -87,32 +87,76 @@ def apply_lowest_int_dtype(
     return pd.to_numeric(series, downcast="integer", dtype_backend="pyarrow")
 
 
+def convert_to_categorical(
+    series: pd.Series,
+    ordered: bool, # noqa: FBT001
+) -> pd.Series:
+    """Convert a series to a categorical series.
+
+    Args:
+        series (pd.Series): The series to convert.
+        ordered (bool, optional): Whether the categories should be returned as ordered.
+
+    Returns:
+        pd.Series: The series converted to categorical dtype.
+    """
+    error_handling_sr_transformation(
+        series,
+        "Any",
+        [
+            [series, "pandas.core.series.Series"],
+            [ordered, "bool"],
+        ],
+        [series.unique(), "Any"],
+    )
+    if series.isna().all():
+        return series.astype("category[pyarrow]")
+    categories = _get_sorted_not_na_unique_values(series)
+    raw_cat_dtype = CategoricalDtype(
+        categories=categories,
+        ordered=ordered,
+    )
+    return series.astype(raw_cat_dtype)
+
+
 def create_dummy(
     series: pd.Series,
-    true_value: bool | str | list,
-    kind: str = "equality",
+    true_value: bool | str | list | float | int,
+    kind: str = "equal",
 ) -> pd.Series:
     """Create a dummy variable based on a condition.
 
     Args:
         series (pd.Series): The input series to be transformed.
-        true_value (bool | str | list): The value to be compared against.
-        kind (str, optional): The type of comparison to be made. Defaults to "equality".
-        Can be "equality", "neq", or "isin".
+        true_value (bool | str | list | float | int): The value to be compared against.
+        kind (str, optional): The type of comparison to be made. Defaults to "equal".
+        Can be "equal", "geq" or "isin", "leq" or "neq".
 
     Returns:
         pd.Series: A boolean series indicating the condition.
     """
     fail_if_invalid_input(series, "pandas.core.series.Series")
-    fail_if_invalid_inputs(true_value, "bool | str | list")
+    fail_if_invalid_inputs(true_value, "bool | str | list | float | int")
     fail_if_invalid_input(kind, "str")
-    if kind == "equality":
+    if kind == "equal":
         return (series == true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
     if kind == "neq":
         return (series != true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
     if kind == "isin":
         return (
             series.isin(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
+        )
+    if kind == "geq":
+        return (
+            series.ge(true_value)
+            .mask(series.isna(), pd.NA)
+            .astype("bool[pyarrow]")
+        )
+    if kind == "leq":
+        return (
+            series.le(true_value)
+            .mask(series.isna(), pd.NA)
+            .astype("bool[pyarrow]")
         )
     msg = f"Unknown kind '{kind}' of dummy creation"
     raise ValueError(msg)

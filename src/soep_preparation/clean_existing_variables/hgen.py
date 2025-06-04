@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw hgen dataset."""
+"""Clean and convert SOEP hgen variables to appropriate data types."""
 
 import pandas as pd
 
@@ -20,7 +20,14 @@ def _bruttokaltmiete_m_hh(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the hgen dataset."""
+    """Create cleaned and sensible data type variables from the hgen file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw hgen data.
+
+    Returns:
+        pd.DataFrame: The processed hgen data.
+    """
     out = pd.DataFrame()
     out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])

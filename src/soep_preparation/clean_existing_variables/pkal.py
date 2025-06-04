@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw pkal dataset."""
+"""Clean and convert SOEP pkal variables to appropriate data types."""
 
 import numpy as np
 import pandas as pd
@@ -72,7 +72,14 @@ def _wide_to_long(dataframe: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the pkal dataset."""
+    """Create cleaned and sensible data type variables from the pkal file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw pkal data.
+
+    Returns:
+        pd.DataFrame: The processed pkal data.
+    """
     out = pd.DataFrame()
 
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])

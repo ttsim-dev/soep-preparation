@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw bioparen dataset."""
+"""Clean and convert SOEP bioparen variables to appropriate data types."""
 
 import pandas as pd
 
@@ -9,7 +9,14 @@ from soep_preparation.utilities.series_manipulator import (
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the biobirth dataset."""
+    """Create cleaned and sensible data type variables from the biobirth file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw biobirth data.
+
+    Returns:
+        pd.DataFrame: The processed biobirth data.
+    """
     out = pd.DataFrame()
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
 

@@ -16,14 +16,12 @@ from soep_preparation.config import (
     SOEP_VERSION,
     SRC,
 )
+from soep_preparation.utilities.general import load_module
 from soep_preparation.utilities.error_handling import fail_if_invalid_input
 
 
-def _get_relevant_column_names(script: Path) -> list[str]:
-    module = SourceFileLoader(
-        script.resolve().stem,
-        str(script.resolve()),
-    ).load_module()
+def _get_relevant_column_names(script_path: Path) -> list[str]:
+    module = load_module(script_path)
     function_with_docstring = inspect.getsource(module.clean)
     # Remove the docstring, if existent.
     function_content = re.sub(
@@ -53,9 +51,13 @@ def _iteratively_read_one_dataset(
         processed_chunks.append(chunk_with_categorical_values)
     return pd.concat(processed_chunks)
 
+if len(DATA_CATALOGS["data_files"]) == 0:
+    msg = """Please add at least one raw dataset to the data directory under
+    the specified SOEP version and create a cleaning script for it.
+    For further instructions, please refer to the README file."""
+    raise FileNotFoundError(msg)
 
-for name, catalog in DATA_CATALOGS["single_datasets"].items():
-
+for name, catalog in DATA_CATALOGS["data_files"].items():
     @task(id=name)
     def task_read_one_dataset(
         stata_data: Annotated[Path, DATA / f"{SOEP_VERSION}" / f"{name}.dta"],
@@ -73,6 +75,8 @@ for name, catalog in DATA_CATALOGS["single_datasets"].items():
         Returns:
             pd.DataFrame: A pandas DataFrame to be saved to the data catalog.
 
+        Raises:
+            TypeError: If input data or script path is not of expected type.
         """
         _error_handling_task(stata_data, cleaning_script)
         relevant_columns = _get_relevant_column_names(cleaning_script)

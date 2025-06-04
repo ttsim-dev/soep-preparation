@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw pgen dataset."""
+"""Clean and convert SOEP pgen variables to appropriate data types."""
 
 import pandas as pd
 
@@ -29,7 +29,14 @@ def _weekly_working_hours_contract(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the pgen dataset."""
+    """Create cleaned and sensible data type variables from the pgen file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw pgen data.
+
+    Returns:
+        pd.DataFrame: The processed pgen data.
+    """
     out = pd.DataFrame()
 
     out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])

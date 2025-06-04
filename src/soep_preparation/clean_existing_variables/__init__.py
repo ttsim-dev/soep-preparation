@@ -1,1 +1,1 @@
-"""Clean existing variables in the SOEP data."""
+"""Clean and convert to adequate data types of existing variables in the SOEP data."""

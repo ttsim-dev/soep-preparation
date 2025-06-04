@@ -1,7 +1,5 @@
-"""Function to clean existing variables in the SOEP dataset."""
+"""Module to clean existing variables in SOEP files."""
 
-import importlib.util
-from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from typing import Annotated
 
@@ -9,61 +7,60 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS, SRC
+from soep_preparation.utilities.general import load_module
 from soep_preparation.utilities.error_handling import fail_if_invalid_input
 
 
-def _fail_if_cleaning_module_missing(script_path):
-    module_name = script_path.stem
-    spec = importlib.util.spec_from_file_location(module_name, str(script_path))
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+def _fail_if_cleaning_module_missing(module_path):
+    module = load_module(module_path)
 
     if not hasattr(module, "clean"):
-        msg = f"""The cleaning script {script_path}
-          does not contain the expected cleaning function."""
+        msg = f"""The cleaning module {module_path}
+          does not contain expected cleaning function."""
         raise AttributeError(
             msg,
         )
 
 
-for name, catalog in DATA_CATALOGS["single_datasets"].items():
+for file_name, file_catalog in DATA_CATALOGS["data_files"].items():
 
-    @task(id=name)
-    def task_clean_one_dataset(
-        raw_data: Annotated[Path, catalog["raw"]],
-        cleaning_script: Annotated[
+    @task(id=file_name)
+    def task_clean_one_file(
+        raw_data: Annotated[Path, file_catalog["raw"]],
+        module_path: Annotated[
             Path,
-            SRC / "clean_existing_variables" / f"{name}.py",
+            SRC / "clean_existing_variables" / f"{file_name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, catalog["cleaned"]]:
-        """Cleans a dataset using a specified cleaning script.
+    ) -> Annotated[pd.DataFrame, file_catalog["cleaned"]]:
+        """Cleans variables of a data file using the corresponding cleaning module.
+
+        Cleaning modules contain function `clean` taking the raw pandas DataFrame
+        as input and assigning variables with adequate data types and values to
+        meaningful variable names. The cleaned DataFrame is returned.
+        The result is stored in the corresponding DataCatalog for further processing.
 
         Parameters:
-            raw_data (Path): The path to the dataset to be cleaned.
-            cleaning_script (Path): The path to the cleaning script.
+            raw_data (Path): The path to the file to be cleaned.
+            module_path (Path): The path to the cleaning module.
 
         Returns:
-            pd.DataFrame: A cleaned pandas DataFrame to be saved to the data catalog.
+            pd.DataFrame: A cleaned pandas DataFrame to be saved to the DataCatalog.
 
         Raises:
-            ImportError: If there is an error loading the cleaning script module.
+            ImportError: If there is an error loading the cleaning module.
             TypeError: If raw_data is not a pandas.DataFrame or
-            cleaning_script is not a pathlib.Path object.
-            AttributeError: If cleaning script module does not
+            module_path is not a pathlib.Path object.
+            AttributeError: If cleaning module module does not
             contain expected function.
-
         """
-        _error_handling_task(raw_data, cleaning_script)
-        module = SourceFileLoader(
-            cleaning_script.stem,
-            str(cleaning_script),
-        ).load_module()
+        _error_handling_task(raw_data, module_path)
+        module = load_module(module_path)
         return module.clean(
             raw_data=raw_data,
         )
 
 
-def _error_handling_task(data, cleaning_script):
+def _error_handling_task(data, module_path):
     fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
-    fail_if_invalid_input(cleaning_script, "pathlib._local.PosixPath")
-    _fail_if_cleaning_module_missing(cleaning_script)
+    fail_if_invalid_input(module_path, "pathlib._local.PosixPath")
+    _fail_if_cleaning_module_missing(module_path)

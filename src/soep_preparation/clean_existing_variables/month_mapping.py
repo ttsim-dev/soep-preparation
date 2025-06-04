@@ -1,4 +1,4 @@
-"""Mapping of months in german and english."""
+"""Mapping of month strings to integers in german and english."""
 
 de = {
     "[1] Januar": 1,

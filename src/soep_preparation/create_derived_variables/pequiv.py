@@ -1,5 +1,4 @@
-"""Functions to create datasets for a pre-processed pequiv dataset."""
-
+"""Functions to create variables for pre-processed pequiv data."""
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
@@ -9,13 +8,13 @@ from soep_preparation.utilities.series_manipulator import (
 
 
 def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
-    """Create derived variables for the pequiv dataset.
+    """Create derived variables for the pequiv data.
 
     Args:
-        data (pd.DataFrame): The dataset required.
+        data (pd.DataFrame): The required data.
 
     Returns:
-        pd.DataFrame: The dataset of derived variables.
+        pd.DataFrame: The derived variables.
     """
     med_vars = [
         "med_pe_schw_anziehen",

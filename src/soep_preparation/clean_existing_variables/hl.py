@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw hl dataset."""
+"""Clean and convert SOEP hl variables to appropriate data types."""
 
 import pandas as pd
 
@@ -22,7 +22,14 @@ def _kindergeld_aktuell_hl_m_hh(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the hl dataset."""
+    """Create cleaned and sensible data type variables from the hl file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw hl data.
+
+    Returns:
+        pd.DataFrame: The processed hl data.
+    """
     out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])

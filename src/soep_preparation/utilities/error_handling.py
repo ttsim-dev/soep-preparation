@@ -2,11 +2,12 @@
 
 from typing import Any
 
+from pathlib import Path
 import pandas as pd
 
 
 def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str) -> None:
-    if expected_dtype not in series.dtype.name:
+    if expected_dtype not in series.dtype.name and expected_dtype != "Any":
         msg = f"Expected dtype {expected_dtype}, got {series.dtype.name}"
         raise TypeError(msg)
 
@@ -21,7 +22,7 @@ def fail_if_invalid_input(input_: Any, expected_dtype: str) -> None:  # noqa: AN
     Raises:
         TypeError: If the input is not of the expected type.
     """
-    if expected_dtype not in str(type(input_)):
+    if expected_dtype not in str(type(input_)) and expected_dtype != "Any":
         msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
         raise TypeError(
             msg,

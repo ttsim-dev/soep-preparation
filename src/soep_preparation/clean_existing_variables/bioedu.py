@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw bioedu dataset."""
+"""Clean and convert SOEP bioedu variables to appropriate data types."""
 
 import pandas as pd
 
@@ -10,7 +10,14 @@ from soep_preparation.utilities.series_manipulator import (
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the bioedu dataset."""
+    """Create cleaned and sensible data type variables from the bioedu file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw bioedu data.
+
+    Returns:
+        pd.DataFrame: The processed bioedu data.
+    """
     out = pd.DataFrame()
     out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])

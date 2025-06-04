@@ -8,62 +8,160 @@ Usage:
     to generate new variables for the relevant datasets.
 """
 
-from importlib.machinery import SourceFileLoader
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import pandas as pd
-from pytask import task
+from pytask import PickleNode, task
 
-from soep_preparation.config import DATA_CATALOGS, SRC, get_dataset_names
+from soep_preparation.config import DATA_CATALOGS, SRC
 from soep_preparation.utilities.error_handling import fail_if_invalid_input
+from soep_preparation.utilities.general import (
+    get_script_names,
+    get_file_names,
+    load_module,
+)
 
-dataset_names = get_dataset_names(SRC / "create_derived_variables")
-for name, catalog in DATA_CATALOGS["single_datasets"].items():
-    if name not in dataset_names:
-        # skipping datasets that do not have a derive variables script
+
+def _fail_if_too_many_or_few_datasets(datasets: dict, expected_entries: int):
+    if len(datasets.keys()) != expected_entries:
+        msg = f"Expected {expected_entries} datasets, got {len(datasets.keys())}"
+        raise ValueError(
+            msg,
+        )
+
+
+def _get_relevant_data_files_mapping(
+    function_: Any,
+) -> dict[str, PickleNode]:
+    # arguments to the function (data files required for the variable)
+    data_names = [
+        data_name
+        for data_name in function_.__annotations__
+        if data_name in DATA_CATALOGS["data_files"]
+    ]
+    # return a mapping of the dataset names to the corresponding datasets
+    return {
+        data_name: DATA_CATALOGS["derived_variables"][data_name]
+        for data_name in data_names
+    }
+
+
+def _get_variable_names_in_module(module: Any) -> list[str]:
+    """Get the variable names in the module.
+
+    Args:
+        module (Any): The module to get the variable names from.
+
+    Returns:
+        list[str]: The variable names in the module.
+    """
+    return [
+        variable_name.split("derive_")[-1]
+        for variable_name in module.__dict__
+        if variable_name.startswith("derive_")
+    ]
+
+
+file_names = get_file_names(directory=SRC / "create_derived_variables")
+for name, catalog in DATA_CATALOGS["data_files"].items():
+    if name in file_names:
+        # files that have a derive variables script get processed
+        @task(id=name)
+        def task_create_derived_variables(
+            clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
+            script_path: Annotated[
+                Path,
+                SRC / "create_derived_variables" / f"{name}.py",
+            ],
+        ) -> Annotated[pd.DataFrame, catalog["derived_variables"]]:
+            """Creates derived variables for a dataset using a specified script.
+
+            Parameters:
+                clean_data (pd.DataFrame): Cleaned dataset to derive variables for.
+                script_path (Path): The path to the script.
+
+            Returns:
+                pd.DataFrame: Derived variables to store in the data catalog.
+
+            Raises:
+                TypeError: If input data or script path is not of expected type.
+            """
+            _error_handling_creation_task(clean_data, script_path)
+            module = load_module(script_path)
+            return module.create_derived_variables(data=clean_data)
+
+        @task(id=name)
+        def task_merge_derived_variables(
+            clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
+            derived_variables: Annotated[pd.DataFrame, catalog["derived_variables"]],
+        ) -> Annotated[pd.DataFrame, DATA_CATALOGS["derived_variables"][name]]:
+            """Merge the cleaned and derived variables datasets.
+
+            Args:
+                clean_data (pd.DataFrame): The cleaned dataset.
+                derived_variables (pd.DataFrame): The derived variables dataset.
+
+            Returns:
+                pd.DataFrame: The merged dataset.
+
+            Raises:
+                TypeError: If input data or derived variables is not of expected type.
+            """
+            _error_handling_merging_task(clean_data, derived_variables)
+            return pd.concat(objs=[clean_data, derived_variables], axis=1)
+
+    else:
+        # files that do not have a derive variables script get copied to
+        # the derived variables catalog
+        @task(id=name)
+        def task_copy_file(
+            clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
+        ) -> Annotated[pd.DataFrame, DATA_CATALOGS["derived_variables"][name]]:
+            """Copy the cleaned data file to the derived variables catalog.
+            Args:
+                clean_data (pd.DataFrame): The cleaned data file.
+            Returns:
+                pd.DataFrame: The copied data file.
+
+            Raises:
+                TypeError: If input data is not of expected type.
+            """
+            fail_if_invalid_input(clean_data, "pandas.core.frame.DataFrame")
+            return clean_data
+
+
+script_names = get_script_names(SRC / "create_derived_variables")
+for script_name in script_names:
+    if script_name in file_names:
+        # skipping variables that have a script for files only
         continue
+    module = load_module(SRC / "create_derived_variables" / f"{script_name}.py")
+    variable_names = _get_variable_names_in_module(module)
+    for variable_name in variable_names:
+        function_ = getattr(module, f"derive_{variable_name}")
+        data_files = _get_relevant_data_files_mapping(function_=function_)
 
-    @task(id=name)
-    def task_create_derived_variables(
-        clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
-        script_path: Annotated[
-            Path,
-            SRC / "create_derived_variables" / f"{name}.py",
-        ],
-    ) -> Annotated[pd.DataFrame, catalog["derived_variables"]]:
-        """Creates derived variables for a dataset using a specified script.
+        @task(id=variable_name)
+        def task_create_merged_variables(
+            data_files: Annotated[dict[str, pd.DataFrame], data_files],
+            function_: Annotated[Any, function_],
+        ) -> Annotated[pd.DataFrame, DATA_CATALOGS["derived_variables"][variable_name]]:
+            """Merge variables for the meta dataset.
 
-        Parameters:
-            clean_data (pd.DataFrame): Cleaned dataset to derive variables for.
-            script_path (Path): The path to the script.
+            Args:
+                data_files (dict): A mapping of data file names to DataFrames.
+                function_ (function): Function to create derived variables.
 
-        Returns:
-            pd.DataFrame: Derived variables to store in the data catalog.
-        """
-        _error_handling_creation_task(clean_data, script_path)
-        module = SourceFileLoader(
-            script_path.stem,
-            str(script_path),
-        ).load_module()
-        return module.create_derived_variables(data=clean_data)
+            Returns:
+                pd.DataFrame: DataFrame containing derived variables.
 
-    @task(id=name)
-    def task_merge_derived_variables(
-        clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
-        derived_variables: Annotated[pd.DataFrame, catalog["derived_variables"]],
-    ) -> Annotated[pd.DataFrame, catalog["merged"]]:
-        """Merge the cleaned and derived variables datasets.
-
-        Args:
-            clean_data (pd.DataFrame): The cleaned dataset.
-            derived_variables (pd.DataFrame): The derived variables dataset.
-
-        Returns:
-            pd.DataFrame: The merged dataset.
-        """
-        _error_handling_merging_task(clean_data, derived_variables)
-        return pd.concat(objs=[clean_data, derived_variables], axis=1)
+            Raises:
+                TypeError: If input data files or function is not of expected type.
+                ValueError: If number of datasets is not as expected.
+            """
+            _error_handling_derived_variables(data_files, function_)
+            return function_(**data_files)
 
 
 def _error_handling_creation_task(data, script_path):
@@ -74,3 +172,9 @@ def _error_handling_creation_task(data, script_path):
 def _error_handling_merging_task(data, variables):
     fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
     fail_if_invalid_input(variables, "pandas.core.frame.DataFrame")
+
+
+def _error_handling_derived_variables(data, function_):
+    fail_if_invalid_input(data, "dict")
+    _fail_if_too_many_or_few_datasets(data, 2)
+    fail_if_invalid_input(function_, "function")

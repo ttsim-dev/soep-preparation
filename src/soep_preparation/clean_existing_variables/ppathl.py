@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw ppathl dataset."""
+"""Clean and convert SOEP ppathl variables to appropriate data types."""
 
 import pandas as pd
 
@@ -13,7 +13,14 @@ from soep_preparation.utilities.series_manipulator import (
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the ppathl dataset."""
+    """Create cleaned and sensible data type variables from the ppathl file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw ppathl data.
+
+    Returns:
+        pd.DataFrame: The processed ppathl data.
+    """
     out = pd.DataFrame()
 
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])

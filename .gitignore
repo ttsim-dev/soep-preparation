@@ -42,3 +42,6 @@ data/
 
 # ignore sandbox
 sandbox/
+
+# ignore pickle files
+*.pickle

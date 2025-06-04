@@ -1,4 +1,4 @@
-"""Functions to create datasets for a pre-processed pl dataset."""
+"""Functions to create variables for pre-processed pl data."""
 
 import pandas as pd
 
@@ -23,14 +23,15 @@ def _priv_rentenv_beitr(raw_data: pd.DataFrame) -> pd.Series:
 
 
 def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
-    """Create derived variables for the pl dataset.
+    """Create derived variables for the pl data.
 
     Args:
-        data (pd.DataFrame): The dataset required.
+        data (pd.DataFrame): The required data.
 
     Returns:
-        pd.DataFrame: The dataset of derived variables.
+        pd.DataFrame: The derived variables.
     """
+
     med_vars = [
         "med_pl_schw_treppen",
         "med_pl_schw_taten",

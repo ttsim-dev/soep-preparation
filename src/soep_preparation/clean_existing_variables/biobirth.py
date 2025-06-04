@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw biobirth dataset."""
+"""Clean and convert SOEP biobirth variables to appropriate data types."""
 
 import pandas as pd
 
@@ -40,7 +40,14 @@ def _wide_to_long(data_wide: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the biobirth dataset."""
+    """Create cleaned and sensible data type variables from the biobirth file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw biobirth data.
+
+    Returns:
+        pd.DataFrame: The processed biobirth data.
+    """
     out = pd.DataFrame()
     out["hh_id_orig"] = float_to_int(raw_data["cid"])
     out["p_id"] = float_to_int(raw_data["pid"])

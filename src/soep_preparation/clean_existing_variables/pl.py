@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw pl dataset."""
+"""Clean and convert SOEP pl variables to appropriate data types."""
 
 import pandas as pd
 
@@ -44,7 +44,14 @@ def _priv_rente_beitr_year(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the pl dataset."""
+    """Create cleaned and sensible data type variables from the pl file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw pl data.
+
+    Returns:
+        pd.DataFrame: The processed pl data.
+    """
     out = pd.DataFrame()
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])

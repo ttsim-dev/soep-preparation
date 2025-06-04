@@ -1,4 +1,4 @@
-"""Functions to pre-process variables for a raw hwealth dataset."""
+"""Clean and convert SOEP hwealth variables to appropriate data types."""
 
 import pandas as pd
 
@@ -47,7 +47,14 @@ def _hwealth_wide_to_long(data_wide: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Clean the hwealth dataset."""
+    """Create cleaned and sensible data type variables from the hwealth file.
+
+    Args:
+        raw_data (pd.DataFrame): The raw hwealth data.
+
+    Returns:
+        pd.DataFrame: The processed hwealth data.
+    """
     out = pd.DataFrame()
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])

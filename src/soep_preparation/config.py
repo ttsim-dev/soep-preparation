@@ -1,4 +1,4 @@
-"""All the general configuration of the project."""
+"""Configuration of the soep preparation."""
 
 from pathlib import Path
 
