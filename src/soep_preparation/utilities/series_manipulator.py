@@ -21,10 +21,10 @@ def _get_values_to_remove(series: pd.Series) -> list:
     """Identify values representing missing data or no response in a pd.Series.
 
     Parameters:
-        series (pd.Series): The pandas.Series to analyze.
+        series: The pandas.Series to analyze.
 
     Returns:
-        list: A list of values to be treated as missing data.
+        A list of values to be treated as missing data.
     """
     unique_values = series.unique()
 
@@ -49,10 +49,10 @@ def _remove_missing_data_values(series: pd.Series) -> pd.Series:
     """Remove values representing missing data or no response to the questionnaire.
 
     Parameters:
-        series (pd.Series): The pandas.Series to be manipulated.
+        series: The pandas.Series to be manipulated.
 
     Returns:
-        pd.Series: A new pd.Series with the missing data values replaced with NA.
+    A new pd.Series with the missing data values replaced with NA.
 
     """
     values_to_remove = _get_values_to_remove(series)
@@ -63,10 +63,10 @@ def apply_lowest_float_dtype(series: pd.Series) -> pd.Series:
     """Apply the lowest float dtype to a series.
 
     Args:
-        series (pd.Series): The series to convert.
+        series: The series to convert.
 
     Returns:
-        pd.Series: The series with the lowest float dtype applied.
+    The series with the lowest float dtype applied.
     """
     return pd.to_numeric(series, downcast="float", dtype_backend="pyarrow")
 
@@ -77,10 +77,10 @@ def apply_lowest_int_dtype(
     """Apply the lowest integer dtype to a series.
 
     Args:
-        series (pd.Series): The series to convert.
+        series: The series to convert.
 
     Returns:
-        pd.Series: The series with the lowest integer dtype applied.
+    The series with the lowest integer dtype applied.
     """
     if not (series < 0).any():
         return pd.to_numeric(series, downcast="unsigned", dtype_backend="pyarrow")
@@ -89,16 +89,16 @@ def apply_lowest_int_dtype(
 
 def convert_to_categorical(
     series: pd.Series,
-    ordered: bool, # noqa: FBT001
+    ordered: bool,  # noqa: FBT001
 ) -> pd.Series:
     """Convert a series to a categorical series.
 
     Args:
-        series (pd.Series): The series to convert.
-        ordered (bool, optional): Whether the categories should be returned as ordered.
+        series: The series to convert.
+        ordered: Whether the categories should be returned as ordered.
 
     Returns:
-        pd.Series: The series converted to categorical dtype.
+    The series converted to categorical dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -121,19 +121,19 @@ def convert_to_categorical(
 
 def create_dummy(
     series: pd.Series,
-    true_value: bool | str | list | float | int,
+    true_value: bool | str | list | float,
     kind: str = "equal",
 ) -> pd.Series:
     """Create a dummy variable based on a condition.
 
     Args:
-        series (pd.Series): The input series to be transformed.
-        true_value (bool | str | list | float | int): The value to be compared against.
-        kind (str, optional): The type of comparison to be made. Defaults to "equal".
+        series: The input series to be transformed.
+        true_value: The value to be compared against.
+        kind: The type of comparison to be made. Defaults to "equal".
         Can be "equal", "geq" or "isin", "leq" or "neq".
 
     Returns:
-        pd.Series: A boolean series indicating the condition.
+    A boolean series indicating the condition.
     """
     fail_if_invalid_input(series, "pandas.core.series.Series")
     fail_if_invalid_inputs(true_value, "bool | str | list | float | int")
@@ -147,17 +147,9 @@ def create_dummy(
             series.isin(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
         )
     if kind == "geq":
-        return (
-            series.ge(true_value)
-            .mask(series.isna(), pd.NA)
-            .astype("bool[pyarrow]")
-        )
+        return series.ge(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
     if kind == "leq":
-        return (
-            series.le(true_value)
-            .mask(series.isna(), pd.NA)
-            .astype("bool[pyarrow]")
-        )
+        return series.le(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
     msg = f"Unknown kind '{kind}' of dummy creation"
     raise ValueError(msg)
 
@@ -166,10 +158,10 @@ def find_lowest_int_dtype(series: pd.Series) -> str:  # noqa: PLR0911
     """Find the lowest integer dtype for a series.
 
     Args:
-        series (pd.Series): The series to check.
+        series: The series to check.
 
     Returns:
-        str: The lowest integer dtype.
+        The lowest integer dtype.
 
     """
     if series.isna().all():
@@ -200,12 +192,12 @@ def float_to_int(
     """Transform a float Series to an integer Series.
 
     Parameters:
-        series (pd.Series): The input series to be transformed.
-        drop_missing (bool, optional): Whether to drop missing values.
+        series: The input series to be transformed.
+        drop_missing: Whether to drop missing values.
           Defaults to False.
 
     Returns:
-        pd.Series: The series with cleaned entries.
+    The series with cleaned entries.
     """
     if drop_missing:
         sr_int = series.astype("int")
@@ -218,10 +210,10 @@ def object_to_float(series: pd.Series) -> pd.Series:
     """Transform a mixed object Series to a float Series.
 
     Parameters:
-        series (pd.Series): The input series to be cleaned.
+        series: The input series to be cleaned.
 
     Returns:
-        pd.Series: The series with cleaned entries and transformed dtype.
+    The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -237,10 +229,10 @@ def object_to_int(series: pd.Series) -> pd.Series:
     """Transform a mixed object Series to an integer Series.
 
     Parameters:
-        series (pd.Series): The input series to be cleaned.
+        series: The input series to be cleaned.
 
     Returns:
-        pd.Series: The series with cleaned entries and transformed dtype.
+    The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -260,13 +252,13 @@ def object_to_bool_categorical(
     """Transform a mixed object Series to a categorical bool Series.
 
     Parameters:
-        series (pd.Series): The input series to be cleaned.
-        renaming (dict): A dictionary to rename the categories.
-        ordered (bool, optional): Whether the categories should be returned as ordered.
+        series: The input series to be cleaned.
+        renaming: A dictionary to rename the categories.
+        ordered: Whether the categories should be returned as ordered.
         Defaults to False.
 
     Returns:
-        pd.Series: The series with cleaned entries and transformed dtype.
+    The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -299,14 +291,14 @@ def object_to_int_categorical(
     """Transform a mixed object Series to a categorical integer Series.
 
     Parameters:
-        series (pd.Series): The input series to be cleaned.
-        renaming (dict | None, optional): A dictionary to rename the categories.
+        series: The input series to be cleaned.
+        renaming: A dictionary to rename the categories.
          Defaults to None.
-        ordered (bool, optional): Whether the categories should be returned as ordered.
+        ordered: Whether the categories should be returned as ordered.
          Defaults to False.
 
     Returns:
-        pd.Series: The series with cleaned entries and transformed dtype.
+    The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -345,16 +337,16 @@ def object_to_str_categorical(
     """Transform a mixed object Series to a categorical string Series.
 
     Parameters:
-        series (pd.Series): The input series to be cleaned.
-        renaming (dict | None, optional): A dictionary to rename the categories.
+        series: The input series to be cleaned.
+        renaming: A dictionary to rename the categories.
          Defaults to None.
-        ordered (bool, optional): Whether the categories should be returned
+        ordered: Whether the categories should be returned
          as ordered. Defaults to False.categories. Defaults to False.
-        nr_identifiers (int, optional): The number of identifiers inside
+        nr_identifiers: The number of identifiers inside
          each element to be removed. Defaults to 1.
 
     Returns:
-        pd.Series: The series with cleaned entries and transformed dtype.
+    The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,

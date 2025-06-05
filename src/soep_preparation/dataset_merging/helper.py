@@ -1,13 +1,10 @@
-"""Helper functions for merging datasets."""
+"""Helper functions for merging variables to dataset."""
 
 from difflib import get_close_matches
 
 import pandas as pd
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
-from soep_preparation.utilities.dataset_manipulator import (
-    get_cleaned_and_potentially_merged_dataset,
-)
 from soep_preparation.utilities.error_handling import (
     fail_if_invalid_input,
     fail_if_invalid_inputs,
@@ -24,7 +21,7 @@ def create_dataset_from_variables(
     ],
     merging_behavior: str = "outer",
 ) -> pd.DataFrame:
-    """Create a dataset by merging datasets based on variable names.
+    """Create a dataset by merging data based on variable names.
 
     Args:
         variables: A list of variable names for the merged dataset to contain.
@@ -87,7 +84,7 @@ def create_dataset_from_variables(
         survey_years,
     )
 
-    return _merge_datasets(
+    return _merge_variables(
         merging_information=dataset_merging_information,
         merging_behavior=merging_behavior,
     )
@@ -128,12 +125,12 @@ def _fail_if_invalid_variable(
                 n=3,
                 cutoff=0.6,
             )
-            matches_datasets = {
+            matches = {
                 match: variable_to_file_mapping[match] for match in closest_matches
             }
-            msg = f"""variable {variable} not found in any dataset.
-            The closest matches with the corresponding dataset are:
-            {matches_datasets}"""
+            msg = f"""variable {variable} not found in any file.
+            The closest matches with the corresponding data files are:
+            {matches}"""
             raise ValueError(msg)
 
 
@@ -168,18 +165,18 @@ def _fail_if_invalid_merging_behavior(merging_behavior: str) -> None:
         raise ValueError(msg)
 
 
-def _get_dataset_to_columns_mapping(
-    columns_to_dataset_mapping: dict[str, str],
-    columns: list[str],
+def _get_dataset_to_variables_mapping(
+    variable_to_file_mapping: dict[str, str],
+    variables: list[str],
 ) -> dict[str, list[str]]:
-    dataset_columns_mapping = {}
-    for column in columns:
-        if column in columns_to_dataset_mapping:
-            dataset = columns_to_dataset_mapping[column]
-            if dataset not in dataset_columns_mapping:
-                dataset_columns_mapping[dataset] = []
-            dataset_columns_mapping[dataset].append(column)
-    return dataset_columns_mapping
+    dataset_variables_mapping = {}
+    for variable in variables:
+        if variable in variable_to_file_mapping:
+            dataset = variable_to_file_mapping[variable]
+            if dataset not in dataset_variables_mapping:
+                dataset_variables_mapping[dataset] = []
+            dataset_variables_mapping[dataset].append(variable)
+    return dataset_variables_mapping
 
 
 def _sort_dataset_merging_information(
@@ -188,7 +185,7 @@ def _sort_dataset_merging_information(
     return dict(
         sorted(
             dataset_merging_information.items(),
-            key=lambda item: len(item[1]["index_columns"]),
+            key=lambda item: len(item[1]["index_variables"]),
             reverse=True,
         ),
     )
@@ -197,64 +194,53 @@ def _sort_dataset_merging_information(
 def _fix_user_input(
     survey_years: list[int] | None,
     min_and_max_survey_years: tuple[int, int] | None,
-    columns: list[str],
+    variables: list[str],
 ) -> tuple[list[int], list[str]]:
     if survey_years is None and min_and_max_survey_years is not None:
         survey_years = [
             *range(min_and_max_survey_years[0], min_and_max_survey_years[1] + 1),
         ]
-    id_columns = ["hh_id", "hh_id_orig", "p_id", "survey_year"]
-    if any(id_column in columns for id_column in id_columns):
-        columns = [col for col in columns if col not in id_columns]
-    return survey_years, columns
+    id_variables = ["hh_id", "hh_id_original", "p_id", "survey_year"]
+    if any(id_variable in variables for id_variable in id_variables):
+        variables = [col for col in variables if col not in id_variables]
+    return survey_years, variables
 
 
 def _get_sorted_dataset_merging_information(
-    columns_to_dataset_mapping: dict[str, dict],
-    columns: list,
+    variable_to_file_mapping: dict[str, dict],
+    variables: list,
     survey_years: list[int],
 ) -> dict[str, dict]:
-    datasets_mapping = {
-        "single_datasets": _get_dataset_to_columns_mapping(
-            columns_to_dataset_mapping["single_datasets"],
-            columns,
-        ),
-        "multiple_datasets": _get_dataset_to_columns_mapping(
-            columns_to_dataset_mapping["multiple_datasets"],
-            columns,
-        ),
-    }
+    data_mapping = _get_dataset_to_variables_mapping(
+        variable_to_file_mapping,
+        variables,
+    )
 
     dataset_merging_information = {}
-    for dataset_kind, dataset_columns_mapping in datasets_mapping.items():
-        for dataset, dataset_columns in dataset_columns_mapping.items():
-            raw_data = get_cleaned_and_potentially_merged_dataset(
-                DATA_CATALOGS[dataset_kind][dataset],
-            ).load()
-            index_columns = sorted(
-                DATA_CATALOGS[dataset_kind][dataset]["metadata"]
-                .load()["index_columns"]
-                .keys(),
-            )
-            if "survey_year" in raw_data.columns:
-                data = raw_data.query(
-                    f"{min(survey_years)} <= survey_year <= {max(survey_years)}",
-                )[index_columns + dataset_columns]
-            else:
-                data = raw_data[index_columns + dataset_columns]
-            dataset_merging_information[dataset] = {
-                "data": data,
-                "index_columns": index_columns,
-            }
+    for data_name, data_variables in data_mapping.items():
+        raw_data = DATA_CATALOGS["derived_variables"][data_name].load()
+        index_variables = sorted(
+            DATA_CATALOGS["metadata"][data_name].load()["index_variables"].keys(),
+        )
+        if "survey_year" in raw_data.columns:
+            data = raw_data.query(
+                f"{min(survey_years)} <= survey_year <= {max(survey_years)}",
+            )[index_variables + data_variables]
+        else:
+            data = raw_data[index_variables + data_variables]
+        dataset_merging_information[data_name] = {
+            "data": data,
+            "index_variables": index_variables,
+        }
     return _sort_dataset_merging_information(dataset_merging_information)
 
 
-def _merge_datasets(
+def _merge_variables(
     merging_information: dict[str, dict],
     merging_behavior: str = "outer",
 ) -> pd.DataFrame:
-    datasets = [dataset["data"] for dataset in merging_information.values()]
+    dataframes = [dataframe["data"] for dataframe in merging_information.values()]
     out = pd.DataFrame()
-    for dataset in datasets:
-        out = dataset if out.empty else out.merge(dataset, how=merging_behavior)
+    for dataframe in dataframes:
+        out = dataframe if out.empty else out.merge(dataframe, how=merging_behavior)
     return out.reset_index(drop=True)

@@ -1,4 +1,4 @@
-"""Tasks to create metadata for datasets."""
+"""Tasks to create metadata."""
 
 from typing import Annotated
 
@@ -6,115 +6,102 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS
-from soep_preparation.utilities.dataset_manipulator import (
-    get_cleaned_and_potentially_merged_dataset,
-)
 from soep_preparation.utilities.error_handling import (
     fail_if_invalid_input,
 )
 
 
-def _get_index_columns(
+def _get_index_variables(
     dataset: pd.DataFrame,
-    potential_index_columns: list[str],
+    potential_index_variables: list[str],
 ) -> dict:
     return {
         col: dtype_
         for col, dtype_ in dataset.dtypes.items()
-        if col in potential_index_columns
+        if col in potential_index_variables
     }
 
 
-def _get_column_dtypes(
+def _get_variable_dtypes(
     dataset: pd.DataFrame,
-    potential_index_columns: list[str],
+    potential_index_variables: list[str],
 ) -> dict:
     # TODO (@hmgaudecker): do we want to just have the "name" of the dtype (e.g. `uint16[pyarrow]`, `category`) or also the dtype itself (only relevant for categorical data which then return the `CategoricalDtype`)
     return {
         col: dtype_.name
         for col, dtype_ in dataset.dtypes.items()
-        if col not in potential_index_columns
+        if col not in potential_index_variables
     }
 
 
-def _columns_to_dataset_mapping(datasets: dict) -> dict[str, str]:
-    """Map column names to dataset names for given datasets.
+def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
+    """Create a mapping of column names to file names.
 
     Args:
-        datasets (dict): Mapping dataset names to their metadata.
+        metadata: A dictionary containing metadata entries.
 
     Returns:
-        dict: Mapping column names to list of dataset names contained in.
+        A mapping of variable names to file names.
     """
-    dataset_mapping = {}
-    for dataset_name, dataset_info in datasets.items():
-        columns = dataset_info["metadata"].load()["column_dtypes"].keys()
-        for column in columns:
-            dataset_mapping[column] = dataset_name
-    return dataset_mapping
+    mapping = {}
+    for data_name, data in metadata._entries.items():  # noqa: SLF001
+        if data_name not in DATA_CATALOGS["derived_variables"]._entries:  # noqa: SLF001
+            # skip data that is not in the derived variables catalog
+            continue
+        variable_names = data.load()["variable_dtypes"].keys()
+        for variable_name in variable_names:
+            mapping[variable_name] = data_name
+    return mapping
 
 
-for dataset_kind in ["single_datasets", "multiple_datasets"]:
-    for name, catalog in DATA_CATALOGS[dataset_kind].items():
-        if dataset_kind == "single_datasets":
-            dataset = get_cleaned_and_potentially_merged_dataset(catalog)
-            after = f"task_clean_one_dataset[{name}]"
+for name, data in DATA_CATALOGS["derived_variables"]._entries.items():  # noqa: SLF001
 
-        else:
-            dataset = catalog["merged"]
-            after = f"task_merge_variable[{name}]"
+    @task(id=name)
+    def task_create_single_metadata(
+        data: Annotated[pd.DataFrame, data],
+    ) -> Annotated[dict, DATA_CATALOGS["metadata"][name]]:
+        """Create metadata for DataFrame.
 
-        @task(id=name, after=after)
-        def task_create_single_metadata(
-            dataset: Annotated[pd.DataFrame, dataset],
-        ) -> Annotated[dict, DATA_CATALOGS[dataset_kind][name]["metadata"]]:
-            """Create metadata for a single dataset.
+        Args:
+            data: The data to create metadata for.
 
-            Args:
-                dataset (pd.DataFrame): The dataset for which to create metadata.
+        Returns:
+            Metadata information for DataFrame.
 
-            Returns:
-                dict: Metadata information for single dataset.
-            """
-            fail_if_invalid_input(dataset, "pandas.core.frame.DataFrame")
-            potential_index_columns = ["p_id", "hh_id", "hh_id_orig", "survey_year"]
-            index_columns = _get_index_columns(dataset, potential_index_columns)
-            column_dtypes = _get_column_dtypes(dataset, potential_index_columns)
-            return {
-                "index_columns": index_columns,
-                "column_dtypes": column_dtypes,
-            }
+        Raises:
+            TypeError: If input data is not of expected type.
+        """
+        fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
+        potential_index_variables = ["p_id", "hh_id", "hh_id_original", "survey_year"]
+        index_variables = _get_index_variables(data, potential_index_variables)
+        variable_dtypes = _get_variable_dtypes(data, potential_index_variables)
+        return {
+            "index_variables": index_variables,
+            "variable_dtypes": variable_dtypes,
+        }
 
 
 @task(after="task_create_single_metadata")
-def task_create_column_to_dataset_mapping(
-    single_datasets: Annotated[dict, DATA_CATALOGS["single_datasets"]],
-    multiple_datasets: Annotated[dict, DATA_CATALOGS["multiple_datasets"]],
-) -> Annotated[dict[str, dict], DATA_CATALOGS["merged"]["metadata"]]:
-    """Create mapping of column name to dataset names.
+def task_create_metadata_mapping(
+    single_metadata_mapping: Annotated[dict, DATA_CATALOGS["metadata"]],
+) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["merged"]]:
+    """Create a mapping of variable names to file names.
 
     Args:
-        single_datasets (dict): Mapping of single
-        dataset names to respective DataCatalog.
-        multiple_datasets (dict): Mapping of multiple
-        dataset names to respective DataCatalog.
+        single_metadata_mapping: A dictionary containing single metadata entries.
 
     Returns:
-        dict: Mapping column names to list of dataset names that contain those columns.
+        A mapping of variable names to file names.
+
+    Raises:
+        TypeError: If input data or data name is not of expected type.
     """
-    _error_handling_mapping_task(single_datasets, multiple_datasets)
-    return {
-        "single_datasets": _columns_to_dataset_mapping(single_datasets),
-        "multiple_datasets": _columns_to_dataset_mapping(multiple_datasets),
-    }
+    _error_handling_mapping_task(single_metadata_mapping)
+    return _create_metadata_mapping(single_metadata_mapping)
 
 
-def _error_handling_mapping_task(single_datasets, multiple_datasets):
-    fail_if_invalid_input(single_datasets, "dict")
-    fail_if_invalid_input(multiple_datasets, "dict")
-    for dataset_catalog in single_datasets.values():
-        fail_if_invalid_input(dataset_catalog, "_pytask.data_catalog.DataCatalog")
-        fail_if_invalid_input(dataset_catalog["metadata"], "_pytask.nodes.PickleNode")
-    for dataset_catalog in multiple_datasets.values():
-        fail_if_invalid_input(dataset_catalog, "_pytask.data_catalog.DataCatalog")
-        fail_if_invalid_input(dataset_catalog["metadata"], "_pytask.nodes.PickleNode")
+def _error_handling_mapping_task(mapping):
+    fail_if_invalid_input(mapping, "_pytask.data_catalog.DataCatalog")
+    for data_name, data in mapping._entries.items():  # noqa: SLF001
+        fail_if_invalid_input(data_name, "str")
+        fail_if_invalid_input(data, "_pytask.nodes.PickleNode")

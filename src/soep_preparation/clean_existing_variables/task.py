@@ -7,8 +7,8 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS, SRC
-from soep_preparation.utilities.general import load_module
 from soep_preparation.utilities.error_handling import fail_if_invalid_input
+from soep_preparation.utilities.general import load_module
 
 
 def _fail_if_cleaning_module_missing(module_path):
@@ -40,11 +40,11 @@ for file_name, file_catalog in DATA_CATALOGS["data_files"].items():
         The result is stored in the corresponding DataCatalog for further processing.
 
         Parameters:
-            raw_data (Path): The path to the file to be cleaned.
-            module_path (Path): The path to the cleaning module.
+            raw_data: The path to the file to be cleaned.
+            module_path: The path to the cleaning module.
 
         Returns:
-            pd.DataFrame: A cleaned pandas DataFrame to be saved to the DataCatalog.
+        A cleaned pandas DataFrame to be saved to the DataCatalog.
 
         Raises:
             ImportError: If there is an error loading the cleaning module.

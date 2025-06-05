@@ -12,12 +12,13 @@ from soep_preparation.utilities.error_handling import fail_if_invalid_input
 VARIABLES = [
     "age",
     "birth_month",
-    "bmi_pe",
-    "hh_gewicht_nur_neue",
-    "hh_position",
+    "bmi",
+    "hh_weighting_factor_new_only",
+    "relationship_to_head_of_hh",
     "hh_strat",
-    "n_kids_total",
+    "number_of_children",
     "p_id_father",
+    "frailty",
 ]
 
 

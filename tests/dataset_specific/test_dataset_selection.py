@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 from pytask import PickleNode
 
-from soep_preparation.utilities.dataset_manipulator import (
+from soep_preparation.utilities.dataframe_manipulator import (
     get_cleaned_and_potentially_merged_dataset,
 )
 

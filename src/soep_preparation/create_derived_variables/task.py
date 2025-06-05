@@ -1,12 +1,4 @@
-"""Functions to create datasets for pre-processed datasets.
-
-Functions:
-- task_manipulate_one_dataset: Calls the dataset specific script.
-
-Usage:
-    Import this module and call task_manipulate_one_dataset
-    to generate new variables for the relevant datasets.
-"""
+"""Functions to create derived variables."""
 
 from pathlib import Path
 from typing import Annotated, Any
@@ -17,15 +9,15 @@ from pytask import PickleNode, task
 from soep_preparation.config import DATA_CATALOGS, SRC
 from soep_preparation.utilities.error_handling import fail_if_invalid_input
 from soep_preparation.utilities.general import (
-    get_script_names,
     get_file_names,
+    get_script_names,
     load_module,
 )
 
 
-def _fail_if_too_many_or_few_datasets(datasets: dict, expected_entries: int):
-    if len(datasets.keys()) != expected_entries:
-        msg = f"Expected {expected_entries} datasets, got {len(datasets.keys())}"
+def _fail_if_too_many_or_few_dataframes(dataframes: dict, expected_entries: int):
+    if len(dataframes.keys()) != expected_entries:
+        msg = f"Expected {expected_entries} dataframes, got {len(dataframes.keys())}"
         raise ValueError(
             msg,
         )
@@ -40,7 +32,7 @@ def _get_relevant_data_files_mapping(
         for data_name in function_.__annotations__
         if data_name in DATA_CATALOGS["data_files"]
     ]
-    # return a mapping of the dataset names to the corresponding datasets
+    # return a mapping of the data file names to the corresponding dataframes
     return {
         data_name: DATA_CATALOGS["derived_variables"][data_name]
         for data_name in data_names
@@ -51,10 +43,10 @@ def _get_variable_names_in_module(module: Any) -> list[str]:
     """Get the variable names in the module.
 
     Args:
-        module (Any): The module to get the variable names from.
+        module: The module to get the variable names from.
 
     Returns:
-        list[str]: The variable names in the module.
+        The variable names in the module.
     """
     return [
         variable_name.split("derive_")[-1]
@@ -78,11 +70,11 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
             """Creates derived variables for a dataset using a specified script.
 
             Parameters:
-                clean_data (pd.DataFrame): Cleaned dataset to derive variables for.
-                script_path (Path): The path to the script.
+                clean_data: Cleaned dataset to derive variables for.
+                script_path: The path to the script.
 
             Returns:
-                pd.DataFrame: Derived variables to store in the data catalog.
+            Derived variables to store in the data catalog.
 
             Raises:
                 TypeError: If input data or script path is not of expected type.
@@ -96,14 +88,14 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
             clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
             derived_variables: Annotated[pd.DataFrame, catalog["derived_variables"]],
         ) -> Annotated[pd.DataFrame, DATA_CATALOGS["derived_variables"][name]]:
-            """Merge the cleaned and derived variables datasets.
+            """Merge the cleaned and derived variables data.
 
             Args:
-                clean_data (pd.DataFrame): The cleaned dataset.
-                derived_variables (pd.DataFrame): The derived variables dataset.
+                clean_data: The cleaned dataset.
+                derived_variables: The derived variables dataset.
 
             Returns:
-                pd.DataFrame: The merged dataset.
+            The merged dataset.
 
             Raises:
                 TypeError: If input data or derived variables is not of expected type.
@@ -119,10 +111,12 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
             clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
         ) -> Annotated[pd.DataFrame, DATA_CATALOGS["derived_variables"][name]]:
             """Copy the cleaned data file to the derived variables catalog.
+
             Args:
-                clean_data (pd.DataFrame): The cleaned data file.
+                clean_data: The cleaned data file.
+
             Returns:
-                pd.DataFrame: The copied data file.
+            The copied data file.
 
             Raises:
                 TypeError: If input data is not of expected type.
@@ -150,15 +144,15 @@ for script_name in script_names:
             """Merge variables for the meta dataset.
 
             Args:
-                data_files (dict): A mapping of data file names to DataFrames.
-                function_ (function): Function to create derived variables.
+                data_files: A mapping of data file names to DataFrames.
+                function_: Function to create derived variables.
 
             Returns:
-                pd.DataFrame: DataFrame containing derived variables.
+            DataFrame containing derived variables.
 
             Raises:
                 TypeError: If input data files or function is not of expected type.
-                ValueError: If number of datasets is not as expected.
+                ValueError: If number of dataframes is not as expected.
             """
             _error_handling_derived_variables(data_files, function_)
             return function_(**data_files)
@@ -176,5 +170,5 @@ def _error_handling_merging_task(data, variables):
 
 def _error_handling_derived_variables(data, function_):
     fail_if_invalid_input(data, "dict")
-    _fail_if_too_many_or_few_datasets(data, 2)
+    _fail_if_too_many_or_few_dataframes(data, 2)
     fail_if_invalid_input(function_, "function")

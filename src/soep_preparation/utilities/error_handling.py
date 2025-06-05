@@ -2,7 +2,6 @@
 
 from typing import Any
 
-from pathlib import Path
 import pandas as pd
 
 
@@ -13,14 +12,14 @@ def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str) -> None:
 
 
 def fail_if_invalid_input(input_: Any, expected_dtype: str) -> None:  # noqa: ANN401
-    """Fail if the input is not of the expected type.
+    """Fail if input is not of expected type.
 
     Args:
-        input_ (Any): The input to check.
-        expected_dtype (str): The expected type of the input.
+        input_: The input to check.
+        expected_dtype: The expected type of the input.
 
     Raises:
-        TypeError: If the input is not of the expected type.
+        TypeError: If input is not of expected type.
     """
     if expected_dtype not in str(type(input_)) and expected_dtype != "Any":
         msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
@@ -30,14 +29,14 @@ def fail_if_invalid_input(input_: Any, expected_dtype: str) -> None:  # noqa: AN
 
 
 def fail_if_invalid_inputs(input_: Any, expected_dtypes: str) -> None:  # noqa: ANN401
-    """Fail if the input is not of any of the expected types.
+    """Fail if input is not of any of expected types.
 
     Args:
-        input_ (Any): The input to check.
-        expected_dtypes (str): The expected types of the input.
+        input_: The input to check.
+        expected_dtypes: The expected types of the input.
 
     Raises:
-        TypeError: If the input is not of any of the expected types.
+        TypeError: If input is not of any of expected types.
     """
     if " | " in expected_dtypes:
         if not any(
@@ -64,15 +63,15 @@ def error_handling_sr_transformation(
     """Check the dtype of a series and its entries.
 
     Args:
-        series (pd.Series): The series to check.
-        expected_sr_dtype (str): The expected dtype of the series.
-        input_expected_types (list[list], optional): A list of lists containing
+        series: The series to check.
+        expected_sr_dtype: The expected dtype of the series.
+        input_expected_types: A list of lists containing
             the inputs and their expected types. Defaults to None.
-        entries_expected_types (list, optional): A list of unique entries and
+        entries_expected_types: A list of unique entries and
             their expected dtype. Defaults to None.
 
     Raises:
-        TypeError: If the series or its entries do not match the expected types.
+        TypeError: If series or its entries do not match expected types.
     """
     if input_expected_types is None:
         input_expected_types = [[]]

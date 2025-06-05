@@ -1,1 +1,1 @@
-"""Merge SOEP datasets."""
+"""Merge SOEP data."""

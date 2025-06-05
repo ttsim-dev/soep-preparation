@@ -1,1 +1,1 @@
-"""Read SOEP datasets."""
+"""Read SOEP data."""
