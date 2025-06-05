@@ -1,14 +1,15 @@
-"""Example task to create a merged panel dataset."""
+"""Example task to create merge variables to a dataset."""
 
 from typing import Annotated, Any
 
 import pandas as pd
+import pytask
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
-from soep_preparation.dataset_merging.helper import create_panel_dataset
+from soep_preparation.dataset_merging.helper import create_dataset_from_variables
 from soep_preparation.utilities.error_handling import fail_if_invalid_input
 
-COLUMNS = [
+VARIABLES = [
     "age",
     "birth_month",
     "bmi_pe",
@@ -20,27 +21,31 @@ COLUMNS = [
 ]
 
 
-def task_merge_columns(
-    columns_to_dataset_mapping: Annotated[dict, DATA_CATALOGS["merged"]["metadata"]],
-    columns: Annotated[list[str], COLUMNS],
+@pytask.mark.try_last
+def task_merge_variables(
+    variable_to_file_mapping: Annotated[dict, DATA_CATALOGS["metadata"]["merged"]],
+    variables: Annotated[list[str], VARIABLES],
 ) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]]:
-    """Example task to merge datasets based on column names.
+    """Example task merging based on variable names to create dataset.
 
     Args:
-        columns_to_dataset_mapping (dict): A mapping of column names to dataset names.
-        columns (list[str]): A list of column names to be used for merging.
+        variable_to_file_mapping: A mapping of variable names to dataset names.
+        variables: A list of variable names to be used for merging.
 
     Returns:
-        pd.DataFrame: The columns merged into a panel dataset.
+    The variables merged into a dataset.
+
+    Raises:
+        TypeError: If input mapping or variables is not of expected type.
     """
-    _error_handling_task(columns_to_dataset_mapping, columns)
-    return create_panel_dataset(
-        columns_to_dataset_mapping=columns_to_dataset_mapping,
-        columns=columns,
+    _error_handling_task(variable_to_file_mapping, variables)
+    return create_dataset_from_variables(
+        variables=variables,
         min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
+        variable_to_file_mapping=variable_to_file_mapping,
     )
 
 
-def _error_handling_task(mapping: Any, columns: Any) -> None:  # noqa: ANN401
+def _error_handling_task(mapping: Any, variables: Any) -> None:  # noqa: ANN401
     fail_if_invalid_input(mapping, "dict")
-    fail_if_invalid_input(columns, "list")
+    fail_if_invalid_input(variables, "list")

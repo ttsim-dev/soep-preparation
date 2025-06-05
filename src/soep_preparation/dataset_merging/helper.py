@@ -14,30 +14,124 @@ from soep_preparation.utilities.error_handling import (
 )
 
 
-def _fail_if_invalid_column(
-    columns: list[str],
-    columns_to_dataset_mapping: dict[str, list[str]],
-) -> None:
-    all_columns_to_dataset_mapping = (
-        columns_to_dataset_mapping["single_datasets"]
-        | columns_to_dataset_mapping["multiple_datasets"]
+# TODO: should `variable_to_file_mapping` be an argument here?
+def create_dataset_from_variables(
+    variables: list[str],
+    min_and_max_survey_years: tuple[int, int] | None = None,
+    survey_years: list[int] | None = None,
+    variable_to_file_mapping: dict[str, list[str]] = DATA_CATALOGS["metadata"][
+        "merged"
+    ],
+    merging_behavior: str = "outer",
+) -> pd.DataFrame:
+    """Create a dataset by merging datasets based on variable names.
+
+    Args:
+        variables: A list of variable names for the merged dataset to contain.
+        min_and_max_survey_years: Range of survey years.
+        survey_years: Survey years to be included in the dataset.
+        Either `survey_years` or `min_and_max_survey_years` must be provided.
+        variable_to_file_mapping: A mapping of variable names to dataset names.
+        Defaults to `DATA_CATALOGS["metadata"]["merged"]`.
+        merging_behavior: The merging behavior to be used.
+        Any out of "left", "right", "outer", or "inner".
+        Defaults to "outer".
+
+    Returns:
+    The dataset with specified variables and survey years.
+
+    Raises:
+        TypeError: If the input types are not as expected.
+        ValueError: If variables or variable mapping are empty or
+        contain faulty variables.
+        Or if survey years out of survey range.
+        Or if inadequate merging behavior.
+
+    Notes:
+        `variables` needs to be specified and are the variables
+        created, renamed, and derived from the raw SOEP files
+         that will be part of the merged dataset.
+        Either specify `min_and_max_survey_years` or `survey_years`.
+        To receive data for just one year (e.g. `2025`) either input
+        `min_and_max_survey_years=(2025,2025)` or `survey_years=[2025]`.
+        Otherwise, `min_and_max_survey_years=(2024,2025)`
+        and `survey_years=[2024, 2025]`
+        both return a merged dataset with information from the two survey years.
+        `variable_to_file_mapping` is created automatically by the pipeline,
+        it can be accessed and provided to the function at
+        `DATA_CATALOGS["metadata"]["merged"]`.
+        Specify `merging_behavior` to control the creation of the dataset
+        from the different variables.
+        The default value is "outer" and sufficient for most cases.
+
+    Examples:
+        For an example see `task_example.py`.
+    """
+    _error_handling(
+        variable_to_file_mapping,
+        variables,
+        min_and_max_survey_years,
+        survey_years,
+        merging_behavior,
     )
-    for column in columns:
-        if (
-            column not in columns_to_dataset_mapping["single_datasets"]
-            and column not in columns_to_dataset_mapping["multiple_datasets"]
-        ):
+
+    survey_years, variables = _fix_user_input(
+        survey_years,
+        min_and_max_survey_years,
+        variables,
+    )
+
+    dataset_merging_information = _get_sorted_dataset_merging_information(
+        variable_to_file_mapping,
+        variables,
+        survey_years,
+    )
+
+    return _merge_datasets(
+        merging_information=dataset_merging_information,
+        merging_behavior=merging_behavior,
+    )
+
+
+def _error_handling(
+    variable_to_file_mapping: dict[str, list[str]],
+    variables: list[str],
+    min_and_max_survey_years: tuple[int, int] | None,
+    survey_years: list[int] | None,
+    merging_behavior: str,
+) -> None:
+    fail_if_invalid_input(variable_to_file_mapping, "dict")
+    fail_if_invalid_input(variables, "list")
+    fail_if_invalid_inputs(min_and_max_survey_years, "tuple | None")
+    fail_if_invalid_inputs(survey_years, "list | None")
+    fail_if_invalid_input(merging_behavior, "str")
+    _fail_if_empty(variable_to_file_mapping)
+    _fail_if_empty(variables)
+    if survey_years is not None:
+        _fail_if_survey_years_not_valid(survey_years, SURVEY_YEARS)
+    else:
+        _fail_if_survey_years_not_valid(min_and_max_survey_years, SURVEY_YEARS)
+        _fail_if_min_larger_max(min_and_max_survey_years)
+    _fail_if_invalid_variable(variables, variable_to_file_mapping)
+    _fail_if_invalid_merging_behavior(merging_behavior)
+
+
+def _fail_if_invalid_variable(
+    variables: list[str],
+    variable_to_file_mapping: dict[str, list[str]],
+) -> None:
+    for variable in variables:
+        if variable not in variable_to_file_mapping:
             closest_matches = get_close_matches(
-                column,
-                all_columns_to_dataset_mapping.keys(),
+                variable,
+                variable_to_file_mapping.keys(),
                 n=3,
                 cutoff=0.6,
             )
             matches_datasets = {
-                match: all_columns_to_dataset_mapping[match]
-                for match in closest_matches
+                match: variable_to_file_mapping[match] for match in closest_matches
             }
-            msg = f"""Column {column} not found in any dataset.
+            msg = f"""variable {variable} not found in any dataset.
             The closest matches with the corresponding dataset are:
             {matches_datasets}"""
             raise ValueError(msg)
@@ -67,7 +161,7 @@ def _fail_if_min_larger_max(min_and_max_survey_years: tuple[int, int]) -> None:
 
 
 def _fail_if_invalid_merging_behavior(merging_behavior: str) -> None:
-    valid_merging_behaviors = ["left", "right", "outer", "inner", "cross"]
+    valid_merging_behaviors = ["left", "right", "outer", "inner"]
     if merging_behavior not in valid_merging_behaviors:
         msg = f"""Expected merging behavior to be in {valid_merging_behaviors},
         got {merging_behavior} instead."""
@@ -164,75 +258,3 @@ def _merge_datasets(
     for dataset in datasets:
         out = dataset if out.empty else out.merge(dataset, how=merging_behavior)
     return out.reset_index(drop=True)
-
-
-def create_panel_dataset(
-    columns_to_dataset_mapping: dict[str, list[str]],
-    columns: list[str],
-    min_and_max_survey_years: tuple[int, int] | None = None,
-    survey_years: list[int] | None = None,
-    merging_behavior: str = "outer",
-) -> pd.DataFrame:
-    """Create a panel dataset by merging datasets based on column names.
-
-    Args:
-        columns_to_dataset_mapping (dict): A mapping of column names to dataset names.
-        columns (list[str]): A list of column names to be used for merging.
-        min_and_max_survey_years (tuple[int, int] | None): Range of survey years.
-        survey_years (list[int] | None): Survey years to be included in the dataset.
-        Either `survey_years` or `min_and_max_survey_years` must be provided.
-        merging_behavior (str): The merging behavior to be used.
-        Any out of "left", "right", "outer", "inner", or "cross".
-        Defaults to "outer".
-
-    Returns:
-        pd.DataFrame: The panel dataset with specified columns and survey years.
-    """
-    _error_handling(
-        columns_to_dataset_mapping,
-        columns,
-        min_and_max_survey_years,
-        survey_years,
-        merging_behavior,
-    )
-
-    survey_years, columns = _fix_user_input(
-        survey_years,
-        min_and_max_survey_years,
-        columns,
-    )
-
-    dataset_merging_information = _get_sorted_dataset_merging_information(
-        columns_to_dataset_mapping,
-        columns,
-        survey_years,
-    )
-
-    return _merge_datasets(
-        merging_information=dataset_merging_information,
-        merging_behavior=merging_behavior,
-    )
-
-
-def _error_handling(
-    columns_to_dataset_mapping: dict[str, list[str]],
-    columns: list[str],
-    min_and_max_survey_years: tuple[int, int] | None,
-    survey_years: list[int] | None,
-    merging_behavior: str,
-) -> None:
-    fail_if_invalid_input(columns_to_dataset_mapping, "dict")
-    fail_if_invalid_input(columns, "list")
-    fail_if_invalid_inputs(min_and_max_survey_years, "tuple | None")
-    fail_if_invalid_inputs(survey_years, "list | None")
-    fail_if_invalid_input(merging_behavior, "str")
-    _fail_if_empty(columns_to_dataset_mapping["single_datasets"])
-    _fail_if_empty(columns_to_dataset_mapping["multiple_datasets"])
-    _fail_if_empty(columns)
-    if survey_years is not None:
-        _fail_if_survey_years_not_valid(survey_years, SURVEY_YEARS)
-    else:
-        _fail_if_survey_years_not_valid(min_and_max_survey_years, SURVEY_YEARS)
-        _fail_if_min_larger_max(min_and_max_survey_years)
-    _fail_if_invalid_column(columns, columns_to_dataset_mapping)
-    _fail_if_invalid_merging_behavior(merging_behavior)
