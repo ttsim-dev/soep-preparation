@@ -1,4 +1,4 @@
-"""Functions to create datasets for a pre-processed pgen dataset."""
+"""Functions to create pre-processed pgen data."""
 
 import re
 
@@ -17,28 +17,30 @@ def _in_education(
         "Auszubildende, gewerblich-technisch",
         "Auszubildende, gewerblich-technisch (ab 2000)",
         "Auszubildende, kaufmaennisch",
-        "Volontäre, Praktikanten",
+        "Volontaere, Praktikanten",
         "Aspiranten",
         "NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
     ]
     out = create_dummy(employment, "Ausbildung, Lehre")
     # Set in_education to missing if out of the labor force -- could mean anything.
-    out = out.where(employment != "Nicht erwerbstätig", pd.NA)
+    out = out.where(employment != "Nicht erwerbstaetig", pd.NA)
     return out.fillna(create_dummy(occupation, in_education, "isin"))
 
 
 def _self_employed_occupations(
     occupation: "pd.Series[pd.Categorical]",
 ) -> list:
-    occ_names = list(occupation.dropna().unique())
-    occs_of_interest = re.compile("^.*Freiberufler.*$|^.*selbstä.*$")
-    return list(filter(occs_of_interest.match, occ_names))
+    """Occupation names that indicate self employment."""
+    occupation_names = list(occupation.dropna().unique())
+    occupations_of_interest = re.compile("^.*Freiberufler.*$|^.*selbstae.*$")
+    return list(filter(occupations_of_interest.match, occupation_names))
 
 
 def _education(
     casmin: "pd.Series[pd.Categorical]",
     isced: "pd.Series[pd.Categorical]",
 ) -> "pd.Series[pd.Categorical]":
+    """Transform education variable to three levels."""
     out = casmin.combine_first(isced).map(
         {
             "in school": "PRIMARY_AND_LOWER_SECONDARY",
@@ -71,16 +73,16 @@ def _education(
 
 
 def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
-    """Create derived variables for the pgen dataset.
+    """Create derived variables for the pgen data.
 
     Args:
-        data (pd.DataFrame): The dataset required.
+        data: The required cleaned data.
 
     Returns:
-        pd.DataFrame: The dataset of derived variables.
+        The dataframe containing derived variables.
     """
     out = pd.DataFrame(index=data.index)
-    out["german"] = create_dummy(data["nationality_first"], "Deutschland")
+    out["german"] = create_dummy(data["first_nationality"], "Deutschland")
     out["retired"] = create_dummy(data["occupation_status"], "NE: Rentner/Rentnerin")
     out["in_education"] = _in_education(
         data["employment_status"],
@@ -95,34 +97,36 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data["occupation_status"],
         "NE: Wehr- und Zivildienst",
     )
-    out["erwerbstätig"] = (
-        create_dummy(data["employment_status"], "Nicht erwerbstätig", "neq")
+    out["erwerbstaetig_annual"] = (
+        create_dummy(data["employment_status"], "Nicht erwerbstaetig", "neq")
     ) & (~out["in_education"])
 
-    out["nicht_erwerbstätig"] = create_dummy(
+    out["nicht_erwerbstaetig_annual"] = create_dummy(
         data["employment_status"],
-        "Nicht erwerbstätig",
+        "Nicht erwerbstaetig",
     )
-    out["unemployed"] = create_dummy(
+    out["unemployed_annual"] = create_dummy(
         data["occupation_status"],
         "NE: arbeitslos gemeldet",
     )
-    out["full_time"] = create_dummy(data["employment_status"], "Voll erwerbstätig")
-    out["part_time"] = create_dummy(data["employment_status"], "Teilzeitbeschäftigung")
-    out["geringfügig_erwb"] = create_dummy(
+    out["ft_annual"] = create_dummy(data["employment_status"], "Voll erwerbstaetig")
+    out["pt_employed_annual"] = create_dummy(
+        data["employment_status"], "Teilzeitbeschaeftigung"
+    )
+    out["geringfuegig_erwbstaetig"] = create_dummy(
         data["employment_status"],
-        "Unregelmässig, geringfügig erwerbstät.",
+        "Unregelmaessig, geringfuegig erwerbstaet.",
     )
     out["werkstatt"] = create_dummy(
         data["employment_status"],
-        "Werkstatt für behinderte Menschen",
+        "Werkstatt fuer behinderte Menschen",
     )
     out["beamte"] = data["occupation_status"].str.startswith("Beamte", na=False)
     out["parental_leave"] = create_dummy(
-        data["laborf_status"],
+        data["laborforce_status"],
         "NE: Mutterschutz/Elternzeit (seit 1991) ",
     )
-    out["education"] = _education(
+    out["highest_education"] = _education(
         data["education_casmin"],
         data["education_isced"],
     )

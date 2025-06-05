@@ -13,10 +13,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned and sensible data type variables from the hpathl file.
 
     Args:
-        raw_data (pd.DataFrame): The raw hpathl data.
+        raw_data: The raw hpathl data.
 
     Returns:
-        pd.DataFrame: The processed hpathl data.
+    The processed hpathl data.
     """
     out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
@@ -32,8 +32,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ),
         nr_identifiers=2,
     )
-    out["hh_bleibe_wkeit"] = apply_lowest_float_dtype(raw_data["hbleib"])
-    out["hh_gewicht"] = apply_lowest_float_dtype(raw_data["hhrf"])
-    out["hh_gewicht_nur_neue"] = apply_lowest_float_dtype(raw_data["hhrf0"])
-    out["hh_gewicht_ohne_neue"] = apply_lowest_float_dtype(raw_data["hhrf1"])
+    out["hh_staying_probability"] = apply_lowest_float_dtype(raw_data["hbleib"])
+    out["hh_weighting_factor"] = apply_lowest_float_dtype(raw_data["hhrf"])
+    out["hh_weighting_factor_new_only"] = apply_lowest_float_dtype(raw_data["hhrf0"])
+    out["hh_weighting_factor_without_new"] = apply_lowest_float_dtype(raw_data["hhrf1"])
     return out

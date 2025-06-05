@@ -16,17 +16,32 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned and sensible data type variables from the ppathl file.
 
     Args:
-        raw_data (pd.DataFrame): The raw ppathl data.
+        raw_data: The raw ppathl data.
 
     Returns:
-        pd.DataFrame: The processed ppathl data.
+    The processed ppathl data.
     """
     out = pd.DataFrame()
 
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
-    out["current_east_west"] = object_to_str_categorical(
+
+    # individual characteristics
+    out["born_in_germany"] = object_to_str_categorical(raw_data["germborn"])
+    out["country_of_birth"] = object_to_str_categorical(raw_data["corigin"])
+    out["birth_month_from_ppathl"] = object_to_int_categorical(
+        raw_data["gebmonat"],
+        renaming=month_mapping.de,
+        ordered=True,
+    )
+    out["1989_place_of_residence"] = object_to_str_categorical(raw_data["loc1989"])
+    out["migration_background"] = object_to_str_categorical(raw_data["migback"])
+    out["birth_bundesland"] = object_to_str_categorical(raw_data["birthregion"])
+
+    # individual current information
+    out["current_survey_status"] = object_to_str_categorical(raw_data["netto"])
+    out["current_place_of_residence"] = object_to_str_categorical(
         raw_data["sampreg"],
         renaming={
             "[1] Westdeutschland, alte Bundeslaender": (
@@ -37,8 +52,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             ),
         },
     )
-    out["befragungsstatus"] = object_to_str_categorical(raw_data["netto"])
-    out["year_immigration"] = object_to_int(
+    out["year_of_immigration"] = object_to_int(
         raw_data["immiyear"].replace(
             {
                 -1: "[-1] Keine Angabe",
@@ -46,21 +60,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             },
         ),
     )
-    out["born_in_germany"] = object_to_str_categorical(raw_data["germborn"])
-    out["country_of_birth"] = object_to_str_categorical(raw_data["corigin"])
-    out["birth_month_from_ppathl"] = object_to_int_categorical(
-        raw_data["gebmonat"],
-        renaming=month_mapping.de,
-        ordered=True,
-    )
-    out["east_west_1989"] = object_to_str_categorical(raw_data["loc1989"])
-    out["migrationshintergrund"] = object_to_str_categorical(raw_data["migback"])
     out["sexual_orientation"] = object_to_str_categorical(raw_data["sexor"])
-    out["birth_bundesland"] = object_to_str_categorical(raw_data["birthregion"])
-    out["p_bleibe_wkeit"] = apply_lowest_float_dtype(raw_data["pbleib"])
-    out["p_gewicht"] = apply_lowest_float_dtype(raw_data["phrf"])
-    out["p_gewicht_nur_neue"] = apply_lowest_float_dtype(raw_data["phrf0"])
-    out["p_gewicht_ohne_neue"] = apply_lowest_float_dtype(raw_data["phrf1"])
+    out["partnership_status"] = object_to_str_categorical(raw_data["partner"])
     out["pointer_partner"] = object_to_int(
         raw_data["parid"].replace(
             {
@@ -69,5 +70,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             },
         ),
     )
-    out["has_partner"] = object_to_str_categorical(raw_data["partner"])
+
+    # individual staying probabilities and weighting factors
+    out["individual_staying_probability"] = apply_lowest_float_dtype(raw_data["pbleib"])
+    out["individual_weighting_factor"] = apply_lowest_float_dtype(raw_data["phrf"])
+    out["individual_weighting_factor_new_only"] = apply_lowest_float_dtype(
+        raw_data["phrf0"]
+    )
+    out["individual_weighting_factor_without_new"] = apply_lowest_float_dtype(
+        raw_data["phrf1"]
+    )
     return out

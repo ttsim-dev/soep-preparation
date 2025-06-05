@@ -15,13 +15,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data (pd.DataFrame): The raw design data.
 
     Returns:
-        pd.DataFrame: The processed design data.
+    The processed design data.
     """
     out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["cid"])
+
     out["hh_random_group"] = apply_lowest_int_dtype(raw_data["rgroup"])
     out["hh_strat"] = apply_lowest_int_dtype(raw_data["strat"])
-
     out["hh_soep_sample_from_design"] = object_to_str_categorical(
         raw_data["hsample"],
         nr_identifiers=2,

@@ -12,78 +12,35 @@ from soep_preparation.utilities.series_manipulator import (
 )
 
 
-def _weekly_working_hours_actual(
-    actual: "pd.Series[pd.Categorical]",
-    employment_status: "pd.Series[pd.Categorical]",
-) -> "pd.Series[float]":
-    out = object_to_float(actual)
-    return out.where(employment_status != "Nicht erwerbstätig", 0)
-
-
-def _weekly_working_hours_contract(
-    contract: "pd.Series[pd.Categorical]",
-    employment_status: "pd.Series[pd.Categorical]",
-) -> "pd.Series[float]":
-    out = object_to_float(contract)
-    return out.where(employment_status != "Nicht erwerbstätig", 0)
+def _weekly_working_hours_fill_non_working(
+    working_hours: pd.Series,
+    employment_status: pd.Series,
+) -> pd.Series:
+    out = object_to_float(working_hours)
+    return out.where(employment_status != "Nicht erwerbstaetig", 0)
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned and sensible data type variables from the pgen file.
 
     Args:
-        raw_data (pd.DataFrame): The raw pgen data.
+        raw_data: The raw pgen data.
 
     Returns:
-        pd.DataFrame: The processed pgen data.
+    The processed pgen data.
     """
     out = pd.DataFrame()
 
-    out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
+    out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
-    # there are multiple categories for ['Kurdistan', 'Malaysia', 'Montenegro']
-    # they have been reduced into one category each
-    out["nationality_first"] = object_to_str_categorical(
-        raw_data["pgnation"],
-    )
-    out["status_refugee"] = object_to_str_categorical(raw_data["pgstatus_refu"])
-    out["marital_status"] = object_to_str_categorical(raw_data["pgfamstd"])
-    out["curr_earnings_m"] = object_to_float(raw_data["pglabgro"]).fillna(0)
-    out["net_wage_m"] = object_to_float(raw_data["pglabnet"]).fillna(0)
-    out["occupation_status"] = object_to_str_categorical(raw_data["pgstib"])
-    out["employment_status"] = object_to_str_categorical(
-        raw_data["pgemplst"],
-    )
-    out["laborf_status"] = object_to_str_categorical(raw_data["pglfs"])
-    out["dauer_im_betrieb"] = object_to_float(raw_data["pgerwzeit"])
-    out["weekly_working_hours_actual"] = _weekly_working_hours_actual(
-        raw_data["pgtatzeit"],
-        out["employment_status"],
-    )
-    out["weekly_working_hours_contract"] = _weekly_working_hours_contract(
-        raw_data["pgvebzeit"],
-        out["employment_status"],
-    )
-    out["public_service"] = object_to_bool_categorical(
-        raw_data["pgoeffd"],
-        renaming={"[2] nein": False, "[1] ja": True},
+
+    out["month_interview"] = object_to_int_categorical(
+        raw_data["pgmonth"],
+        renaming=month_mapping.de,
         ordered=True,
     )
-    out["size_company_raw"] = object_to_str_categorical(
-        raw_data["pgbetr"].replace(
-            {-5: "[-5] in Fragebogenversion nicht enthalten"},
-        ),
-    )
-    out["size_company"] = object_to_str_categorical(raw_data["pgallbet"])
-    out["pgen_grund_beschäftigungsende"] = object_to_str_categorical(
-        raw_data["pgjobend"],
-    )
-    out["exp_full_time"] = object_to_float(raw_data["pgexpft"])
-    out["exp_part_time"] = object_to_float(raw_data["pgexppt"])
-    out["exp_unempl"] = object_to_float(raw_data["pgexpue"])
-
     out["education_isced_old"] = object_to_str_categorical(raw_data["pgisced97"])
     out["education_isced"] = object_to_str_categorical(
         raw_data["pgisced11"],
@@ -98,9 +55,49 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["education_casmin_cat"] = apply_lowest_int_dtype(
         out["education_casmin"].cat.codes,
     )
-    out["month_interview"] = object_to_int_categorical(
-        raw_data["pgmonth"],
-        renaming=month_mapping.de,
+
+    # individual current status
+    # there are multiple categories for ['Kurdistan', 'Malaysia', 'Montenegro']
+    # they have been reduced into one category each
+    out["first_nationality"] = object_to_str_categorical(raw_data["pgnation"])
+    out["refugee_status"] = object_to_str_categorical(raw_data["pgstatus_refu"])
+    out["marital_status"] = object_to_str_categorical(raw_data["pgfamstd"])
+    out["laborforce_status"] = object_to_str_categorical(raw_data["pglfs"])
+    out["occupation_status"] = object_to_str_categorical(raw_data["pgstib"])
+    out["employment_status"] = object_to_str_categorical(raw_data["pgemplst"])
+    out["total_full_time_working_experience"] = object_to_float(raw_data["pgexpft"])
+    out["total_part_time_working_experience"] = object_to_float(raw_data["pgexppt"])
+    out["total_unemployment_experience"] = object_to_float(raw_data["pgexpue"])
+    out["dauer_im_betrieb"] = object_to_float(raw_data["pgerwzeit"])
+
+    # individual work information
+    out["gross_labor_income_previous_month"] = object_to_float(
+        raw_data["pglabgro"]
+    ).fillna(0)
+    out["net_labor_income_previous_month"] = object_to_float(
+        raw_data["pglabnet"]
+    ).fillna(0)
+    out["weekly_working_hours_actual"] = _weekly_working_hours_fill_non_working(
+        raw_data["pgtatzeit"],
+        out["employment_status"],
+    )
+    out["weekly_working_hours_contract"] = _weekly_working_hours_fill_non_working(
+        raw_data["pgvebzeit"],
+        out["employment_status"],
+    )
+    out["public_service"] = object_to_bool_categorical(
+        raw_data["pgoeffd"],
+        renaming={"[2] nein": False, "[1] ja": True},
         ordered=True,
     )
+    out["size_company"] = object_to_str_categorical(raw_data["pgallbet"])
+    out["size_company_granular"] = object_to_str_categorical(
+        raw_data["pgbetr"].replace(
+            {-5: "[-5] in Fragebogenversion nicht enthalten"},
+        ),
+    )
+    out["grund_beschaeftigungsende"] = object_to_str_categorical(
+        raw_data["pgjobend"],
+    )
+
     return out

@@ -23,33 +23,33 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned and sensible data type variables from the hgen file.
 
     Args:
-        raw_data (pd.DataFrame): The raw hgen data.
+        raw_data: The raw hgen data.
 
     Returns:
-        pd.DataFrame: The processed hgen data.
+    The processed hgen data.
     """
     out = pd.DataFrame()
-    out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
+    out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-
     out["survey_year"] = float_to_int(raw_data["syear"])
+
     out["building_year_hh_max"] = object_to_int(raw_data["hgcnstyrmax"])
     out["building_year_hh_min"] = object_to_int(raw_data["hgcnstyrmin"])
-    out["heating_costs_m_hh"] = object_to_int(raw_data["hgheat"])
-    out["einzugsjahr"] = object_to_int(raw_data["hgmoveyr"])
+    out["heating_costs_monthly_hh"] = object_to_int(raw_data["hgheat"])
+    out["year_moved_in"] = object_to_int(raw_data["hgmoveyr"])
     out["rented_or_owned"] = object_to_str_categorical(raw_data["hgowner"])
-    out["bruttokaltmiete_m_hh"] = _bruttokaltmiete_m_hh(
+    out["rent_minus_heating_costs_monthly_hh"] = _bruttokaltmiete_m_hh(
         raw_data["hgrent"],
         out["rented_or_owned"],
     )
     out["living_space_hh"] = object_to_int(raw_data["hgsize"])
-    out["heizkosten_mi_reason"] = object_to_str_categorical(
+    out["heating_costs_reason_missing"] = object_to_str_categorical(
         raw_data["hgheatinfo"],
         ordered=False,
     )
-    out["hh_typ"] = object_to_str_categorical(
+    out["hh_typ_one_digit"] = object_to_str_categorical(
         raw_data["hgtyp1hh"],
         nr_identifiers=2,
     )
-    out["hh_typ_2st"] = object_to_str_categorical(raw_data["hgtyp2hh"])
+    out["hh_typ_two_digits"] = object_to_str_categorical(raw_data["hgtyp2hh"])
     return out

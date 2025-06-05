@@ -13,21 +13,20 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned and sensible data type variables from the pbrutto file.
 
     Args:
-        raw_data (pd.DataFrame): The raw pbrutto data.
+        raw_data: The raw pbrutto data.
 
     Returns:
-        pd.DataFrame: The processed pbrutto data.
+    The processed pbrutto data.
     """
     out = pd.DataFrame()
 
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["hh_id_orig"] = apply_lowest_int_dtype(raw_data["cid"])
+    out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
-    out["birth_year"] = object_to_int(raw_data["geburt_v2"])
-    out["befragungs_status"] = object_to_str_categorical(raw_data["befstat_h"])
 
-    out["hh_position"] = object_to_str_categorical(
+    out["birth_year"] = object_to_int(raw_data["geburt_v2"])
+    out["relationship_to_head_of_hh"] = object_to_str_categorical(
         raw_data["stell_h"],
         renaming={
             "[0] Haushaltsvorstand,Bezugsperson": "Household head",
@@ -68,26 +67,25 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[99] Stellung zu HV unbekannt": "Other",
         },
     )
-    out["bearbeitungserg"] = object_to_str_categorical(raw_data["perg"])
+    out["relationship_to_hh_last_year"] = object_to_str_categorical(raw_data["pzugv"])
+
+    # interview related variables
+    out["interview_status"] = object_to_str_categorical(raw_data["befstat_h"])
+    out["interview_result_one_digit"] = object_to_str_categorical(raw_data["perg"])
     # categories [29] and [39] have identical missing data labels
     # they are reduced to one
-    out["bearbeitungserg_ausf"] = object_to_str_categorical(
-        raw_data["pergz"],
-    )
+    out["interview_result_two_digits"] = object_to_str_categorical(raw_data["pergz"])
+    out["interview_result_old"] = object_to_str_categorical(raw_data["hergs"])
     # categories [19] and [39] have identical missing data labels
     # they are reduced to one
-    out["hh_position_raw_last_year"] = object_to_str_categorical(
-        raw_data["pzugv"],
-    )
-    out["teilnahmebereitschaft"] = object_to_str_categorical(
+    out["willingness_to_participate"] = object_to_str_categorical(
         raw_data["ber"],
-        ordered=True,
         renaming={
             "[4] sehr schlecht": "sehr schlecht",
             "[3] schlecht": "schlecht",
             "[2] gut": "gut",
             "[1] sehr gut": "sehr gut",
         },
+        ordered=True,
     )
-    out["bearbeitungserg_old"] = object_to_str_categorical(raw_data["hergs"])
     return out
