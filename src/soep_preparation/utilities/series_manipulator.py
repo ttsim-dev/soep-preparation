@@ -4,9 +4,9 @@ import pandas as pd
 from pandas.api.types import CategoricalDtype
 
 from soep_preparation.utilities.error_handling import (
-    error_handling_sr_transformation,
     fail_if_invalid_input,
     fail_if_invalid_inputs,
+    fail_if_series_cannot_be_transformed,
 )
 
 
@@ -18,10 +18,10 @@ def _get_sorted_not_na_unique_values(series: pd.Series) -> pd.Series:
 
 
 def _get_values_to_remove(series: pd.Series) -> list:
-    """Identify values representing missing data or no response in a pd.Series.
+    """Identify values representing missing data or no response in a Series.
 
     Parameters:
-        series: The pandas.Series to analyze.
+        series: The Series to analyze.
 
     Returns:
         A list of values to be treated as missing data.
@@ -100,7 +100,7 @@ def convert_to_categorical(
     Returns:
         The series converted to categorical dtype.
     """
-    error_handling_sr_transformation(
+    fail_if_series_cannot_be_transformed(
         series,
         "Any",
         [
@@ -215,7 +215,7 @@ def object_to_float(series: pd.Series) -> pd.Series:
     Returns:
         The series with cleaned entries and transformed dtype.
     """
-    error_handling_sr_transformation(
+    fail_if_series_cannot_be_transformed(
         series,
         "object",
         [[series, "pandas.core.series.Series"]],
@@ -234,7 +234,7 @@ def object_to_int(series: pd.Series) -> pd.Series:
     Returns:
         The series with cleaned entries and transformed dtype.
     """
-    error_handling_sr_transformation(
+    fail_if_series_cannot_be_transformed(
         series,
         "object",
         [[series, "pandas.core.series.Series"]],
@@ -260,7 +260,7 @@ def object_to_bool_categorical(
     Returns:
         The series with cleaned entries and transformed dtype.
     """
-    error_handling_sr_transformation(
+    fail_if_series_cannot_be_transformed(
         series,
         "object",
         [
@@ -300,7 +300,7 @@ def object_to_int_categorical(
     Returns:
         The series with cleaned entries and transformed dtype.
     """
-    error_handling_sr_transformation(
+    fail_if_series_cannot_be_transformed(
         series,
         "object",
         [
@@ -348,7 +348,7 @@ def object_to_str_categorical(
     Returns:
         The series with cleaned entries and transformed dtype.
     """
-    error_handling_sr_transformation(
+    fail_if_series_cannot_be_transformed(
         series,
         "object",
         [

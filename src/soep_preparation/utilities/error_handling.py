@@ -54,7 +54,7 @@ def fail_if_invalid_inputs(input_: Any, expected_dtypes: str) -> None:  # noqa: 
         fail_if_invalid_input(input_, expected_dtypes)
 
 
-def error_handling_sr_transformation(
+def fail_if_series_cannot_be_transformed(
     series: pd.Series,
     expected_sr_dtype: str,
     input_expected_types: list[list] | None = None,
@@ -77,11 +77,9 @@ def error_handling_sr_transformation(
         input_expected_types = [[]]
     _fail_if_series_wrong_dtype(series, expected_sr_dtype)
     if entries_expected_types is not None:
-        dtype = entries_expected_types[1]
-        [
-            fail_if_invalid_inputs(unique_entry, dtype)
-            for unique_entry in entries_expected_types[0]
-        ]
+        type_ = entries_expected_types[1]
+        for unique_entry in entries_expected_types[0]:
+            fail_if_invalid_inputs(unique_entry, type_)
     else:
         msg = (
             "Did not receive a list of unique entries and their expected dtype, "
@@ -90,4 +88,5 @@ def error_handling_sr_transformation(
         raise Warning(
             msg,
         )
-    [fail_if_invalid_input(*item) for item in input_expected_types]
+    for item in input_expected_types:
+        fail_if_invalid_input(*item)

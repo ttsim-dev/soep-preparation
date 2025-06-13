@@ -79,7 +79,7 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data: The required cleaned data.
 
     Returns:
-        The dataframe containing derived variables.
+        Derived variables.
     """
     out = pd.DataFrame(index=data.index)
     out["german"] = create_dummy(data["first_nationality"], "Deutschland")

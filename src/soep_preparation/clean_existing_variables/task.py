@@ -44,7 +44,7 @@ for file_name, file_catalog in DATA_CATALOGS["data_files"].items():
             module_path: The path to the cleaning module.
 
         Returns:
-                A cleaned pandas DataFrame to be saved to the DataCatalog.
+                The cleaned data to be saved to the DataCatalog.
 
         Raises:
             ImportError: If there is an error loading the cleaning module.

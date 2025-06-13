@@ -11,11 +11,11 @@ def derive_hh_soep_sample(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.Data
     """Merge the hh_soep_sample variable from hpathl and design.
 
     Args:
-        hpathl: DataFrame containing the cleaned hpathl data.
-        design: DataFrame containing the cleaned design data.
+        hpathl: Cleaned hpathl data.
+        design: Cleaned design data.
 
     Returns:
-        DataFrame containing the merged hh_soep_sample variable.
+        Merged hh_soep_sample variable.
     """
     out = pd.DataFrame(index=hpathl.index)
     merged = pd.merge(hpathl, design, on=["hh_id"], how="outer")
@@ -35,11 +35,11 @@ def derive_hh_received_transfers(
     """Merge the household received transfer variables from pequiv and hl.
 
     Args:
-        pequiv: DataFrame containing the cleaned pequiv data.
-        hl: DataFrame containing the cleaned hl data.
+        pequiv: Cleaned pequiv data.
+        hl: Cleaned hl data.
 
     Returns:
-        DataFrame containing the merged received transfer variables.
+        Merged received transfer variables.
     """
     out = pd.DataFrame(index=pequiv.index)
     merged = pd.merge(pequiv, hl, on=["hh_id", "survey_year"], how="outer")

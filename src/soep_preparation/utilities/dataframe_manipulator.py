@@ -1,4 +1,4 @@
-"""Utilities for dataframe manipulation."""
+"""Utilities for DataFrame manipulation."""
 
 import pandas as pd
 
@@ -14,7 +14,7 @@ def combine_first_and_make_categorical(
     """Combine two columns and convert to categorical.
 
     Args:
-        data: The DataFrame containing the columns.
+        data: Data containing columns.
         column_name_1: The first column name.
         column_name_2: The second column name.
         ordered: Whether the categorical is ordered.

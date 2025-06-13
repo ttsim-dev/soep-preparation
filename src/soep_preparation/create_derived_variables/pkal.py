@@ -48,7 +48,7 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data: The required data.
 
     Returns:
-        The dataframe containing derived variables.
+        Derived variables.
     """
     out = pd.DataFrame(index=data.index)
 

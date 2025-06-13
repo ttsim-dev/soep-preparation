@@ -11,11 +11,11 @@ def derive_birth_month(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFra
     """Combine the birth_month variables from ppathl and bioedu.
 
     Args:
-        ppathl: DataFrame containing cleaned ppathl data.
-        bioedu: DataFrame containing cleaned bioedu data.
+        ppathl: Cleaned ppathl data.
+        bioedu: Cleaned bioedu data.
 
     Returns:
-        DataFrame containing the combined birth_month variable.
+        Combined birth_month variable.
     """
     out = pd.DataFrame()
     merged = pd.merge(left=ppathl, right=bioedu, on="p_id", how="outer")
@@ -30,11 +30,11 @@ def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataF
     """Combine the medical variables from pequiv and pl.
 
     Args:
-        pequiv: DataFrame containing cleaned pequiv data.
-        pl: DataFrame containing cleaned pl data.
+        pequiv: Cleaned pequiv data.
+        pl: Cleaned pl data.
 
     Returns:
-        DataFrame containing the combined medical variables.
+        Combined medical variables.
     """
     out = pd.DataFrame(index=pequiv.index)
     merged = pd.merge(pequiv, pl, on=["p_id", "hh_id", "survey_year"], how="outer")
@@ -106,11 +106,11 @@ def derive_p_received_transfers(pl: pd.DataFrame, pkal: pd.DataFrame) -> pd.Data
     """Merge the personal received transfer variables from pl and pkal.
 
     Args:
-        pl: DataFrame containing the cleaned pl data.
-        pkal: DataFrame containing the cleaned pkal data.
+        pl: Cleaned pl data.
+        pkal: Cleaned pkal data.
 
     Returns:
-        DataFrame containing the merged received transfer variables.
+        Merged received transfer variables.
     """
     out = pd.DataFrame(index=pl.index)
     merged = pd.merge(pl, pkal, on=["hh_id", "survey_year"], how="outer")

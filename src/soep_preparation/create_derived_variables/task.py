@@ -148,7 +148,7 @@ for script_name in script_names:
                 function_: Function to create derived variables.
 
             Returns:
-                DataFrame containing derived variables.
+                Derived variables.
 
             Raises:
                 TypeError: If input data files or function is not of expected type.
