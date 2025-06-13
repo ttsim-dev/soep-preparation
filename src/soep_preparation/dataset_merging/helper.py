@@ -168,18 +168,18 @@ def _fail_if_invalid_merging_behavior(merging_behavior: str) -> None:
         raise ValueError(msg)
 
 
-def _get_dataset_to_variables_mapping(
+def _get_file_name_to_variables_mapping(
     variable_to_file_mapping: dict[str, str],
     variables: list[str],
 ) -> dict[str, list[str]]:
-    dataset_variables_mapping = {}
+    file_name_variables_mapping = {}
     for variable in variables:
         if variable in variable_to_file_mapping:
-            dataset = variable_to_file_mapping[variable]
-            if dataset not in dataset_variables_mapping:
-                dataset_variables_mapping[dataset] = []
-            dataset_variables_mapping[dataset].append(variable)
-    return dataset_variables_mapping
+            file_name = variable_to_file_mapping[variable]
+            if file_name not in file_name_variables_mapping:
+                file_name_variables_mapping[file_name] = []
+            file_name_variables_mapping[file_name].append(variable)
+    return file_name_variables_mapping
 
 
 def _sort_dataset_merging_information(
@@ -214,7 +214,7 @@ def _get_sorted_dataset_merging_information(
     variables: list,
     survey_years: list[int],
 ) -> dict[str, dict]:
-    data_mapping = _get_dataset_to_variables_mapping(
+    data_mapping = _get_file_name_to_variables_mapping(
         variable_to_file_mapping,
         variables,
     )
