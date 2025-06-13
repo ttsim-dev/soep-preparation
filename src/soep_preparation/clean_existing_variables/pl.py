@@ -68,7 +68,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["beendigung_beschaeftigungsverhaeltnis_betriebsstillegung"] = (
         object_to_str_categorical(raw_data["plb0304_v11"])
     )
-    out["active_work_search_last_four_weeks_from"] = object_to_bool_categorical(
+    out["active_work_search_last_four_weeks"] = object_to_bool_categorical(
         raw_data["plb0424_v2"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
@@ -128,19 +128,19 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         true_value=1,
     )
     out["disability_degree"] = object_to_int(raw_data["ple0041"]).fillna(0)
-    out["med_pl_schwierigkeit_treppen"] = object_to_int_categorical(
+    out["med_schwierigkeit_treppen_pl"] = object_to_int_categorical(
         raw_data["ple0004"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
     )
-    out["med_pl_schwierigkeit_taten"] = object_to_int_categorical(
+    out["med_schwierigkeit_taten_pl"] = object_to_int_categorical(
         raw_data["ple0005"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
     )
-    out["med_pl_groesse"] = object_to_int(raw_data["ple0006"])
-    out["med_pl_gewicht"] = object_to_int(raw_data["ple0007"])
-    out["med_pl_subjective_status"] = object_to_int_categorical(
+    out["med_groesse_pl"] = object_to_int(raw_data["ple0006"])
+    out["med_gewicht_pl"] = object_to_int(raw_data["ple0007"])
+    out["med_subjective_status_pl"] = object_to_int_categorical(
         raw_data["ple0008"],
         renaming={
             "[1] Sehr gut": 1,
@@ -151,70 +151,70 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
         ordered=True,
     )
-    out["med_pl_schlaf"] = object_to_bool_categorical(
+    out["med_schlaf_pl"] = object_to_bool_categorical(
         raw_data["ple0011"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_diabetes"] = object_to_bool_categorical(
+    out["med_diabetes_pl"] = object_to_bool_categorical(
         raw_data["ple0012"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_asthma"] = object_to_bool_categorical(
+    out["med_asthma_pl"] = object_to_bool_categorical(
         raw_data["ple0013"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_herzkrankheit"] = object_to_bool_categorical(
+    out["med_herzkrankheit_pl"] = object_to_bool_categorical(
         raw_data["ple0014"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_krebs"] = object_to_bool_categorical(
+    out["med_krebs_pl"] = object_to_bool_categorical(
         raw_data["ple0015"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_schlaganfall"] = object_to_bool_categorical(
+    out["med_schlaganfall_pl"] = object_to_bool_categorical(
         raw_data["ple0016"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_migraene"] = object_to_bool_categorical(
+    out["med_migraene_pl"] = object_to_bool_categorical(
         raw_data["ple0017"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_bluthochdruck"] = object_to_bool_categorical(
+    out["med_bluthochdruck_pl"] = object_to_bool_categorical(
         raw_data["ple0018"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_depressiv"] = object_to_bool_categorical(
+    out["med_depressiv_pl"] = object_to_bool_categorical(
         raw_data["ple0019"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_demenz"] = object_to_bool_categorical(
+    out["med_demenz_pl"] = object_to_bool_categorical(
         raw_data["ple0020"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_gelenk"] = object_to_bool_categorical(
+    out["med_gelenk_pl"] = object_to_bool_categorical(
         raw_data["ple0021"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
-    out["med_pl_ruecken"] = object_to_bool_categorical(
+    out["med_ruecken_pl"] = object_to_bool_categorical(
         raw_data["ple0022"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
-    out["med_pl_sonst"] = object_to_bool_categorical(
+    out["med_sonst_pl"] = object_to_bool_categorical(
         raw_data["ple0023"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_pl_raucher"] = object_to_bool_categorical(
+    out["med_raucher_pl"] = object_to_bool_categorical(
         raw_data["ple0081_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,

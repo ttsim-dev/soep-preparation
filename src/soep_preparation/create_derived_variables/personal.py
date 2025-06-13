@@ -20,8 +20,8 @@ def derive_birth_month(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFra
     out = pd.DataFrame()
     merged = pd.merge(left=ppathl, right=bioedu, on="p_id", how="outer")
     out["p_id"] = merged["p_id"].unique()
-    out["birth_month"] = merged["birth_month_from_ppathl"].combine_first(
-        merged["birth_month_from_bioedu"]
+    out["birth_month"] = merged["birth_month_ppathl"].combine_first(
+        merged["birth_month_bioedu"]
     )
     return out
 
@@ -44,60 +44,60 @@ def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataF
 
     out["med_schw_treppen"] = combine_first_and_make_categorical(
         merged,
-        "med_pequiv_schwierigkeiten_treppen",
-        "med_pl_schwierigkeit_treppen_dummy",
+        "med_schwierigkeiten_treppen_pequiv",
+        "med_schwierigkeit_treppen_dummy_pl",
         ordered=True,
     )
     out["med_bluthochdruck"] = combine_first_and_make_categorical(
         merged,
-        "med_pequiv_bluthochdruck",
-        "med_pl_bluthochdruck",
+        "med_bluthochdruck_pequiv",
+        "med_bluthochdruck_pl",
         ordered=True,
     )
     out["med_diabetes"] = combine_first_and_make_categorical(
         merged,
-        "med_pequiv_diabetes",
-        "med_pl_diabetes",
+        "med_diabetes_pequiv",
+        "med_diabetes_pl",
         ordered=True,
     )
     out["med_krebs"] = combine_first_and_make_categorical(
         merged,
-        "med_pequiv_krebs",
-        "med_pl_krebs",
+        "med_krebs_pequiv",
+        "med_krebs_pl",
         ordered=True,
     )
     out["med_herzkrankheit"] = combine_first_and_make_categorical(
         merged,
-        "med_pequiv_herzkrankheit",
-        "med_pl_herzkrankheit",
+        "med_herzkrankheit_pequiv",
+        "med_herzkrankheit_pl",
         ordered=True,
     )
     out["med_schlaganfall"] = combine_first_and_make_categorical(
         merged,
-        "med_pequiv_schlaganfall",
-        "med_pl_schlaganfall",
+        "med_schlaganfall_pequiv",
+        "med_schlaganfall_pl",
         ordered=True,
     )
     out["med_gelenk"] = combine_first_and_make_categorical(
         merged,
-        "med_pequiv_gelenk",
-        "med_pl_gelenk",
+        "med_gelenk_pequiv",
+        "med_gelenk_pl",
         ordered=True,
     )
-    out["med_gewicht"] = merged["med_pequiv_gewicht"].combine_first(
-        merged["med_pl_gewicht"]
+    out["med_gewicht"] = merged["med_gewicht_pequiv"].combine_first(
+        merged["med_gewicht_pl"]
     )
-    out["med_groesse"] = merged["med_pequiv_groesse"].combine_first(
-        merged["med_pl_groesse"]
+    out["med_groesse"] = merged["med_groesse_pequiv"].combine_first(
+        merged["med_groesse_pl"]
     )
     out["bmi"] = merged["bmi_pequiv"].combine_first(merged["bmi_pl"])
-    out["bmi_dummy"] = merged["bmi_pequiv_dummy"].combine_first(merged["bmi_pl_dummy"])
-    out["med_subjective_status"] = merged["med_pequiv_subjective_status"].combine_first(
-        merged["med_pl_subjective_status"]
+    out["bmi_dummy"] = merged["bmi_dummy_pequiv"].combine_first(merged["bmi_dummy_pl"])
+    out["med_subjective_status"] = merged["med_subjective_status_pequiv"].combine_first(
+        merged["med_subjective_status_pl"]
     )
     out["med_subjective_status_dummy"] = merged[
-        "med_pequiv_subjective_status_dummy"
-    ].combine_first(merged["med_pl_subjective_status_dummy"])
+        "med_subjective_status_dummy_pequiv"
+    ].combine_first(merged["med_subjective_status_dummy_pl"])
     out["frailty"] = merged["frailty_pequiv"].combine_first(merged["frailty_pl"])
     return out
 

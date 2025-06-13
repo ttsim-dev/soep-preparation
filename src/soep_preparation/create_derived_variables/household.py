@@ -22,8 +22,8 @@ def derive_hh_soep_sample(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.Data
     out["hh_id"] = hpathl["hh_id"].copy()
     out["hh_soep_sample"] = combine_first_and_make_categorical(
         merged,
-        "hh_soep_sample_from_hpathl",
-        "hh_soep_sample_from_design",
+        "hh_soep_sample_hpathl",
+        "hh_soep_sample_design",
         ordered=False,
     )
     return out
@@ -48,8 +48,8 @@ def derive_hh_received_transfers(
     ].copy()
     out["alg2_hh_betrag_m"] = combine_first_and_make_categorical(
         merged,
-        "alg2_pequiv_hh_betrag_m",
-        "alg2_hl_hh_betrag_m",
+        "alg2_hh_betrag_m_pequiv",
+        "alg2_hh_betrag_m_hl",
         ordered=False,
     )
     out["kindergeld_hh_betrag_m"] = combine_first_and_make_categorical(
@@ -60,14 +60,14 @@ def derive_hh_received_transfers(
     )
     out["kinderzuschlag_hh_betrag_m"] = combine_first_and_make_categorical(
         merged,
-        "kinderzuschlag_pequiv_hh_betrag_m",
-        "kinderzuschlag_hl_hh_betrag_m",
+        "kinderzuschlag_hh_betrag_m_pequiv",
+        "kinderzuschlag_hh_betrag_m_hl",
         ordered=False,
     )
     out["wohngeld_hh_betrag_y"] = combine_first_and_make_categorical(
         merged,
-        "wohngeld_pequiv_hh_betrag_m",
-        "wohngeld_hl_hh_betrag_m",
+        "wohngeld_hh_betrag_m_pequiv",
+        "wohngeld_hh_betrag_m_hl",
         ordered=False,
     )
 

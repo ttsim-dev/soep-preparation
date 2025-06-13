@@ -33,22 +33,22 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         The derived variables.
     """
     med_vars = [
-        "med_pl_schwierigkeit_treppen",
-        "med_pl_schwierigkeit_taten",
-        "med_pl_schlaf",
-        "med_pl_diabetes",
-        "med_pl_asthma",
-        "med_pl_herzkrankheit",
-        "med_pl_krebs",
-        "med_pl_schlaganfall",
-        "med_pl_migraene",
-        "med_pl_bluthochdruck",
-        "med_pl_depressiv",
-        "med_pl_demenz",
-        "med_pl_gelenk",
-        "med_pl_ruecken",
-        "med_pl_sonst",
-        "med_pl_raucher",
+        "med_schwierigkeit_treppen_pl",
+        "med_schwierigkeit_taten_pl",
+        "med_schlaf_pl",
+        "med_diabetes_pl",
+        "med_asthma_pl",
+        "med_herzkrankheit_pl",
+        "med_krebs_pl",
+        "med_schlaganfall_pl",
+        "med_migraene_pl",
+        "med_bluthochdruck_pl",
+        "med_depressiv_pl",
+        "med_demenz_pl",
+        "med_gelenk_pl",
+        "med_ruecken_pl",
+        "med_sonst_pl",
+        "med_raucher_pl",
     ]
 
     out = pd.DataFrame(index=data.index)
@@ -63,16 +63,16 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
             ]
         ],
     )
-    out["med_pl_schwierigkeit_treppen_dummy"] = create_dummy(
-        data["med_pl_schwierigkeit_treppen"], [1, 2], "isin"
+    out["med_schwierigkeit_treppen_dummy_pl"] = create_dummy(
+        data["med_schwierigkeit_treppen_pl"], [1, 2], "isin"
     )
-    out["bmi_pl"] = data["med_pl_gewicht"] / ((data["med_pl_groesse"] / 100) ** 2)
-    out["bmi_pl_dummy"] = apply_lowest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
-    out["med_pl_subjective_status_dummy"] = create_dummy(
-        data["med_pl_subjective_status"], 3, "geq"
+    out["bmi_pl"] = data["med_gewicht"] / ((data["med_groesse_pl"] / 100) ** 2)
+    out["bmi_dummy_pl"] = apply_lowest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
+    out["med_subjective_status_dummy_pl"] = create_dummy(
+        data["med_subjective_status_pl"], 3, "geq"
     )
     med_var_data = pd.concat(
-        [data[med_vars], out["med_pl_subjective_status_dummy"]],
+        [data[med_vars], out["med_subjective_status_dummy_pl"]],
         axis=1,
     )
     out["frailty_pl"] = apply_lowest_float_dtype(med_var_data.mean(axis=1))

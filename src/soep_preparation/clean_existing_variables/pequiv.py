@@ -38,11 +38,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["capital_income_hh_amount_y"] = object_to_int(raw_data["divdy"])
     # hh social benefits
     out["grundsicherung_im_alter_hh_betrag_y"] = object_to_int(raw_data["ssold"])
-    out["alg2_pequiv_hh_betrag_y"] = object_to_int(raw_data["alg2"])
-    out["kindergeld_pequiv_hh_betrag_y"] = object_to_int(raw_data["chspt"])
-    out["kinderzuschlag_pequiv_hh_betrag_y"] = object_to_int(raw_data["adchb"])
+    out["alg2_hh_betrag_y_pequiv"] = object_to_int(raw_data["alg2"])
+    out["kindergeld_hh_betrag_y_pequiv"] = object_to_int(raw_data["chspt"])
+    out["kinderzuschlag_hh_betrag_y_pequiv"] = object_to_int(raw_data["adchb"])
     out["childcare_subsidy_hh_amount_y"] = object_to_int(raw_data["chsub"])
-    out["wohngeld_pequiv_hh_betrag_y"] = object_to_int(raw_data["house"])
+    out["wohngeld_hh_betrag_y_pequiv"] = object_to_int(raw_data["house"])
     out["pflegegeld_hh_betrag_y"] = object_to_int(raw_data["nursh"])
     out["social_assistance_hh_amount_y"] = object_to_int(raw_data["subst"])
     out["social_assistance_special_hh_amount_y"] = object_to_int(raw_data["sphlp"])
@@ -68,52 +68,52 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=False,
     )
     # individual medical characteristics
-    out["med_pequiv_krnkhaus"] = object_to_bool_categorical(
+    out["med_krankenhaus_pequiv"] = object_to_bool_categorical(
         raw_data["m11101"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pequiv_schlaganfall"] = object_to_bool_categorical(
+    out["med_schlaganfall_pequiv"] = object_to_bool_categorical(
         raw_data["m11105"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pequiv_bluthochdruck"] = object_to_bool_categorical(
+    out["med_bluthochdruck_pequiv"] = object_to_bool_categorical(
         raw_data["m11106"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pequiv_diabetes"] = object_to_bool_categorical(
+    out["med_diabetes_pequiv"] = object_to_bool_categorical(
         raw_data["m11107"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pequiv_krebs"] = object_to_bool_categorical(
+    out["med_krebs_pequiv"] = object_to_bool_categorical(
         raw_data["m11108"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pequiv_psych"] = object_to_bool_categorical(
+    out["med_psych_pequiv"] = object_to_bool_categorical(
         raw_data["m11109"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pequiv_gelenk"] = object_to_bool_categorical(
+    out["med_gelenk_pequiv"] = object_to_bool_categorical(
         raw_data["m11110"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pequiv_herzkrankheit"] = object_to_bool_categorical(
+    out["med_herzkrankheit_pequiv"] = object_to_bool_categorical(
         raw_data["m11111"],
         renaming={0: False, 1: True},
         ordered=True,
     )
-    out["med_pequiv_schwierigkeiten_treppen"] = object_to_bool_categorical(
+    out["med_schwierigkeiten_treppen_pequiv"] = object_to_bool_categorical(
         raw_data["m11113"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
-    out["med_pequiv_schwierigkeiten_anziehen"] = object_to_bool_categorical(
+    out["med_schwierigkeiten_anziehen_pequiv"] = object_to_bool_categorical(
         raw_data["m11115"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
@@ -134,9 +134,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
 
-    out["med_pequiv_groesse"] = object_to_int(raw_data["m11122"])
-    out["med_pequiv_gewicht"] = object_to_int(raw_data["m11123"])
-    out["med_pequiv_zufrieden"] = object_to_int_categorical(
+    out["med_groesse_pequiv"] = object_to_int(raw_data["m11122"])
+    out["med_gewicht_pequiv"] = object_to_int(raw_data["m11123"])
+    out["med_zufrieden_pequiv"] = object_to_int_categorical(
         raw_data["m11125"],
         renaming={
             "[0] Completely dissatisfied": 0,
@@ -153,7 +153,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
 
-    out["med_pequiv_subjective_status"] = object_to_int_categorical(
+    out["med_subjective_status_pequiv"] = object_to_int_categorical(
         raw_data["m11126"],
         renaming={
             "[1] Very good": 1,

@@ -30,7 +30,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # individual characteristics
     out["born_in_germany"] = object_to_str_categorical(raw_data["germborn"])
     out["country_of_birth"] = object_to_str_categorical(raw_data["corigin"])
-    out["birth_month_from_ppathl"] = object_to_int_categorical(
+    out["birth_month_ppathl"] = object_to_int_categorical(
         raw_data["gebmonat"],
         renaming=month_mapping.de,
         ordered=True,

@@ -22,7 +22,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
 
-    out["hh_soep_sample_from_hpathl"] = object_to_str_categorical(
+    out["hh_soep_sample_hpathl"] = object_to_str_categorical(
         raw_data["hsample"].replace(
             {
                 "[4] D 1994/5 Migration (1984-92/94 West)": (
