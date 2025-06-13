@@ -66,7 +66,7 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
     out["med_schwierigkeit_treppen_dummy_pl"] = create_dummy(
         data["med_schwierigkeit_treppen_pl"], [1, 2], "isin"
     )
-    out["bmi_pl"] = data["med_gewicht"] / ((data["med_groesse_pl"] / 100) ** 2)
+    out["bmi_pl"] = data["med_gewicht_pl"] / ((data["med_groesse_pl"] / 100) ** 2)
     out["bmi_dummy_pl"] = apply_lowest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
     out["med_subjective_status_dummy_pl"] = create_dummy(
         data["med_subjective_status_pl"], 3, "geq"

@@ -9,8 +9,8 @@ from pytask import PickleNode, task
 from soep_preparation.config import DATA_CATALOGS, SRC
 from soep_preparation.utilities.error_handling import fail_if_invalid_input
 from soep_preparation.utilities.general import (
-    get_file_names,
     get_script_names,
+    get_stems_if_corresponding_raw_file_exists,
     load_module,
 )
 
@@ -55,7 +55,9 @@ def _get_variable_names_in_module(module: Any) -> list[str]:
     ]
 
 
-file_names = get_file_names(directory=SRC / "create_derived_variables")
+file_names = get_stems_if_corresponding_raw_file_exists(
+    directory=SRC / "create_derived_variables"
+)
 for name, catalog in DATA_CATALOGS["data_files"].items():
     if name in file_names:
         # files that have a derive variables script get processed

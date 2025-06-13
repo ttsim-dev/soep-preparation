@@ -5,7 +5,9 @@ from pathlib import Path
 import pandas as pd
 from pytask import DataCatalog
 
-from soep_preparation.utilities.general import get_file_names
+from soep_preparation.utilities.general import (
+    get_stems_if_corresponding_raw_file_exists,
+)
 
 pd.set_option("mode.copy_on_write", True)  # noqa: FBT003
 pd.set_option("future.infer_string", True)  # noqa: FBT003
@@ -25,7 +27,9 @@ else:
     SURVEY_YEARS = [*range(1984, 2020 + 1)]
 
 
-FILE_NAMES = get_file_names(directory=SRC / "clean_existing_variables")
+FILE_NAMES = get_stems_if_corresponding_raw_file_exists(
+    directory=SRC / "clean_existing_variables"
+)
 
 DATA_CATALOGS = {
     "data_files": {file_name: DataCatalog(name=file_name) for file_name in FILE_NAMES},

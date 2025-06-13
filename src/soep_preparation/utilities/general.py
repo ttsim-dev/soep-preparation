@@ -21,7 +21,7 @@ def get_script_names(directory: Path) -> list[str]:
     ]
 
 
-def get_file_names(directory: Path) -> list[str]:
+def get_stems_if_corresponding_raw_file_exists(directory: Path) -> list[str]:
     """Get the names of all scripts in the given directory with corresponding raw files.
 
     Args:

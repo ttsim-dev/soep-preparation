@@ -1,5 +1,7 @@
 """Utilities for manipulating pandas Series."""
 
+import re
+
 import pandas as pd
 from pandas.api.types import CategoricalDtype
 
@@ -17,7 +19,7 @@ def _get_sorted_not_na_unique_values(series: pd.Series) -> pd.Series:
     return pd.Series(sorted_not_na_unique_values)
 
 
-def _get_values_to_remove(series: pd.Series) -> list:
+def _get_na_values_to_remove(series: pd.Series) -> list:
     """Identify values representing missing data or no response in a Series.
 
     Parameters:
@@ -28,14 +30,17 @@ def _get_values_to_remove(series: pd.Series) -> list:
     """
     unique_values = series.unique()
 
+    # negative single digit values (-1 through -8) represent missing data
+
+    # strings representing missing data have the following pattern:
+    # e.g. "[-1] Potentially some missing name"
+    pattern = re.compile(r"\[-\d\]\s.+")
     str_values_to_remove = [
         value
         for value in unique_values
-        if isinstance(value, str)
-        and value.startswith("[-")
-        and len(value) > 3  # noqa: PLR2004
-        and value[3] == "]"
+        if isinstance(value, str) and pattern.match(value)
     ]
+    # numerical missing data values
     num_values_to_remove = [
         value
         for value in unique_values
@@ -55,7 +60,7 @@ def _remove_missing_data_values(series: pd.Series) -> pd.Series:
         A new series with the missing data values replaced with NA.
 
     """
-    values_to_remove = _get_values_to_remove(series)
+    values_to_remove = _get_na_values_to_remove(series)
     return series.replace(values_to_remove, pd.NA)
 
 
