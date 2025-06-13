@@ -50,7 +50,7 @@ def create_dataset_from_variables(
     Notes:
         `variables` needs to be specified and are the variables
         created, renamed, and derived from the raw SOEP files
-         that will be part of the merged dataset.
+        that will be part of the merged dataset.
         Either specify `min_and_max_survey_years` or `survey_years`.
         To receive data for just one year (e.g. `2025`) either input
         `min_and_max_survey_years=(2025,2025)` or `survey_years=[2025]`.
