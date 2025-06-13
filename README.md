@@ -9,10 +9,10 @@
 ## Project Overview
 
 The project focusses on casting variables to adequate data types, manipulating them in
-further ways (e.g. by filling missing values sensibly or reducing the categories),
-combines them where relevant to new variables (e.g. bmi dummy from continuous medical
-variables), and selects them for the creation of a final output dataset. The flow of the
-project can be seen in the mermaid diagram below.
+further ways (e.g. by sensibly filling missing values or reducing the number of
+categories), combines them where relevant to new variables (e.g. bmi dummy from
+continuous medical variables), and selects them for the creation of a final output
+dataset. The flow of the project can be seen in the mermaid diagram below.
 
 ```mermaid
 flowchart LR
@@ -32,8 +32,8 @@ flowchart LR
 
   subgraph Merged Variables
     id6-->id7["Create merged metadata"]
-    id7-->id8@{ shape: trap-t, label: "Dataset merging \n(Example exists)" }
-    id8-->id9["GETTSIM preparation"]
+    id7-->id8@{ shape: trap-t, label: "Dataset merging \n(Example function in <code>dataset_merging/task_example.py</code>)" }
+    id8-->id9@{ shape: lin-cyl, label: "Dataset \n(Stored in root directory)" }
   end
 ```
 
@@ -75,11 +75,15 @@ directory.
 
 The SOEP data is available in different waves, with the latest being version 39. This
 project is currently set up to work with version 38. It is relevant to note that the
-SOEP is a survey, which usually asks questions regarding variables in the last year
-(e.g. "What was your annual income _last year_?") One wave contains "data files" based
-on different survey modules. For example `hwealth.dta` contains the wealth information
-on household level. One of the "variables" in the dataset is `p010ha` describing roughly
-speaking the market value of the property of primary residence (see
+SOEP is a survey, which usually asks questions regarding variables in the previous
+calendar year (e.g. "What was your annual income _last year_?").
+
+### Terminology
+
+One wave contains "data files" based on different survey modules. For example
+`hwealth.dta` contains the wealth information on household level. One of the "variables"
+in the dataset is `p010ha` describing roughly speaking the market value of the property
+of primary residence (see
 [https://paneldata.org/soep-core/datasets/hwealth/p010ha](https://paneldata.org/soep-core/datasets/hwealth/p010ha)).
 
 ### Understanding the SOEP-Core Data
