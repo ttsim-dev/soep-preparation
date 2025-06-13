@@ -26,7 +26,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw hgen data.
 
     Returns:
-    The processed hgen data.
+        The processed hgen data.
     """
     out = pd.DataFrame()
     out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
@@ -35,10 +35,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["building_year_hh_max"] = object_to_int(raw_data["hgcnstyrmax"])
     out["building_year_hh_min"] = object_to_int(raw_data["hgcnstyrmin"])
-    out["heating_costs_monthly_hh"] = object_to_int(raw_data["hgheat"])
+    out["heating_costs_m_hh"] = object_to_int(raw_data["hgheat"])
     out["year_moved_in"] = object_to_int(raw_data["hgmoveyr"])
     out["rented_or_owned"] = object_to_str_categorical(raw_data["hgowner"])
-    out["rent_minus_heating_costs_monthly_hh"] = _bruttokaltmiete_m_hh(
+    out["rent_minus_heating_costs_m_hh"] = _bruttokaltmiete_m_hh(
         raw_data["hgrent"],
         out["rented_or_owned"],
     )

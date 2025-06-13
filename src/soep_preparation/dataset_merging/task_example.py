@@ -34,7 +34,7 @@ def task_merge_variables(
         variables: A list of variable names to be used for merging.
 
     Returns:
-    The variables merged into a dataset.
+        The variables merged into a dataset.
 
     Raises:
         TypeError: If input mapping or variables is not of expected type.

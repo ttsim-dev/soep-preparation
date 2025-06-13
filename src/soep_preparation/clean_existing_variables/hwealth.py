@@ -53,7 +53,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw hwealth data.
 
     Returns:
-    The processed hwealth data.
+        The processed hwealth data.
     """
     out = pd.DataFrame()
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])

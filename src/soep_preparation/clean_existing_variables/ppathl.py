@@ -19,7 +19,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw ppathl data.
 
     Returns:
-    The processed ppathl data.
+        The processed ppathl data.
     """
     out = pd.DataFrame()
 

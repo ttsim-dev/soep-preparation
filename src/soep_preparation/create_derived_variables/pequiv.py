@@ -54,19 +54,19 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
     out["frailty_pequiv"] = apply_lowest_float_dtype(med_var_data.mean(axis=1))
 
     # hh social benefits yearly to average monthly amounts
-    out["alg2_pequiv_hh_monatlicher_betrag"] = apply_lowest_float_dtype(
-        data["alg2_pequiv_hh_jaehrlicher_betrag"] / 12
+    out["alg2_pequiv_hh_betrag_m"] = apply_lowest_float_dtype(
+        data["alg2_pequiv_hh_betrag_y"] / 12
     )
-    out["kindergeld_pequiv_hh_monatlicher_betrag"] = apply_lowest_float_dtype(
-        data["kindergeld_pequiv_hh_jaehrlicher_betrag"] / 12
+    out["kindergeld_hh_betrag_m_pequiv"] = apply_lowest_float_dtype(
+        data["kindergeld_pequiv_hh_betrag_y"] / 12
     )
-    out["kinderzuschlag_pequiv_hh_monatlicher_betrag"] = apply_lowest_float_dtype(
-        data["kinderzuschlag_pequiv_hh_jaehrlicher_betrag"] / 12
+    out["kinderzuschlag_pequiv_hh_betrag_m"] = apply_lowest_float_dtype(
+        data["kinderzuschlag_pequiv_hh_betrag_y"] / 12
     )
-    out["childcare_subsidy_hh_monthly_amount"] = apply_lowest_float_dtype(
-        data["childcare_subsidy_hh_annual_amount"] / 12
+    out["childcare_subsidy_hh_amount_m"] = apply_lowest_float_dtype(
+        data["childcare_subsidy_hh_amount_y"] / 12
     )
-    out["wohngeld_pequiv_hh_monatlicher_betrag"] = apply_lowest_float_dtype(
-        data["wohngeld_pequiv_hh_jaehrlicher_betrag"] / 12
+    out["wohngeld_pequiv_hh_betrag_m"] = apply_lowest_float_dtype(
+        data["wohngeld_pequiv_hh_betrag_y"] / 12
     )
     return out

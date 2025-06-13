@@ -15,7 +15,7 @@ def derive_hh_soep_sample(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.Data
         design: DataFrame containing the cleaned design data.
 
     Returns:
-    DataFrame containing the merged hh_soep_sample variable.
+        DataFrame containing the merged hh_soep_sample variable.
     """
     out = pd.DataFrame(index=hpathl.index)
     merged = pd.merge(hpathl, design, on=["hh_id"], how="outer")
@@ -46,28 +46,28 @@ def derive_hh_received_transfers(
     out[["p_id", "hh_id", "survey_year"]] = pequiv[
         ["p_id", "hh_id", "survey_year"]
     ].copy()
-    out["alg2_hh_monatlicher_betrag"] = combine_first_and_make_categorical(
+    out["alg2_hh_betrag_m"] = combine_first_and_make_categorical(
         merged,
-        "alg2_pequiv_hh_monatlicher_betrag",
-        "alg2_hl_hh_monatlicher_betrag",
+        "alg2_pequiv_hh_betrag_m",
+        "alg2_hl_hh_betrag_m",
         ordered=False,
     )
-    out["kindergeld_hh_monatlicher_betrag"] = combine_first_and_make_categorical(
+    out["kindergeld_hh_betrag_m"] = combine_first_and_make_categorical(
         merged,
-        "kindergeld_pequiv_hh_monatlicher_betrag",
-        "kindergeld_hl_hh_monatlicher_betrag",
+        "kindergeld_hh_betrag_m_pequiv",
+        "kindergeld_hh_betrag_m_hl",
         ordered=False,
     )
-    out["kinderzuschlag_hh_monatlicher_betrag"] = combine_first_and_make_categorical(
+    out["kinderzuschlag_hh_betrag_m"] = combine_first_and_make_categorical(
         merged,
-        "kinderzuschlag_pequiv_hh_monatlicher_betrag",
-        "kinderzuschlag_hl_hh_monatlicher_betrag",
+        "kinderzuschlag_pequiv_hh_betrag_m",
+        "kinderzuschlag_hl_hh_betrag_m",
         ordered=False,
     )
-    out["wohngeld_hh_jaehrlicher_betrag"] = combine_first_and_make_categorical(
+    out["wohngeld_hh_betrag_y"] = combine_first_and_make_categorical(
         merged,
-        "wohngeld_pequiv_hh_monatlicher_betrag",
-        "wohngeld_hl_hh_monatlicher_betrag",
+        "wohngeld_pequiv_hh_betrag_m",
+        "wohngeld_hl_hh_betrag_m",
         ordered=False,
     )
 

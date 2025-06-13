@@ -16,7 +16,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw hpathl data.
 
     Returns:
-    The processed hpathl data.
+        The processed hpathl data.
     """
     out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])

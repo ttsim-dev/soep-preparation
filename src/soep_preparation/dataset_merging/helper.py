@@ -21,7 +21,10 @@ def create_dataset_from_variables(
     ],
     merging_behavior: str = "outer",
 ) -> pd.DataFrame:
-    """Create a dataset by merging data based on variable names.
+    """Create a dataset by merging different specified variables.
+
+    A list of variables and timeframe needs to be specified to create a dataset.
+    Variables are results of the pipeline of cleaning and deriving further variables.
 
     Args:
         variables: A list of variable names for the merged dataset to contain.
@@ -35,7 +38,7 @@ def create_dataset_from_variables(
         Defaults to "outer".
 
     Returns:
-    The dataset with specified variables and survey years.
+        The dataset with specified variables and survey years.
 
     Raises:
         TypeError: If the input types are not as expected.

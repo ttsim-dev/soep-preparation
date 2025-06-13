@@ -20,7 +20,7 @@ def combine_first_and_make_categorical(
         ordered: Whether the categorical is ordered.
 
     Returns:
-    The combined and converted categorical series.
+        The combined and converted categorical series.
     """
     combined = data[column_name_1].combine_first(data[column_name_2])
     return convert_to_categorical(combined, ordered=ordered)

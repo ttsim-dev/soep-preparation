@@ -49,10 +49,10 @@ def _remove_missing_data_values(series: pd.Series) -> pd.Series:
     """Remove values representing missing data or no response to the questionnaire.
 
     Parameters:
-        series: The pandas.Series to be manipulated.
+        series: The series to be manipulated.
 
     Returns:
-    A new pd.Series with the missing data values replaced with NA.
+        A new series with the missing data values replaced with NA.
 
     """
     values_to_remove = _get_values_to_remove(series)
@@ -66,7 +66,7 @@ def apply_lowest_float_dtype(series: pd.Series) -> pd.Series:
         series: The series to convert.
 
     Returns:
-    The series with the lowest float dtype applied.
+        The series with the lowest float dtype applied.
     """
     return pd.to_numeric(series, downcast="float", dtype_backend="pyarrow")
 
@@ -80,7 +80,7 @@ def apply_lowest_int_dtype(
         series: The series to convert.
 
     Returns:
-    The series with the lowest integer dtype applied.
+        The series with the lowest integer dtype applied.
     """
     if not (series < 0).any():
         return pd.to_numeric(series, downcast="unsigned", dtype_backend="pyarrow")
@@ -98,7 +98,7 @@ def convert_to_categorical(
         ordered: Whether the categories should be returned as ordered.
 
     Returns:
-    The series converted to categorical dtype.
+        The series converted to categorical dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -133,7 +133,7 @@ def create_dummy(
         Can be "equal", "geq" or "isin", "leq" or "neq".
 
     Returns:
-    A boolean series indicating the condition.
+        A boolean series indicating the condition.
     """
     fail_if_invalid_input(series, "pandas.core.series.Series")
     fail_if_invalid_inputs(true_value, "bool | str | list | float | int")
@@ -197,7 +197,7 @@ def float_to_int(
           Defaults to False.
 
     Returns:
-    The series with cleaned entries.
+        The series with cleaned entries.
     """
     if drop_missing:
         sr_int = series.astype("int")
@@ -213,7 +213,7 @@ def object_to_float(series: pd.Series) -> pd.Series:
         series: The input series to be cleaned.
 
     Returns:
-    The series with cleaned entries and transformed dtype.
+        The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -232,7 +232,7 @@ def object_to_int(series: pd.Series) -> pd.Series:
         series: The input series to be cleaned.
 
     Returns:
-    The series with cleaned entries and transformed dtype.
+        The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -258,7 +258,7 @@ def object_to_bool_categorical(
         Defaults to False.
 
     Returns:
-    The series with cleaned entries and transformed dtype.
+        The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -298,7 +298,7 @@ def object_to_int_categorical(
          Defaults to False.
 
     Returns:
-    The series with cleaned entries and transformed dtype.
+        The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,
@@ -346,7 +346,7 @@ def object_to_str_categorical(
          each element to be removed. Defaults to 1.
 
     Returns:
-    The series with cleaned entries and transformed dtype.
+        The series with cleaned entries and transformed dtype.
     """
     error_handling_sr_transformation(
         series,

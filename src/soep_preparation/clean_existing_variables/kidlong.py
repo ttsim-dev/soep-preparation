@@ -15,7 +15,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw kidlong data.
 
     Returns:
-    The processed kidlong data.
+        The processed kidlong data.
     """
     out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
@@ -23,9 +23,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
 
     out["pointer_mother"] = object_to_int(raw_data["k_pmum"])
-    out["children_care_facility_costs_monthly_current"] = object_to_int(
-        raw_data["kk_amtp_h"]
-    )
-    out["school_costs_monthly_current"] = object_to_int(raw_data["ks_amtp_h"])
+    out["children_care_facility_costs_m_current"] = object_to_int(raw_data["kk_amtp_h"])
+    out["school_costs_m_current"] = object_to_int(raw_data["ks_amtp_h"])
 
     return out

@@ -74,7 +74,7 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
             cleaning_script: The path to the respective cleaning script.
 
         Returns:
-        A pandas DataFrame to be saved to the data catalog.
+                A pandas DataFrame to be saved to the data catalog.
 
         Raises:
             TypeError: If input data or script path is not of expected type.

@@ -16,7 +16,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw biol data.
 
     Returns:
-    The processed biol data.
+        The processed biol data.
     """
     out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])

@@ -16,7 +16,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw bioedu data.
 
     Returns:
-    The processed bioedu data.
+        The processed bioedu data.
     """
     out = pd.DataFrame()
     out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])

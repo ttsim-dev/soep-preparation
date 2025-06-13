@@ -27,7 +27,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw pgen data.
 
     Returns:
-    The processed pgen data.
+        The processed pgen data.
     """
     out = pd.DataFrame()
 

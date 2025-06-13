@@ -15,7 +15,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw biobirth data.
 
     Returns:
-    The processed biobirth data.
+        The processed biobirth data.
     """
     out = pd.DataFrame()
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])

@@ -80,7 +80,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw pkal data.
 
     Returns:
-    The processed pkal data.
+        The processed pkal data.
     """
     out = pd.DataFrame()
 

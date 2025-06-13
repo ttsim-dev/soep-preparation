@@ -12,10 +12,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned and sensible data type variables from the design file.
 
     Args:
-        raw_data (pd.DataFrame): The raw design data.
+        raw_data: The raw design data.
 
     Returns:
-    The processed design data.
+        The processed design data.
     """
     out = pd.DataFrame()
     out["hh_id"] = apply_lowest_int_dtype(raw_data["cid"])

@@ -36,7 +36,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw pl data.
 
     Returns:
-    The processed pl data.
+        The processed pl data.
     """
     out = pd.DataFrame()
     out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
@@ -74,7 +74,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
-    out["net_labor_income_monthly_average"] = object_to_float(raw_data["plb0471_h"])
+    out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
     out["mutterschaftsgeld_bezug_pl"] = object_to_bool_categorical(
         raw_data["plc0126_v1"],
         renaming={"[2] Nein": False, "[1] Ja": True},
@@ -93,13 +93,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
-    out["mutterschaftsgeld_brutto_betrag_monatlich_aktuell"] = object_to_float(
+    out["mutterschaftsgeld_brutto_betrag_m_aktuell"] = object_to_float(
         raw_data["plc0153_h"]
     )
-    out["mutterschaftsgeld_betrag_durchschnittlich_monatlich"] = object_to_float(
+    out["mutterschaftsgeld_betrag_durchschnittlich_m"] = object_to_float(
         raw_data["plc0155_h"]
     )
-    out["child_alimony_monthly"] = object_to_int(raw_data["plc0178"])
+    out["child_alimony_m"] = object_to_int(raw_data["plc0178"])
 
     # private pension plan
     out["in_private_rente_eingezahlt"] = object_to_bool_categorical(
@@ -108,13 +108,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["in_private_rente_eingezahlt_monate"] = object_to_int(raw_data["plc0438"])
-    out["private_rente_beitrag_monatlich_2013"] = _private_rente_beitrag_jahr(
+    out["private_rente_beitrag_m_2013"] = _private_rente_beitrag_jahr(
         raw_data["plc0439_v1"],
         out["in_private_rente_eingezahlt_monate"],
         out["in_private_rente_eingezahlt"],
         2013,
     )
-    out["private_rente_beitrag_monatlich_2018"] = _private_rente_beitrag_jahr(
+    out["private_rente_beitrag_m_2018"] = _private_rente_beitrag_jahr(
         raw_data["plc0439_v2"],
         out["in_private_rente_eingezahlt_monate"],
         out["in_private_rente_eingezahlt"],

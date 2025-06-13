@@ -10,16 +10,16 @@ from soep_preparation.utilities.series_manipulator import (
 
 
 def _private_rentenversichung_beitrag(raw_data: pd.DataFrame) -> pd.Series:
-    private_rente_beitrag_monatlich = pd.Series(
-        raw_data["private_rente_beitrag_monatlich_2013"].where(
+    private_rente_beitrag_m = pd.Series(
+        raw_data["private_rente_beitrag_m_2013"].where(
             raw_data["survey_year"] != 2018,  # noqa: PLR2004
-            raw_data["private_rente_beitrag_monatlich_2018"],
+            raw_data["private_rente_beitrag_m_2018"],
         ),
-        name="private_rente_beitrag_monatlich",
+        name="private_rente_beitrag_m",
     )
 
-    data = pd.concat([raw_data["p_id"], private_rente_beitrag_monatlich], axis=1)
-    out = data.groupby("p_id")["private_rente_beitrag_monatlich"].ffill()
+    data = pd.concat([raw_data["p_id"], private_rente_beitrag_m], axis=1)
+    out = data.groupby("p_id")["private_rente_beitrag_m"].ffill()
     return apply_lowest_float_dtype(out)
 
 
@@ -30,7 +30,7 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data: The required data.
 
     Returns:
-    The derived variables.
+        The derived variables.
     """
     med_vars = [
         "med_pl_schwierigkeit_treppen",
@@ -53,13 +53,13 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
 
     out = pd.DataFrame(index=data.index)
 
-    out["private_rente_beitrag_monatlich"] = _private_rentenversichung_beitrag(
+    out["private_rente_beitrag_m"] = _private_rentenversichung_beitrag(
         data[
             [
                 "p_id",
                 "survey_year",
-                "private_rente_beitrag_monatlich_2013",
-                "private_rente_beitrag_monatlich_2018",
+                "private_rente_beitrag_m_2013",
+                "private_rente_beitrag_m_2018",
             ]
         ],
     )

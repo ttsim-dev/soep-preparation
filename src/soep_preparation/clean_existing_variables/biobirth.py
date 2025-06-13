@@ -46,7 +46,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw biobirth data.
 
     Returns:
-    The processed biobirth data.
+        The processed biobirth data.
     """
     out = pd.DataFrame()
     out["hh_id_original"] = float_to_int(raw_data["cid"])

@@ -67,14 +67,14 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
                 SRC / "create_derived_variables" / f"{name}.py",
             ],
         ) -> Annotated[pd.DataFrame, catalog["derived_variables"]]:
-            """Creates derived variables for a dataset using a specified script.
+            """Creates derived variables using a specified script.
 
             Parameters:
-                clean_data: Cleaned dataset to derive variables for.
+                clean_data: Cleaned existing variables to derive variables for.
                 script_path: The path to the script.
 
             Returns:
-            Derived variables to store in the data catalog.
+                Derived variables to store in the data catalog.
 
             Raises:
                 TypeError: If input data or script path is not of expected type.
@@ -91,11 +91,11 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
             """Merge the cleaned and derived variables data.
 
             Args:
-                clean_data: The cleaned dataset.
-                derived_variables: The derived variables dataset.
+                clean_data: The cleaned existing variables.
+                derived_variables: The derived variables.
 
             Returns:
-            The merged dataset.
+                The merged data of cleaned existing and derived variables.
 
             Raises:
                 TypeError: If input data or derived variables is not of expected type.
@@ -116,7 +116,7 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
                 clean_data: The cleaned data file.
 
             Returns:
-            The copied data file.
+                The copied data file.
 
             Raises:
                 TypeError: If input data is not of expected type.
@@ -148,7 +148,7 @@ for script_name in script_names:
                 function_: Function to create derived variables.
 
             Returns:
-            DataFrame containing derived variables.
+                DataFrame containing derived variables.
 
             Raises:
                 TypeError: If input data files or function is not of expected type.

@@ -16,7 +16,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw pbrutto data.
 
     Returns:
-    The processed pbrutto data.
+        The processed pbrutto data.
     """
     out = pd.DataFrame()
 
