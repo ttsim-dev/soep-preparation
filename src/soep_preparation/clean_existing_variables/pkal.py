@@ -57,11 +57,11 @@ def _wide_to_long(dataframe: pd.DataFrame) -> pd.DataFrame:
     out = out.dropna(subset=prev_wide_variables, how="all")
     return out.astype(
         {
-            "ft_employed_v1": _categorical_dtype_ordered(
+            "ft_employed_m_v1": _categorical_dtype_ordered(
                 dataframe,
                 "ft_employed_v1",
             ),
-            "ft_employed_v2": _categorical_dtype_ordered(
+            "ft_employed_m_v2": _categorical_dtype_ordered(
                 dataframe,
                 "ft_employed_v2",
             ),

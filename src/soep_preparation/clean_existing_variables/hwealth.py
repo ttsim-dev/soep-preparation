@@ -19,8 +19,8 @@ def _hwealth_wide_to_long(data_wide: pd.DataFrame) -> pd.DataFrame:
         "hh_gross_overall_wealth",
         "hh_net_overall_wealth",
         "hh_vehicles_value",
-        "hh_gross_overall_wealth_inclusive_vehicles",
-        "hh_net_overall_wealth_inclusive_vehicles_and_student_loans",
+        "hh_gross_overall_wealth_including_vehicles",
+        "hh_net_overall_wealth_including_vehicles_and_student_loans",
     ]
     data_long = pd.wide_to_long(
         data_wide,
@@ -40,8 +40,8 @@ def _hwealth_wide_to_long(data_wide: pd.DataFrame) -> pd.DataFrame:
             "hh_vehicles_value": (
                 find_lowest_int_dtype(data_long_no_missings["hh_vehicles_value"])
             ),
-            "hh_gross_overall_wealth_inclusive_vehicles": "float64[pyarrow]",
-            "hh_net_overall_wealth_inclusive_vehicles_and_student_loans": "float64[pyarrow]",
+            "hh_gross_overall_wealth_including_vehicles": "float64[pyarrow]",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans": "float64[pyarrow]",
         },
     )
 
@@ -99,35 +99,35 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_vehicles_value_d"] = apply_lowest_int_dtype(raw_data["v010hd"])
     out["hh_vehicles_value_e"] = apply_lowest_int_dtype(raw_data["v010he"])
 
-    out["hh_gross_overall_wealth_inclusive_vehicles_a"] = apply_lowest_float_dtype(
+    out["hh_gross_overall_wealth_including_vehicles_a"] = apply_lowest_float_dtype(
         raw_data["n010ha"]
     )
-    out["hh_gross_overall_wealth_inclusive_vehicles_b"] = apply_lowest_float_dtype(
+    out["hh_gross_overall_wealth_including_vehicles_b"] = apply_lowest_float_dtype(
         raw_data["n010hb"]
     )
-    out["hh_gross_overall_wealth_inclusive_vehicles_c"] = apply_lowest_float_dtype(
+    out["hh_gross_overall_wealth_including_vehicles_c"] = apply_lowest_float_dtype(
         raw_data["n010hc"]
     )
-    out["hh_gross_overall_wealth_inclusive_vehicles_d"] = apply_lowest_float_dtype(
+    out["hh_gross_overall_wealth_including_vehicles_d"] = apply_lowest_float_dtype(
         raw_data["n010hd"]
     )
-    out["hh_gross_overall_wealth_inclusive_vehicles_e"] = apply_lowest_float_dtype(
+    out["hh_gross_overall_wealth_including_vehicles_e"] = apply_lowest_float_dtype(
         raw_data["n010he"]
     )
 
-    out["hh_net_overall_wealth_inclusive_vehicles_and_student_loans_a"] = (
+    out["hh_net_overall_wealth_including_vehicles_and_student_loans_a"] = (
         apply_lowest_float_dtype(raw_data["n011ha"])
     )
-    out["hh_net_overall_wealth_inclusive_vehicles_and_student_loans_b"] = (
+    out["hh_net_overall_wealth_including_vehicles_and_student_loans_b"] = (
         apply_lowest_float_dtype(raw_data["n011hb"])
     )
-    out["hh_net_overall_wealth_inclusive_vehicles_and_student_loans_c"] = (
+    out["hh_net_overall_wealth_including_vehicles_and_student_loans_c"] = (
         apply_lowest_float_dtype(raw_data["n011hc"])
     )
-    out["hh_net_overall_wealth_inclusive_vehicles_and_student_loans_d"] = (
+    out["hh_net_overall_wealth_including_vehicles_and_student_loans_d"] = (
         apply_lowest_float_dtype(raw_data["n011hd"])
     )
-    out["hh_net_overall_wealth_inclusive_vehicles_and_student_loans_e"] = (
+    out["hh_net_overall_wealth_including_vehicles_and_student_loans_e"] = (
         apply_lowest_float_dtype(raw_data["n011he"])
     )
 

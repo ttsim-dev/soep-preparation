@@ -68,7 +68,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["total_full_time_working_experience"] = object_to_float(raw_data["pgexpft"])
     out["total_part_time_working_experience"] = object_to_float(raw_data["pgexppt"])
     out["total_unemployment_experience"] = object_to_float(raw_data["pgexpue"])
-    out["dauer_im_betrieb"] = object_to_float(raw_data["pgerwzeit"])
+    out["tenure"] = object_to_float(raw_data["pgerwzeit"])
 
     # individual work information
     out["gross_labor_income_previous_month"] = object_to_float(

@@ -9,7 +9,7 @@ from soep_preparation.utilities.series_manipulator import (
 )
 
 
-def _private_rentenversichung_beitrag(raw_data: pd.DataFrame) -> pd.Series:
+def _private_rente_beitrag_monatlich(raw_data: pd.DataFrame) -> pd.Series:
     private_rente_beitrag_m = pd.Series(
         raw_data["private_rente_beitrag_m_2013"].where(
             raw_data["survey_year"] != 2018,  # noqa: PLR2004
@@ -53,7 +53,7 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
 
     out = pd.DataFrame(index=data.index)
 
-    out["private_rente_beitrag_m"] = _private_rentenversichung_beitrag(
+    out["private_rente_beitrag_m"] = _private_rente_beitrag_monatlich(
         data[
             [
                 "p_id",

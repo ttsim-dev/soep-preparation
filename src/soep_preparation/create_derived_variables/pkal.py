@@ -53,13 +53,13 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame(index=data.index)
 
     # aligning the two consecutive full-time employment variables
-    out["ft_employed"] = _ft_employed_in_month(
-        data["ft_employed_v1"],
-        data["ft_employed_v2"],
+    out["ft_employed_m"] = _ft_employed_in_month(
+        data["ft_employed_m_v1"],
+        data["ft_employed_m_v2"],
         data["survey_year"],
     )
     # indicating whether employed at all in a month in the last year
-    out["employed_in_month"] = _employed_in_month(
+    out["employed_in_at_least_one_month"] = _employed_in_month(
         out["ft_employed"].cat.codes.between(0, 23),
         data["pt_employed"].cat.codes.between(0, 23),
         data["minijob_employed"].cat.codes.between(0, 11),

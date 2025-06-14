@@ -15,7 +15,7 @@ from soep_preparation.utilities.general import (
 )
 
 
-def _fail_if_too_many_or_few_dataframes(dataframes: dict, expected_entries: int):
+def _fail_if_too_many_or_too_few_dataframes(dataframes: dict, expected_entries: int):
     if len(dataframes.keys()) != expected_entries:
         msg = f"Expected {expected_entries} dataframes, got {len(dataframes.keys())}"
         raise ValueError(
@@ -172,5 +172,5 @@ def _error_handling_merging_task(data, variables):
 
 def _error_handling_derived_variables(data, function_):
     fail_if_invalid_input(data, "dict")
-    _fail_if_too_many_or_few_dataframes(data, 2)
+    _fail_if_too_many_or_too_few_dataframes(data, 2)
     fail_if_invalid_input(function_, "function")
