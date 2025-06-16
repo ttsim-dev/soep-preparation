@@ -6,8 +6,9 @@ import pandas as pd
 from pandas.api.types import CategoricalDtype
 
 from soep_preparation.utilities.error_handling import (
-    fail_if_invalid_input,
-    fail_if_invalid_inputs,
+    fail_if_input_all_invalid_types,
+    fail_if_input_equals,
+    fail_if_input_invalid_type,
     fail_if_series_cannot_be_transformed,
 )
 
@@ -135,14 +136,16 @@ def create_dummy(
         series: The input series to be transformed.
         true_value: The value to be compared against.
         kind: The type of comparison to be made. Defaults to "equal".
-        Can be "equal", "geq" or "isin", "leq" or "neq".
+        Can be "equal", "geq", "isin", "startswith", "leq" or "neq".
 
     Returns:
         A boolean series indicating the condition.
     """
-    fail_if_invalid_input(series, "pandas.core.series.Series")
-    fail_if_invalid_inputs(true_value, "bool | str | list | float | int")
-    fail_if_invalid_input(kind, "str")
+    fail_if_input_invalid_type(series, "pandas.core.series.Series")
+    if type(true_value) is not str:
+        fail_if_input_equals(kind, "startswith")
+    fail_if_input_all_invalid_types(true_value, "bool | str | list | float | int")
+    fail_if_input_invalid_type(kind, "str")
     if kind == "equal":
         return (series == true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
     if kind == "neq":
@@ -155,6 +158,14 @@ def create_dummy(
         return series.ge(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
     if kind == "leq":
         return series.le(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
+    if kind == "startswith":
+        return (
+            series.str.startswith(true_value)
+            .mask(series.isna(), pd.NA)
+            .astype(
+                "bool[pyarrow]",
+            )
+        )
     msg = f"Unknown kind '{kind}' of dummy creation"
     raise ValueError(msg)
 

@@ -45,10 +45,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["sampreg"],
         renaming={
             "[1] Westdeutschland, alte Bundeslaender": (
-                "Westdeutschland (alte Bundeslaender)"
+                "Westdeutschland (alte Bundesländer)"
             ),
             "[2] Ostdeutschland, neue Bundeslaender": (
-                "Ostdeutschland (neue Bundeslaender)"
+                "Ostdeutschland (neue Bundesländer)"
             ),
         },
     )

@@ -6,8 +6,8 @@ import pandas as pd
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.utilities.error_handling import (
-    fail_if_invalid_input,
-    fail_if_invalid_inputs,
+    fail_if_input_all_invalid_types,
+    fail_if_input_invalid_type,
 )
 
 
@@ -100,11 +100,11 @@ def _error_handling(
     survey_years: list[int] | None,
     merging_behavior: str,
 ) -> None:
-    fail_if_invalid_input(variable_to_file_mapping, "dict")
-    fail_if_invalid_input(variables, "list")
-    fail_if_invalid_inputs(min_and_max_survey_years, "tuple | None")
-    fail_if_invalid_inputs(survey_years, "list | None")
-    fail_if_invalid_input(merging_behavior, "str")
+    fail_if_input_invalid_type(variable_to_file_mapping, "dict")
+    fail_if_input_invalid_type(variables, "list")
+    fail_if_input_all_invalid_types(min_and_max_survey_years, "tuple | None")
+    fail_if_input_all_invalid_types(survey_years, "list | None")
+    fail_if_input_invalid_type(merging_behavior, "str")
     _fail_if_empty(variable_to_file_mapping)
     _fail_if_empty(variables)
     if survey_years is not None:

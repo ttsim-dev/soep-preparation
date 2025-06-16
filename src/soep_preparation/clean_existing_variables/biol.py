@@ -28,8 +28,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={
             "[4] Auf dem Land": "Auf dem Land",
             "[3] Kleinstadt": "Kleinstadt",
-            "[2] Mittelgrosse Stadt": "Mittelgrosse Stadt",
-            "[1] Grosstadt": "Grosstadt",
+            "[2] Mittelgrosse Stadt": "Mittelgroße Stadt",
+            "[1] Grosstadt": "Großtadt",
         },
         ordered=True,
     )

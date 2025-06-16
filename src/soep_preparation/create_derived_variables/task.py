@@ -7,7 +7,7 @@ import pandas as pd
 from pytask import PickleNode, task
 
 from soep_preparation.config import DATA_CATALOGS, SRC
-from soep_preparation.utilities.error_handling import fail_if_invalid_input
+from soep_preparation.utilities.error_handling import fail_if_input_invalid_type
 from soep_preparation.utilities.general import (
     get_script_names,
     get_stems_if_corresponding_raw_file_exists,
@@ -123,7 +123,7 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
             Raises:
                 TypeError: If input data is not of expected type.
             """
-            fail_if_invalid_input(clean_data, "pandas.core.frame.DataFrame")
+            fail_if_input_invalid_type(clean_data, "pandas.core.frame.DataFrame")
             return clean_data
 
 
@@ -161,16 +161,16 @@ for script_name in script_names:
 
 
 def _error_handling_creation_task(data, script_path):
-    fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
-    fail_if_invalid_input(script_path, "pathlib._local.PosixPath")
+    fail_if_input_invalid_type(data, "pandas.core.frame.DataFrame")
+    fail_if_input_invalid_type(script_path, "pathlib._local.PosixPath")
 
 
 def _error_handling_merging_task(data, variables):
-    fail_if_invalid_input(data, "pandas.core.frame.DataFrame")
-    fail_if_invalid_input(variables, "pandas.core.frame.DataFrame")
+    fail_if_input_invalid_type(data, "pandas.core.frame.DataFrame")
+    fail_if_input_invalid_type(variables, "pandas.core.frame.DataFrame")
 
 
 def _error_handling_derived_variables(data, function_):
-    fail_if_invalid_input(data, "dict")
+    fail_if_input_invalid_type(data, "dict")
     _fail_if_too_many_or_too_few_dataframes(data, 2)
-    fail_if_invalid_input(function_, "function")
+    fail_if_input_invalid_type(function_, "function")

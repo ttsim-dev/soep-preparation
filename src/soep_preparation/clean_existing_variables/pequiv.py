@@ -134,7 +134,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
 
-    out["med_groesse_pequiv"] = object_to_int(raw_data["m11122"])
+    out["med_größe_pequiv"] = object_to_int(raw_data["m11122"])
     out["med_gewicht_pequiv"] = object_to_int(raw_data["m11123"])
     out["med_zufrieden_pequiv"] = object_to_int_categorical(
         raw_data["m11125"],
@@ -180,7 +180,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["alg2_betrag_y"] = object_to_int(raw_data["iunby"])
     out["arbeitslosen_hilfe_betrag_y"] = object_to_int(raw_data["iunay"])
     out["unterhalt_empfangen_betrag_y"] = object_to_int(raw_data["isuby"])
-    out["uebergangsgeld_empfangen_betrag_y"] = object_to_int(raw_data["ieret"])
+    out["übergangsgeld_empfangen_betrag_y"] = object_to_int(raw_data["ieret"])
     out["maternity_benefit_amount_y"] = object_to_int(raw_data["imaty"])
     out["student_grants_amount_y"] = object_to_int(raw_data["istuy"])
     out["private_transfers_received_amount_y"] = object_to_int(raw_data["ielse"])

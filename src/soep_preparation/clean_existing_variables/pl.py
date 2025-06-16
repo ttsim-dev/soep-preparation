@@ -138,7 +138,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
     )
-    out["med_groesse_pl"] = object_to_int(raw_data["ple0006"])
+    out["med_größe_pl"] = object_to_int(raw_data["ple0006"])
     out["med_gewicht_pl"] = object_to_int(raw_data["ple0007"])
     out["med_subjective_status_pl"] = object_to_int_categorical(
         raw_data["ple0008"],
@@ -205,7 +205,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["ple0021"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
-    out["med_ruecken_pl"] = object_to_bool_categorical(
+    out["med_rücken_pl"] = object_to_bool_categorical(
         raw_data["ple0022"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )

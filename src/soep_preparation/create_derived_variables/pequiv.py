@@ -36,7 +36,7 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame(index=data.index)
 
     out["bmi_pequiv"] = apply_smallest_float_dtype(
-        data["med_gewicht_pequiv"] / ((data["med_groesse_pequiv"] / 100) ** 2),
+        data["med_gewicht_pequiv"] / ((data["med_größe_pequiv"] / 100) ** 2),
     )
     out["bmi_dummy_pequiv"] = apply_smallest_int_dtype(
         out["bmi_pequiv"] >= 30,  # noqa: PLR2004

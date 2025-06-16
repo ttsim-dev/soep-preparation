@@ -11,7 +11,7 @@ def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str) -> None:
         raise TypeError(msg)
 
 
-def fail_if_invalid_input(input_: Any, expected_dtype: str) -> None:  # noqa: ANN401
+def fail_if_input_invalid_type(input_: Any, expected_dtype: str) -> None:
     """Fail if input is not of expected type.
 
     Args:
@@ -28,7 +28,7 @@ def fail_if_invalid_input(input_: Any, expected_dtype: str) -> None:  # noqa: AN
         )
 
 
-def fail_if_invalid_inputs(input_: Any, expected_dtypes: str) -> None:  # noqa: ANN401
+def fail_if_input_all_invalid_types(input_: Any, expected_dtypes: str) -> None:
     """Fail if input is not of any of expected types.
 
     Args:
@@ -51,7 +51,24 @@ def fail_if_invalid_inputs(input_: Any, expected_dtypes: str) -> None:  # noqa: 
             )
 
     else:
-        fail_if_invalid_input(input_, expected_dtypes)
+        fail_if_input_invalid_type(input_, expected_dtypes)
+
+
+def fail_if_input_equals(input_: Any, failing_value: str) -> None:
+    """Fail if input is equal to value.
+
+    Args:
+        input_: The input to check.
+        failing_value: The value the input can not take.
+
+    Raises:
+        ValueError: If input is equal to value.
+    """
+    if input_ == failing_value:
+        msg = f"Expected {input_} to be unequal to {failing_value}"
+        raise ValueError(
+            msg,
+        )
 
 
 def fail_if_series_cannot_be_transformed(
@@ -79,7 +96,7 @@ def fail_if_series_cannot_be_transformed(
     if entries_expected_types is not None:
         type_ = entries_expected_types[1]
         for unique_entry in entries_expected_types[0]:
-            fail_if_invalid_inputs(unique_entry, type_)
+            fail_if_input_all_invalid_types(unique_entry, type_)
     else:
         msg = (
             "Did not receive a list of unique entries and their expected dtype, "
@@ -89,4 +106,4 @@ def fail_if_series_cannot_be_transformed(
             msg,
         )
     for item in input_expected_types:
-        fail_if_invalid_input(*item)
+        fail_if_input_invalid_type(*item)

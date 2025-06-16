@@ -41,12 +41,12 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         "med_herzkrankheit_pl",
         "med_krebs_pl",
         "med_schlaganfall_pl",
-        "med_migraene_pl",
+        "med_migräne_pl",
         "med_bluthochdruck_pl",
         "med_depressiv_pl",
         "med_demenz_pl",
         "med_gelenk_pl",
-        "med_ruecken_pl",
+        "med_rücken_pl",
         "med_sonst_pl",
         "med_raucher_pl",
     ]
@@ -66,7 +66,7 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
     out["med_schwierigkeit_treppen_dummy_pl"] = create_dummy(
         data["med_schwierigkeit_treppen_pl"], [1, 2], "isin"
     )
-    out["bmi_pl"] = data["med_gewicht_pl"] / ((data["med_groesse_pl"] / 100) ** 2)
+    out["bmi_pl"] = data["med_gewicht_pl"] / ((data["med_größe_pl"] / 100) ** 2)
     out["bmi_dummy_pl"] = apply_smallest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
     out["med_subjective_status_dummy_pl"] = create_dummy(
         data["med_subjective_status_pl"], 3, "geq"

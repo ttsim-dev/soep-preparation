@@ -7,7 +7,7 @@ import pytask
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.dataset_merging.helper import create_dataset_from_variables
-from soep_preparation.utilities.error_handling import fail_if_invalid_input
+from soep_preparation.utilities.error_handling import fail_if_input_invalid_type
 
 VARIABLES = [
     "age",
@@ -48,5 +48,5 @@ def task_merge_variables(
 
 
 def _error_handling_task(mapping: Any, variables: Any) -> None:  # noqa: ANN401
-    fail_if_invalid_input(mapping, "dict")
-    fail_if_invalid_input(variables, "list")
+    fail_if_input_invalid_type(mapping, "dict")
+    fail_if_input_invalid_type(variables, "list")

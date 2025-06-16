@@ -12,18 +12,16 @@ def _in_education(
     occupation: "pd.Series[pd.Categorical]",
 ) -> "pd.Series[pd.Categorical]":
     in_education = [
-        "in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
-        "Auszubildende (bis 1999)",
-        "Auszubildende, gewerblich-technisch",
+        "Aspiranten (1990 Ost)",
+        "Auszubildende (1984-1999), Lehrlinge (1990 Ost)",
         "Auszubildende, gewerblich-technisch (ab 2000)",
-        "Auszubildende, kaufmaennisch",
-        "Volontaere, Praktikanten",
-        "Aspiranten",
+        "Auszubildende, kaufmännisch (ab 2000)",
         "NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
+        "Volontäre, Praktikanten",
     ]
     out = create_dummy(employment, "Ausbildung, Lehre")
     # Set in_education to missing if out of the labor force -- could mean anything.
-    out = out.where(employment != "Nicht erwerbstaetig", pd.NA)
+    out = out.where(employment != "Nicht erwerbstätig", pd.NA)
     return out.fillna(create_dummy(occupation, in_education, "isin"))
 
 
@@ -32,7 +30,7 @@ def _self_employed_occupations(
 ) -> list:
     """Occupation names that indicate self employment."""
     occupation_names = list(occupation.dropna().unique())
-    occupations_of_interest = re.compile("^.*Freiberufler.*$|^.*selbstae.*$")
+    occupations_of_interest = re.compile("^.*Freiberufler.*$|^.*selbstä.*$")
     return list(filter(occupations_of_interest.match, occupation_names))
 
 
@@ -97,34 +95,39 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data["occupation_status"],
         "NE: Wehr- und Zivildienst",
     )
-    out["erwerbstätig_annual"] = (
+
+    out["erwerbstätig_y"] = (
         create_dummy(data["employment_status"], "Nicht erwerbstätig", "neq")
     ) & (~out["in_education"])
 
-    out["nicht_erwerbstätig_annual"] = create_dummy(
+    out["nicht_erwerbstätig_y"] = create_dummy(
         data["employment_status"],
         "Nicht erwerbstätig",
     )
-    out["unemployed_annual"] = create_dummy(
+    out["unemployed_y"] = create_dummy(
         data["occupation_status"],
         "NE: arbeitslos gemeldet",
     )
-    out["ft_annual"] = create_dummy(data["employment_status"], "Voll erwerbstätig")
-    out["pt_employed_annual"] = create_dummy(
+    out["ft_y"] = create_dummy(data["employment_status"], "Voll erwerbstätig")
+    out["pt_employed_y"] = create_dummy(
         data["employment_status"], "Teilzeitbeschäftigung"
     )
-    out["geringfuegig_erwbstätig"] = create_dummy(
+    out["geringfügig_erwbstätig"] = create_dummy(
         data["employment_status"],
-        "Unregelmässig, geringfuegig erwerbstät.",
+        "Unregelmässig, geringfügig erwerbstät.",
     )
     out["werkstatt"] = create_dummy(
         data["employment_status"],
-        "Werkstatt für behinderte Menschen",
+        "Werkstatt für behinderte Menschen (seit 1998)",
     )
-    out["beamte"] = data["occupation_status"].str.startswith("Beamte", na=False)
+    out["beamte"] = create_dummy(
+        series=data["occupation_status"],
+        true_value="Beamte",
+        kind="startswith",
+    )
     out["parental_leave"] = create_dummy(
         data["laborforce_status"],
-        "NE: Mutterschutz/Elternzeit (seit 1991) ",
+        "NE: Mutterschutz/Elternzeit (seit 1991)",
     )
     out["highest_education"] = _education(
         data["education_casmin"],

@@ -16,7 +16,7 @@ def _bruttokaltmiete_m_hh(
     rented_or_owned: "pd.Series[pd.Categorical]",
 ) -> "pd.Series[float]":
     out = object_to_float(miete)
-    return out.where(rented_or_owned != "Eigentuemer", 0)
+    return out.where(rented_or_owned != "Eigentümer", 0)
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -37,7 +37,16 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["building_year_hh_min"] = object_to_int(raw_data["hgcnstyrmin"])
     out["heating_costs_m_hh"] = object_to_int(raw_data["hgheat"])
     out["year_moved_in"] = object_to_int(raw_data["hgmoveyr"])
-    out["rented_or_owned"] = object_to_str_categorical(raw_data["hgowner"])
+    out["rented_or_owned"] = object_to_str_categorical(
+        series=raw_data["hgowner"],
+        renaming={
+            "[1] Eigentuemer": "Eigentümer",
+            "[2] Hauptmieter": "Hauptmieter",
+            "[3] Untermieter": "Untermieter",
+            "[4] Mieter": "Mieter",
+            "[5] Heimbewohner oder Gewarkschaftsunterkunft": "Heimbewohner oder Gewarkschaftsunterkunft",
+        },
+    )
     out["rent_minus_heating_costs_m_hh"] = _bruttokaltmiete_m_hh(
         raw_data["hgrent"],
         out["rented_or_owned"],
