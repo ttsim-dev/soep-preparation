@@ -3,8 +3,8 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_float_dtype,
-    apply_lowest_int_dtype,
+    apply_smallest_float_dtype,
+    apply_smallest_int_dtype,
     create_dummy,
 )
 
@@ -20,7 +20,7 @@ def _private_rente_beitrag_monatlich(raw_data: pd.DataFrame) -> pd.Series:
 
     data = pd.concat([raw_data["p_id"], private_rente_beitrag_m], axis=1)
     out = data.groupby("p_id")["private_rente_beitrag_m"].ffill()
-    return apply_lowest_float_dtype(out)
+    return apply_smallest_float_dtype(out)
 
 
 def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
@@ -67,7 +67,7 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data["med_schwierigkeit_treppen_pl"], [1, 2], "isin"
     )
     out["bmi_pl"] = data["med_gewicht_pl"] / ((data["med_groesse_pl"] / 100) ** 2)
-    out["bmi_dummy_pl"] = apply_lowest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
+    out["bmi_dummy_pl"] = apply_smallest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
     out["med_subjective_status_dummy_pl"] = create_dummy(
         data["med_subjective_status_pl"], 3, "geq"
     )
@@ -75,5 +75,5 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         [data[med_vars], out["med_subjective_status_dummy_pl"]],
         axis=1,
     )
-    out["frailty_pl"] = apply_lowest_float_dtype(med_var_data.mean(axis=1))
+    out["frailty_pl"] = apply_smallest_float_dtype(med_var_data.mean(axis=1))
     return out

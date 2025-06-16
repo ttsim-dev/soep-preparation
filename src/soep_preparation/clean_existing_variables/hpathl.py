@@ -3,8 +3,8 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_float_dtype,
-    apply_lowest_int_dtype,
+    apply_smallest_float_dtype,
+    apply_smallest_int_dtype,
     object_to_str_categorical,
 )
 
@@ -19,8 +19,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed hpathl data.
     """
     out = pd.DataFrame()
-    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["hh_soep_sample_hpathl"] = object_to_str_categorical(
         raw_data["hsample"].replace(
@@ -32,8 +32,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ),
         nr_identifiers=2,
     )
-    out["hh_staying_probability"] = apply_lowest_float_dtype(raw_data["hbleib"])
-    out["hh_weighting_factor"] = apply_lowest_float_dtype(raw_data["hhrf"])
-    out["hh_weighting_factor_new_only"] = apply_lowest_float_dtype(raw_data["hhrf0"])
-    out["hh_weighting_factor_without_new"] = apply_lowest_float_dtype(raw_data["hhrf1"])
+    out["hh_staying_probability"] = apply_smallest_float_dtype(raw_data["hbleib"])
+    out["hh_weighting_factor"] = apply_smallest_float_dtype(raw_data["hhrf"])
+    out["hh_weighting_factor_new_only"] = apply_smallest_float_dtype(raw_data["hhrf0"])
+    out["hh_weighting_factor_without_new"] = apply_smallest_float_dtype(
+        raw_data["hhrf1"]
+    )
     return out

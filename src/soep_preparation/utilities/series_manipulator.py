@@ -64,28 +64,28 @@ def _remove_missing_data_values(series: pd.Series) -> pd.Series:
     return series.replace(values_to_remove, pd.NA)
 
 
-def apply_lowest_float_dtype(series: pd.Series) -> pd.Series:
-    """Apply the lowest float dtype to a series.
+def apply_smallest_float_dtype(series: pd.Series) -> pd.Series:
+    """Apply the smallest bit-size float dtype to a series.
 
     Args:
         series: The series to convert.
 
     Returns:
-        The series with the lowest float dtype applied.
+        The series with the smallest float dtype applied.
     """
     return pd.to_numeric(series, downcast="float", dtype_backend="pyarrow")
 
 
-def apply_lowest_int_dtype(
+def apply_smallest_int_dtype(
     series: pd.Series,
 ) -> pd.Series:
-    """Apply the lowest integer dtype to a series.
+    """Apply the smallest bit-size integer dtype to a series.
 
     Args:
         series: The series to convert.
 
     Returns:
-        The series with the lowest integer dtype applied.
+        The series with the smallest integer dtype applied.
     """
     if not (series < 0).any():
         return pd.to_numeric(series, downcast="unsigned", dtype_backend="pyarrow")
@@ -159,37 +159,6 @@ def create_dummy(
     raise ValueError(msg)
 
 
-def find_lowest_int_dtype(series: pd.Series) -> str:  # noqa: PLR0911
-    """Find the lowest integer dtype for a series.
-
-    Args:
-        series: The series to check.
-
-    Returns:
-        The lowest integer dtype.
-
-    """
-    if series.isna().all():
-        return "int64[pyarrow]"
-    if "float" in series.dtype.name:
-        series = series.astype("float[pyarrow]")
-    if series.min() >= 0:
-        if series.max() <= 255:  # noqa: PLR2004
-            return "uint8[pyarrow]"
-        if series.max() <= 65535:  # noqa: PLR2004
-            return "uint16[pyarrow]"
-        if series.max() <= 4294967295:  # noqa: PLR2004
-            return "uint32[pyarrow]"
-        return "uint64[pyarrow]"
-    if series.min() >= -128 and series.max() <= 127:  # noqa: PLR2004
-        return "int8[pyarrow]"
-    if series.min() >= -32768 and series.max() <= 32767:  # noqa: PLR2004
-        return "int16[pyarrow]"
-    if series.min() >= -2147483648 and series.max() <= 2147483647:  # noqa: PLR2004
-        return "int32[pyarrow]"
-    return "int64[pyarrow]"
-
-
 def float_to_int(
     series: pd.Series,
     drop_missing: bool = False,  # noqa: FBT001, FBT002
@@ -207,8 +176,8 @@ def float_to_int(
     if drop_missing:
         sr_int = series.astype("int")
         sr_no_missing = sr_int.where(sr_int >= 0, -1).replace({-1: pd.NA})
-        return apply_lowest_int_dtype(sr_no_missing)
-    return apply_lowest_int_dtype(series=series)
+        return apply_smallest_int_dtype(sr_no_missing)
+    return apply_smallest_int_dtype(series=series)
 
 
 def object_to_float(series: pd.Series) -> pd.Series:
@@ -227,7 +196,7 @@ def object_to_float(series: pd.Series) -> pd.Series:
         [series.unique(), "float | int | str"],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
-    return apply_lowest_float_dtype(sr_relevant_values_only)
+    return apply_smallest_float_dtype(sr_relevant_values_only)
 
 
 def object_to_int(series: pd.Series) -> pd.Series:
@@ -246,7 +215,7 @@ def object_to_int(series: pd.Series) -> pd.Series:
         [series.unique(), "float | int | str"],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
-    return apply_lowest_int_dtype(sr_relevant_values_only)
+    return apply_smallest_int_dtype(sr_relevant_values_only)
 
 
 def object_to_bool_categorical(
@@ -318,16 +287,16 @@ def object_to_int_categorical(
     sr_relevant_values_only = _remove_missing_data_values(series)
     if renaming:
         sr_renamed = sr_relevant_values_only.replace(renaming)
-        sr_int = apply_lowest_int_dtype(sr_renamed)
-        categories = apply_lowest_int_dtype(
+        sr_int = apply_smallest_int_dtype(sr_renamed)
+        categories = apply_smallest_int_dtype(
             pd.Series(
                 data=pd.Series(renaming).unique(),
-                dtype=find_lowest_int_dtype(sr_int),
+                dtype=apply_smallest_int_dtype(sr_int).dtype,
             ),
         )
     else:
-        sr_int = apply_lowest_int_dtype(sr_relevant_values_only)
-        categories = apply_lowest_int_dtype(_get_sorted_not_na_unique_values(sr_int))
+        sr_int = apply_smallest_int_dtype(sr_relevant_values_only)
+        categories = apply_smallest_int_dtype(_get_sorted_not_na_unique_values(sr_int))
 
     raw_cat_dtype = CategoricalDtype(categories=categories, ordered=ordered)
     return sr_int.astype(raw_cat_dtype)

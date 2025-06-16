@@ -3,7 +3,7 @@
 import pandas as pd
 from pandas.api.types import union_categoricals
 
-from soep_preparation.utilities.series_manipulator import apply_lowest_int_dtype
+from soep_preparation.utilities.series_manipulator import apply_smallest_int_dtype
 
 
 def _ft_employed_in_month(
@@ -30,15 +30,17 @@ def _employed_in_month(
     """This is on the month level."""
     out = pd.Series(pd.NA, index=full.index)
     out = out.where(~(full | half | minijob), 1)
-    return apply_lowest_int_dtype(out)
+    return apply_smallest_int_dtype(out)
 
 
 def _number_of_months_employed(
-    raw_data: pd.DataFrame, employment_sr: pd.Series
+    raw_data: pd.DataFrame, employment_dummy_sr: pd.Series
 ) -> pd.Series:
     """This is on the annual level."""
-    data = pd.concat([raw_data[["p_id", "survey_year"]], employment_sr], axis=1)
-    return data.groupby(["p_id", "survey_year"])["employed_in_month"].transform("sum")
+    data = pd.concat([raw_data[["p_id", "survey_year"]], employment_dummy_sr], axis=1)
+    return data.groupby(["p_id", "survey_year"])[
+        "employed_in_at_least_one_month_dummy"
+    ].transform("sum")
 
 
 def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
@@ -58,14 +60,14 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data["ft_employed_m_v2"],
         data["survey_year"],
     )
-    # indicating whether employed at all in a month in the last year
-    out["employed_in_at_least_one_month"] = _employed_in_month(
-        out["ft_employed"].cat.codes.between(0, 23),
-        data["pt_employed"].cat.codes.between(0, 23),
-        data["minijob_employed"].cat.codes.between(0, 11),
+    # indicating whether employed at all in a given month in the last year
+    out["employed_in_at_least_one_month_dummy"] = _employed_in_month(
+        out["ft_employed_m"].cat.codes.between(0, 23),
+        data["pt_employed_m"].cat.codes.between(0, 23),
+        data["minijob_employed_m"].cat.codes.between(0, 11),
     )
     # indicating the number of months employed in the previous year
     out["number_of_months_employed"] = _number_of_months_employed(
-        data, out["employed_in_month"]
+        data, out["employed_in_at_least_one_month_dummy"]
     )
     return out

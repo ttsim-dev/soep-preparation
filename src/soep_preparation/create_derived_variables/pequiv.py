@@ -3,8 +3,8 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_float_dtype,
-    apply_lowest_int_dtype,
+    apply_smallest_float_dtype,
+    apply_smallest_int_dtype,
 )
 
 
@@ -35,13 +35,13 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
 
     out = pd.DataFrame(index=data.index)
 
-    out["bmi_pequiv"] = apply_lowest_float_dtype(
+    out["bmi_pequiv"] = apply_smallest_float_dtype(
         data["med_gewicht_pequiv"] / ((data["med_groesse_pequiv"] / 100) ** 2),
     )
-    out["bmi_dummy_pequiv"] = apply_lowest_int_dtype(
+    out["bmi_dummy_pequiv"] = apply_smallest_int_dtype(
         out["bmi_pequiv"] >= 30,  # noqa: PLR2004
     )
-    out["med_subjective_status_dummy_pequiv"] = apply_lowest_int_dtype(
+    out["med_subjective_status_dummy_pequiv"] = apply_smallest_int_dtype(
         data["med_subjective_status_pequiv"] <= 5,  # noqa: PLR2004
     )
     med_var_data = pd.concat(
@@ -51,22 +51,22 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         ],
         axis=1,
     )
-    out["frailty_pequiv"] = apply_lowest_float_dtype(med_var_data.mean(axis=1))
+    out["frailty_pequiv"] = apply_smallest_float_dtype(med_var_data.mean(axis=1))
 
     # hh social benefits yearly to average monthly amounts
-    out["alg2_hh_betrag_m_pequiv"] = apply_lowest_float_dtype(
+    out["alg2_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
         data["alg2_hh_betrag_y_pequiv"] / 12
     )
-    out["kindergeld_hh_betrag_m_pequiv"] = apply_lowest_float_dtype(
+    out["kindergeld_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
         data["kindergeld_hh_betrag_y_pequiv"] / 12
     )
-    out["kinderzuschlag_hh_betrag_m_pequiv"] = apply_lowest_float_dtype(
+    out["kinderzuschlag_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
         data["kinderzuschlag_hh_betrag_y_pequiv"] / 12
     )
-    out["childcare_subsidy_hh_amount_m"] = apply_lowest_float_dtype(
+    out["childcare_subsidy_hh_amount_m"] = apply_smallest_float_dtype(
         data["childcare_subsidy_hh_amount_y"] / 12
     )
-    out["wohngeld_hh_betrag_m_pequiv"] = apply_lowest_float_dtype(
+    out["wohngeld_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
         data["wohngeld_hh_betrag_y_pequiv"] / 12
     )
     return out

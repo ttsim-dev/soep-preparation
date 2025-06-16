@@ -4,7 +4,7 @@ import pandas as pd
 
 from soep_preparation.clean_existing_variables import month_mapping
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_int_dtype,
+    apply_smallest_int_dtype,
     object_to_bool_categorical,
     object_to_float,
     object_to_int_categorical,
@@ -17,7 +17,7 @@ def _weekly_working_hours_fill_non_working(
     employment_status: pd.Series,
 ) -> pd.Series:
     out = object_to_float(working_hours)
-    return out.where(employment_status != "Nicht erwerbstaetig", 0)
+    return out.where(employment_status != "Nicht erwerbstätig", 0)
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -31,10 +31,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """
     out = pd.DataFrame()
 
-    out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
+    out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["month_interview"] = object_to_int_categorical(
         raw_data["pgmonth"],
@@ -45,14 +45,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["education_isced"] = object_to_str_categorical(
         raw_data["pgisced11"],
     )
-    out["education_isced_cat"] = apply_lowest_int_dtype(
+    out["education_isced_cat"] = apply_smallest_int_dtype(
         out["education_isced"].cat.codes,
     )
     out["education_casmin"] = object_to_str_categorical(
         raw_data["pgcasmin"],
         nr_identifiers=2,
     )
-    out["education_casmin_cat"] = apply_lowest_int_dtype(
+    out["education_casmin_cat"] = apply_smallest_int_dtype(
         out["education_casmin"].cat.codes,
     )
 
@@ -96,7 +96,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             {-5: "[-5] in Fragebogenversion nicht enthalten"},
         ),
     )
-    out["grund_beschaeftigungsende"] = object_to_str_categorical(
+    out["grund_beschäftigungsende"] = object_to_str_categorical(
         raw_data["pgjobend"],
     )
 

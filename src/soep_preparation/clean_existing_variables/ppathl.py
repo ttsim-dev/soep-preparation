@@ -4,8 +4,8 @@ import pandas as pd
 
 from soep_preparation.clean_existing_variables import month_mapping
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_float_dtype,
-    apply_lowest_int_dtype,
+    apply_smallest_float_dtype,
+    apply_smallest_int_dtype,
     object_to_int,
     object_to_int_categorical,
     object_to_str_categorical,
@@ -23,9 +23,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """
     out = pd.DataFrame()
 
-    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
+    out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     # individual characteristics
     out["born_in_germany"] = object_to_str_categorical(raw_data["germborn"])
@@ -72,12 +72,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # individual staying probabilities and weighting factors
-    out["individual_staying_probability"] = apply_lowest_float_dtype(raw_data["pbleib"])
-    out["individual_weighting_factor"] = apply_lowest_float_dtype(raw_data["phrf"])
-    out["individual_weighting_factor_new_only"] = apply_lowest_float_dtype(
+    out["individual_staying_probability"] = apply_smallest_float_dtype(
+        raw_data["pbleib"]
+    )
+    out["individual_weighting_factor"] = apply_smallest_float_dtype(raw_data["phrf"])
+    out["individual_weighting_factor_new_only"] = apply_smallest_float_dtype(
         raw_data["phrf0"]
     )
-    out["individual_weighting_factor_without_new"] = apply_lowest_float_dtype(
+    out["individual_weighting_factor_without_new"] = apply_smallest_float_dtype(
         raw_data["phrf1"]
     )
     return out

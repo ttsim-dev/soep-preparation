@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_int_dtype,
+    apply_smallest_int_dtype,
     create_dummy,
     object_to_bool_categorical,
     object_to_int,
@@ -23,14 +23,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """
     out = pd.DataFrame()
 
-    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
+    out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
+    out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     # hh characteristics
-    out["number_of_persons_hh"] = apply_lowest_int_dtype(raw_data["d11106"])
-    out["number_of_children_hh"] = apply_lowest_int_dtype(raw_data["d11107"])
+    out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])
+    out["number_of_children_hh"] = apply_smallest_int_dtype(raw_data["d11107"])
     # hh income
     out["einkommen_vor_steuer_hh_betrag_y"] = object_to_int(raw_data["i11101"])
     out["einkommen_nach_steuer_hh_betrag_y"] = object_to_int(raw_data["i11102"])
@@ -166,10 +166,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["hours_worked_annually"] = object_to_int(raw_data["e11101"])
     # individual income
-    out["einkuenfte_aus_arbeit_betrag_y"] = object_to_int(raw_data["i11110"])
-    out["einkuenfte_aus_erster_arbeit_betrag_y"] = object_to_int(raw_data["ijob1"])
-    out["einkuenfte_aus_zweiter_arbeit_betrag_y"] = object_to_int(raw_data["ijob2"])
-    out["einkuenfte_aus_selbststaendiger_arbeit_betrag_y"] = object_to_int(
+    out["einkünfte_aus_arbeit_betrag_y"] = object_to_int(raw_data["i11110"])
+    out["einkünfte_aus_erster_arbeit_betrag_y"] = object_to_int(raw_data["ijob1"])
+    out["einkünfte_aus_zweiter_arbeit_betrag_y"] = object_to_int(raw_data["ijob2"])
+    out["einkünfte_aus_selbstständiger_arbeit_betrag_y"] = object_to_int(
         raw_data["iself"]
     ).fillna(0)
     out["christmas_bonus_amount_y"] = object_to_int(raw_data["ixmas"])

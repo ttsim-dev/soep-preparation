@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_int_dtype,
+    apply_smallest_int_dtype,
     float_to_int,
 )
 
@@ -18,7 +18,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed biobirth data.
     """
     out = pd.DataFrame()
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
 
     out["p_id_father"] = float_to_int(
         raw_data["fnr"],

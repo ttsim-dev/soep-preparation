@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_int_dtype,
+    apply_smallest_int_dtype,
     create_dummy,
     object_to_bool_categorical,
     object_to_float,
@@ -39,9 +39,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed pl data.
     """
     out = pd.DataFrame()
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["person_number_surveyed"] = object_to_int(raw_data["pnr"])
     out["years_worked_last_job"] = object_to_int(raw_data["plb0301"])
@@ -59,13 +59,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["beendigung_beschaeftigungsverhaeltnis_grund"] = object_to_str_categorical(
+    out["beendigung_beschäftigungsverhältnis_grund"] = object_to_str_categorical(
         raw_data["plb0304_v14"]
     )
-    out["beendigung_beschaeftigungsverhaeltnis_grund_1999"] = object_to_str_categorical(
+    out["beendigung_beschäftigungsverhältnis_grund_1999"] = object_to_str_categorical(
         raw_data["plb0304_v13"]
     )
-    out["beendigung_beschaeftigungsverhaeltnis_betriebsstillegung"] = (
+    out["beendigung_beschäftigungsverhältnis_betriebsstillegung"] = (
         object_to_str_categorical(raw_data["plb0304_v11"])
     )
     out["active_work_search_last_four_weeks"] = object_to_bool_categorical(
@@ -181,7 +181,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_migraene_pl"] = object_to_bool_categorical(
+    out["med_migräne_pl"] = object_to_bool_categorical(
         raw_data["ple0017"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,

@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_int_dtype,
+    apply_smallest_int_dtype,
     float_to_int,
     object_to_float,
     object_to_int,
@@ -29,8 +29,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed hgen data.
     """
     out = pd.DataFrame()
-    out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
+    out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
     out["survey_year"] = float_to_int(raw_data["syear"])
 
     out["building_year_hh_max"] = object_to_int(raw_data["hgcnstyrmax"])

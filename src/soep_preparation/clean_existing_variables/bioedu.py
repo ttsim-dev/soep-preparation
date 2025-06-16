@@ -4,7 +4,7 @@ import pandas as pd
 
 from soep_preparation.clean_existing_variables import month_mapping
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_int_dtype,
+    apply_smallest_int_dtype,
     object_to_int_categorical,
 )
 
@@ -19,8 +19,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed bioedu data.
     """
     out = pd.DataFrame()
-    out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
+    out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
+    out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
 
     out["birth_month_bioedu"] = object_to_int_categorical(
         raw_data["gebmonat"],

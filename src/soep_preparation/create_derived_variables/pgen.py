@@ -97,29 +97,29 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data["occupation_status"],
         "NE: Wehr- und Zivildienst",
     )
-    out["erwerbstaetig_annual"] = (
-        create_dummy(data["employment_status"], "Nicht erwerbstaetig", "neq")
+    out["erwerbstätig_annual"] = (
+        create_dummy(data["employment_status"], "Nicht erwerbstätig", "neq")
     ) & (~out["in_education"])
 
-    out["nicht_erwerbstaetig_annual"] = create_dummy(
+    out["nicht_erwerbstätig_annual"] = create_dummy(
         data["employment_status"],
-        "Nicht erwerbstaetig",
+        "Nicht erwerbstätig",
     )
     out["unemployed_annual"] = create_dummy(
         data["occupation_status"],
         "NE: arbeitslos gemeldet",
     )
-    out["ft_annual"] = create_dummy(data["employment_status"], "Voll erwerbstaetig")
+    out["ft_annual"] = create_dummy(data["employment_status"], "Voll erwerbstätig")
     out["pt_employed_annual"] = create_dummy(
-        data["employment_status"], "Teilzeitbeschaeftigung"
+        data["employment_status"], "Teilzeitbeschäftigung"
     )
-    out["geringfuegig_erwbstaetig"] = create_dummy(
+    out["geringfuegig_erwbstätig"] = create_dummy(
         data["employment_status"],
-        "Unregelmaessig, geringfuegig erwerbstaet.",
+        "Unregelmässig, geringfuegig erwerbstät.",
     )
     out["werkstatt"] = create_dummy(
         data["employment_status"],
-        "Werkstatt fuer behinderte Menschen",
+        "Werkstatt für behinderte Menschen",
     )
     out["beamte"] = data["occupation_status"].str.startswith("Beamte", na=False)
     out["parental_leave"] = create_dummy(

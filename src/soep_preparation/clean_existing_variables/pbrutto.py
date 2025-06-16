@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_int_dtype,
+    apply_smallest_int_dtype,
     object_to_int,
     object_to_str_categorical,
 )
@@ -20,10 +20,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """
     out = pd.DataFrame()
 
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["hh_id_original"] = apply_lowest_int_dtype(raw_data["cid"])
-    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
+    out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["birth_year"] = object_to_int(raw_data["geburt_v2"])
     out["relationship_to_head_of_hh"] = object_to_str_categorical(
@@ -67,7 +67,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[99] Stellung zu HV unbekannt": "Other",
         },
     )
-    out["relationship_to_hh_last_year"] = object_to_str_categorical(raw_data["pzugv"])
+    out["relationship_to_hh"] = object_to_str_categorical(raw_data["pzugv"])
 
     # interview related variables
     out["interview_status"] = object_to_str_categorical(raw_data["befstat_h"])

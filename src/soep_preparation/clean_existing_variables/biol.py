@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.series_manipulator import (
-    apply_lowest_int_dtype,
+    apply_smallest_int_dtype,
     object_to_bool_categorical,
     object_to_str_categorical,
 )
@@ -19,9 +19,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed biol data.
     """
     out = pd.DataFrame()
-    out["hh_id"] = apply_lowest_int_dtype(raw_data["hid"])
-    out["p_id"] = apply_lowest_int_dtype(raw_data["pid"])
-    out["survey_year"] = apply_lowest_int_dtype(raw_data["syear"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
+    out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["residence_childhood"] = object_to_str_categorical(
         raw_data["lb0058"],
