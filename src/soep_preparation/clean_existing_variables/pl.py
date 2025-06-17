@@ -30,7 +30,7 @@ def _private_rente_beitrag_jahr(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned and sensible data type variables from the pl file.
+    """Create cleaned and sensible data type variables from the pl data file.
 
     Args:
         raw_data: The raw pl data.

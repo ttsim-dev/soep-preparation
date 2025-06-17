@@ -35,13 +35,13 @@ def _get_variable_dtypes(
 
 
 def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
-    """Create a mapping of column names to file names.
+    """Create a mapping of column names to data file names.
 
     Args:
         metadata: A dictionary containing metadata entries.
 
     Returns:
-        A mapping of variable names to file names.
+        A mapping of variable names to data file names.
     """
     mapping = {}
     for data_name, data in metadata._entries.items():  # noqa: SLF001
@@ -85,13 +85,13 @@ for name, data in DATA_CATALOGS["derived_variables"]._entries.items():  # noqa: 
 def task_create_metadata_mapping(
     single_metadata_mapping: Annotated[dict, DATA_CATALOGS["metadata"]],
 ) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["merged"]]:
-    """Create a mapping of variable names to file names.
+    """Create a mapping of variable names to data file names.
 
     Args:
         single_metadata_mapping: A dictionary containing single metadata entries.
 
     Returns:
-        A mapping of variable names to file names.
+        A mapping of variable names to data file names.
 
     Raises:
         TypeError: If input data or data name is not of expected type.

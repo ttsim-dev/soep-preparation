@@ -1,4 +1,4 @@
-"""Module to clean existing variables in SOEP files."""
+"""Module to clean existing variables in SOEP data files."""
 
 from pathlib import Path
 from typing import Annotated
@@ -22,16 +22,16 @@ def _fail_if_cleaning_module_missing(module_path):
         )
 
 
-for file_name, file_catalog in DATA_CATALOGS["data_files"].items():
+for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
 
-    @task(id=file_name)
-    def task_clean_one_file(
-        raw_data: Annotated[Path, file_catalog["raw"]],
+    @task(id=data_file_name)
+    def task_clean_one_data_file(
+        raw_data: Annotated[Path, data_file_catalog["raw"]],
         module_path: Annotated[
             Path,
-            SRC / "clean_existing_variables" / f"{file_name}.py",
+            SRC / "clean_existing_variables" / f"{data_file_name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, file_catalog["cleaned"]]:
+    ) -> Annotated[pd.DataFrame, data_file_catalog["cleaned"]]:
         """Cleans variables of a data file using the corresponding cleaning module.
 
         Cleaning modules contain function `clean` taking the raw pandas DataFrame
@@ -40,7 +40,7 @@ for file_name, file_catalog in DATA_CATALOGS["data_files"].items():
         The result is stored in the corresponding DataCatalog for further processing.
 
         Parameters:
-            raw_data: The path to the file to be cleaned.
+            raw_data: The path to the data file to be cleaned.
             module_path: The path to the cleaning module.
 
         Returns:

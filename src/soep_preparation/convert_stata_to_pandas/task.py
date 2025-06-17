@@ -36,7 +36,7 @@ def _get_relevant_column_names(script_path: Path) -> list[str]:
     return list(dict.fromkeys(matches))
 
 
-def _iteratively_read_one_file(
+def _iteratively_read_one_data_file(
     iterator: StataReader,
     relevant_columns: list[str],
 ) -> pd.DataFrame:
@@ -52,43 +52,45 @@ def _iteratively_read_one_file(
 
 
 if DATA_CATALOGS["data_files"]:
-    for name, catalog in DATA_CATALOGS["data_files"].items():
+    for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
 
-        @task(id=name)
-        def task_read_one_file(
-            stata_data: Annotated[Path, DATA / f"{SOEP_VERSION}" / f"{name}.dta"],
+        @task(id=data_file_name)
+        def task_read_one_data_file(
+            stata_data_file: Annotated[
+                Path, DATA / f"{SOEP_VERSION}" / f"{data_file_name}.dta"
+            ],
             cleaning_script: Annotated[
                 Path,
-                SRC / "clean_existing_variables" / f"{name}.py",
+                SRC / "clean_existing_variables" / f"{data_file_name}.py",
             ],
-        ) -> Annotated[pd.DataFrame, catalog["raw"]]:
-            """Saves the raw file to the data catalog.
+        ) -> Annotated[pd.DataFrame, data_file_catalog["raw"]]:
+            """Saves the raw data file to the data catalog.
 
             Parameters:
-                stata_data: The path to the original STATA file.
+                stata_data_file: The path to the original STATA data file.
                 cleaning_script: The path to the respective cleaning script.
 
             Returns:
-                    The raw data to be saved to the data catalog.
+                    The raw data to be saved to the data data_file_catalog.
 
             Raises:
                 TypeError: If input data or script path is not of expected type.
             """
-            _error_handling_task(stata_data, cleaning_script)
+            _error_handling_task(stata_data_file, cleaning_script)
             relevant_columns = _get_relevant_column_names(cleaning_script)
             with StataReader(
-                stata_data,
+                stata_data_file,
                 chunksize=100_000,
                 columns=relevant_columns,
                 convert_categoricals=False,
             ) as stata_iterator:
-                return _iteratively_read_one_file(stata_iterator, relevant_columns)
+                return _iteratively_read_one_data_file(stata_iterator, relevant_columns)
 
 else:
 
     @task
-    def _raise_data_files_found() -> None:
-        msg = """Please add at least one raw file to the data directory under
+    def _raise_no_data_files_found() -> None:
+        msg = """Please add at least one raw data file to the data directory under
         the specified SOEP version and create a cleaning script for it.
         For further instructions, please refer to the README file."""
         raise FileNotFoundError(msg)

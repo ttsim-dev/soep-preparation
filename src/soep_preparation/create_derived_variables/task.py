@@ -10,7 +10,7 @@ from soep_preparation.config import DATA_CATALOGS, SRC
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import (
     get_script_names,
-    get_stems_if_corresponding_raw_file_exists,
+    get_stems_if_corresponding_raw_data_file_exists,
     load_module,
 )
 
@@ -55,20 +55,20 @@ def _get_variable_names_in_module(module: Any) -> list[str]:
     ]
 
 
-file_names = get_stems_if_corresponding_raw_file_exists(
+data_file_names = get_stems_if_corresponding_raw_data_file_exists(
     directory=SRC / "create_derived_variables"
 )
-for name, catalog in DATA_CATALOGS["data_files"].items():
-    if name in file_names:
-        # files that have a derive variables script get processed
-        @task(id=name)
+for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
+    if data_file_name in data_file_names:
+        # data files that have a derive variables script get processed
+        @task(id=data_file_name)
         def task_create_derived_variables(
-            clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
+            clean_data: Annotated[pd.DataFrame, data_file_catalog["cleaned"]],
             script_path: Annotated[
                 Path,
-                SRC / "create_derived_variables" / f"{name}.py",
+                SRC / "create_derived_variables" / f"{data_file_name}.py",
             ],
-        ) -> Annotated[pd.DataFrame, catalog["derived_variables"]]:
+        ) -> Annotated[pd.DataFrame, data_file_catalog["derived_variables"]]:
             """Creates derived variables using a specified script.
 
             Parameters:
@@ -76,7 +76,7 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
                 script_path: The path to the script.
 
             Returns:
-                Derived variables to store in the data catalog.
+                Derived variables to store in the data data_file_catalog.
 
             Raises:
                 TypeError: If input data or script path is not of expected type.
@@ -85,11 +85,15 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
             module = load_module(script_path)
             return module.create_derived_variables(data=clean_data)
 
-        @task(id=name)
+        @task(id=data_file_name)
         def task_merge_derived_variables(
-            clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
-            derived_variables: Annotated[pd.DataFrame, catalog["derived_variables"]],
-        ) -> Annotated[pd.DataFrame, DATA_CATALOGS["derived_variables"][name]]:
+            clean_data: Annotated[pd.DataFrame, data_file_catalog["cleaned"]],
+            derived_variables: Annotated[
+                pd.DataFrame, data_file_catalog["derived_variables"]
+            ],
+        ) -> Annotated[
+            pd.DataFrame, DATA_CATALOGS["derived_variables"][data_file_name]
+        ]:
             """Merge the cleaned and derived variables data.
 
             Args:
@@ -106,19 +110,21 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
             return pd.concat(objs=[clean_data, derived_variables], axis=1)
 
     else:
-        # files that do not have a derive variables script get copied to
-        # the derived variables catalog
-        @task(id=name)
-        def task_copy_file(
-            clean_data: Annotated[pd.DataFrame, catalog["cleaned"]],
-        ) -> Annotated[pd.DataFrame, DATA_CATALOGS["derived_variables"][name]]:
-            """Copy the cleaned data file to the derived variables catalog.
+        # data files that do not have a derive variables script get copied to
+        # the derived variables data_file_catalog
+        @task(id=data_file_name)
+        def task_copy_cleaned_dtaa(
+            clean_data: Annotated[pd.DataFrame, data_file_catalog["cleaned"]],
+        ) -> Annotated[
+            pd.DataFrame, DATA_CATALOGS["derived_variables"][data_file_name]
+        ]:
+            """Copy the cleaned data to the derived variables catalog.
 
             Args:
-                clean_data: The cleaned data file.
+                clean_data: The cleaned data.
 
             Returns:
-                The copied data file.
+                The copied data.
 
             Raises:
                 TypeError: If input data is not of expected type.
@@ -129,8 +135,8 @@ for name, catalog in DATA_CATALOGS["data_files"].items():
 
 script_names = get_script_names(SRC / "create_derived_variables")
 for script_name in script_names:
-    if script_name in file_names:
-        # skipping variables that have a script for files only
+    if script_name in data_file_names:
+        # skipping scripts that have been processed above
         continue
     module = load_module(SRC / "create_derived_variables" / f"{script_name}.py")
     variable_names = _get_variable_names_in_module(module)

@@ -5,7 +5,7 @@ containing selected variables. Processing steps include initially cleaning and
 assignment of adequate variable names, types, and values.
 Further, variables are derived either from existing cleaned variables or by
 merging from multiple data files.
-Metadata is generated for each variable, including the corresponding file name
+Metadata is generated for each variable, including the corresponding data file name
 and variable data type.
 There exists an example of merging variables from multiple data files to create
 a final dataset.

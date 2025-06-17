@@ -6,7 +6,7 @@ import pandas as pd
 from pytask import DataCatalog
 
 from soep_preparation.utilities.general import (
-    get_stems_if_corresponding_raw_file_exists,
+    get_stems_if_corresponding_raw_data_file_exists,
 )
 
 pd.set_option("mode.copy_on_write", True)  # noqa: FBT003
@@ -27,12 +27,15 @@ else:
     SURVEY_YEARS = [*range(1984, 2020 + 1)]
 
 
-FILE_NAMES = get_stems_if_corresponding_raw_file_exists(
+DATA_FILE_NAMES = get_stems_if_corresponding_raw_data_file_exists(
     directory=SRC / "clean_existing_variables"
 )
 
 DATA_CATALOGS = {
-    "data_files": {file_name: DataCatalog(name=file_name) for file_name in FILE_NAMES},
+    "data_files": {
+        data_file_name: DataCatalog(name=data_file_name)
+        for data_file_name in DATA_FILE_NAMES
+    },
     "derived_variables": DataCatalog(name="derived_variables"),
     "metadata": DataCatalog(name="metadata"),
     "merged": DataCatalog(name="merged"),
@@ -41,7 +44,7 @@ DATA_CATALOGS = {
 __all__ = [
     "DATA",
     "DATA_CATALOGS",
-    "FILE_NAMES",
+    "DATA_FILE_NAMES",
     "ROOT",
     "SOEP_VERSION",
     "SRC",

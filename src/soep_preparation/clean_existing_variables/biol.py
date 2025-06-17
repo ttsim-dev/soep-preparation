@@ -10,7 +10,7 @@ from soep_preparation.utilities.series_manipulator import (
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned and sensible data type variables from the biol file.
+    """Create cleaned and sensible data type variables from the biol data file.
 
     Args:
         raw_data: The raw biol data.

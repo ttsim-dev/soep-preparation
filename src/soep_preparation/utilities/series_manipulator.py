@@ -223,7 +223,7 @@ def object_to_float(series: pd.Series) -> pd.Series:
         series,
         "object",
         [[series, "pandas.core.series.Series"]],
-        [series.unique(), ("float", "intstr")],
+        [series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     return apply_smallest_float_dtype(sr_relevant_values_only)

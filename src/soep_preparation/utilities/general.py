@@ -15,29 +15,28 @@ def get_script_names(directory: Path) -> list[str]:
         A list of script names.
     """
     return [
-        file.stem
-        for file in directory.glob("*.py")
-        if file.name not in ["__init__.py", "task.py"]
+        script.stem
+        for script in directory.glob("*.py")
+        if script.name not in ["__init__.py", "task.py"]
     ]
 
 
-def get_stems_if_corresponding_raw_file_exists(directory: Path) -> list[str]:
-    """Get the names of all scripts in the given directory with corresponding raw files.
+def get_stems_if_corresponding_raw_data_file_exists(directory: Path) -> list[str]:
+    """Get names of all scripts in the directory with corresponding raw data files.
 
     Args:
         directory: The directory containing scripts.
 
     Returns:
-        A list of file names.
+        A list of data file names.
 
     """
     from soep_preparation.config import DATA, SOEP_VERSION
 
     return [
-        file.stem
-        for file in directory.glob("*.py")
-        if file.name not in ["__init__.py", "task.py"]
-        and (DATA / f"{SOEP_VERSION}" / f"{file.stem}.dta").exists()
+        script.stem
+        for script in directory.glob("*.py")
+        if (DATA / f"{SOEP_VERSION}" / f"{script.stem}.dta").exists()
     ]
 
 
