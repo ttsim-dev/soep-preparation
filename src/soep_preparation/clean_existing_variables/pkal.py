@@ -49,10 +49,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """
     wide = pd.DataFrame()
 
-    wide["tmp_p_id"] = apply_smallest_int_dtype(raw_data["pid"])
-    wide["tmp_hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
-    wide["tmp_hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
-    wide["tmp_survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
+    wide["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
+    wide["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    wide["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
+    wide["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     # individual status previous calendar year
     wide["tmp_unemployed_m"] = object_to_int(raw_data["kal1d02"]).fillna(0)
@@ -70,6 +70,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # individual employment status by month
     # January
+    # v1 includes the timeframe 1984 until 1997
+    # v2 includes the timeframe 1998 until 2022
     wide["tmp_ft_employed_m_v1_1"] = object_to_str_categorical(
         series=raw_data["kal1a001_v1"],
         renaming={"[1] Ja": "Vollzeit erwerbstätig"},
@@ -78,14 +80,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a001_v2"],
         renaming={
             "[1] Jan Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Jan Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Jan Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_1"] = object_to_str_categorical(
         series=raw_data["kal1b001"],
         renaming={
             "[1] Jan Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Jan Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Jan Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_1"] = object_to_str_categorical(
@@ -102,14 +104,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a002_v2"],
         renaming={
             "[1] Feb Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Feb Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Feb Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_2"] = object_to_str_categorical(
         series=raw_data["kal1b002"],
         renaming={
             "[1] Feb Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Feb Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Feb Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_2"] = object_to_str_categorical(
@@ -126,14 +128,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a003_v2"],
         renaming={
             "[1] Mrz Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Mrz Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Mrz Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_3"] = object_to_str_categorical(
         series=raw_data["kal1b003"],
         renaming={
             "[1] Mrz Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Mrz Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Mrz Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_3"] = object_to_str_categorical(
@@ -150,14 +152,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a004_v2"],
         renaming={
             "[1] Apr Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Apr Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Apr Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_4"] = object_to_str_categorical(
         series=raw_data["kal1b004"],
         renaming={
             "[1] Apr Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Apr Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Apr Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_4"] = object_to_str_categorical(
@@ -174,14 +176,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a005_v2"],
         renaming={
             "[1] Mai Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Mai Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Mai Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_5"] = object_to_str_categorical(
         series=raw_data["kal1b005"],
         renaming={
             "[1] Mai Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Mai Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Mai Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_5"] = object_to_str_categorical(
@@ -198,14 +200,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a006_v2"],
         renaming={
             "[1] Jun Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Jun Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Jun Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_6"] = object_to_str_categorical(
         series=raw_data["kal1b006"],
         renaming={
             "[1] Jun Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Jun Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Jun Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_6"] = object_to_str_categorical(
@@ -222,14 +224,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a007_v2"],
         renaming={
             "[1] Jul Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Jul Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Jul Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_7"] = object_to_str_categorical(
         series=raw_data["kal1b007"],
         renaming={
             "[1] Jul Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Jul Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Jul Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_7"] = object_to_str_categorical(
@@ -246,14 +248,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a008_v2"],
         renaming={
             "[1] Aug Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Aug Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Aug Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_8"] = object_to_str_categorical(
         series=raw_data["kal1b008"],
         renaming={
             "[1] Aug Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Aug Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Aug Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_8"] = object_to_str_categorical(
@@ -270,14 +272,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a009_v2"],
         renaming={
             "[1] Sep Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Sep Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Sep Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_9"] = object_to_str_categorical(
         series=raw_data["kal1b009"],
         renaming={
             "[1] Sep Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Sep Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Sep Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_9"] = object_to_str_categorical(
@@ -294,14 +296,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a010_v2"],
         renaming={
             "[1] Okt Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Okt Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Okt Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_10"] = object_to_str_categorical(
         series=raw_data["kal1b010"],
         renaming={
             "[1] Okt Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Okt Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Okt Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_10"] = object_to_str_categorical(
@@ -318,14 +320,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a011_v2"],
         renaming={
             "[1] Nov Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Nov Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Nov Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_11"] = object_to_str_categorical(
         series=raw_data["kal1b011"],
         renaming={
             "[1] Nov Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Nov Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Nov Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_11"] = object_to_str_categorical(
@@ -342,14 +344,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["kal1a012_v2"],
         renaming={
             "[1] Dez Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Dez Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Dez Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_pt_employed_m_12"] = object_to_str_categorical(
         series=raw_data["kal1b012"],
         renaming={
             "[1] Dez Teilzeit erwerbst.": "Teilzeit erwerbstätig",
-            "[8] Dez Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",
+            "[8] Dez Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     wide["tmp_minijob_employed_m_12"] = object_to_str_categorical(
@@ -358,29 +360,28 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Transforming the wide data to long format
-    # (the following columns were in wide format)
-    prev_wide_cols = [
-        "tmp_ft_employed_m_v1",
-        "tmp_ft_employed_m_v2",
-        "tmp_pt_employed_m",
-        "tmp_minijob_employed_m",
-    ]
+
     # Notice that no rows have been dropped here, since the other columns are meaningful
     # in themselves, even when employment information is missing.
     tmp_long = pd.wide_to_long(
         wide,
-        stubnames=prev_wide_cols,
-        i=["tmp_hh_id_original", "tmp_hh_id", "tmp_p_id", "tmp_survey_year"],
+        stubnames=[
+            "tmp_ft_employed_m_v1",
+            "tmp_ft_employed_m_v2",
+            "tmp_pt_employed_m",
+            "tmp_minijob_employed_m",
+        ],
+        i=["hh_id_original", "hh_id", "p_id", "survey_year"],
         j="tmp_month_numerical",
         sep="_",
     ).reset_index()
 
     long = pd.DataFrame()
 
-    long["p_id"] = tmp_long["tmp_p_id"]
-    long["hh_id"] = tmp_long["tmp_hh_id"]
-    long["hh_id_original"] = tmp_long["tmp_hh_id_original"]
-    long["survey_year"] = tmp_long["tmp_survey_year"]
+    long["p_id"] = tmp_long["p_id"]
+    long["hh_id"] = tmp_long["hh_id"]
+    long["hh_id_original"] = tmp_long["hh_id_original"]
+    long["survey_year"] = tmp_long["survey_year"]
 
     long["month_numerical"] = tmp_long["tmp_month_numerical"]
 

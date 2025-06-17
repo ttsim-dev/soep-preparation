@@ -20,7 +20,7 @@ def _bruttokaltmiete_m_hh(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned and sensible data type variables from the hgen file.
+    """Create cleaned and sensible data type variables from the hgen data file.
 
     Args:
         raw_data: The raw hgen data.
@@ -44,7 +44,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[2] Hauptmieter": "Hauptmieter",
             "[3] Untermieter": "Untermieter",
             "[4] Mieter": "Mieter",
-            "[5] Heimbewohner oder Gewarkschaftsunterkunft": "Heimbewohner oder Gewarkschaftsunterkunft",
+            "[5] Heimbewohner oder Gemeinschaftsunterkunft": "Heimbewohner oder Gemeinschaftsunterkunft",  # noqa: E501
         },
     )
     out["rent_minus_heating_costs_m_hh"] = _bruttokaltmiete_m_hh(

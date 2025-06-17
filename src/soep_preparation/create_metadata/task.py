@@ -7,7 +7,7 @@ from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS
 from soep_preparation.utilities.error_handling import (
-    fail_if_input_invalid_type,
+    fail_if_input_has_invalid_type,
 )
 
 
@@ -71,7 +71,7 @@ for name, data in DATA_CATALOGS["derived_variables"]._entries.items():  # noqa: 
         Raises:
             TypeError: If input data is not of expected type.
         """
-        fail_if_input_invalid_type(data, "pandas.core.frame.DataFrame")
+        fail_if_input_has_invalid_type(data, ["pandas.core.frame.DataFrame"])
         potential_index_variables = ["p_id", "hh_id", "hh_id_original", "survey_year"]
         index_variables = _get_index_variables(data, potential_index_variables)
         variable_dtypes = _get_variable_dtypes(data, potential_index_variables)
@@ -101,7 +101,7 @@ def task_create_metadata_mapping(
 
 
 def _error_handling_mapping_task(mapping):
-    fail_if_input_invalid_type(mapping, "_pytask.data_catalog.DataCatalog")
+    fail_if_input_has_invalid_type(mapping, ["_pytask.data_catalog.DataCatalog"])
     for data_name, data in mapping._entries.items():  # noqa: SLF001
-        fail_if_input_invalid_type(data_name, "str")
-        fail_if_input_invalid_type(data, "_pytask.nodes.PickleNode")
+        fail_if_input_has_invalid_type(data_name, ["str"])
+        fail_if_input_has_invalid_type(data, ["_pytask.nodes.PickleNode"])

@@ -122,8 +122,8 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
     )
     out["beamte"] = create_dummy(
         series=data["occupation_status"],
-        true_value="Beamte",
-        kind="startswith",
+        value_for_comparison="Beamte",
+        comparison_type="startswith",
     )
     out["parental_leave"] = create_dummy(
         data["laborforce_status"],

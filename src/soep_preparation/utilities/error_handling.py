@@ -1,5 +1,6 @@
 """Error handling utilities for data validation."""
 
+from collections.abc import Iterable
 from typing import Any
 
 import pandas as pd
@@ -11,24 +12,7 @@ def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str) -> None:
         raise TypeError(msg)
 
 
-def fail_if_input_invalid_type(input_: Any, expected_dtype: str) -> None:
-    """Fail if input is not of expected type.
-
-    Args:
-        input_: The input to check.
-        expected_dtype: The expected type of the input.
-
-    Raises:
-        TypeError: If input is not of expected type.
-    """
-    if expected_dtype not in str(type(input_)) and expected_dtype != "Any":
-        msg = f"Expected {input_} to be of type {expected_dtype}, got {type(input_)}"
-        raise TypeError(
-            msg,
-        )
-
-
-def fail_if_input_all_invalid_types(input_: Any, expected_dtypes: str) -> None:
+def fail_if_input_has_invalid_type(input_: Any, expected_dtypes: Iterable[str]) -> None:  # noqa: ANN401
     """Fail if input is not of any of expected types.
 
     Args:
@@ -38,23 +22,17 @@ def fail_if_input_all_invalid_types(input_: Any, expected_dtypes: str) -> None:
     Raises:
         TypeError: If input is not of any of expected types.
     """
-    if " | " in expected_dtypes:
-        if not any(
-            expected_dtype in str(type(input_))
-            for expected_dtype in expected_dtypes.split(" | ")
-        ):
-            msg = (
-                f"Expected {input_} to be of type {expected_dtypes}, got {type(input_)}"
-            )
-            raise TypeError(
-                msg,
-            )
-
-    else:
-        fail_if_input_invalid_type(input_, expected_dtypes)
+    if (
+        not any(
+            expected_dtype in str(type(input_)) for expected_dtype in expected_dtypes
+        )
+        and "Any" not in expected_dtypes
+    ):
+        msg = f"Expected {input_} to be of type {expected_dtypes}, got {type(input_)}"
+        raise TypeError(msg)
 
 
-def fail_if_input_equals(input_: Any, failing_value: str) -> None:
+def fail_if_input_equals(input_: Any, failing_value: str) -> None:  # noqa: ANN401
     """Fail if input is equal to value.
 
     Args:
@@ -96,7 +74,7 @@ def fail_if_series_cannot_be_transformed(
     if entries_expected_types is not None:
         type_ = entries_expected_types[1]
         for unique_entry in entries_expected_types[0]:
-            fail_if_input_all_invalid_types(unique_entry, type_)
+            fail_if_input_has_invalid_type(unique_entry, type_)
     else:
         msg = (
             "Did not receive a list of unique entries and their expected dtype, "
@@ -106,4 +84,4 @@ def fail_if_series_cannot_be_transformed(
             msg,
         )
     for item in input_expected_types:
-        fail_if_input_invalid_type(*item)
+        fail_if_input_has_invalid_type(*item)

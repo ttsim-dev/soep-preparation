@@ -60,8 +60,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["federal_state_of_residence"] = object_to_str_categorical(
         raw_data["l11101"], ordered=False
     )
-    out["employment_status_dummy"] = create_dummy(
-        raw_data["e11102"], true_value="[1] Employed", kind="equal"
+    out["employed_y"] = create_dummy(
+        raw_data["e11102"], value_for_comparison="[1] Employed", comparison_type="equal"
     )
     out["employment_level"] = object_to_str_categorical(
         raw_data["e11103"],

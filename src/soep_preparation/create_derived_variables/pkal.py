@@ -39,7 +39,7 @@ def _number_of_months_employed(
     """This is on the annual level."""
     data = pd.concat([raw_data[["p_id", "survey_year"]], employment_dummy_sr], axis=1)
     return data.groupby(["p_id", "survey_year"])[
-        "employed_in_at_least_one_month_dummy"
+        "employed_in_at_least_one_month"
     ].transform("sum")
 
 
@@ -61,13 +61,13 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
         data["survey_year"],
     )
     # indicating whether employed at all in a given month in the last year
-    out["employed_in_at_least_one_month_dummy"] = _employed_in_month(
+    out["employed_in_at_least_one_month"] = _employed_in_month(
         out["ft_employed_m"].cat.codes.between(0, 23),
         data["pt_employed_m"].cat.codes.between(0, 23),
         data["minijob_employed_m"].cat.codes.between(0, 11),
     )
     # indicating the number of months employed in the previous year
     out["number_of_months_employed"] = _number_of_months_employed(
-        data, out["employed_in_at_least_one_month_dummy"]
+        data, out["employed_in_at_least_one_month"]
     )
     return out

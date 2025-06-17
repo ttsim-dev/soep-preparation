@@ -7,7 +7,7 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS, SRC
-from soep_preparation.utilities.error_handling import fail_if_input_invalid_type
+from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import load_module
 
 
@@ -61,6 +61,6 @@ for file_name, file_catalog in DATA_CATALOGS["data_files"].items():
 
 
 def _error_handling_task(data, module_path):
-    fail_if_input_invalid_type(data, "pandas.core.frame.DataFrame")
-    fail_if_input_invalid_type(module_path, "pathlib._local.PosixPath")
+    fail_if_input_has_invalid_type(data, ["pandas.core.frame.DataFrame"])
+    fail_if_input_has_invalid_type(module_path, ["pathlib._local.PosixPath"])
     _fail_if_cleaning_module_missing(module_path)

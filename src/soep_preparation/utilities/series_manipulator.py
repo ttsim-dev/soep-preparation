@@ -6,9 +6,8 @@ import pandas as pd
 from pandas.api.types import CategoricalDtype
 
 from soep_preparation.utilities.error_handling import (
-    fail_if_input_all_invalid_types,
     fail_if_input_equals,
-    fail_if_input_invalid_type,
+    fail_if_input_has_invalid_type,
     fail_if_series_cannot_be_transformed,
 )
 
@@ -113,7 +112,7 @@ def convert_to_categorical(
             [series, "pandas.core.series.Series"],
             [ordered, "bool"],
         ],
-        [series.unique(), "Any"],
+        [series.unique(), ["Any"]],
     )
     if series.isna().all():
         return series.astype("category[pyarrow]")
@@ -127,46 +126,66 @@ def convert_to_categorical(
 
 def create_dummy(
     series: pd.Series,
-    true_value: bool | str | list | float,
-    kind: str = "equal",
+    value_for_comparison: bool | str | list | float,
+    comparison_type: str = "equal",
 ) -> pd.Series:
     """Create a dummy variable based on a condition.
 
     Args:
         series: The input series to be transformed.
-        true_value: The value to be compared against.
-        kind: The type of comparison to be made. Defaults to "equal".
+        value_for_comparison: The value to be compared against.
+        comparison_type: The type of comparison to be made. Defaults to "equal".
         Can be "equal", "geq", "isin", "startswith", "leq" or "neq".
 
     Returns:
         A boolean series indicating the condition.
     """
-    fail_if_input_invalid_type(series, "pandas.core.series.Series")
-    if type(true_value) is not str:
-        fail_if_input_equals(kind, "startswith")
-    fail_if_input_all_invalid_types(true_value, "bool | str | list | float | int")
-    fail_if_input_invalid_type(kind, "str")
-    if kind == "equal":
-        return (series == true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
-    if kind == "neq":
-        return (series != true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
-    if kind == "isin":
+    fail_if_input_has_invalid_type(series, ["pandas.core.series.Series"])
+    if type(value_for_comparison) is not str:
+        fail_if_input_equals(comparison_type, "startswith")
+    fail_if_input_has_invalid_type(
+        value_for_comparison, ("bool", "str", "list", "float", "int")
+    )
+    fail_if_input_has_invalid_type(comparison_type, ["str"])
+    if comparison_type == "equal":
         return (
-            series.isin(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
+            (series == value_for_comparison)
+            .mask(series.isna(), pd.NA)
+            .astype("bool[pyarrow]")
         )
-    if kind == "geq":
-        return series.ge(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
-    if kind == "leq":
-        return series.le(true_value).mask(series.isna(), pd.NA).astype("bool[pyarrow]")
-    if kind == "startswith":
+    if comparison_type == "neq":
         return (
-            series.str.startswith(true_value)
+            (series != value_for_comparison)
+            .mask(series.isna(), pd.NA)
+            .astype("bool[pyarrow]")
+        )
+    if comparison_type == "isin":
+        return (
+            series.isin(value_for_comparison)
+            .mask(series.isna(), pd.NA)
+            .astype("bool[pyarrow]")
+        )
+    if comparison_type == "geq":
+        return (
+            series.ge(value_for_comparison)
+            .mask(series.isna(), pd.NA)
+            .astype("bool[pyarrow]")
+        )
+    if comparison_type == "leq":
+        return (
+            series.le(value_for_comparison)
+            .mask(series.isna(), pd.NA)
+            .astype("bool[pyarrow]")
+        )
+    if comparison_type == "startswith":
+        return (
+            series.str.startswith(value_for_comparison)
             .mask(series.isna(), pd.NA)
             .astype(
                 "bool[pyarrow]",
             )
         )
-    msg = f"Unknown kind '{kind}' of dummy creation"
+    msg = f"Unknown comparison type '{comparison_type}' of dummy creation"
     raise ValueError(msg)
 
 
@@ -204,7 +223,7 @@ def object_to_float(series: pd.Series) -> pd.Series:
         series,
         "object",
         [[series, "pandas.core.series.Series"]],
-        [series.unique(), "float | int | str"],
+        [series.unique(), ("float", "intstr")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     return apply_smallest_float_dtype(sr_relevant_values_only)
@@ -223,7 +242,7 @@ def object_to_int(series: pd.Series) -> pd.Series:
         series,
         "object",
         [[series, "pandas.core.series.Series"]],
-        [series.unique(), "float | int | str"],
+        [series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     return apply_smallest_int_dtype(sr_relevant_values_only)
@@ -253,7 +272,7 @@ def object_to_bool_categorical(
             [renaming, "dict"],
             [ordered, "bool"],
         ],
-        [series.unique(), "float | int | str"],
+        [series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
 
@@ -293,7 +312,7 @@ def object_to_int_categorical(
             [renaming, "dict" if renaming is not None else "None"],
             [ordered, "bool"],
         ],
-        [series.unique(), "float | int | str"],
+        [series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     if renaming:
@@ -341,7 +360,7 @@ def object_to_str_categorical(
             [renaming, "dict" if renaming is not None else "None"],
             [ordered, "bool"],
         ],
-        [series.unique(), "float | int | str"],
+        [series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     if renaming:

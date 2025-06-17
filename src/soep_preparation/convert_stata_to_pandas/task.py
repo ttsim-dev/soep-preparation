@@ -15,7 +15,7 @@ from soep_preparation.config import (
     SOEP_VERSION,
     SRC,
 )
-from soep_preparation.utilities.error_handling import fail_if_input_invalid_type
+from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import load_module
 
 
@@ -95,5 +95,5 @@ else:
 
 
 def _error_handling_task(data, script_path):
-    fail_if_input_invalid_type(data, "pathlib._local.PosixPath")
-    fail_if_input_invalid_type(script_path, "pathlib._local.PosixPath")
+    fail_if_input_has_invalid_type(data, ["pathlib._local.PosixPath"])
+    fail_if_input_has_invalid_type(script_path, ["pathlib._local.PosixPath"])

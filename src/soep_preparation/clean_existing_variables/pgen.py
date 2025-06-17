@@ -42,18 +42,16 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["education_isced_old"] = object_to_str_categorical(raw_data["pgisced97"])
-    out["education_isced"] = object_to_str_categorical(
-        raw_data["pgisced11"],
-    )
+    out["education_isced"] = object_to_str_categorical(raw_data["pgisced11"])
     out["education_isced_cat"] = apply_smallest_int_dtype(
-        out["education_isced"].cat.codes,
+        out["education_isced"].cat.codes
     )
     out["education_casmin"] = object_to_str_categorical(
         raw_data["pgcasmin"],
         nr_identifiers=2,
     )
     out["education_casmin_cat"] = apply_smallest_int_dtype(
-        out["education_casmin"].cat.codes,
+        out["education_casmin"].cat.codes
     )
 
     # individual current status

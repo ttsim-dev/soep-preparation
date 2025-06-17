@@ -29,7 +29,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Auf dem Land": "Auf dem Land",
             "[3] Kleinstadt": "Kleinstadt",
             "[2] Mittelgrosse Stadt": "Mittelgroße Stadt",
-            "[1] Grosstadt": "Großtadt",
+            "[1] Grosstadt": "Großstadt",
         },
         ordered=True,
     )

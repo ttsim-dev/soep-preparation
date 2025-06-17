@@ -6,12 +6,11 @@ import pandas as pd
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.utilities.error_handling import (
-    fail_if_input_all_invalid_types,
-    fail_if_input_invalid_type,
+    fail_if_input_has_invalid_type,
 )
 
 
-# TODO: should `variable_to_file_mapping` be an argument here?
+# TODO (@hmgaudecker): should `variable_to_file_mapping` be an argument here?
 def create_dataset_from_variables(
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None = None,
@@ -100,11 +99,11 @@ def _error_handling(
     survey_years: list[int] | None,
     merging_behavior: str,
 ) -> None:
-    fail_if_input_invalid_type(variable_to_file_mapping, "dict")
-    fail_if_input_invalid_type(variables, "list")
-    fail_if_input_all_invalid_types(min_and_max_survey_years, "tuple | None")
-    fail_if_input_all_invalid_types(survey_years, "list | None")
-    fail_if_input_invalid_type(merging_behavior, "str")
+    fail_if_input_has_invalid_type(variable_to_file_mapping, ["dict"])
+    fail_if_input_has_invalid_type(variables, ["list"])
+    fail_if_input_has_invalid_type(min_and_max_survey_years, ("tuple", "None"))
+    fail_if_input_has_invalid_type(survey_years, ("list", "None"))
+    fail_if_input_has_invalid_type(merging_behavior, ["str"])
     _fail_if_empty(variable_to_file_mapping)
     _fail_if_empty(variables)
     if survey_years is not None:

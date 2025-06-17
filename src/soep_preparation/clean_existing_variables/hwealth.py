@@ -19,8 +19,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed hwealth data.
     """
     wide = pd.DataFrame()
-    wide["tmp_survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
-    wide["tmp_hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    wide["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
+    wide["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
 
     wide["tmp_hh_property_value_primary_residence_a"] = apply_smallest_float_dtype(
         raw_data["p010ha"]
@@ -114,7 +114,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         apply_smallest_float_dtype(raw_data["n011he"])
     )
 
-    wide["tmp_flag_netwealth"] = object_to_str_categorical(
+    wide["tmp_imputation_flag_netwealth"] = object_to_str_categorical(
         raw_data["n022h0"],
         renaming={
             "[0] No imputation": "No imputation",
@@ -125,8 +125,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Transforming the wide data to long format
-    # (the following columns were in wide format)
-    prev_wide_cols = [
+    prev_wide_variables = [
         "tmp_hh_property_value_primary_residence",
         "tmp_hh_financial_assets_value",
         "tmp_hh_gross_overall_wealth",
@@ -141,21 +140,21 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     tmp_long = (
         pd.wide_to_long(
             wide,
-            stubnames=prev_wide_cols,
-            i=["tmp_survey_year", "tmp_hh_id"],
+            stubnames=prev_wide_variables,
+            i=["survey_year", "hh_id"],
             j="tmp_asset_group",
             sep="_",
             suffix=r"\w+",
         )
-        .dropna(subset=prev_wide_cols, how="all")
+        .dropna(subset=prev_wide_variables, how="all")
         .reset_index()
     )
 
     long = pd.DataFrame()
 
-    long["survey_year"] = tmp_long["tmp_survey_year"]
-    long["hh_id"] = tmp_long["tmp_hh_id"]
-    long["flag_netwealth"] = tmp_long["tmp_flag_netwealth"]
+    long["survey_year"] = tmp_long["survey_year"]
+    long["hh_id"] = tmp_long["hh_id"]
+    long["imputation_flag_netwealth"] = tmp_long["tmp_imputation_flag_netwealth"]
     long["asset_class"] = tmp_long["tmp_asset_group"]
     long["hh_property_value_primary_residence"] = tmp_long[
         "tmp_hh_property_value_primary_residence"

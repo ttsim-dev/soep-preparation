@@ -20,8 +20,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed biobirth data.
     """
     wide = pd.DataFrame()
-    wide["tmp_hh_id_original"] = float_to_int(raw_data["cid"])
-    wide["tmp_p_id"] = float_to_int(raw_data["pid"])
+    wide["hh_id_original"] = float_to_int(raw_data["cid"])
+    wide["p_id"] = float_to_int(raw_data["pid"])
 
     wide["tmp_number_of_children"] = float_to_int(raw_data["sumkids"])
     # the personal id of children (kidpnr) only exists for the first 9 children
@@ -101,26 +101,29 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Transforming the wide data to long format
-    # (the following columns were in wide format)
-    prev_wide_cols = ["tmp_birth_year_child", "tmp_p_id_child", "tmp_birth_month_child"]
+    prev_wide_variables = [
+        "tmp_birth_year_child",
+        "tmp_p_id_child",
+        "tmp_birth_month_child",
+    ]
     # We remove rows that are completely empty that is,
     # all non-existent children of the potential enumeration are dropped
     # (individual with 2 children only takes two rows in the final data)
     tmp_long = (
         pd.wide_to_long(
             wide,
-            stubnames=prev_wide_cols,
-            i=["tmp_hh_id_original", "tmp_p_id"],
+            stubnames=prev_wide_variables,
+            i=["hh_id_original", "p_id"],
             j="tmp_child_number",
             sep="_",
         )
-        .dropna(subset=prev_wide_cols, how="all")
+        .dropna(subset=prev_wide_variables, how="all")
         .reset_index()
     )
 
     long = pd.DataFrame()
-    long["hh_id_original"] = tmp_long["tmp_hh_id_original"]
-    long["p_id"] = tmp_long["tmp_p_id"]
+    long["hh_id_original"] = tmp_long["hh_id_original"]
+    long["p_id"] = tmp_long["p_id"]
     long["number_of_children"] = tmp_long["tmp_number_of_children"]
     long["child_number"] = tmp_long["tmp_child_number"]
     long["p_id_child"] = tmp_long["tmp_p_id_child"]

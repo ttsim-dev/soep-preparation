@@ -20,12 +20,15 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame()
     out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
 
+    # Social father personal id
     out["p_id_father"] = float_to_int(
         raw_data["fnr"],
         drop_missing=True,
-    )  # social father personal id
+    )
+
+    # Social mother personal id
     out["p_id_mother"] = float_to_int(
         raw_data["mnr"],
         drop_missing=True,
-    )  # social mother personal id
+    )
     return out

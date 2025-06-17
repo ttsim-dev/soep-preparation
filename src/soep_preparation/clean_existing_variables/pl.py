@@ -124,8 +124,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # health and medical characteristics
     out["type_of_health_insurance"] = object_to_str_categorical(raw_data["ple0097"])
     out["motor_disability"] = create_dummy(
-        raw_data["plj0582"],
-        true_value=1,
+        series=raw_data["plj0582"],
+        value_for_comparison=1,
     )
     out["disability_degree"] = object_to_int(raw_data["ple0041"]).fillna(0)
     out["med_schwierigkeit_treppen_pl"] = object_to_int_categorical(
@@ -247,7 +247,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["party_affiliation_dummy"] = create_dummy(
-        raw_data["plh0011_h"], true_value="[1] Yes", kind="equal"
+        raw_data["plh0011_h"], value_for_comparison="[1] Yes", comparison_type="equal"
     )
     out["party_affiliation"] = object_to_str_categorical(raw_data["plh0012_h"])
     out["party_affiliation_intensity_high_to_low"] = object_to_int_categorical(
