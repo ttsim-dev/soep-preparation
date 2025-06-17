@@ -4,7 +4,7 @@ import pytest
 
 from soep_preparation.dataset_merging.helper import (
     _fix_user_input,
-    _get_file_name_to_variables_mapping,
+    _get_data_file_name_to_variables_mapping,
     create_dataset_from_variables,
 )
 
@@ -76,7 +76,7 @@ def test_fix_user_input_assert_columns():
     assert actual[1] == expected[1]
 
 
-def test_get_file_name_to_variables_mapping_assert_type():
+def test_get_data_file_name_to_variables_mapping_assert_type():
     expected = type(
         {
             "dataset1": ["column1", "column3"],
@@ -84,45 +84,45 @@ def test_get_file_name_to_variables_mapping_assert_type():
         },
     )
     input_ = {
-        "variable_to_file_mapping": {
+        "variable_to_data_file_mapping": {
             "column1": "dataset1",
             "column2": "dataset2",
             "column3": "dataset1",
         },
         "variables": ["column1", "column2"],
     }
-    actual = type(_get_file_name_to_variables_mapping(**input_))
+    actual = type(_get_data_file_name_to_variables_mapping(**input_))
     assert actual == expected
 
 
-def test_get_file_name_to_variables_mapping_assert_mapping():
+def test_get_data_file_name_to_variables_mapping_assert_mapping():
     expected = {
         "dataset1": ["column1", "column3"],
         "dataset2": ["column2"],
     }
     input_ = {
-        "variable_to_file_mapping": {
+        "variable_to_data_file_mapping": {
             "column1": "dataset1",
             "column2": "dataset2",
             "column3": "dataset1",
         },
         "variables": ["column1", "column2", "column3"],
     }
-    actual = _get_file_name_to_variables_mapping(**input_)
+    actual = _get_data_file_name_to_variables_mapping(**input_)
     assert actual == expected
 
 
-def test_get_file_name_to_variables_mapping_assert_datasets():
+def test_get_data_file_name_to_variables_mapping_assert_datasets():
     expected = ["dataset1", "dataset2"]
     input_ = {
-        "variable_to_file_mapping": {
+        "variable_to_data_file_mapping": {
             "column1": "dataset1",
             "column2": "dataset2",
             "column3": "dataset1",
         },
         "variables": ["column1", "column2"],
     }
-    actual = _get_file_name_to_variables_mapping(**input_)
+    actual = _get_data_file_name_to_variables_mapping(**input_)
     assert sorted(actual.keys()) == sorted(expected)
 
 

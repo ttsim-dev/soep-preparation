@@ -36,5 +36,5 @@ def test_create_dummy_assert_isin():
 def test_create_dummy_assert_correct_bool():
     expected = pd.Series([False, True], dtype="bool[pyarrow]")
     sr = pd.Series([False, True], dtype=object)
-    actual = create_dummy(sr, true_value=True, kind="equal")
+    actual = create_dummy(sr, value_for_comparison=True, comparison_type="equal")
     pd.testing.assert_series_equal(actual, expected)
