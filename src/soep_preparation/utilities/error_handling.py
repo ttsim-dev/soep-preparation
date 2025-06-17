@@ -85,3 +85,35 @@ def fail_if_series_cannot_be_transformed(
         )
     for item in input_expected_types:
         fail_if_input_has_invalid_type(*item)
+
+
+def fail_if_series_is_empty(series: pd.Series) -> None:
+    """Fail if series is empty.
+
+    Args:
+        series: The series to check.
+
+    Raises:
+        ValueError: If series is empty.
+    """
+    if series.empty:
+        msg = "Expected series to not be empty, but it was."
+        raise ValueError(msg)
+
+
+def fail_if_column_name_not_in_dataframe(
+    dataframe: pd.DataFrame,
+    column_name: str,
+) -> None:
+    """Fail if column name is not in DataFrame.
+
+    Args:
+        dataframe: The DataFrame to check.
+        column_name: The column name to check.
+
+    Raises:
+        ValueError: If column name is not in DataFrame.
+    """
+    if column_name not in dataframe.columns:
+        msg = f"Expected column '{column_name}' to be in DataFrame, but it was not."
+        raise ValueError(msg)
