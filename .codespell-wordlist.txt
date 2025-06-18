@@ -12,3 +12,7 @@ september
 oktober
 november
 dezember
+astroid
+als
+missings
+oder

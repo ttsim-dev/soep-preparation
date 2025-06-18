@@ -5,10 +5,7 @@
 [project]
 name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
-requires-python = ">=3.11"
-dependencies = [
-    "pytask",
-]
+requires-python = ">=3.13"
 dynamic = ["version"]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -25,6 +22,7 @@ authors = [
 maintainers = [
     { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
 ]
+dependencies = ["pytask"]
 
 [project.readme]
 file = "README.md"
@@ -77,29 +75,32 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.dependencies]
-python = "3.11"
+python = "~=3.13"
 jupyterlab = "*"
-plotly = ">=5.24,<6"
-pre-commit = "*"
-ipykernel = "*"
-pandas = ">=2.1"
-pyarrow = ">=13.0"
-pygraphviz = "*"
-pytask-latex = ">=0.4.0"
-pytask-parallel = ">=0.4.0"
-pytask = ">=0.4.7"
-python-graphviz = "*"
-pyyaml = "*"
-statsmodels = "*"
+plotly = ">=6.0.1"
+pre-commit = ">=4.2.0,<5"
+ipykernel = ">=6.29.5,<7"
+pandas = ">=2.2.3,<3"
+pyarrow = ">=20.0.0,<21"
+pygraphviz = ">=1.14"
+pytask-latex = "*"
+pytask-parallel = "*"
+pytask = ">=0.5.2"
+python-graphviz = ">=0.20.3,<0.21"
+pyyaml = ">=6.0.2,<7"
+statsmodels = ">=0.14.4,<0.15"
 toml = "*"
+tqdm = "*"
+pytest = "*"
 
 # Development Dependencies (pypi)
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.pypi-dependencies]
 soep_preparation = {path = ".", editable = true}
-kaleido = "*"
-pdbp = "*"
+gettsim = {git = "https://github.com/iza-institute-of-labor-economics/gettsim.git", branch = "collect-components-of-namespaces"}
+kaleido = ">=0.1.0.post1, <0.3"
+pdbp = ">=1.7.0, <2"
 
 [tool.pixi.target.win-64.pypi-dependencies]
 kaleido = ">=0.1.0.post1,<=0.1.0.post1"
@@ -128,21 +129,26 @@ test = {features = ["test"], solve-group = "default"}
 # ======================================================================================
 
 [tool.ruff]
-target-version = "py311"
-lint.select = ["ALL"]
+target-version = "py313"
 fix = true
-fix-only = true # No linting errors will be reported
-lint.extend-ignore = [
+
+[tool.ruff.lint]
+select = ["ALL"]
+extend-ignore = [
     "S101", # Use of `assert` detected.
-    "ANN",  # Missing type annotations
-    # Avoid conflict with ruff-format
-    "COM812",
-    "ISC001",
+    "COM812", # Avoid conflict with ruff-format
+    "ISC001", # Avoid conflict with ruff-format
+    "PD015", # pd.merge fine because of inherent symmetry
+    "FBT001", # Boolean-typed positional argument in function definition
+    "FIX002", # rely on TODO-spotting from TD area.
 ]
 
+[tool.ruff.lint.pylint]
+max-statements = 100
+
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "PD011"]
-"task_*.py" = ["ANN"]
+"tests/*" = ["D", "PD011", "ANN201"]
+"**/task.py" = ["ANN"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
