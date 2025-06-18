@@ -1,0 +1,120 @@
+---
+alter: 1900-01-01 / 2100-12-31
+arbeitslosengeld_2:
+  bezug_im_vorjahr: 2023-01-01 / 2100-12-31
+  eigenbedarf_gedeckt: 2023-01-01 / 2100-12-31
+  p_id_einstandspartner: 2005-01-01 / 2100-12-31
+arbeitsstunden_w: 1900-01-01 / 2100-12-31
+behinderungsgrad: 1900-01-01 / 2100-12-31
+einkommensteuer:
+  abzüge:
+    beitrag_private_rentenversicherung_m: 1900-01-01 / 2100-12-31
+    betreuungskosten_m: 1900-01-01 / 2100-12-31
+    p_id_betreuungskostenträger: 1900-01-01 / 2100-12-31
+  einkünfte:
+    aus_forst_und_landwirtschaft:
+      betrag_m: 1900-01-01 / 2100-12-31
+    aus_gewerbebetrieb:
+      betrag_m: 1900-01-01 / 2100-12-31
+    aus_kapitalvermögen:
+      kapitalerträge_m: 1900-01-01 / 2100-12-31
+    aus_nichtselbstständiger_arbeit:
+      bruttolohn_m: 1900-01-01 / 2100-12-31
+      bruttolohn_vorjahr_m: 1900-01-01 / 2100-12-31
+    aus_selbstständiger_arbeit:
+      betrag_m: 1900-01-01 / 2100-12-31
+    aus_vermietung_und_verpachtung:
+      betrag_m: 1900-01-01 / 2100-12-31
+    ist_selbstständig: 1900-01-01 / 2100-12-31
+    sonstige:
+      ohne_renten_m: 1900-01-01 / 2100-12-31
+      renteneinkünfte_vorjahr_m: 1900-01-01 / 2100-12-31
+  gemeinsam_veranlagt: 1900-01-01 / 2100-12-31
+elterngeld:
+  bisherige_bezugsmonate: 1900-01-01 / 2100-12-31
+  claimed: 1900-01-01 / 2100-12-31
+  nettoeinkommen_vorjahr_m: 1900-01-01 / 2100-12-31
+  zu_versteuerndes_einkommen_vorjahr_y_sn: 1900-01-01 / 2100-12-31
+erziehungsgeld:
+  budgetsatz: 1900-01-01 / 2100-12-31
+  p_id_empfänger: 1900-01-01 / 2100-12-31
+familie:
+  alleinerziehend: 1900-01-01 / 2100-12-31
+  kind: 1900-01-01 / 2100-12-31
+  p_id_ehepartner: 1900-01-01 / 2100-12-31
+  p_id_elternteil_1: 1900-01-01 / 2100-12-31
+  p_id_elternteil_2: 1900-01-01 / 2100-12-31
+geburtsjahr: 1900-01-01 / 2100-12-31
+geburtsmonat: 1900-01-01 / 2100-12-31
+geburtstag: 1900-01-01 / 2100-12-31
+hh_id: 1900-01-01 / 2100-12-31
+kindergeld:
+  in_ausbildung: 1900-01-01 / 2100-12-31
+  p_id_empfänger: 1900-01-01 / 2100-12-31
+lohnsteuer:
+  steuerklasse: 1900-01-01 / 2100-12-31
+p_id: 1900-01-01 / 2100-12-31
+schwerbehindert_grad_g: 1900-01-01 / 2100-12-31
+sozialversicherung:
+  arbeitslosen:
+    anwartschaftszeit: 1900-01-01 / 2100-12-31
+    arbeitssuchend: 1900-01-01 / 2100-12-31
+    monate_durchgängigen_bezugs_von_arbeitslosengeld: 1900-01-01 / 2100-12-31
+    monate_sozialversicherungspflichtiger_beschäftigung_in_letzten_5_jahren: 1900-01-01 /
+      2100-12-31
+  kranken:
+    beitrag:
+      privat_versichert: 1900-01-01 / 2100-12-31
+  pflege:
+    beitrag:
+      hat_kinder: 1900-01-01 / 2100-12-31
+  rente:
+    altersrente:
+      für_frauen:
+        pflichtsbeitragsjahre_ab_alter_40: 1900-01-01 / 2100-12-31
+      höchster_bruttolohn_letzte_15_jahre_vor_rente_y: 1900-01-01 / 2100-12-31
+      wegen_arbeitslosigkeit:
+        arbeitslos_für_1_jahr_nach_alter_58_ein_halb: 1900-01-01 / 2100-12-31
+        pflichtbeitragsjahre_8_von_10: 1900-01-01 / 2100-12-31
+        vertrauensschutz_1997: 1900-01-01 / 2100-12-31
+        vertrauensschutz_2004: 1900-01-01 / 2100-12-31
+    bezieht_rente: 1900-01-01 / 2100-12-31
+    entgeltpunkte_ost: 1900-01-01 / 2100-12-31
+    entgeltpunkte_west: 1900-01-01 / 2100-12-31
+    ersatzzeiten_monate: 1900-01-01 / 2100-12-31
+    erwerbsminderung:
+      teilweise_erwerbsgemindert: 1900-01-01 / 2100-12-31
+      voll_erwerbsgemindert: 1900-01-01 / 2100-12-31
+    freiwillige_beitragsmonate: 1900-01-01 / 2100-12-31
+    grundrente:
+      bewertungszeiten_monate: 1900-01-01 / 2100-12-31
+      grundrentenzeiten_monate: 1900-01-01 / 2100-12-31
+      mean_entgeltpunkte: 1900-01-01 / 2100-12-31
+    jahr_renteneintritt: 1900-01-01 / 2100-12-31
+    kinderberücksichtigungszeiten_monate: 1900-01-01 / 2100-12-31
+    krankheitszeiten_ab_16_bis_24_monate: 1900-01-01 / 2100-12-31
+    monat_renteneintritt: 1900-01-01 / 2100-12-31
+    monate_geringfügiger_beschäftigung: 1900-01-01 / 2100-12-31
+    monate_in_arbeitslosigkeit: 1900-01-01 / 2100-12-31
+    monate_in_arbeitsunfähigkeit: 1900-01-01 / 2100-12-31
+    monate_in_ausbildungssuche: 1900-01-01 / 2100-12-31
+    monate_in_mutterschutz: 1900-01-01 / 2100-12-31
+    monate_in_schulausbildung: 1900-01-01 / 2100-12-31
+    monate_mit_bezug_entgeltersatzleistungen_wegen_arbeitslosigkeit: 1900-01-01 / 2100-12-31
+    pflegeberücksichtigungszeiten_monate: 1900-01-01 / 2100-12-31
+    pflichtbeitragsmonate: 1900-01-01 / 2100-12-31
+    private_rente_betrag_m: 1900-01-01 / 2100-12-31
+unterhalt:
+  anspruch_m: 1900-01-01 / 2100-12-31
+  tatsächlich_erhaltener_betrag_m: 1900-01-01 / 2100-12-31
+vermögen: 1900-01-01 / 2100-12-31
+weiblich: 1900-01-01 / 2100-12-31
+wohnen:
+  baujahr_immobilie_hh: 1900-01-01 / 2100-12-31
+  bewohnt_eigentum_hh: 1900-01-01 / 2100-12-31
+  bruttokaltmiete_m_hh: 1900-01-01 / 2100-12-31
+  heizkosten_m_hh: 1900-01-01 / 2100-12-31
+  wohnfläche_hh: 1900-01-01 / 2100-12-31
+wohngeld:
+  mietstufe: 1900-01-01 / 2100-12-31
+wohnort_ost: 1900-01-01 / 2100-12-31

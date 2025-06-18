@@ -1,0 +1,293 @@
+---
+alter:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'int'>
+arbeitslosengeld_2:
+  bezug_im_vorjahr:
+    dates: 2023-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+  eigenbedarf_gedeckt:
+    dates: 2023-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+  p_id_einstandspartner:
+    dates: 2005-01-01 / 2100-12-31
+    return_type: <class 'int'>
+arbeitsstunden_w:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'float'>
+behinderungsgrad:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'int'>
+einkommensteuer:
+  abzüge:
+    beitrag_private_rentenversicherung_m:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    betreuungskosten_m:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    p_id_betreuungskostenträger:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'int'>
+  einkünfte:
+    aus_forst_und_landwirtschaft:
+      betrag_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+    aus_gewerbebetrieb:
+      betrag_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+    aus_kapitalvermögen:
+      kapitalerträge_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+    aus_nichtselbstständiger_arbeit:
+      bruttolohn_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+      bruttolohn_vorjahr_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+    aus_selbstständiger_arbeit:
+      betrag_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+    aus_vermietung_und_verpachtung:
+      betrag_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+    ist_selbstständig:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'bool'>
+    sonstige:
+      ohne_renten_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+      renteneinkünfte_vorjahr_m:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+  gemeinsam_veranlagt:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+elterngeld:
+  bisherige_bezugsmonate:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+  claimed:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+  nettoeinkommen_vorjahr_m:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'float'>
+  zu_versteuerndes_einkommen_vorjahr_y_sn:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'float'>
+erziehungsgeld:
+  budgetsatz:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+  p_id_empfänger:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+familie:
+  alleinerziehend:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+  kind:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+  p_id_ehepartner:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+  p_id_elternteil_1:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+  p_id_elternteil_2:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+geburtsjahr:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'int'>
+geburtsmonat:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'int'>
+geburtstag:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'int'>
+hh_id:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'int'>
+kindergeld:
+  in_ausbildung:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+  p_id_empfänger:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+lohnsteuer:
+  steuerklasse:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+p_id:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'int'>
+schwerbehindert_grad_g:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'bool'>
+sozialversicherung:
+  arbeitslosen:
+    anwartschaftszeit:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'bool'>
+    arbeitssuchend:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'bool'>
+    monate_durchgängigen_bezugs_von_arbeitslosengeld:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    monate_sozialversicherungspflichtiger_beschäftigung_in_letzten_5_jahren:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+  kranken:
+    beitrag:
+      privat_versichert:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'bool'>
+  pflege:
+    beitrag:
+      hat_kinder:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'bool'>
+  rente:
+    altersrente:
+      für_frauen:
+        pflichtsbeitragsjahre_ab_alter_40:
+          dates: 1900-01-01 / 2100-12-31
+          return_type: <class 'float'>
+      höchster_bruttolohn_letzte_15_jahre_vor_rente_y:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+      wegen_arbeitslosigkeit:
+        arbeitslos_für_1_jahr_nach_alter_58_ein_halb:
+          dates: 1900-01-01 / 2100-12-31
+          return_type: <class 'bool'>
+        pflichtbeitragsjahre_8_von_10:
+          dates: 1900-01-01 / 2100-12-31
+          return_type: <class 'bool'>
+        vertrauensschutz_1997:
+          dates: 1900-01-01 / 2100-12-31
+          return_type: <class 'bool'>
+        vertrauensschutz_2004:
+          dates: 1900-01-01 / 2100-12-31
+          return_type: <class 'bool'>
+    bezieht_rente:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'bool'>
+    entgeltpunkte_ost:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    entgeltpunkte_west:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    ersatzzeiten_monate:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    erwerbsminderung:
+      teilweise_erwerbsgemindert:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'bool'>
+      voll_erwerbsgemindert:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'bool'>
+    freiwillige_beitragsmonate:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    grundrente:
+      bewertungszeiten_monate:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'int'>
+      grundrentenzeiten_monate:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'int'>
+      mean_entgeltpunkte:
+        dates: 1900-01-01 / 2100-12-31
+        return_type: <class 'float'>
+    jahr_renteneintritt:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'int'>
+    kinderberücksichtigungszeiten_monate:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    krankheitszeiten_ab_16_bis_24_monate:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    monat_renteneintritt:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'int'>
+    monate_geringfügiger_beschäftigung:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    monate_in_arbeitslosigkeit:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    monate_in_arbeitsunfähigkeit:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    monate_in_ausbildungssuche:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    monate_in_mutterschutz:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    monate_in_schulausbildung:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    monate_mit_bezug_entgeltersatzleistungen_wegen_arbeitslosigkeit:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    pflegeberücksichtigungszeiten_monate:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    pflichtbeitragsmonate:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+    private_rente_betrag_m:
+      dates: 1900-01-01 / 2100-12-31
+      return_type: <class 'float'>
+unterhalt:
+  anspruch_m:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'float'>
+  tatsächlich_erhaltener_betrag_m:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'float'>
+vermögen:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'float'>
+weiblich:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'bool'>
+wohnen:
+  baujahr_immobilie_hh:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+  bewohnt_eigentum_hh:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'bool'>
+  bruttokaltmiete_m_hh:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'float'>
+  heizkosten_m_hh:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'float'>
+  wohnfläche_hh:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'float'>
+wohngeld:
+  mietstufe:
+    dates: 1900-01-01 / 2100-12-31
+    return_type: <class 'int'>
+wohnort_ost:
+  dates: 1900-01-01 / 2100-12-31
+  return_type: <class 'bool'>

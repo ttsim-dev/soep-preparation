@@ -1,0 +1,29 @@
+---
+arbeitslosengeld_2:
+  betrag_m_bg: 2005-01-01 / 2100-12-31
+elterngeld:
+  betrag_m: 2009-01-01 / 2100-12-31
+erziehungsgeld:
+  betrag_m: 1900-01-01 / 2008-12-31
+grundsicherung:
+  im_alter:
+    betrag_m_eg: 1900-01-01 / 2100-12-31
+kindergeld:
+  betrag_m: 1900-01-01 / 2100-12-31
+kinderzuschlag:
+  betrag_m_bg: 2005-01-01 / 2100-12-31
+sozialversicherung:
+  arbeitslosen:
+    betrag_m: 1900-01-01 / 2100-12-31
+  rente:
+    altersrente:
+      betrag_m: 1900-01-01 / 2100-12-31
+      bruttorente_m: 1900-01-01 / 2100-12-31
+    erwerbsminderung:
+      betrag_m: 1900-01-01 / 2100-12-31
+    grundrente:
+      betrag_m: 2021-01-01 / 2100-12-31
+unterhaltsvorschuss:
+  betrag_m: 1980-01-01 / 2100-12-31
+wohngeld:
+  betrag_m_wthh: 1965-01-01 / 2100-12-31
