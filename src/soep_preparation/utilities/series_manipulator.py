@@ -94,7 +94,7 @@ def apply_smallest_int_dtype(
 
 def convert_to_categorical(
     series: pd.Series,
-    ordered: bool,  # noqa: FBT001
+    ordered: bool,
 ) -> pd.Series:
     """Convert a series to a categorical series.
 
@@ -191,7 +191,7 @@ def create_dummy(
 
 def float_to_int(
     series: pd.Series,
-    drop_missing: bool = False,  # noqa: FBT001, FBT002
+    drop_missing: bool = False,  # noqa: FBT002
 ) -> pd.Series:
     """Transform a float Series to an integer Series.
 
@@ -251,7 +251,7 @@ def object_to_int(series: pd.Series) -> pd.Series:
 def object_to_bool_categorical(
     series: pd.Series,
     renaming: dict,
-    ordered: bool = False,  # noqa: FBT001, FBT002
+    ordered: bool = False,  # noqa: FBT002
 ) -> pd.Series:
     """Transform a mixed object Series to a categorical bool Series.
 
@@ -290,7 +290,7 @@ def object_to_bool_categorical(
 def object_to_int_categorical(
     series: pd.Series,
     renaming: dict | None = None,
-    ordered: bool = False,  # noqa: FBT001, FBT002
+    ordered: bool = False,  # noqa: FBT002
 ) -> pd.Series:
     """Transform a mixed object Series to a categorical integer Series.
 
@@ -335,7 +335,7 @@ def object_to_int_categorical(
 def object_to_str_categorical(
     series: pd.Series,
     renaming: dict | None = None,
-    ordered: bool = False,  # noqa: FBT001, FBT002
+    ordered: bool = False,  # noqa: FBT002
     nr_identifiers: int = 1,
 ) -> pd.Series:
     """Transform a mixed object Series to a categorical string Series.

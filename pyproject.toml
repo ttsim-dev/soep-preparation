@@ -138,7 +138,9 @@ extend-ignore = [
     "S101", # Use of `assert` detected.
     "COM812", # Avoid conflict with ruff-format
     "ISC001", # Avoid conflict with ruff-format
-
+    "PD015", # pd.merge fine because of inherent symmetry
+    "FBT001", # Boolean-typed positional argument in function definition
+    "FIX002", # rely on TODO-spotting from TD area.
 ]
 
 [tool.ruff.lint.pylint]

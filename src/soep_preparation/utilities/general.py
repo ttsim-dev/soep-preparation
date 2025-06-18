@@ -4,6 +4,8 @@ from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
 
+from soep_preparation.config import DATA, SOEP_VERSION
+
 
 def get_script_names(directory: Path) -> list[str]:
     """Get the names of all scripts in the given directory.
@@ -31,8 +33,6 @@ def get_stems_if_corresponding_raw_data_file_exists(directory: Path) -> list[str
         A list of data file names.
 
     """
-    from soep_preparation.config import DATA, SOEP_VERSION
-
     return [
         script.stem
         for script in directory.glob("*.py")

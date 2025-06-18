@@ -13,7 +13,7 @@ def combine_first_and_make_categorical(
     data: pd.DataFrame,
     column_name_1: str,
     column_name_2: str,
-    ordered: bool,  # noqa: FBT001
+    ordered: bool,
 ) -> pd.Series:
     """Combine two columns and convert to categorical.
 
