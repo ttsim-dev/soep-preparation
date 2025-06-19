@@ -21,22 +21,24 @@ def get_script_names(directory: Path) -> list[str]:
     ]
 
 
-def get_stems_if_corresponding_raw_data_file_exists(directory: Path) -> list[str]:
+def get_stems_if_corresponding_raw_data_file_exists(
+    directory: Path, data_root: Path, soep_version: str
+) -> list[str]:
     """Get names of all scripts in the directory with corresponding raw data files.
 
     Args:
         directory: The directory containing scripts.
+        data_root: The root directory where data files are stored.
+        soep_version: The version of the SOEP data.
 
     Returns:
         A list of data file names.
 
     """
-    from soep_preparation.config import DATA, SOEP_VERSION
-
     return [
         script.stem
         for script in directory.glob("*.py")
-        if (DATA / f"{SOEP_VERSION}" / f"{script.stem}.dta").exists()
+        if (data_root / f"{soep_version}" / f"{script.stem}.dta").exists()
     ]
 
 
