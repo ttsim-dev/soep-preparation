@@ -6,7 +6,7 @@ from typing import Annotated, Any
 import pandas as pd
 from pytask import PickleNode, task
 
-from soep_preparation.config import DATA_CATALOGS, SRC
+from soep_preparation.config import DATA, DATA_CATALOGS, SOEP_VERSION, SRC
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import (
     get_script_names,
@@ -56,7 +56,9 @@ def _get_variable_names_in_module(module: Any) -> list[str]:
 
 
 data_file_names = get_stems_if_corresponding_raw_data_file_exists(
-    directory=SRC / "create_derived_variables"
+    directory=SRC / "create_derived_variables",
+    data_root=DATA,
+    soep_version=SOEP_VERSION,
 )
 for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
     if data_file_name in data_file_names:

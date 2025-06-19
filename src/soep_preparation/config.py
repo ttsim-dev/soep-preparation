@@ -28,7 +28,9 @@ else:
 
 
 DATA_FILE_NAMES = get_stems_if_corresponding_raw_data_file_exists(
-    directory=SRC / "clean_existing_variables"
+    directory=SRC / "clean_existing_variables",
+    data_root=DATA,
+    soep_version=SOEP_VERSION,
 )
 
 DATA_CATALOGS = {
