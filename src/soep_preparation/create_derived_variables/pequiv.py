@@ -63,8 +63,8 @@ def create_derived_variables(data: pd.DataFrame) -> pd.DataFrame:
     out["kinderzuschlag_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
         data["kinderzuschlag_hh_betrag_y_pequiv"] / 12
     )
-    out["childcare_subsidy_hh_amount_m"] = apply_smallest_float_dtype(
-        data["childcare_subsidy_hh_amount_y"] / 12
+    out["betreuungsgeld_hh_betrag_m"] = apply_smallest_float_dtype(
+        data["betreuungsgeld_hh_betrag_y"] / 12
     )
     out["wohngeld_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
         data["wohngeld_hh_betrag_y_pequiv"] / 12
