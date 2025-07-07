@@ -60,9 +60,9 @@ def derive_hh_received_transfers(
         merged["kinderzuschlag_hh_betrag_m_hl"],
         ordered=False,
     )
-    out["wohngeld_hh_betrag_y"] = combine_first_and_make_categorical(
-        merged["wohngeld_hh_betrag_y_pequiv"],
-        merged["wohngeld_hh_betrag_y_hl"],
+    out["wohngeld_hh_betrag_m"] = combine_first_and_make_categorical(
+        merged["wohngeld_hh_betrag_m_pequiv"],
+        merged["wohngeld_hh_betrag_m_hl"],
         ordered=False,
     )
 

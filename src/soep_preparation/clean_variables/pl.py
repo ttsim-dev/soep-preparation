@@ -3,6 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
+    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
     create_dummy,
     object_to_bool_categorical,
@@ -29,6 +30,47 @@ def _private_rente_beitrag_jahr(
         out = object_to_float(private_rente_beitrag_jahr)
     out *= eingezahlte_monate / 12
     return out.where(eingezahlt.astype("bool[pyarrow]"), 0)
+
+
+def _private_rente_beitrag_monatlich(data: pd.DataFrame) -> pd.Series:
+    private_rente_beitrag_m = pd.Series(
+        data["private_rente_beitrag_m_2013"].where(
+            data["survey_year"] != 2018,  # noqa: PLR2004
+            data["private_rente_beitrag_m_2018"],
+        ),
+        name="private_rente_beitrag_m",
+    )
+
+    data = pd.concat([data["p_id"], private_rente_beitrag_m], axis=1)
+    out = data.groupby("p_id")["private_rente_beitrag_m"].ffill()
+    return apply_smallest_float_dtype(out)
+
+
+def _frailty(data: pd.DataFrame) -> pd.Series:
+    med_vars = [
+        "med_schwierigkeit_treppen_pl",
+        "med_schwierigkeit_taten_pl",
+        "med_schlaf_pl",
+        "med_diabetes_pl",
+        "med_asthma_pl",
+        "med_herzkrankheit_pl",
+        "med_krebs_pl",
+        "med_schlaganfall_pl",
+        "med_migräne_pl",
+        "med_bluthochdruck_pl",
+        "med_depressiv_pl",
+        "med_demenz_pl",
+        "med_gelenk_pl",
+        "med_rücken_pl",
+        "med_sonst_pl",
+        "med_raucher_pl",
+    ]
+
+    med_var_data = pd.concat(
+        [data[med_vars], data["med_subjective_status_dummy_pl"]],
+        axis=1,
+    )
+    return apply_smallest_float_dtype(med_var_data.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -122,6 +164,16 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         out["in_private_rente_eingezahlt"],
         2018,
     )
+    out["private_rente_beitrag_m"] = _private_rente_beitrag_monatlich(
+        out[
+            [
+                "p_id",
+                "survey_year",
+                "private_rente_beitrag_m_2013",
+                "private_rente_beitrag_m_2018",
+            ]
+        ],
+    )
 
     # health and medical characteristics
     out["type_of_health_insurance"] = object_to_str_categorical(raw_data["ple0097"])
@@ -135,6 +187,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
     )
+    out["med_schwierigkeit_treppen_dummy_pl"] = create_dummy(
+        out["med_schwierigkeit_treppen_pl"], [1, 2], "isin"
+    )
     out["med_schwierigkeit_taten_pl"] = object_to_int_categorical(
         raw_data["ple0005"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
@@ -142,6 +197,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["med_größe_pl"] = object_to_int(raw_data["ple0006"])
     out["med_gewicht_pl"] = object_to_int(raw_data["ple0007"])
+    out["bmi_pl"] = out["med_gewicht_pl"] / ((out["med_größe_pl"] / 100) ** 2)
+    out["bmi_dummy_pl"] = apply_smallest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
     out["med_subjective_status_pl"] = object_to_int_categorical(
         raw_data["ple0008"],
         renaming={
@@ -152,6 +209,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[5] Schlecht": 5,
         },
         ordered=True,
+    )
+    out["med_subjective_status_dummy_pl"] = create_dummy(
+        out["med_subjective_status_pl"], 3, "geq"
     )
     out["med_schlaf_pl"] = object_to_bool_categorical(
         raw_data["ple0011"],
@@ -221,6 +281,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
+    out["frailty_pl"] = _frailty(out)
 
     # personal positions, norms, and political variables
     out["political_spectrum_left_to_right"] = object_to_int_categorical(

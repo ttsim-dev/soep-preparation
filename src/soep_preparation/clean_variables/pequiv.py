@@ -3,6 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
+    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
     create_dummy,
     object_to_bool_categorical,
@@ -10,6 +11,32 @@ from soep_preparation.utilities.data_manipulator import (
     object_to_int_categorical,
     object_to_str_categorical,
 )
+
+
+def _calculate_frailty(data: pd.DataFrame) -> pd.Series:
+    med_vars = [
+        "med_schwierigkeiten_anziehen_pequiv",
+        "med_schwierigkeiten_bett",
+        "med_schwierigkeiten_einkauf",
+        "med_schwierigkeiten_hausarb",
+        "med_schwierigkeiten_treppen_pequiv",
+        "med_krankenhaus_pequiv",
+        "med_bluthochdruck_pequiv",
+        "med_diabetes_pequiv",
+        "med_krebs_pequiv",
+        "med_herzkrankheit_pequiv",
+        "med_schlaganfall_pequiv",
+        "med_gelenk_pequiv",
+        "med_psych_pequiv",
+    ]
+    med_var_data = pd.concat(
+        [
+            data[med_vars],
+            data[["bmi_dummy_pequiv", "med_subjective_status_dummy_pequiv"]],
+        ],
+        axis=1,
+    )
+    return apply_smallest_float_dtype(med_var_data.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -39,10 +66,22 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # hh social benefits
     out["grundsicherung_im_alter_hh_betrag_y"] = object_to_int(raw_data["ssold"])
     out["alg2_hh_betrag_y_pequiv"] = object_to_int(raw_data["alg2"])
+    out["alg2_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
+        out["alg2_hh_betrag_y_pequiv"] / 12
+    )
     out["kindergeld_hh_betrag_y_pequiv"] = object_to_int(raw_data["chspt"])
+    out["kindergeld_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
+        out["kindergeld_hh_betrag_y_pequiv"] / 12
+    )
     out["kinderzuschlag_hh_betrag_y_pequiv"] = object_to_int(raw_data["adchb"])
+    out["kinderzuschlag_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
+        out["kinderzuschlag_hh_betrag_y_pequiv"] / 12
+    )
     out["childcare_subsidy_hh_amount_y"] = object_to_int(raw_data["chsub"])
     out["wohngeld_hh_betrag_y_pequiv"] = object_to_int(raw_data["house"])
+    out["wohngeld_hh_betrag_m_pequiv"] = apply_smallest_float_dtype(
+        out["wohngeld_hh_betrag_y_pequiv"] / 12
+    )
     out["pflegegeld_hh_betrag_y"] = object_to_int(raw_data["nursh"])
     out["social_assistance_hh_amount_y"] = object_to_int(raw_data["subst"])
     out["social_assistance_special_hh_amount_y"] = object_to_int(raw_data["sphlp"])
@@ -136,6 +175,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["med_größe_pequiv"] = object_to_int(raw_data["m11122"])
     out["med_gewicht_pequiv"] = object_to_int(raw_data["m11123"])
+
+    out["bmi_pequiv"] = apply_smallest_float_dtype(
+        out["med_gewicht_pequiv"] / ((out["med_größe_pequiv"] / 100) ** 2),
+    )
+    out["bmi_dummy_pequiv"] = apply_smallest_int_dtype(
+        out["bmi_pequiv"] >= 30,  # noqa: PLR2004
+    )
+
     out["med_zufrieden_pequiv"] = object_to_int_categorical(
         raw_data["m11125"],
         renaming={
@@ -164,6 +211,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
         ordered=True,
     )
+    out["med_subjective_status_dummy_pequiv"] = apply_smallest_int_dtype(
+        out["med_subjective_status_pequiv"] <= 5,  # noqa: PLR2004
+    )
+    out["frailty_pequiv"] = _calculate_frailty(out)
+
     out["hours_worked_annually"] = object_to_int(raw_data["e11101"])
     # individual income
     out["einkünfte_aus_arbeit_betrag_y"] = object_to_int(raw_data["i11110"])
