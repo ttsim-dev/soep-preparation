@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     combine_first_and_make_categorical,
     object_to_bool_categorical,

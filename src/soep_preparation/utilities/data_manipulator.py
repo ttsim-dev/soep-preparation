@@ -1,4 +1,4 @@
-"""Utilities for manipulating pandas Series."""
+"""Utilities for manipulating data."""
 
 import re
 
@@ -9,6 +9,7 @@ from soep_preparation.utilities.error_handling import (
     fail_if_input_equals,
     fail_if_input_has_invalid_type,
     fail_if_series_cannot_be_transformed,
+    fail_if_series_is_empty,
 )
 
 
@@ -379,3 +380,24 @@ def object_to_str_categorical(
         ordered=ordered,
     )
     return sr_str.astype(raw_cat_dtype)
+
+
+def combine_first_and_make_categorical(
+    series_1: pd.Series,
+    series_2: pd.Series,
+    ordered: bool,
+) -> pd.Series:
+    """Combine two series and convert to categorical.
+
+    Args:
+        series_1: The first series.
+        series_2: The second series.
+        ordered: Whether the categorical is ordered.
+
+    Returns:
+        The combined and converted categorical series.
+    """
+    fail_if_series_is_empty(series_1)
+    fail_if_series_is_empty(series_2)
+    combined = series_1.combine_first(series_2)
+    return convert_to_categorical(combined, ordered=ordered)

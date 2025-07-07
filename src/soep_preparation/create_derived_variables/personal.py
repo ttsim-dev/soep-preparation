@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from soep_preparation.utilities.dataframe_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     combine_first_and_make_categorical,
 )
 
@@ -43,45 +43,38 @@ def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataF
     ].copy()
 
     out["med_schw_treppen"] = combine_first_and_make_categorical(
-        merged,
-        "med_schwierigkeiten_treppen_pequiv",
-        "med_schwierigkeit_treppen_dummy_pl",
+        merged["med_schwierigkeiten_treppen_pequiv"],
+        merged["med_schwierigkeit_treppen_pl"],
         ordered=True,
     )
     out["med_bluthochdruck"] = combine_first_and_make_categorical(
-        merged,
-        "med_bluthochdruck_pequiv",
-        "med_bluthochdruck_pl",
+        merged["med_bluthochdruck_pequiv"],
+        merged["med_bluthochdruck_pl"],
         ordered=True,
     )
     out["med_diabetes"] = combine_first_and_make_categorical(
-        merged,
-        "med_diabetes_pequiv",
-        "med_diabetes_pl",
+        merged["med_diabetes_pequiv"],
+        merged["med_diabetes_pl"],
         ordered=True,
     )
     out["med_krebs"] = combine_first_and_make_categorical(
-        merged,
-        "med_krebs_pequiv",
-        "med_krebs_pl",
+        merged["med_krebs_pequiv"],
+        merged["med_krebs_pl"],
         ordered=True,
     )
     out["med_herzkrankheit"] = combine_first_and_make_categorical(
-        merged,
-        "med_herzkrankheit_pequiv",
-        "med_herzkrankheit_pl",
+        merged["med_herzkrankheit_pequiv"],
+        merged["med_herzkrankheit_pl"],
         ordered=True,
     )
     out["med_schlaganfall"] = combine_first_and_make_categorical(
-        merged,
-        "med_schlaganfall_pequiv",
-        "med_schlaganfall_pl",
+        merged["med_schlaganfall_pequiv"],
+        merged["med_schlaganfall_pl"],
         ordered=True,
     )
     out["med_gelenk"] = combine_first_and_make_categorical(
-        merged,
-        "med_gelenk_pequiv",
-        "med_gelenk_pl",
+        merged["med_gelenk_pequiv"],
+        merged["med_gelenk_pl"],
         ordered=True,
     )
     out["med_gewicht"] = merged["med_gewicht_pequiv"].combine_first(
@@ -114,9 +107,8 @@ def derive_p_received_transfers(pl: pd.DataFrame, pkal: pd.DataFrame) -> pd.Data
     merged = pd.merge(pl, pkal, on=["hh_id", "survey_year"], how="outer")
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
     out["mutterschaftsgeld_bezug"] = combine_first_and_make_categorical(
-        merged,
-        "mutterschaftsgeld_bezug_pl",
-        "mutterschaftsgeld_bezug_pkal",
+        merged["mutterschaftsgeld_bezug_pl"],
+        merged["mutterschaftsgeld_bezug_pkal"],
         ordered=False,
     )
     return out

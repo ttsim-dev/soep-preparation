@@ -1,6 +1,6 @@
 import pandas as pd
 
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
     float_to_int,
