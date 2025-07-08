@@ -60,7 +60,7 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
         ],
         cleaning_script: Annotated[
             Path,
-            SRC / "clean_existing_variables" / f"{data_file_name}.py",
+            SRC / "clean_variables" / f"{data_file_name}.py",
         ],
     ) -> Annotated[pd.DataFrame, data_file_catalog["raw"]]:
         """Saves the raw data file to the data catalog.

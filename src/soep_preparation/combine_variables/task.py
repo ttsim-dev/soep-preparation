@@ -56,17 +56,18 @@ def _get_variable_names_in_module(module: Any) -> list[str]:
 
 
 data_file_names = get_stems_if_corresponding_raw_data_file_exists(
-    directory=SRC / "create_derived_variables"
+    directory=SRC / "combine_variables"
 )
+
 for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
     if data_file_name in data_file_names:
         # data files that have a derive variables script get processed
         @task(id=data_file_name)
-        def task_create_derived_variables(
+        def task_combine_variables(
             clean_data: Annotated[pd.DataFrame, data_file_catalog["cleaned"]],
             script_path: Annotated[
                 Path,
-                SRC / "create_derived_variables" / f"{data_file_name}.py",
+                SRC / "combine_variables" / f"{data_file_name}.py",
             ],
         ) -> Annotated[pd.DataFrame, data_file_catalog["derived_variables"]]:
             """Creates derived variables using a specified script.
@@ -83,7 +84,7 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
             """
             _error_handling_creation_task(clean_data, script_path)
             module = load_module(script_path)
-            return module.create_derived_variables(data=clean_data)
+            return module.combine_variables(data=clean_data)
 
         @task(id=data_file_name)
         def task_merge_derived_variables(
@@ -133,12 +134,12 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
             return clean_data
 
 
-script_names = get_script_names(SRC / "create_derived_variables")
+script_names = get_script_names(SRC / "combine_variables")
 for script_name in script_names:
     if script_name in data_file_names:
         # skipping scripts that have been processed above
         continue
-    module = load_module(SRC / "create_derived_variables" / f"{script_name}.py")
+    module = load_module(SRC / "combine_variables" / f"{script_name}.py")
     variable_names = _get_variable_names_in_module(module)
     for variable_name in variable_names:
         function_ = getattr(module, f"derive_{variable_name}")
