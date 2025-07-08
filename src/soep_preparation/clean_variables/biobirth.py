@@ -2,8 +2,8 @@
 
 import pandas as pd
 
-from soep_preparation.clean_existing_variables import month_mapping
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.clean_variables import month_mapping
+from soep_preparation.utilities.data_manipulator import (
     float_to_int,
     object_to_int,
     object_to_int_categorical,

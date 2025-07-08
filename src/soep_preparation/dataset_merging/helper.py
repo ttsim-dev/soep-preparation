@@ -11,6 +11,7 @@ from soep_preparation.utilities.error_handling import (
 
 
 # TODO (@hmgaudecker): should `variable_to_data_file_mapping` be an argument here?
+# extract/create table/dataset
 def create_dataset_from_variables(
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None = None,
@@ -18,7 +19,7 @@ def create_dataset_from_variables(
     variable_to_data_file_mapping: dict[str, list[str]] = DATA_CATALOGS["metadata"][
         "merged"
     ],
-    merging_behavior: str = "outer",
+    merging_behavior: str = "outer",  # make only outer
 ) -> pd.DataFrame:
     """Create a dataset by merging different specified variables.
 
@@ -99,19 +100,31 @@ def _error_handling(
     survey_years: list[int] | None,
     merging_behavior: str,
 ) -> None:
-    fail_if_input_has_invalid_type(variable_to_data_file_mapping, ["dict"])
-    fail_if_input_has_invalid_type(variables, ["list"])
-    fail_if_input_has_invalid_type(min_and_max_survey_years, ("tuple", "None"))
-    fail_if_input_has_invalid_type(survey_years, ("list", "None"))
-    fail_if_input_has_invalid_type(merging_behavior, ["str"])
+    fail_if_input_has_invalid_type(
+        input_=variable_to_data_file_mapping, expected_dtypes=["dict"]
+    )
+    fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
+    fail_if_input_has_invalid_type(
+        input_=min_and_max_survey_years, expected_dtypes=("tuple", "None")
+    )
+    fail_if_input_has_invalid_type(
+        input_=survey_years, expected_dtypes=("list", "None")
+    )
+    fail_if_input_has_invalid_type(input_=merging_behavior, expected_dtypes=["str"])
     _fail_if_empty(variable_to_data_file_mapping)
     _fail_if_empty(variables)
     if survey_years is not None:
-        _fail_if_survey_years_not_valid(survey_years, SURVEY_YEARS)
+        _fail_if_survey_years_not_valid(
+            survey_years=survey_years, valid_survey_years=SURVEY_YEARS
+        )
     else:
-        _fail_if_survey_years_not_valid(min_and_max_survey_years, SURVEY_YEARS)
+        _fail_if_survey_years_not_valid(
+            survey_years=min_and_max_survey_years, valid_survey_years=SURVEY_YEARS
+        )
         _fail_if_min_larger_max(min_and_max_survey_years)
-    _fail_if_invalid_variable(variables, variable_to_data_file_mapping)
+    _fail_if_invalid_variable(
+        variables=variables, variable_to_data_file_mapping=variable_to_data_file_mapping
+    )
     _fail_if_invalid_merging_behavior(merging_behavior)
 
 
