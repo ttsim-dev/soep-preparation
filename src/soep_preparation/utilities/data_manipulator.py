@@ -1,4 +1,4 @@
-"""Utilities for manipulating pandas Series."""
+"""Utilities for manipulating data."""
 
 import re
 
@@ -9,6 +9,7 @@ from soep_preparation.utilities.error_handling import (
     fail_if_input_equals,
     fail_if_input_has_invalid_type,
     fail_if_series_cannot_be_transformed,
+    fail_if_series_is_empty,
 )
 
 
@@ -140,13 +141,16 @@ def create_dummy(
     Returns:
         A boolean series indicating the condition.
     """
-    fail_if_input_has_invalid_type(series, ["pandas.core.series.Series"])
-    if type(value_for_comparison) is not str:
-        fail_if_input_equals(comparison_type, "startswith")
     fail_if_input_has_invalid_type(
-        value_for_comparison, ("bool", "str", "list", "float", "int")
+        input_=series, expected_dtypes=["pandas.core.series.Series"]
     )
-    fail_if_input_has_invalid_type(comparison_type, ["str"])
+    if type(value_for_comparison) is not str:
+        fail_if_input_equals(input_=comparison_type, failing_value="startswith")
+    fail_if_input_has_invalid_type(
+        input_=value_for_comparison,
+        expected_dtypes=("bool", "str", "list", "float", "int"),
+    )
+    fail_if_input_has_invalid_type(comparison_type, expected_dtypes=["str"])
     if comparison_type == "equal":
         return (
             (series == value_for_comparison)
@@ -379,3 +383,24 @@ def object_to_str_categorical(
         ordered=ordered,
     )
     return sr_str.astype(raw_cat_dtype)
+
+
+def combine_first_and_make_categorical(
+    series_1: pd.Series,
+    series_2: pd.Series,
+    ordered: bool,
+) -> pd.Series:
+    """Combine two series and convert to categorical.
+
+    Args:
+        series_1: The first series.
+        series_2: The second series.
+        ordered: Whether the categorical is ordered.
+
+    Returns:
+        The combined and converted categorical series.
+    """
+    fail_if_series_is_empty(series_1)
+    fail_if_series_is_empty(series_2)
+    combined = series_1.combine_first(series_2)
+    return convert_to_categorical(combined, ordered=ordered)

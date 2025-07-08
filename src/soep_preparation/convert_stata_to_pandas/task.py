@@ -3,7 +3,7 @@
 import inspect
 import re
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import pandas as pd
 from pandas.io.stata import StataReader
@@ -60,7 +60,7 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
         ],
         cleaning_script: Annotated[
             Path,
-            SRC / "clean_existing_variables" / f"{data_file_name}.py",
+            SRC / "clean_variables" / f"{data_file_name}.py",
         ],
     ) -> Annotated[pd.DataFrame, data_file_catalog["raw"]]:
         """Saves the raw data file to the data catalog.
@@ -75,7 +75,7 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
         Raises:
             TypeError: If input data or script path is not of expected type.
         """
-        _error_handling_task(stata_data_file, cleaning_script)
+        _error_handling_task(data=stata_data_file, script_path=cleaning_script)
         relevant_columns = _get_relevant_column_names(cleaning_script)
         with StataReader(
             stata_data_file,
@@ -83,7 +83,9 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
             columns=relevant_columns,
             convert_categoricals=False,
         ) as stata_iterator:
-            return _iteratively_read_one_data_file(stata_iterator, relevant_columns)
+            return _iteratively_read_one_data_file(
+                iterator=stata_iterator, relevant_columns=relevant_columns
+            )
 
 
 if not DATA_CATALOGS["data_files"]:
@@ -96,6 +98,10 @@ if not DATA_CATALOGS["data_files"]:
         raise FileNotFoundError(msg)
 
 
-def _error_handling_task(data, script_path):
-    fail_if_input_has_invalid_type(data, ["pathlib._local.PosixPath"])
-    fail_if_input_has_invalid_type(script_path, ["pathlib._local.PosixPath"])
+def _error_handling_task(data: Any, script_path: Any) -> None:
+    fail_if_input_has_invalid_type(
+        input_=data, expected_dtypes=["pathlib._local.PosixPath"]
+    )
+    fail_if_input_has_invalid_type(
+        input_=script_path, expected_dtypes=["pathlib._local.PosixPath"]
+    )

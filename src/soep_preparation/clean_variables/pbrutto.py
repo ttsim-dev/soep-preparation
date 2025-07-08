@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     object_to_int,
     object_to_str_categorical,
@@ -27,7 +27,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["birth_year"] = object_to_int(raw_data["geburt_v2"])
     out["relationship_to_head_of_hh"] = object_to_str_categorical(
-        raw_data["stell_h"],
+        series=raw_data["stell_h"],
         renaming={
             "[0] Haushaltsvorstand,Bezugsperson": "Household head",
             "[11] Ehegatte/in": "Spouse",
@@ -79,7 +79,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # categories [19] and [39] have identical missing data labels
     # they are reduced to one
     out["willingness_to_participate"] = object_to_str_categorical(
-        raw_data["ber"],
+        series=raw_data["ber"],
         renaming={
             "[4] sehr schlecht": "sehr schlecht",
             "[3] schlecht": "schlecht",

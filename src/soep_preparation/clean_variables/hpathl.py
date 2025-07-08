@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
     object_to_str_categorical,
@@ -23,7 +23,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["hh_soep_sample_hpathl"] = object_to_str_categorical(
-        raw_data["hsample"].replace(
+        series=raw_data["hsample"].replace(
             {
                 "[4] D 1994/5 Migration (1984-92/94 West)": (
                     "[4] D 1994/5 Migration (1984-92/94, West)"

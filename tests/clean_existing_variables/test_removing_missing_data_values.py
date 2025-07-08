@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pyarrow as pa
 
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     _remove_missing_data_values,
 )
 

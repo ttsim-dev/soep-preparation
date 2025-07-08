@@ -2,8 +2,8 @@
 
 import pandas as pd
 
-from soep_preparation.clean_existing_variables import month_mapping
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.clean_variables import month_mapping
+from soep_preparation.utilities.data_manipulator import (
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
     object_to_int,
@@ -31,7 +31,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["born_in_germany"] = object_to_str_categorical(raw_data["germborn"])
     out["country_of_birth"] = object_to_str_categorical(raw_data["corigin"])
     out["birth_month_ppathl"] = object_to_int_categorical(
-        raw_data["gebmonat"],
+        series=raw_data["gebmonat"],
         renaming=month_mapping.de,
         ordered=True,
     )
@@ -42,7 +42,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # individual current information
     out["current_survey_status"] = object_to_str_categorical(raw_data["netto"])
     out["current_place_of_residence"] = object_to_str_categorical(
-        raw_data["sampreg"],
+        series=raw_data["sampreg"],
         renaming={
             "[1] Westdeutschland, alte Bundeslaender": (
                 "Westdeutschland (alte Bundesländer)"

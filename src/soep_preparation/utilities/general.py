@@ -50,7 +50,7 @@ def load_module(script_path: Path) -> ModuleType:
         The loaded module.
     """
     module_name = script_path.stem
-    spec = spec_from_file_location(module_name, script_path)
+    spec = spec_from_file_location(name=module_name, location=script_path)
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
