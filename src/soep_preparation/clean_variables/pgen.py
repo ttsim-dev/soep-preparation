@@ -74,7 +74,7 @@ def _self_employed_occupations(
 ) -> list:
     """Occupation names that indicate self employment."""
     occupation_names = list(occupation.dropna().unique())
-    occupations_of_interest = re.compile("^.*Freiberufler.*$|^.*selbstä.*$")
+    occupations_of_interest = re.compile("^.*Freiberufler.*$|^.*selb(st)?stä.*$")
     return list(filter(occupations_of_interest.match, occupation_names))
 
 
@@ -107,7 +107,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming=month_mapping.de,
         ordered=True,
     )
-    out["education_isced_old"] = object_to_str_categorical(raw_data["pgisced97"])
+    out["education_isced_97"] = object_to_str_categorical(raw_data["pgisced97"])
     out["education_isced"] = object_to_str_categorical(raw_data["pgisced11"])
     out["education_isced_cat"] = apply_smallest_int_dtype(
         out["education_isced"].cat.codes
@@ -120,8 +120,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         out["education_casmin"].cat.codes
     )
     out["highest_education"] = _education(
-        out["education_casmin"],
-        out["education_isced"],
+        casmin=out["education_casmin"],
+        isced=out["education_isced"],
     )
 
     # individual current status
@@ -131,7 +131,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["german"] = create_dummy(out["first_nationality"], "Deutschland")
     out["refugee_status"] = object_to_str_categorical(raw_data["pgstatus_refu"])
     out["marital_status"] = object_to_str_categorical(raw_data["pgfamstd"])
-    out["laborforce_status"] = object_to_str_categorical(raw_data["pglfs"])
+    out["labor_force_status"] = object_to_str_categorical(raw_data["pglfs"])
     out["occupation_status"] = object_to_str_categorical(raw_data["pgstib"])
     out["employment_status"] = object_to_str_categorical(raw_data["pgemplst"])
     out["total_full_time_working_experience"] = object_to_float(raw_data["pgexpft"])
@@ -183,7 +183,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         comparison_type="startswith",
     )
     out["parental_leave"] = create_dummy(
-        out["laborforce_status"],
+        out["labor_force_status"],
         "NE: Mutterschutz/Elternzeit (seit 1991)",
     )
 
@@ -202,13 +202,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["pgvebzeit"],
         out["employment_status"],
     )
-    out["public_service"] = object_to_bool_categorical(
+    out["employed_in_public_service"] = object_to_bool_categorical(
         raw_data["pgoeffd"],
         renaming={"[2] nein": False, "[1] ja": True},
         ordered=True,
     )
-    out["size_company"] = object_to_str_categorical(raw_data["pgallbet"])
-    out["size_company_granular"] = object_to_str_categorical(
+    out["firm_size"] = object_to_str_categorical(raw_data["pgallbet"])
+    out["firm_size_granular_but_inconsistent_over_time"] = object_to_str_categorical(
         raw_data["pgbetr"].replace(
             {-5: "[-5] in Fragebogenversion nicht enthalten"},
         ),

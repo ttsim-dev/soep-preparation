@@ -14,7 +14,7 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
-def _private_rente_beitrag_jahr(
+def _private_rente_beitrag_m_ein_umfragejahr(
     private_rente_beitrag_jahr: "pd.Series[int]",
     eingezahlte_monate: "pd.Series[int]",
     eingezahlt: "pd.Series[pd.Categorical]",
@@ -32,45 +32,23 @@ def _private_rente_beitrag_jahr(
     return out.where(eingezahlt.astype("bool[pyarrow]"), 0)
 
 
-def _private_rente_beitrag_monatlich(data: pd.DataFrame) -> pd.Series:
-    private_rente_beitrag_m = pd.Series(
-        data["private_rente_beitrag_m_2013"].where(
-            data["survey_year"] != 2018,  # noqa: PLR2004
-            data["private_rente_beitrag_m_2018"],
+def _private_rente_beitrag_m(private_rente_data: pd.DataFrame) -> pd.Series:
+    """Combine private pension contributions and forward-fill within individuals."""
+    combined_years = pd.Series(
+        private_rente_data["private_rente_beitrag_m_2013"].mask(
+            private_rente_data["survey_year"] == 2018,  # noqa: PLR2004
+            private_rente_data["private_rente_beitrag_m_2018"],
         ),
         name="private_rente_beitrag_m",
     )
 
-    data = pd.concat([data["p_id"], private_rente_beitrag_m], axis=1)
+    data = pd.concat([private_rente_data["p_id"], combined_years], axis=1)
     out = data.groupby("p_id")["private_rente_beitrag_m"].ffill()
     return apply_smallest_float_dtype(out)
 
 
-def _frailty(data: pd.DataFrame) -> pd.Series:
-    med_vars = [
-        "med_schwierigkeit_treppen_pl",
-        "med_schwierigkeit_taten_pl",
-        "med_schlaf_pl",
-        "med_diabetes_pl",
-        "med_asthma_pl",
-        "med_herzkrankheit_pl",
-        "med_krebs_pl",
-        "med_schlaganfall_pl",
-        "med_migräne_pl",
-        "med_bluthochdruck_pl",
-        "med_depressiv_pl",
-        "med_demenz_pl",
-        "med_gelenk_pl",
-        "med_rücken_pl",
-        "med_sonst_pl",
-        "med_raucher_pl",
-    ]
-
-    med_var_data = pd.concat(
-        [data[med_vars], data["med_subjective_status_dummy_pl"]],
-        axis=1,
-    )
-    return apply_smallest_float_dtype(med_var_data.mean(axis=1))
+def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
+    return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -152,19 +130,19 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["in_private_rente_eingezahlt_monate"] = object_to_int(raw_data["plc0438"])
-    out["private_rente_beitrag_m_2013"] = _private_rente_beitrag_jahr(
+    out["private_rente_beitrag_m_2013"] = _private_rente_beitrag_m_ein_umfragejahr(
         raw_data["plc0439_v1"],
         out["in_private_rente_eingezahlt_monate"],
         out["in_private_rente_eingezahlt"],
         2013,
     )
-    out["private_rente_beitrag_m_2018"] = _private_rente_beitrag_jahr(
+    out["private_rente_beitrag_m_2018"] = _private_rente_beitrag_m_ein_umfragejahr(
         raw_data["plc0439_v2"],
         out["in_private_rente_eingezahlt_monate"],
         out["in_private_rente_eingezahlt"],
         2018,
     )
-    out["private_rente_beitrag_m"] = _private_rente_beitrag_monatlich(
+    out["private_rente_beitrag_m"] = _private_rente_beitrag_m(
         out[
             [
                 "p_id",
@@ -198,7 +176,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["med_größe_pl"] = object_to_int(raw_data["ple0006"])
     out["med_gewicht_pl"] = object_to_int(raw_data["ple0007"])
     out["bmi_pl"] = out["med_gewicht_pl"] / ((out["med_größe_pl"] / 100) ** 2)
-    out["bmi_dummy_pl"] = apply_smallest_int_dtype(out["bmi_pl"] >= 30)  # noqa: PLR2004
+    out["obese_pl"] = create_dummy(out["bmi_pl"], 30, "geq")
     out["med_subjective_status_pl"] = object_to_int_categorical(
         raw_data["ple0008"],
         renaming={
@@ -281,7 +259,29 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["frailty_pl"] = _frailty(out)
+    out["frailty_pl"] = _calculate_frailty(
+        out[
+            [
+                "med_schwierigkeit_treppen_pl",
+                "med_schwierigkeit_taten_pl",
+                "med_schlaf_pl",
+                "med_diabetes_pl",
+                "med_asthma_pl",
+                "med_herzkrankheit_pl",
+                "med_krebs_pl",
+                "med_schlaganfall_pl",
+                "med_migräne_pl",
+                "med_bluthochdruck_pl",
+                "med_depressiv_pl",
+                "med_demenz_pl",
+                "med_gelenk_pl",
+                "med_rücken_pl",
+                "med_sonst_pl",
+                "med_raucher_pl",
+                "med_subjective_status_dummy_pl",
+            ]
+        ]
+    )
 
     # personal positions, norms, and political variables
     out["political_spectrum_left_to_right"] = object_to_int_categorical(

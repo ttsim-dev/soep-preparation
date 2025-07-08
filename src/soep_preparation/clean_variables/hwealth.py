@@ -16,7 +16,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data: The raw hwealth data.
 
     Returns:
-        The processed hwealth data.
+        The processed hwealth data. The postfixes a-e stand for different imputations.
     """
     out = pd.DataFrame()
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
@@ -38,6 +38,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["p010he"]
     )
 
+    # due to non-response and to achieve comparable market values,
+    # a maximum-likelihood Heckman selection regression model is used
+    # the imputation is repeated leading to postfixes a-e
+    # variation between the imputation results is marginal, averaging is sensible
     out["hh_financial_assets_value_a"] = apply_smallest_float_dtype(raw_data["f010ha"])
     out["hh_financial_assets_value_b"] = apply_smallest_float_dtype(raw_data["f010hb"])
     out["hh_financial_assets_value_c"] = apply_smallest_float_dtype(raw_data["f010hc"])
@@ -56,11 +60,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_net_overall_wealth_d"] = apply_smallest_float_dtype(raw_data["w011hd"])
     out["hh_net_overall_wealth_e"] = apply_smallest_float_dtype(raw_data["w011he"])
 
-    out["hh_vehicles_value_a"] = apply_smallest_int_dtype(raw_data["v010ha"])
-    out["hh_vehicles_value_b"] = apply_smallest_int_dtype(raw_data["v010hb"])
-    out["hh_vehicles_value_c"] = apply_smallest_int_dtype(raw_data["v010hc"])
-    out["hh_vehicles_value_d"] = apply_smallest_int_dtype(raw_data["v010hd"])
-    out["hh_vehicles_value_e"] = apply_smallest_int_dtype(raw_data["v010he"])
+    out["hh_vehicles_value_a"] = apply_smallest_float_dtype(raw_data["v010ha"])
+    out["hh_vehicles_value_b"] = apply_smallest_float_dtype(raw_data["v010hb"])
+    out["hh_vehicles_value_c"] = apply_smallest_float_dtype(raw_data["v010hc"])
+    out["hh_vehicles_value_d"] = apply_smallest_float_dtype(raw_data["v010hd"])
+    out["hh_vehicles_value_e"] = apply_smallest_float_dtype(raw_data["v010he"])
 
     out["hh_gross_overall_wealth_including_vehicles_a"] = apply_smallest_float_dtype(
         raw_data["n010ha"]
@@ -94,7 +98,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         apply_smallest_float_dtype(raw_data["n011he"])
     )
 
-    out["imputation_flag_netwealth"] = object_to_str_categorical(
+    out[
+        "imputation_flag_hh_net_overall_wealth_including_vehicles_and_student_loans"
+    ] = object_to_str_categorical(
         raw_data["n022h0"],
         renaming={
             "[0] No imputation": "No imputation",

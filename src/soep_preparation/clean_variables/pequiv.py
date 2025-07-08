@@ -13,30 +13,8 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
-def _calculate_frailty(data: pd.DataFrame) -> pd.Series:
-    med_vars = [
-        "med_schwierigkeiten_anziehen_pequiv",
-        "med_schwierigkeiten_bett",
-        "med_schwierigkeiten_einkauf",
-        "med_schwierigkeiten_hausarb",
-        "med_schwierigkeiten_treppen_pequiv",
-        "med_krankenhaus_pequiv",
-        "med_bluthochdruck_pequiv",
-        "med_diabetes_pequiv",
-        "med_krebs_pequiv",
-        "med_herzkrankheit_pequiv",
-        "med_schlaganfall_pequiv",
-        "med_gelenk_pequiv",
-        "med_psych_pequiv",
-    ]
-    med_var_data = pd.concat(
-        [
-            data[med_vars],
-            data[["bmi_dummy_pequiv", "med_subjective_status_dummy_pequiv"]],
-        ],
-        axis=1,
-    )
-    return apply_smallest_float_dtype(med_var_data.mean(axis=1))
+def _calculate_frailty(frailty_input: pd.DataFrame) -> pd.Series:
+    return apply_smallest_float_dtype(frailty_input.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -179,9 +157,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["bmi_pequiv"] = apply_smallest_float_dtype(
         out["med_gewicht_pequiv"] / ((out["med_größe_pequiv"] / 100) ** 2),
     )
-    out["bmi_dummy_pequiv"] = apply_smallest_int_dtype(
-        out["bmi_pequiv"] >= 30,  # noqa: PLR2004
-    )
+    out["obese_pequiv"] = create_dummy(out["bmi_pequiv"], 30, "geq")
 
     out["med_zufrieden_pequiv"] = object_to_int_categorical(
         raw_data["m11125"],
@@ -214,7 +190,27 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["med_subjective_status_dummy_pequiv"] = apply_smallest_int_dtype(
         out["med_subjective_status_pequiv"] <= 5,  # noqa: PLR2004
     )
-    out["frailty_pequiv"] = _calculate_frailty(out)
+    out["frailty_pequiv"] = _calculate_frailty(
+        out[
+            [
+                "med_schwierigkeiten_anziehen_pequiv",
+                "med_schwierigkeiten_bett",
+                "med_schwierigkeiten_einkauf",
+                "med_schwierigkeiten_hausarb",
+                "med_schwierigkeiten_treppen_pequiv",
+                "med_krankenhaus_pequiv",
+                "med_bluthochdruck_pequiv",
+                "med_diabetes_pequiv",
+                "med_krebs_pequiv",
+                "med_herzkrankheit_pequiv",
+                "med_schlaganfall_pequiv",
+                "med_gelenk_pequiv",
+                "med_psych_pequiv",
+                "med_subjective_status_dummy_pequiv",
+                "obese_pequiv",
+            ]
+        ]
+    )
 
     out["hours_worked_annually"] = object_to_int(raw_data["e11101"])
     # individual income

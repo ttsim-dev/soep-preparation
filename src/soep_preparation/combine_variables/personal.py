@@ -82,7 +82,7 @@ def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataF
     )
     out["med_größe"] = merged["med_größe_pequiv"].combine_first(merged["med_größe_pl"])
     out["bmi"] = merged["bmi_pequiv"].combine_first(merged["bmi_pl"])
-    out["bmi_dummy"] = merged["bmi_dummy_pequiv"].combine_first(merged["bmi_dummy_pl"])
+    out["obese"] = merged["obese_pequiv"].combine_first(merged["obese_pl"])
     out["med_subjective_status"] = merged["med_subjective_status_pequiv"].combine_first(
         merged["med_subjective_status_pl"]
     )
