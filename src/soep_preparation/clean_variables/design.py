@@ -23,7 +23,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_random_group"] = apply_smallest_int_dtype(raw_data["rgroup"])
     out["hh_strat"] = apply_smallest_int_dtype(raw_data["strat"])
     out["hh_soep_sample_design"] = object_to_str_categorical(
-        raw_data["hsample"],
+        series=raw_data["hsample"],
         nr_identifiers=2,
     )
     return out

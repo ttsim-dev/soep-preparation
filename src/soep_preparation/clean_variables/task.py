@@ -1,7 +1,7 @@
 """Module to clean existing variables in SOEP data files."""
 
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import pandas as pd
 from pytask import task
@@ -11,7 +11,7 @@ from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_
 from soep_preparation.utilities.general import load_module
 
 
-def _fail_if_cleaning_module_missing(module_path):
+def _fail_if_cleaning_module_missing(module_path: Path) -> None:
     module = load_module(module_path)
 
     if not hasattr(module, "clean"):
@@ -53,14 +53,18 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
             AttributeError: If cleaning module module does not
             contain expected function.
         """
-        _error_handling_task(raw_data, module_path)
+        _error_handling_task(data=raw_data, module_path=module_path)
         module = load_module(module_path)
         return module.clean(
             raw_data=raw_data,
         )
 
 
-def _error_handling_task(data, module_path):
-    fail_if_input_has_invalid_type(data, ["pandas.core.frame.DataFrame"])
-    fail_if_input_has_invalid_type(module_path, ["pathlib._local.PosixPath"])
+def _error_handling_task(data: Any, module_path: Any) -> None:
+    fail_if_input_has_invalid_type(
+        input_=data, expected_dtypes=["pandas.core.frame.DataFrame"]
+    )
+    fail_if_input_has_invalid_type(
+        input_=module_path, expected_dtypes=["pathlib._local.PosixPath"]
+    )
     _fail_if_cleaning_module_missing(module_path)

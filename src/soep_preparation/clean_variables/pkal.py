@@ -89,13 +89,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["early_retirement_pension_m"] = object_to_int(raw_data["kal1e02"])
     out["unemployment_benefits_m"] = object_to_int(raw_data["kal2f02"])
     out["mutterschaftsgeld_bezug_pkal"] = object_to_bool_categorical(
-        raw_data["kal2j01_h"],
+        series=raw_data["kal2j01_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["mutterschaftsgeld_bezug_anzahl_m"] = _mutterschaftsgeld_monate(
-        raw_data["kal2j02"],
-        out["mutterschaftsgeld_bezug_pkal"],
+        monate=raw_data["kal2j02"],
+        bezug=out["mutterschaftsgeld_bezug_pkal"],
     )
 
     # the first full time employment variables includes the timeframe 1984 until 1997,
@@ -114,7 +114,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_1"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_1"], out["tmp_ft_employed_m_v2_1"], False
+        series_1=out["tmp_ft_employed_m_v1_1"],
+        series_2=out["tmp_ft_employed_m_v2_1"],
+        ordered=False,
     )
     out["pt_employed_m_1"] = object_to_str_categorical(
         series=raw_data["kal1b001"],
@@ -124,7 +126,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["minijob_employed_m_1"] = object_to_str_categorical(
-        raw_data["kal1n001"],
+        series=raw_data["kal1n001"],
         renaming={1: "Minijob erwerbstätig"},
     )
 
@@ -141,7 +143,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_2"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_2"], out["tmp_ft_employed_m_v2_2"], False
+        series_1=out["tmp_ft_employed_m_v1_2"],
+        series_2=out["tmp_ft_employed_m_v2_2"],
+        ordered=False,
     )
     out["pt_employed_m_2"] = object_to_str_categorical(
         series=raw_data["kal1b002"],
@@ -168,7 +172,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_3"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_3"], out["tmp_ft_employed_m_v2_3"], False
+        series_1=out["tmp_ft_employed_m_v1_3"],
+        series_2=out["tmp_ft_employed_m_v2_3"],
+        ordered=False,
     )
     out["pt_employed_m_3"] = object_to_str_categorical(
         series=raw_data["kal1b003"],
@@ -195,7 +201,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_4"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_4"], out["tmp_ft_employed_m_v2_4"], False
+        series_1=out["tmp_ft_employed_m_v1_4"],
+        series_2=out["tmp_ft_employed_m_v2_4"],
+        ordered=False,
     )
     out["pt_employed_m_4"] = object_to_str_categorical(
         series=raw_data["kal1b004"],
@@ -222,7 +230,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_5"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_5"], out["tmp_ft_employed_m_v2_5"], False
+        series_1=out["tmp_ft_employed_m_v1_5"],
+        series_2=out["tmp_ft_employed_m_v2_5"],
+        ordered=False,
     )
     out["pt_employed_m_5"] = object_to_str_categorical(
         series=raw_data["kal1b005"],
@@ -249,7 +259,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_6"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_6"], out["tmp_ft_employed_m_v2_6"], False
+        series_1=out["tmp_ft_employed_m_v1_6"],
+        series_2=out["tmp_ft_employed_m_v2_6"],
+        ordered=False,
     )
     out["pt_employed_m_6"] = object_to_str_categorical(
         series=raw_data["kal1b006"],
@@ -276,7 +288,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_7"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_7"], out["tmp_ft_employed_m_v2_7"], False
+        series_1=out["tmp_ft_employed_m_v1_7"],
+        series_2=out["tmp_ft_employed_m_v2_7"],
+        ordered=False,
     )
     out["pt_employed_m_7"] = object_to_str_categorical(
         series=raw_data["kal1b007"],
@@ -303,7 +317,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_8"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_8"], out["tmp_ft_employed_m_v2_8"], False
+        series_1=out["tmp_ft_employed_m_v1_8"],
+        series_2=out["tmp_ft_employed_m_v2_8"],
+        ordered=False,
     )
     out["pt_employed_m_8"] = object_to_str_categorical(
         series=raw_data["kal1b008"],
@@ -330,7 +346,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_9"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_9"], out["tmp_ft_employed_m_v2_9"], False
+        series_1=out["tmp_ft_employed_m_v1_9"],
+        series_2=out["tmp_ft_employed_m_v2_9"],
+        ordered=False,
     )
     out["pt_employed_m_9"] = object_to_str_categorical(
         series=raw_data["kal1b009"],
@@ -357,7 +375,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_10"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_10"], out["tmp_ft_employed_m_v2_10"], False
+        series_1=out["tmp_ft_employed_m_v1_10"],
+        series_2=out["tmp_ft_employed_m_v2_10"],
+        ordered=False,
     )
     out["pt_employed_m_10"] = object_to_str_categorical(
         series=raw_data["kal1b010"],
@@ -384,7 +404,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_11"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_11"], out["tmp_ft_employed_m_v2_11"], False
+        series_1=out["tmp_ft_employed_m_v1_11"],
+        series_2=out["tmp_ft_employed_m_v2_11"],
+        ordered=False,
     )
     out["pt_employed_m_11"] = object_to_str_categorical(
         series=raw_data["kal1b011"],
@@ -411,7 +433,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["ft_employed_m_12"] = combine_first_and_make_categorical(
-        out["tmp_ft_employed_m_v1_12"], out["tmp_ft_employed_m_v2_12"], False
+        series_1=out["tmp_ft_employed_m_v1_12"],
+        series_2=out["tmp_ft_employed_m_v2_12"],
+        ordered=False,
     )
     out["pt_employed_m_12"] = object_to_str_categorical(
         series=raw_data["kal1b012"],

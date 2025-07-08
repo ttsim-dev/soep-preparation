@@ -101,7 +101,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out[
         "imputation_flag_hh_net_overall_wealth_including_vehicles_and_student_loans"
     ] = object_to_str_categorical(
-        raw_data["n022h0"],
+        series=raw_data["n022h0"],
         renaming={
             "[0] No imputation": "No imputation",
             "[1] Edited": "Edited",

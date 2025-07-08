@@ -63,10 +63,14 @@ def _in_education(
         "NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
         "Volontäre, Praktikanten",
     ]
-    out = create_dummy(employment, "Ausbildung, Lehre")
+    out = create_dummy(series=employment, value_for_comparison="Ausbildung, Lehre")
     # Set in_education to missing if out of the labor force -- could mean anything.
     out = out.where(employment != "Nicht erwerbstätig", pd.NA)
-    return out.fillna(create_dummy(occupation, in_education, "isin"))
+    return out.fillna(
+        create_dummy(
+            series=occupation, value_for_comparison=in_education, comparison_type="isin"
+        )
+    )
 
 
 def _self_employed_occupations(
@@ -103,7 +107,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["month_interview"] = object_to_int_categorical(
-        raw_data["pgmonth"],
+        series=raw_data["pgmonth"],
         renaming=month_mapping.de,
         ordered=True,
     )
@@ -113,7 +117,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         out["education_isced"].cat.codes
     )
     out["education_casmin"] = object_to_str_categorical(
-        raw_data["pgcasmin"],
+        series=raw_data["pgcasmin"],
         nr_identifiers=2,
     )
     out["education_casmin_cat"] = apply_smallest_int_dtype(
@@ -128,7 +132,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # there are multiple categories for ['Kurdistan', 'Malaysia', 'Montenegro']
     # they have been reduced into one category each
     out["first_nationality"] = object_to_str_categorical(raw_data["pgnation"])
-    out["german"] = create_dummy(out["first_nationality"], "Deutschland")
+    out["german"] = create_dummy(
+        series=out["first_nationality"], value_for_comparison="Deutschland"
+    )
     out["refugee_status"] = object_to_str_categorical(raw_data["pgstatus_refu"])
     out["marital_status"] = object_to_str_categorical(raw_data["pgfamstd"])
     out["labor_force_status"] = object_to_str_categorical(raw_data["pglfs"])
@@ -138,44 +144,52 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["total_part_time_working_experience"] = object_to_float(raw_data["pgexppt"])
     out["total_unemployment_experience"] = object_to_float(raw_data["pgexpue"])
     out["tenure"] = object_to_float(raw_data["pgerwzeit"])
-    out["retired"] = create_dummy(out["occupation_status"], "NE: Rentner/Rentnerin")
+    out["retired"] = create_dummy(
+        series=out["occupation_status"], value_for_comparison="NE: Rentner/Rentnerin"
+    )
     out["in_education"] = _in_education(
-        out["employment_status"],
-        out["occupation_status"],
+        employment=out["employment_status"],
+        occupation=out["occupation_status"],
     )
     out["self_employed"] = create_dummy(
-        out["occupation_status"],
-        _self_employed_occupations(out["occupation_status"]),
-        "isin",
+        series=out["occupation_status"],
+        value_for_comparison=_self_employed_occupations(out["occupation_status"]),
+        comparison_type="isin",
     )
     out["military"] = create_dummy(
-        out["occupation_status"],
-        "NE: Wehr- und Zivildienst",
+        series=out["occupation_status"],
+        value_for_comparison="NE: Wehr- und Zivildienst",
     )
 
     out["erwerbstätig_y"] = (
-        create_dummy(out["employment_status"], "Nicht erwerbstätig", "neq")
+        create_dummy(
+            series=out["employment_status"],
+            value_for_comparison="Nicht erwerbstätig",
+            comparison_type="neq",
+        )
     ) & (~out["in_education"])
 
     out["nicht_erwerbstätig_y"] = create_dummy(
-        out["employment_status"],
-        "Nicht erwerbstätig",
+        series=out["employment_status"],
+        value_for_comparison="Nicht erwerbstätig",
     )
     out["unemployed_y"] = create_dummy(
-        out["occupation_status"],
-        "NE: arbeitslos gemeldet",
+        series=out["occupation_status"],
+        value_for_comparison="NE: arbeitslos gemeldet",
     )
-    out["ft_y"] = create_dummy(out["employment_status"], "Voll erwerbstätig")
+    out["ft_y"] = create_dummy(
+        series=out["employment_status"], value_for_comparison="Voll erwerbstätig"
+    )
     out["pt_employed_y"] = create_dummy(
-        out["employment_status"], "Teilzeitbeschäftigung"
+        series=out["employment_status"], value_for_comparison="Teilzeitbeschäftigung"
     )
     out["geringfügig_erwbstätig"] = create_dummy(
-        out["employment_status"],
-        "Unregelmässig, geringfügig erwerbstät.",
+        series=out["employment_status"],
+        value_for_comparison="Unregelmässig, geringfügig erwerbstät.",
     )
     out["werkstatt"] = create_dummy(
-        out["employment_status"],
-        "Werkstatt für behinderte Menschen (seit 1998)",
+        series=out["employment_status"],
+        value_for_comparison="Werkstatt für behinderte Menschen (seit 1998)",
     )
     out["beamte"] = create_dummy(
         series=out["occupation_status"],
@@ -183,8 +197,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         comparison_type="startswith",
     )
     out["parental_leave"] = create_dummy(
-        out["labor_force_status"],
-        "NE: Mutterschutz/Elternzeit (seit 1991)",
+        series=out["labor_force_status"],
+        value_for_comparison="NE: Mutterschutz/Elternzeit (seit 1991)",
     )
 
     # individual work information
@@ -195,15 +209,15 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["pglabnet"]
     ).fillna(0)
     out["weekly_working_hours_actual"] = _weekly_working_hours_fill_non_working(
-        raw_data["pgtatzeit"],
-        out["employment_status"],
+        working_hours=raw_data["pgtatzeit"],
+        employment_status=out["employment_status"],
     )
     out["weekly_working_hours_contract"] = _weekly_working_hours_fill_non_working(
-        raw_data["pgvebzeit"],
-        out["employment_status"],
+        working_hours=raw_data["pgvebzeit"],
+        employment_status=out["employment_status"],
     )
     out["employed_in_public_service"] = object_to_bool_categorical(
-        raw_data["pgoeffd"],
+        series=raw_data["pgoeffd"],
         renaming={"[2] nein": False, "[1] ja": True},
         ordered=True,
     )

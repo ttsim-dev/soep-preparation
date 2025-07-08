@@ -23,7 +23,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
 
     out["birth_month_bioedu"] = object_to_int_categorical(
-        raw_data["gebmonat"],
+        series=raw_data["gebmonat"],
         renaming=month_mapping.en,
         ordered=True,
     )

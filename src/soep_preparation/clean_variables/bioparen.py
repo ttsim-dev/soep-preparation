@@ -22,13 +22,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # Social father personal id
     out["p_id_father"] = float_to_int(
-        raw_data["fnr"],
+        series=raw_data["fnr"],
         drop_missing=True,
     )
 
     # Social mother personal id
     out["p_id_mother"] = float_to_int(
-        raw_data["mnr"],
+        series=raw_data["mnr"],
         drop_missing=True,
     )
     return out

@@ -141,13 +141,16 @@ def create_dummy(
     Returns:
         A boolean series indicating the condition.
     """
-    fail_if_input_has_invalid_type(series, ["pandas.core.series.Series"])
-    if type(value_for_comparison) is not str:
-        fail_if_input_equals(comparison_type, "startswith")
     fail_if_input_has_invalid_type(
-        value_for_comparison, ("bool", "str", "list", "float", "int")
+        input_=series, expected_dtypes=["pandas.core.series.Series"]
     )
-    fail_if_input_has_invalid_type(comparison_type, ["str"])
+    if type(value_for_comparison) is not str:
+        fail_if_input_equals(input_=comparison_type, failing_value="startswith")
+    fail_if_input_has_invalid_type(
+        input_=value_for_comparison,
+        expected_dtypes=("bool", "str", "list", "float", "int"),
+    )
+    fail_if_input_has_invalid_type(comparison_type, expected_dtypes=["str"])
     if comparison_type == "equal":
         return (
             (series == value_for_comparison)

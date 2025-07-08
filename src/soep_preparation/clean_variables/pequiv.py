@@ -69,74 +69,76 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # individual characteristics
     out["gender"] = object_to_str_categorical(
-        raw_data["d11102ll"],
+        series=raw_data["d11102ll"],
         ordered=False,
         renaming={"[1] Male": "male", "[2] Female": "female"},
     )
     out["age"] = object_to_int(raw_data["d11101"])
     out["federal_state_of_residence"] = object_to_str_categorical(
-        raw_data["l11101"], ordered=False
+        series=raw_data["l11101"], ordered=False
     )
     out["employed_y"] = create_dummy(
-        raw_data["e11102"], value_for_comparison="[1] Employed", comparison_type="equal"
+        series=raw_data["e11102"],
+        value_for_comparison="[1] Employed",
+        comparison_type="equal",
     )
     out["employment_level"] = object_to_str_categorical(
-        raw_data["e11103"],
+        series=raw_data["e11103"],
         ordered=False,
     )
     # individual medical characteristics
     out["med_krankenhaus_pequiv"] = object_to_bool_categorical(
-        raw_data["m11101"],
+        series=raw_data["m11101"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_schlaganfall_pequiv"] = object_to_bool_categorical(
-        raw_data["m11105"],
+        series=raw_data["m11105"],
         renaming={0: False, 1: True},
         ordered=True,
     )
     out["med_bluthochdruck_pequiv"] = object_to_bool_categorical(
-        raw_data["m11106"],
+        series=raw_data["m11106"],
         renaming={0: False, 1: True},
         ordered=True,
     )
     out["med_diabetes_pequiv"] = object_to_bool_categorical(
-        raw_data["m11107"],
+        series=raw_data["m11107"],
         renaming={0: False, 1: True},
         ordered=True,
     )
     out["med_krebs_pequiv"] = object_to_bool_categorical(
-        raw_data["m11108"],
+        series=raw_data["m11108"],
         renaming={0: False, 1: True},
         ordered=True,
     )
     out["med_psych_pequiv"] = object_to_bool_categorical(
-        raw_data["m11109"],
+        series=raw_data["m11109"],
         renaming={0: False, 1: True},
         ordered=True,
     )
     out["med_gelenk_pequiv"] = object_to_bool_categorical(
-        raw_data["m11110"],
+        series=raw_data["m11110"],
         renaming={0: False, 1: True},
         ordered=True,
     )
     out["med_herzkrankheit_pequiv"] = object_to_bool_categorical(
-        raw_data["m11111"],
+        series=raw_data["m11111"],
         renaming={0: False, 1: True},
         ordered=True,
     )
     out["med_schwierigkeiten_treppen_pequiv"] = object_to_bool_categorical(
-        raw_data["m11113"],
+        series=raw_data["m11113"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_schwierigkeiten_anziehen_pequiv"] = object_to_bool_categorical(
-        raw_data["m11115"],
+        series=raw_data["m11115"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
     out["med_schwierigkeiten_bett"] = object_to_bool_categorical(
-        raw_data["m11116"],
+        series=raw_data["m11116"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
@@ -146,7 +148,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["med_schwierigkeiten_hausarb"] = object_to_bool_categorical(
-        raw_data["m11119"],
+        series=raw_data["m11119"],
         renaming={"[0] Does not apply": False, "[1] Applies": True},
         ordered=True,
     )
@@ -157,10 +159,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["bmi_pequiv"] = apply_smallest_float_dtype(
         out["med_gewicht_pequiv"] / ((out["med_größe_pequiv"] / 100) ** 2),
     )
-    out["obese_pequiv"] = create_dummy(out["bmi_pequiv"], 30, "geq")
+    out["obese_pequiv"] = create_dummy(
+        series=out["bmi_pequiv"], value_for_comparison=30, comparison_type="geq"
+    )
 
     out["med_zufrieden_pequiv"] = object_to_int_categorical(
-        raw_data["m11125"],
+        series=raw_data["m11125"],
         renaming={
             "[0] Completely dissatisfied": 0,
             1: 1,
@@ -177,7 +181,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     out["med_subjective_status_pequiv"] = object_to_int_categorical(
-        raw_data["m11126"],
+        series=raw_data["m11126"],
         renaming={
             "[1] Very good": 1,
             "[2] Good": 2,
@@ -187,8 +191,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
         ordered=True,
     )
-    out["med_subjective_status_dummy_pequiv"] = apply_smallest_int_dtype(
-        out["med_subjective_status_pequiv"] <= 5,  # noqa: PLR2004
+    out["med_subjective_status_dummy_pequiv"] = create_dummy(
+        series=out["med_subjective_status_pequiv"],
+        value_for_comparison=5,
+        comparison_type="leq",
     )
     out["frailty_pequiv"] = _calculate_frailty(
         out[
