@@ -1,6 +1,6 @@
 """Tasks to create metadata."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 import pandas as pd
 from pytask import task
