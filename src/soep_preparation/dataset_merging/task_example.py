@@ -5,20 +5,38 @@ from typing import Annotated, Any
 import pandas as pd
 import pytask
 
-from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
+from soep_preparation.config import DATA_CATALOGS, ROOT, SURVEY_YEARS
 from soep_preparation.dataset_merging.helper import create_dataset_from_variables
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
 VARIABLES = [
     "age",
-    "birth_month",
-    "bmi",
-    "hh_weighting_factor_new_only",
-    "relationship_to_head_of_hh",
-    "hh_strat",
-    "number_of_children",
+    "weekly_working_hours_actual",
+    "disability_degree",
+    "birth_year",
+    "east_germany",
+    "self_employed",
+    "einkünfte_aus_selbstständiger_arbeit_betrag_m",
+    "rental_income_amount_m",
+    "einkünfte_aus_arbeit_betrag_m",
+    "income_from_forest_and_agriculture",
+    "capital_income_amount_m",
+    "income_from_other_sources",
+    "gesetzliche_rente_empfangener_betrag_m",
+    "private_rente_beitrag_m",
+    "children_care_facility_costs_m_current",
+    "person_that_pays_childcare_expenses",
+    "joint_taxation",
+    "private_altersvorsorge_betrag_m",
+    "private_zusatzkrankenversicherung_betrag_m",
+    "has_children",
+    "single_parent",
+    "is_child",
+    "pointer_partner",
     "p_id_father",
-    "frailty",
+    "p_id_mother",
+    "in_education",
+    "id_recipient_child_allowance",
 ]
 
 
@@ -44,6 +62,27 @@ def task_merge_variables(
         variables=variables,
         min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
         variable_to_data_file_mapping=variable_to_data_file_mapping,
+    )
+
+
+def task_store_example_merged_dataset(
+    example_merged_dataset: Annotated[
+        pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]
+    ],
+) -> None:
+    """Task to store the example merged dataset.
+
+    Args:
+        example_merged_dataset: The merged dataset to be stored.
+    """
+    unique_individuals = example_merged_dataset.drop_duplicates(
+        subset="p_id", keep="first"
+    )
+    out = unique_individuals[unique_individuals["hh_id"].notna()].reset_index(drop=True)
+    out.to_parquet(
+        ROOT / "dataset.pkl",
+        engine="pyarrow",
+        index=False,
     )
 
 

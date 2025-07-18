@@ -51,7 +51,7 @@ def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
 
 
-def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     """Create cleaned and sensible data type variables from the pl data file.
 
     Args:
@@ -155,6 +155,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # health and medical characteristics
     out["type_of_health_insurance"] = object_to_str_categorical(raw_data["ple0097"])
+    out["private_zusatzkrankenversicherung_betrag_m"] = object_to_float(
+        raw_data["ple0128_h"]
+    )
     out["motor_disability"] = create_dummy(
         series=raw_data["plj0582"],
         value_for_comparison=1,

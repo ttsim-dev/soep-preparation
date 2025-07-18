@@ -4,6 +4,7 @@ import pandas as pd
 
 from soep_preparation.clean_variables import month_mapping
 from soep_preparation.utilities.data_manipulator import (
+    create_dummy,
     float_to_int,
     object_to_int,
     object_to_int_categorical,
@@ -125,6 +126,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     long["hh_id_original"] = tmp_long["hh_id_original"]
     long["p_id"] = tmp_long["p_id"]
     long["number_of_children"] = tmp_long["tmp_number_of_children"]
+    long["has_children"] = create_dummy(
+        series=long["number_of_children"], value_for_comparison=1, comparison_type="geq"
+    )
     long["child_number"] = tmp_long["tmp_child_number"]
     long["p_id_child"] = tmp_long["tmp_p_id_child"]
     long["birth_year_child"] = tmp_long["tmp_birth_year_child"]

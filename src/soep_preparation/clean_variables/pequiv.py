@@ -17,7 +17,7 @@ def _calculate_frailty(frailty_input: pd.DataFrame) -> pd.Series:
     return apply_smallest_float_dtype(frailty_input.mean(axis=1))
 
 
-def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     """Create cleaned and sensible data type variables from the pequiv data file.
 
     Args:
@@ -40,7 +40,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["einkommen_vor_steuer_hh_betrag_y"] = object_to_int(raw_data["i11101"])
     out["einkommen_nach_steuer_hh_betrag_y"] = object_to_int(raw_data["i11102"])
     out["rental_income_hh_amount_y"] = object_to_int(raw_data["renty"])
+    out["rental_income_hh_amount_m"] = out["rental_income_hh_amount_y"] / 12
     out["capital_income_hh_amount_y"] = object_to_int(raw_data["divdy"])
+    out["capital_income_hh_amount_m"] = out["capital_income_hh_amount_y"] / 12
 
     # individual characteristics
     out["gender"] = object_to_str_categorical(
@@ -49,6 +51,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[1] Male": "male", "[2] Female": "female"},
     )
     out["age"] = object_to_int(raw_data["d11101"])
+    out["is_child"] = create_dummy(
+        series=out["age"], value_for_comparison=17, comparison_type="leq"
+    )
     out["federal_state_of_residence"] = object_to_str_categorical(
         series=raw_data["l11101"], ordered=False
     )
@@ -123,6 +128,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # gesetzliche rente available since 1986
     # contains knappschaftliche rente and alterssicherung landwirte since 2002
     out["gesetzliche_rente_empfangener_betrag_y"] = object_to_int(raw_data["igrv1"])
+    out["gesetzliche_rente_empfangener_betrag_m"] = (
+        out["gesetzliche_rente_empfangener_betrag_y"] / 12
+    )
     out["gesetzliche_hinterbliebenen_rente_betrag_y"] = object_to_int(raw_data["igrv2"])
     # knappschaftliche rente available 1986 through 2001
     out["knappschaftliche_rente_empfangener_betrag_y"] = object_to_int(
@@ -151,6 +159,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["private_hinterbliebenen_altersvorsorge_betrag_y"] = object_to_int(
         raw_data["iprv2"]
     )
+    out["private_altersvorsorge_betrag_m"] = out["private_altersvorsorge_betrag_y"] / 12
     # other pension available since 1986
     out["other_pension_amount_y"] = object_to_int(raw_data["ison1"])
     out["other_relatives_pension_amount_y"] = object_to_int(raw_data["ison2"])
@@ -170,15 +179,21 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["hours_worked_y"] = object_to_int(raw_data["e11101"])
     out["einkünfte_aus_arbeit_betrag_y"] = object_to_int(raw_data["i11110"])
+    out["einkünfte_aus_arbeit_betrag_m"] = out["einkünfte_aus_arbeit_betrag_y"] / 12
     out["einkünfte_aus_erster_arbeit_betrag_y"] = object_to_int(raw_data["ijob1"])
     out["einkünfte_aus_zweiter_arbeit_betrag_y"] = object_to_int(raw_data["ijob2"])
     out["einkünfte_aus_selbstständiger_arbeit_betrag_y"] = object_to_int(
         raw_data["iself"]
     ).fillna(0)
+    out["einkünfte_aus_selbstständiger_arbeit_betrag_m"] = (
+        out["einkünfte_aus_selbstständiger_arbeit_betrag_y"] / 12
+    )
     out["christmas_bonus_amount_y"] = object_to_int(raw_data["ixmas"])
     out["vacation_bonus_amount_y"] = object_to_int(raw_data["iholy"])
     out["profit_share_amount_y"] = object_to_int(raw_data["igray"])
     out["other_bonuses_amount_y"] = object_to_int(raw_data["iothy"])
+    out["income_from_forest_and_agriculture"] = 0
+    out["income_from_other_sources"] = 0
 
     # hh costs
     out["maintenance_costs_hh_amount_y"] = object_to_int(raw_data["opery"])

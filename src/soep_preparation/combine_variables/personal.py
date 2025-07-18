@@ -7,6 +7,74 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
+def derive_individual_income_variables_from_household_position(
+    pbrutto: pd.DataFrame, pequiv: pd.DataFrame
+) -> pd.DataFrame:
+    """Derive individual income variables from household position.
+
+    Args:
+        pbrutto: Cleaned pbrutto data.
+        pequiv: Cleaned pequiv data.
+
+    Returns:
+        DataFrame with individual income variables.
+    """
+    out = pd.DataFrame()
+    merged = pd.merge(
+        left=pbrutto, right=pequiv, on=["p_id", "hh_id", "survey_year"], how="outer"
+    )
+    out["p_id"] = merged["p_id"]
+    out["hh_id"] = merged["hh_id"]
+    out["survey_year"] = merged["survey_year"]
+    out["rental_income_amount_m"] = merged["rental_income_hh_amount_m"].where(
+        merged["relationship_to_head_of_hh"] == "Household head", 0
+    )
+    out["capital_income_amount_m"] = merged["capital_income_hh_amount_m"].where(
+        merged["relationship_to_head_of_hh"] == "Household head", 0
+    )
+    return out
+
+
+def derive_payer_childcare_expenses_and_receiver_child_allowance(
+    kidlong: pd.DataFrame, pequiv: pd.DataFrame
+) -> pd.DataFrame:
+    """Derive person that pays childcare expenses and child allowance receiver.
+
+    Args:
+        kidlong: Cleaned kidlong data.
+        pequiv: Cleaned pequiv data.
+
+    Returns:
+        DataFrame with childcare expenses and child allowance variables.
+    """
+    out = pd.DataFrame()
+    merged = pd.merge(
+        left=kidlong, right=pequiv, on=["p_id", "hh_id", "survey_year"], how="outer"
+    )
+    out["p_id"] = merged["p_id"]
+    out["hh_id"] = merged["hh_id"]
+    out["survey_year"] = merged["survey_year"]
+    out["person_that_pays_childcare_expenses"] = merged["pointer_hh_head"].where(
+        merged["is_child"], pd.NA
+    )
+    out["id_recipient_child_allowance"] = merged["pointer_hh_head"].where(
+        merged["is_child"], pd.NA
+    )
+    return out
+
+
+def derive_single_parental_status(
+    ppathl: pd.DataFrame, biobirth: pd.DataFrame
+) -> pd.DataFrame:
+    """Combine information on parental status and relationship status."""
+    out = pd.DataFrame()
+    merged = pd.merge(left=ppathl, right=biobirth, on="p_id", how="outer")
+    out["survey_year"] = merged["survey_year"]
+    out["p_id"] = merged["p_id"]
+    out["single_parent"] = merged["has_children"] & merged["living_without_partner"]
+    return out
+
+
 def derive_birth_month(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFrame:
     """Combine the birth_month variables from ppathl and bioedu.
 

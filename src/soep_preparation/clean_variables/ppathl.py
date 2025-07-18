@@ -6,6 +6,7 @@ from soep_preparation.clean_variables import month_mapping
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    create_dummy,
     object_to_int,
     object_to_int_categorical,
     object_to_str_categorical,
@@ -23,7 +24,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """
     out = pd.DataFrame()
 
-    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"]).mask(
+        raw_data["hid"] < 0, pd.NA
+    )
     out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
@@ -52,6 +55,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             ),
         },
     )
+    out["east_germany"] = create_dummy(
+        series=out["current_place_of_residence"],
+        value_for_comparison="Ostdeutschland (neue Bundesländer)",
+        comparison_type="equal",
+    )
     out["year_of_immigration"] = object_to_int(
         raw_data["immiyear"].replace(
             {
@@ -62,6 +70,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["sexual_orientation"] = object_to_str_categorical(raw_data["sexor"])
     out["partnership_status"] = object_to_str_categorical(raw_data["partner"])
+    # only if certain that a person does not have a partner, then "living_without_partner"  # noqa: E501
+    out["living_without_partner"] = create_dummy(
+        series=out["partnership_status"],
+        value_for_comparison="kein Partner im Haushalt",
+        comparison_type="equal",
+    )
+    # only if certain that a person has a partner, then "joint_taxation"
+    out["joint_taxation"] = create_dummy(
+        series=out["partnership_status"],
+        value_for_comparison=["Ehepartner / eingetragener Partner", "Lebenspartner"],
+        comparison_type="isin",
+    )
     out["pointer_partner"] = object_to_int(
         raw_data["parid"].replace(
             {
