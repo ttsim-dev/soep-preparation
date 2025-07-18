@@ -39,7 +39,7 @@ def task_merge_variables(
     Raises:
         TypeError: If input mapping or variables is not of expected type.
     """
-    _error_handling_task(variable_to_data_file_mapping, variables)
+    _error_handling_task(mapping=variable_to_data_file_mapping, variables=variables)
     return create_dataset_from_variables(
         variables=variables,
         min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
@@ -48,5 +48,5 @@ def task_merge_variables(
 
 
 def _error_handling_task(mapping: Any, variables: Any) -> None:  # noqa: ANN401
-    fail_if_input_has_invalid_type(mapping, ["dict"])
-    fail_if_input_has_invalid_type(variables, ["list"])
+    fail_if_input_has_invalid_type(input_=mapping, expected_dtypes=["dict"])
+    fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])

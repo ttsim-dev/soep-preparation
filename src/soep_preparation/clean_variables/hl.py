@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     object_to_bool_categorical,
     object_to_float,
@@ -35,18 +35,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["kindergeld_hh_bezug_aktuell"] = object_to_bool_categorical(
-        raw_data["hlc0044_h"],
+        series=raw_data["hlc0044_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["kindergeld_hh_betrag_m_aktuell"] = _kindergeld_hh_betrag_m(
-        raw_data["hlc0045_h"],
-        out["kindergeld_hh_bezug_aktuell"],
+        betrag=raw_data["hlc0045_h"],
+        bezug=out["kindergeld_hh_bezug_aktuell"],
     )
     out["kindergeld_hh_betrag_m_hl"] = object_to_int(raw_data["hlc0042_h"])
 
     out["kinderzuschlag_hh_bezug_aktuell"] = object_to_bool_categorical(
-        raw_data["hlc0046_h"],
+        series=raw_data["hlc0046_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
@@ -60,7 +60,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # alg2-variables contain Arbeitslosengeld II, Sozialgeld, and Unterkunftskosten
     out["alg2_hh_bezug_aktuell"] = object_to_bool_categorical(
-        raw_data["hlc0064_h"],
+        series=raw_data["hlc0064_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
@@ -68,17 +68,17 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["alg2_hh_betrag_m_hl"] = object_to_float(raw_data["hlc0054"])
 
     out["hilfe_lebensunterhalt_hh_aktuell"] = object_to_bool_categorical(
-        raw_data["hlc0067_h"],
+        series=raw_data["hlc0067_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["wohngeld_hh_bezug_aktuell"] = object_to_bool_categorical(
-        raw_data["hlc0083_h"],
+        series=raw_data["hlc0083_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["wohngeld_hh_betrag_m_hl"] = object_to_int(raw_data["hlc0082_h"])
     out["grundsicherung_im_alter_hh_betrag_m_aktuell"] = object_to_int(
-        raw_data["hlc0071"]
+        series=raw_data["hlc0071"]
     )
     return out

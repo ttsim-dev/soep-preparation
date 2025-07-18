@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from soep_preparation.utilities.dataframe_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     combine_first_and_make_categorical,
 )
 
@@ -21,9 +21,8 @@ def derive_hh_soep_sample(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.Data
     merged = pd.merge(hpathl, design, on=["hh_id"], how="outer")
     out["hh_id"] = hpathl["hh_id"].copy()
     out["hh_soep_sample"] = combine_first_and_make_categorical(
-        merged,
-        "hh_soep_sample_hpathl",
-        "hh_soep_sample_design",
+        series_1=merged["hh_soep_sample_hpathl"],
+        series_2=merged["hh_soep_sample_design"],
         ordered=False,
     )
     return out
@@ -47,27 +46,23 @@ def derive_hh_received_transfers(
         ["p_id", "hh_id", "survey_year"]
     ].copy()
     out["alg2_hh_betrag_m"] = combine_first_and_make_categorical(
-        merged,
-        "alg2_hh_betrag_m_pequiv",
-        "alg2_hh_betrag_m_hl",
+        series_1=merged["alg2_hh_betrag_m_pequiv"],
+        series_2=merged["alg2_hh_betrag_m_hl"],
         ordered=False,
     )
     out["kindergeld_hh_betrag_m"] = combine_first_and_make_categorical(
-        merged,
-        "kindergeld_hh_betrag_m_pequiv",
-        "kindergeld_hh_betrag_m_hl",
+        series_1=merged["kindergeld_hh_betrag_m_pequiv"],
+        series_2=merged["kindergeld_hh_betrag_m_hl"],
         ordered=False,
     )
     out["kinderzuschlag_hh_betrag_m"] = combine_first_and_make_categorical(
-        merged,
-        "kinderzuschlag_hh_betrag_m_pequiv",
-        "kinderzuschlag_hh_betrag_m_hl",
+        series_1=merged["kinderzuschlag_hh_betrag_m_pequiv"],
+        series_2=merged["kinderzuschlag_hh_betrag_m_hl"],
         ordered=False,
     )
-    out["wohngeld_hh_betrag_y"] = combine_first_and_make_categorical(
-        merged,
-        "wohngeld_hh_betrag_m_pequiv",
-        "wohngeld_hh_betrag_m_hl",
+    out["wohngeld_hh_betrag_m"] = combine_first_and_make_categorical(
+        series_1=merged["wohngeld_hh_betrag_m_pequiv"],
+        series_2=merged["wohngeld_hh_betrag_m_hl"],
         ordered=False,
     )
 

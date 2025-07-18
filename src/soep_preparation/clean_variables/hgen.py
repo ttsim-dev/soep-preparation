@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from soep_preparation.utilities.series_manipulator import (
+from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     float_to_int,
     object_to_float,
@@ -48,16 +48,16 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
     out["rent_minus_heating_costs_m_hh"] = _bruttokaltmiete_m_hh(
-        raw_data["hgrent"],
-        out["rented_or_owned"],
+        miete=raw_data["hgrent"],
+        rented_or_owned=out["rented_or_owned"],
     )
     out["living_space_hh"] = object_to_int(raw_data["hgsize"])
     out["heating_costs_reason_missing"] = object_to_str_categorical(
-        raw_data["hgheatinfo"],
+        series=raw_data["hgheatinfo"],
         ordered=False,
     )
     out["hh_typ_one_digit"] = object_to_str_categorical(
-        raw_data["hgtyp1hh"],
+        series=raw_data["hgtyp1hh"],
         nr_identifiers=2,
     )
     out["hh_typ_two_digits"] = object_to_str_categorical(raw_data["hgtyp2hh"])

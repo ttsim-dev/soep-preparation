@@ -70,11 +70,11 @@ def fail_if_series_cannot_be_transformed(
     """
     if input_expected_types is None:
         input_expected_types = [[]]
-    _fail_if_series_wrong_dtype(series, expected_sr_dtype)
+    _fail_if_series_wrong_dtype(series=series, expected_dtype=expected_sr_dtype)
     if entries_expected_types is not None:
         type_ = entries_expected_types[1]
         for unique_entry in entries_expected_types[0]:
-            fail_if_input_has_invalid_type(unique_entry, type_)
+            fail_if_input_has_invalid_type(input_=unique_entry, expected_dtypes=type_)
     else:
         msg = (
             "Did not receive a list of unique entries and their expected dtype, "
