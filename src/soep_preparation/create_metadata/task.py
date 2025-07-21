@@ -1,6 +1,6 @@
 """Tasks to create metadata."""
 
-from typing import Annotated
+from typing import Annotated, Any
 
 import pandas as pd
 from pytask import task
@@ -26,7 +26,9 @@ def _get_variable_dtypes(
     dataset: pd.DataFrame,
     potential_index_variables: list[str],
 ) -> dict:
-    # TODO (@hmgaudecker): do we want to just have the "name" of the dtype (e.g. `uint16[pyarrow]`, `category`) or also the dtype itself (only relevant for categorical data which then return the `CategoricalDtype`)
+    # TODO (@hmgaudecker): do we want to just have the "name" of the dtype # noqa: TD003
+    # (e.g. `uint16[pyarrow]`, `category`) or also the dtype itself
+    # (only relevant for categorical data which then return the `CategoricalDtype`)
     return {
         col: dtype_.name
         for col, dtype_ in dataset.dtypes.items()
@@ -45,8 +47,10 @@ def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
     """
     mapping = {}
     for data_name, data in metadata._entries.items():  # noqa: SLF001
-        if data_name not in DATA_CATALOGS["derived_variables"]._entries:  # noqa: SLF001
-            # skip data that is not in the derived variables catalog
+        if (
+            data_name not in DATA_CATALOGS["combined_variables"]._entries  # noqa: SLF001
+        ) and (data_name not in DATA_CATALOGS["data_files"]):
+            # Skip if data_name is not in either combined variables or data files
             continue
         variable_names = data.load()["variable_dtypes"].keys()
         for variable_name in variable_names:
@@ -54,10 +58,17 @@ def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
     return mapping
 
 
-for name, data in DATA_CATALOGS["derived_variables"]._entries.items():  # noqa: SLF001
+single_data_files = {
+    name: data_catalog["cleaned"]
+    for name, data_catalog in DATA_CATALOGS["data_files"].items()
+}
+combined_variables = dict(DATA_CATALOGS["combined_variables"]._entries)  # noqa: SLF001
+
+
+for name, data in (single_data_files | combined_variables).items():
 
     @task(id=name)
-    def task_create_single_metadata(
+    def task_create_metadata(
         data: Annotated[pd.DataFrame, data],
     ) -> Annotated[dict, DATA_CATALOGS["metadata"][name]]:
         """Create metadata for DataFrame.
@@ -87,7 +98,7 @@ for name, data in DATA_CATALOGS["derived_variables"]._entries.items():  # noqa: 
         }
 
 
-@task(after="task_create_single_metadata")
+@task(after="task_create_metadata")
 def task_create_metadata_mapping(
     single_metadata_mapping: Annotated[dict, DATA_CATALOGS["metadata"]],
 ) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["merged"]]:

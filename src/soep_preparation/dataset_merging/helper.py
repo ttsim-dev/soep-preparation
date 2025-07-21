@@ -10,8 +10,9 @@ from soep_preparation.utilities.error_handling import (
 )
 
 
-# TODO (@hmgaudecker): should `variable_to_data_file_mapping` be an argument here?
-# extract/create table/dataset
+# TODO (@hmgaudecker): should `variable_to_data_file_mapping` # noqa: TD003
+# be an argument here?
+# rename to extract/create table/dataset
 def create_dataset_from_variables(
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None = None,
@@ -80,7 +81,6 @@ def create_dataset_from_variables(
         min_and_max_survey_years,
         variables,
     )
-
     dataset_merging_information = _get_sorted_dataset_merging_information(
         variable_to_data_file_mapping,
         variables,
@@ -233,7 +233,11 @@ def _get_sorted_dataset_merging_information(
 
     dataset_merging_information = {}
     for data_name, data_variables in data_mapping.items():
-        raw_data = DATA_CATALOGS["derived_variables"][data_name].load()
+        raw_data = (
+            DATA_CATALOGS["data_files"][data_name]["cleaned"].load()
+            if data_name in DATA_CATALOGS["data_files"]
+            else DATA_CATALOGS["combined_variables"][data_name].load()
+        )
         index_variables = sorted(
             DATA_CATALOGS["metadata"][data_name].load()["index_variables"].keys(),
         )
