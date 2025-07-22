@@ -1,7 +1,5 @@
 """Task to read STATA data and store as pandas DataFrames."""
 
-import inspect
-import re
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -16,24 +14,10 @@ from soep_preparation.config import (
     SRC,
 )
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
-from soep_preparation.utilities.general import get_data_file_names, load_module
-
-
-def _get_relevant_column_names(script_path: Path) -> list[str]:
-    module = load_module(script_path)
-    function_with_docstring = inspect.getsource(module.clean)
-    # Remove the docstring, if existent.
-    function_content = re.sub(
-        r'""".*?"""|\'\'\'.*?\'\'\'',
-        "",
-        function_with_docstring,
-        flags=re.DOTALL,
-    )
-    # Find all occurrences of raw["column_name"] or ['column_name'].
-    pattern = r'raw_data\["([^"]+)"\]|\[\'([^\']+)\'\]'
-    matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
-    # Return unique matches in the order that they appear.
-    return list(dict.fromkeys(matches))
+from soep_preparation.utilities.general import (
+    get_data_file_names,
+    get_relevant_column_names,
+)
 
 
 def _iteratively_read_one_data_file(
@@ -82,7 +66,7 @@ for data_file_name in data_file_names:
             TypeError: If input data or script path is not of expected type.
         """
         _error_handling_task(data=stata_data_file, script_path=cleaning_script)
-        relevant_columns = _get_relevant_column_names(cleaning_script)
+        relevant_columns = get_relevant_column_names(cleaning_script)
         with StataReader(
             stata_data_file,
             chunksize=100_000,

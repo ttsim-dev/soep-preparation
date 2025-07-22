@@ -1,5 +1,7 @@
 """General utility functions."""
 
+import inspect
+import re
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
@@ -49,6 +51,31 @@ def get_data_file_names(
     for script_name in script_names:
         _fail_if_raw_data_file_missing(script_name, data_root, soep_version)
     return script_names
+
+
+def get_relevant_column_names(script_path: Path) -> list[str]:
+    """Get relevant column names from the cleaning script.
+
+    Args:
+        script_path: The path to the cleaning script.
+
+    Returns:
+        A list of relevant column names.
+    """
+    module = load_module(script_path)
+    function_with_docstring = inspect.getsource(module.clean)
+    # Remove the docstring, if existent.
+    function_content = re.sub(
+        r'""".*?"""|\'\'\'.*?\'\'\'',
+        "",
+        function_with_docstring,
+        flags=re.DOTALL,
+    )
+    # Find all occurrences of raw["column_name"] or ['column_name'].
+    pattern = r'raw_data\["([^"]+)"\]|\[\'([^\']+)\'\]'
+    matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
+    # Return unique matches in the order that they appear.
+    return list(dict.fromkeys(matches))
 
 
 def load_module(script_path: Path) -> ModuleType:
