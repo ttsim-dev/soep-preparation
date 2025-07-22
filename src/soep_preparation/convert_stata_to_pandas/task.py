@@ -16,7 +16,7 @@ from soep_preparation.config import (
     SRC,
 )
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
-from soep_preparation.utilities.general import load_module
+from soep_preparation.utilities.general import get_data_file_names, load_module
 
 
 def _get_relevant_column_names(script_path: Path) -> list[str]:
@@ -51,7 +51,13 @@ def _iteratively_read_one_data_file(
     return pd.concat(processed_chunks)
 
 
-for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
+data_file_names = get_data_file_names(
+    directory=SRC / "clean_variables",
+    data_root=DATA_ROOT,
+    soep_version=SOEP_VERSION,
+)
+
+for data_file_name in data_file_names:
 
     @task(id=data_file_name)
     def task_read_one_data_file(
@@ -62,7 +68,7 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
             Path,
             SRC / "clean_variables" / f"{data_file_name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, data_file_catalog["raw"]]:
+    ) -> Annotated[pd.DataFrame, DATA_CATALOGS["raw_pandas"][data_file_name]]:
         """Saves the raw data file to the data catalog.
 
         Parameters:
@@ -88,7 +94,7 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
             )
 
 
-if not DATA_CATALOGS["data_files"]:
+if not data_file_names:
 
     @task
     def _raise_no_data_files_found() -> None:

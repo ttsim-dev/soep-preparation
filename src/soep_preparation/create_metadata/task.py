@@ -49,7 +49,9 @@ def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
     for data_name, data in metadata._entries.items():  # noqa: SLF001
         if (
             data_name not in DATA_CATALOGS["combined_variables"]._entries  # noqa: SLF001
-        ) and (data_name not in DATA_CATALOGS["data_files"]):
+        ) and (
+            data_name not in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
+        ):
             # Skip if data_name is not in either combined variables or data files
             continue
         variable_names = data.load()["variable_dtypes"].keys()
@@ -58,11 +60,12 @@ def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
     return mapping
 
 
-single_data_files = {
-    name: data_catalog["cleaned"]
-    for name, data_catalog in DATA_CATALOGS["data_files"].items()
-}
-combined_variables = dict(DATA_CATALOGS["combined_variables"]._entries)  # noqa: SLF001
+single_data_files = dict(
+    DATA_CATALOGS["cleaned_variables"]._entries.items()  # noqa: SLF001
+)
+combined_variables = dict(
+    DATA_CATALOGS["combined_variables"]._entries.items()  # noqa: SLF001
+)
 
 
 for name, data in (single_data_files | combined_variables).items():
