@@ -10,8 +10,8 @@ def _fail_if_raw_data_file_missing(
 ) -> None:
     raw_data_file_path = data_root / f"{soep_version}" / f"{script_name}.dta"
     if not raw_data_file_path.exists():
-        msg = f"Raw data file {raw_data_file_path} not found for SOEP {soep_version}. "
-        "Ensure the file is present in the data directory under the corresponding wave."
+        msg = f"""Raw data file {raw_data_file_path} not found for SOEP {soep_version}.
+        Ensure the file is present in the data directory for the corresponding wave."""
         raise FileNotFoundError(msg)
 
 
