@@ -10,7 +10,7 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
-def _kindergeld_hh_betrag_m(
+def _kindergeld_betrag_m_hh(
     betrag: "pd.Series[pd.Categorical]",
     bezug: "pd.Series[pd.Categorical]",
 ) -> "pd.Series[int]":
@@ -39,33 +39,36 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["kindergeld_hh_betrag_m_aktuell"] = _kindergeld_hh_betrag_m(
+    out["kindergeld_betrag_m_hh_aktuell"] = _kindergeld_betrag_m_hh(
         betrag=raw_data["hlc0045_h"],
         bezug=out["kindergeld_hh_bezug_aktuell"],
     )
-    out["kindergeld_hh_betrag_m_hl"] = object_to_int(raw_data["hlc0042_h"])
+    out["kindergeld_betrag_m_hh_hl"] = object_to_int(raw_data["hlc0042_h"])
 
     out["kinderzuschlag_hh_bezug_aktuell"] = object_to_bool_categorical(
         series=raw_data["hlc0046_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["kinderzuschlag_hh_betrag_m_aktuell"] = object_to_int(raw_data["hlc0047_h"])
+    out["kinderzuschlag_betrag_m_hh_aktuell"] = object_to_int(raw_data["hlc0047_h"])
     out["kinderzuschlag_hh_bezug"] = object_to_bool_categorical(
         raw_data["hlc0049_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["kinderzuschlag_hh_betrag_m_hl"] = object_to_int(raw_data["hlc0051_h"])
+    out["kinderzuschlag_betrag_m_hh_hl"] = object_to_int(raw_data["hlc0051_h"])
 
-    # alg2-variables contain Arbeitslosengeld II, Sozialgeld, and Unterkunftskosten
-    out["alg2_hh_bezug_aktuell"] = object_to_bool_categorical(
+    # arbeitslosengeld_2-variables contain Arbeitslosengeld II,
+    # Sozialgeld, and Unterkunftskosten
+    out["arbeitslosengeld_2_hh_bezug_aktuell"] = object_to_bool_categorical(
         series=raw_data["hlc0064_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["alg2_hh_bezug_anzahl_monate"] = object_to_int(raw_data["hlc0053"])
-    out["alg2_hh_betrag_m_hl"] = object_to_float(raw_data["hlc0054"])
+    out["arbeitslosengeld_2_hh_bezug_anzahl_monate"] = object_to_int(
+        raw_data["hlc0053"]
+    )
+    out["arbeitslosengeld_2_betrag_m_hh_hl"] = object_to_float(raw_data["hlc0054"])
 
     out["hilfe_lebensunterhalt_hh_aktuell"] = object_to_bool_categorical(
         series=raw_data["hlc0067_h"],
@@ -77,8 +80,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["wohngeld_hh_betrag_m_hl"] = object_to_int(raw_data["hlc0082_h"])
-    out["grundsicherung_im_alter_hh_betrag_m_aktuell"] = object_to_int(
+    out["wohngeld_betrag_m_hh_hl"] = object_to_int(raw_data["hlc0082_h"])
+    out["grundsicherung_im_alter_betrag_m_hh_aktuell"] = object_to_int(
         series=raw_data["hlc0071"]
     )
     return out

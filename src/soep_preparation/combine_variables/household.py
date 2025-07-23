@@ -45,24 +45,24 @@ def derive_hh_received_transfers(
     out[["p_id", "hh_id", "survey_year"]] = pequiv[
         ["p_id", "hh_id", "survey_year"]
     ].copy()
-    out["alg2_hh_betrag_m"] = combine_first_and_make_categorical(
-        series_1=merged["alg2_hh_betrag_m_pequiv"],
-        series_2=merged["alg2_hh_betrag_m_hl"],
+    out["arbeitslosengeld_2_betrag_m_hh"] = combine_first_and_make_categorical(
+        series_1=merged["arbeitslosengeld_2_betrag_m_hh_pequiv"],
+        series_2=merged["arbeitslosengeld_2_betrag_m_hh_hl"],
         ordered=False,
     )
-    out["kindergeld_hh_betrag_m"] = combine_first_and_make_categorical(
-        series_1=merged["kindergeld_hh_betrag_m_pequiv"],
-        series_2=merged["kindergeld_hh_betrag_m_hl"],
+    out["kindergeld_betrag_m_hh"] = combine_first_and_make_categorical(
+        series_1=merged["kindergeld_betrag_m_hh_pequiv"],
+        series_2=merged["kindergeld_betrag_m_hh_hl"],
         ordered=False,
     )
-    out["kinderzuschlag_hh_betrag_m"] = combine_first_and_make_categorical(
-        series_1=merged["kinderzuschlag_hh_betrag_m_pequiv"],
-        series_2=merged["kinderzuschlag_hh_betrag_m_hl"],
+    out["kinderzuschlag_betrag_m_hh"] = combine_first_and_make_categorical(
+        series_1=merged["kinderzuschlag_betrag_m_hh_pequiv"],
+        series_2=merged["kinderzuschlag_betrag_m_hh_hl"],
         ordered=False,
     )
-    out["wohngeld_hh_betrag_m"] = combine_first_and_make_categorical(
-        series_1=merged["wohngeld_hh_betrag_m_pequiv"],
-        series_2=merged["wohngeld_hh_betrag_m_hl"],
+    out["wohngeld_betrag_m_hh"] = combine_first_and_make_categorical(
+        series_1=merged["wohngeld_betrag_m_hh_pequiv"],
+        series_2=merged["wohngeld_betrag_m_hh_hl"],
         ordered=False,
     )
 
