@@ -26,16 +26,17 @@ def _fail_if_too_many_or_too_few_dataframes(
 def _get_relevant_data_files_mapping(
     function_: Any,
 ) -> dict[str, PickleNode]:
-    # arguments to the function (data files required for the variable)
-    data_names = [
-        data_name
-        for data_name in function_.__annotations__
-        if data_name in DATA_CATALOGS["data_files"]
+    # get the relevant data file names from the function annotations
+    relevant_data_file_names = [
+        data_file_name
+        for data_file_name in function_.__annotations__
+        if data_file_name in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
     ]
-    # return a mapping of the data file names to the corresponding dataframes
+    # create a mapping of data file names to DataFrames
+    # using the data catalog
     return {
-        data_name: DATA_CATALOGS["data_files"][data_name]["cleaned"]
-        for data_name in data_names
+        data_name: DATA_CATALOGS["cleaned_variables"][data_name]
+        for data_name in relevant_data_file_names
     }
 
 
@@ -85,24 +86,6 @@ for script_name in script_names:
             """
             _error_handling_derived_variables(data=data_files, function_=function_)
             return function_(**data_files)
-
-
-def _error_handling_creation_task(data: Any, script_path: Any) -> None:
-    fail_if_input_has_invalid_type(
-        input_=data, expected_dtypes=["pandas.core.frame.DataFrame"]
-    )
-    fail_if_input_has_invalid_type(
-        input_=script_path, expected_dtypes=["pathlib._local.PosixPath"]
-    )
-
-
-def _error_handling_merging_task(data: Any, variables: Any) -> None:
-    fail_if_input_has_invalid_type(
-        input_=data, expected_dtypes=["pandas.core.frame.DataFrame"]
-    )
-    fail_if_input_has_invalid_type(
-        input_=variables, expected_dtypes=["pandas.core.frame.DataFrame"]
-    )
 
 
 def _error_handling_derived_variables(data: Any, function_: Any) -> None:
