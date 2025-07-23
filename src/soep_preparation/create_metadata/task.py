@@ -52,7 +52,7 @@ def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
         ) and (
             data_name not in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
         ):
-            # Skip if data_name is not in either combined variables or data files
+            # Skip if data_name is neither among combined variables nor among data files
             continue
         variable_names = data.load()["variable_dtypes"].keys()
         for variable_name in variable_names:

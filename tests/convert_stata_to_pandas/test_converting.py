@@ -6,7 +6,7 @@ from soep_preparation.utilities.general import get_relevant_column_names
 
 @patch("soep_preparation.utilities.general.load_module")
 @patch("inspect.getsource")
-def testget_relevant_column_names_with_raw_data_in_docstring(
+def test_get_relevant_column_names_with_raw_data_in_docstring(
     mock_getsource: MagicMock,
     mock_load_module: MagicMock,
 ) -> None:
@@ -31,7 +31,7 @@ def testget_relevant_column_names_with_raw_data_in_docstring(
 
 @patch("soep_preparation.utilities.general.load_module")
 @patch("inspect.getsource")
-def testget_relevant_column_names_with_empty_string(
+def test_get_relevant_column_names_with_empty_string(
     mock_getsource: MagicMock,
     mock_load_module: MagicMock,
 ) -> None:
@@ -53,7 +53,7 @@ def testget_relevant_column_names_with_empty_string(
 
 @patch("soep_preparation.utilities.general.load_module")
 @patch("inspect.getsource")
-def testget_relevant_column_names_valid_cases(
+def test_get_relevant_column_names_valid_cases(
     mock_getsource: MagicMock,
     mock_load_module: MagicMock,
 ) -> None:
@@ -77,7 +77,7 @@ def testget_relevant_column_names_valid_cases(
 
 @patch("soep_preparation.utilities.general.load_module")
 @patch("inspect.getsource")
-def testget_relevant_column_names_mixed_cases(
+def test_get_relevant_column_names_mixed_cases(
     mock_getsource: MagicMock,
     mock_load_module: MagicMock,
 ) -> None:

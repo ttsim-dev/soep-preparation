@@ -63,18 +63,16 @@ def get_relevant_column_names(script_path: Path) -> list[str]:
         A list of relevant column names.
     """
     module = load_module(script_path)
-    function_with_docstring = inspect.getsource(module.clean)
     # Remove the docstring, if existent.
-    function_content = re.sub(
+    function_source = re.sub(
         r'""".*?"""|\'\'\'.*?\'\'\'',
         "",
-        function_with_docstring,
+        inspect.getsource(module.clean),
         flags=re.DOTALL,
     )
     # Find all occurrences of raw["column_name"] or ['column_name'].
     pattern = r'raw_data\["([^"]+)"\]|\[\'([^\']+)\'\]'
-    matches = [match[0] or match[1] for match in re.findall(pattern, function_content)]
-    # Return unique matches in the order that they appear.
+    matches = [match[0] or match[1] for match in re.findall(pattern, function_source)]
     return list(dict.fromkeys(matches))
 
 
