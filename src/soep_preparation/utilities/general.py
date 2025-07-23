@@ -5,6 +5,16 @@ from pathlib import Path
 from types import ModuleType
 
 
+def _fail_if_raw_data_file_missing(
+    script_name: str, data_root: Path, soep_version: str
+) -> None:
+    raw_data_file_path = data_root / f"{soep_version}" / f"{script_name}.dta"
+    if not raw_data_file_path.exists():
+        msg = f"""Raw data file {raw_data_file_path} not found for SOEP {soep_version}.
+        Ensure the file is present in the data directory for the corresponding wave."""
+        raise FileNotFoundError(msg)
+
+
 def get_script_names(directory: Path) -> list[str]:
     """Get the names of all scripts in the given directory.
 
@@ -21,23 +31,24 @@ def get_script_names(directory: Path) -> list[str]:
     ]
 
 
-def get_stems_if_corresponding_raw_data_file_exists(directory: Path) -> list[str]:
+def get_data_file_names(
+    directory: Path, data_root: Path, soep_version: str
+) -> list[str]:
     """Get names of all scripts in the directory with corresponding raw data files.
 
     Args:
         directory: The directory containing scripts.
+        data_root: The root directory where data files are stored.
+        soep_version: The version of the SOEP data.
 
     Returns:
         A list of data file names.
 
     """
-    from soep_preparation.config import DATA, SOEP_VERSION
-
-    return [
-        script.stem
-        for script in directory.glob("*.py")
-        if (DATA / f"{SOEP_VERSION}" / f"{script.stem}.dta").exists()
-    ]
+    script_names = get_script_names(directory)
+    for script_name in script_names:
+        _fail_if_raw_data_file_missing(script_name, data_root, soep_version)
+    return script_names
 
 
 def load_module(script_path: Path) -> ModuleType:

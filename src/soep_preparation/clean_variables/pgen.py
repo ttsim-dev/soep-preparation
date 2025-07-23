@@ -4,7 +4,7 @@ import re
 
 import pandas as pd
 
-from soep_preparation.clean_variables import month_mapping
+from soep_preparation.utilities import month_mapping
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     create_dummy,

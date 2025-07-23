@@ -10,8 +10,8 @@ from pandas.io.stata import StataReader
 from pytask import task
 
 from soep_preparation.config import (
-    DATA,
     DATA_CATALOGS,
+    DATA_ROOT,
     SOEP_VERSION,
     SRC,
 )
@@ -56,7 +56,7 @@ for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
     @task(id=data_file_name)
     def task_read_one_data_file(
         stata_data_file: Annotated[
-            Path, DATA / f"{SOEP_VERSION}" / f"{data_file_name}.dta"
+            Path, DATA_ROOT / f"{SOEP_VERSION}" / f"{data_file_name}.dta"
         ],
         cleaning_script: Annotated[
             Path,
