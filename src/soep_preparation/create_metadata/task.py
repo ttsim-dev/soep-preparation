@@ -26,9 +26,6 @@ def _get_variable_dtypes(
     dataset: pd.DataFrame,
     potential_index_variables: list[str],
 ) -> dict:
-    # TODO (@hmgaudecker): do we want to just have the "name" of the dtype # noqa: TD003
-    # (e.g. `uint16[pyarrow]`, `category`) or also the dtype itself
-    # (only relevant for categorical data which then return the `CategoricalDtype`)
     return {
         col: dtype_.name
         for col, dtype_ in dataset.dtypes.items()

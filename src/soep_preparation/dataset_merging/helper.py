@@ -10,9 +10,6 @@ from soep_preparation.utilities.error_handling import (
 )
 
 
-# TODO (@hmgaudecker): should `variable_to_data_file_mapping` # noqa: TD003
-# be an argument here?
-# rename to extract/create table/dataset
 def create_dataset_from_variables(
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None = None,
