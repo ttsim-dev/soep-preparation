@@ -40,7 +40,7 @@ def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataF
     """
     out = pd.DataFrame(index=pequiv.index)
     merged = pd.merge(pequiv, pl, on=["p_id", "hh_id", "survey_year"], how="outer")
-    out[["p_id", "hh_id", "survey_year", "hh_id_original"]] = pequiv[
+    out[["p_id", "hh_id", "survey_year", "hh_id_original"]] = merged[
         ["p_id", "hh_id", "survey_year", "hh_id_original"]
     ].copy()
 

@@ -22,16 +22,16 @@ def _fail_if_cleaning_module_missing(module_path: Path) -> None:
         )
 
 
-for data_file_name, data_file_catalog in DATA_CATALOGS["data_files"].items():
+for data_file_name, raw_data in DATA_CATALOGS["raw_pandas"]._entries.items():  # noqa: SLF001
 
     @task(id=data_file_name)
     def task_clean_one_data_file(
-        raw_data: Annotated[Path, data_file_catalog["raw"]],
+        raw_data: Annotated[Path, raw_data],
         module_path: Annotated[
             Path,
             SRC / "clean_variables" / f"{data_file_name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, data_file_catalog["cleaned"]]:
+    ) -> Annotated[pd.DataFrame, DATA_CATALOGS["cleaned_variables"][data_file_name]]:
         """Cleans variables of a data file using the corresponding cleaning module.
 
         Cleaning modules contain function `clean` taking the raw pandas DataFrame

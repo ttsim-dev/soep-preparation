@@ -1,10 +1,10 @@
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from soep_preparation.convert_stata_to_pandas.task import _get_relevant_column_names
+from soep_preparation.utilities.general import get_relevant_column_names
 
 
-@patch("soep_preparation.convert_stata_to_pandas.task.load_module")
+@patch("soep_preparation.utilities.general.load_module")
 @patch("inspect.getsource")
 def test_get_relevant_column_names_with_raw_data_in_docstring(
     mock_getsource: MagicMock,
@@ -24,12 +24,12 @@ def test_get_relevant_column_names_with_raw_data_in_docstring(
     mock_load_module.return_value = mock_module
 
     script_path = Path("dummy/path")
-    actual = _get_relevant_column_names(script_path)
+    actual = get_relevant_column_names(script_path)
     expected = ["real_column"]
     assert actual == expected
 
 
-@patch("soep_preparation.convert_stata_to_pandas.task.load_module")
+@patch("soep_preparation.utilities.general.load_module")
 @patch("inspect.getsource")
 def test_get_relevant_column_names_with_empty_string(
     mock_getsource: MagicMock,
@@ -46,12 +46,12 @@ def test_get_relevant_column_names_with_empty_string(
     mock_load_module.return_value = mock_module
 
     script_path = Path("dummy/path")
-    actual = _get_relevant_column_names(script_path)
+    actual = get_relevant_column_names(script_path)
     expected = []
     assert actual == expected
 
 
-@patch("soep_preparation.convert_stata_to_pandas.task.load_module")
+@patch("soep_preparation.utilities.general.load_module")
 @patch("inspect.getsource")
 def test_get_relevant_column_names_valid_cases(
     mock_getsource: MagicMock,
@@ -70,12 +70,12 @@ def test_get_relevant_column_names_valid_cases(
     mock_load_module.return_value = mock_module
 
     script_path = Path("dummy/path")
-    actual = _get_relevant_column_names(script_path)
+    actual = get_relevant_column_names(script_path)
     expected = ["column_name", "another_column", "third_column"]
     assert actual == expected
 
 
-@patch("soep_preparation.convert_stata_to_pandas.task.load_module")
+@patch("soep_preparation.utilities.general.load_module")
 @patch("inspect.getsource")
 def test_get_relevant_column_names_mixed_cases(
     mock_getsource: MagicMock,
@@ -94,6 +94,6 @@ def test_get_relevant_column_names_mixed_cases(
     mock_load_module.return_value = mock_module
 
     script_path = Path("dummy/path")
-    actual = _get_relevant_column_names(script_path)
+    actual = get_relevant_column_names(script_path)
     expected = ["valid_column", "another_valid_column"]
     assert actual == expected
