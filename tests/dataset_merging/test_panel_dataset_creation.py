@@ -5,7 +5,7 @@ import pytest
 from soep_preparation.dataset_merging.helper import (
     _fix_user_input,
     _get_data_file_name_to_variables_mapping,
-    create_dataset_from_variables,
+    create_dataset,
 )
 
 
@@ -127,7 +127,7 @@ def test_get_data_file_name_to_variables_mapping_assert_datasets():
 
 
 @pytest.mark.skip(reason="Skipped since the merging depends on DataCatalog content")
-def test_create_dataset_from_variables_assert_type():
+def test_create_dataset_assert_type():
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
@@ -161,12 +161,12 @@ def test_create_dataset_from_variables_assert_type():
         },
         "merging_behavior": "outer",
     }
-    actual = type(create_dataset_from_variables(**input_))
+    actual = type(create_dataset(**input_))
     assert actual == expected
 
 
 @pytest.mark.skip(reason="Skipped since the merging depends on DataCatalog content")
-def test_create_dataset_from_variables_assert_data():
+def test_create_dataset_assert_data():
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
@@ -200,5 +200,5 @@ def test_create_dataset_from_variables_assert_data():
         },
         "merging_behavior": "outer",
     }
-    actual = create_dataset_from_variables(**input_)
+    actual = create_dataset(**input_)
     pd.testing.assert_frame_equal(actual, expected)
