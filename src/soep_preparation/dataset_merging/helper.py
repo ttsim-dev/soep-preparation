@@ -4,23 +4,16 @@ from difflib import get_close_matches
 
 import pandas as pd
 
-from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
+from soep_preparation.config import DATA_CATALOGS, ID_VARIABLES, SURVEY_YEARS
 from soep_preparation.utilities.error_handling import (
     fail_if_input_has_invalid_type,
 )
 
 
-# TODO (@hmgaudecker): should `variable_to_data_file_mapping` # noqa: TD003
-# be an argument here?
-# rename to extract/create table/dataset
-def create_dataset_from_variables(
+def create_dataset(
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None = None,
     survey_years: list[int] | None = None,
-    variable_to_data_file_mapping: dict[str, list[str]] = DATA_CATALOGS["metadata"][
-        "merged"
-    ],
-    merging_behavior: str = "outer",  # make only outer
 ) -> pd.DataFrame:
     """Create a dataset by merging different specified variables.
 
@@ -32,11 +25,6 @@ def create_dataset_from_variables(
         min_and_max_survey_years: Range of survey years.
         survey_years: Survey years to be included in the dataset.
         Either `survey_years` or `min_and_max_survey_years` must be provided.
-        variable_to_data_file_mapping: A mapping of variable names to dataset names.
-        Defaults to `DATA_CATALOGS["metadata"]["merged"]`.
-        merging_behavior: The merging behavior to be used.
-        Any out of "left", "right", "outer", or "inner".
-        Defaults to "outer".
 
     Returns:
         The dataset with specified variables and survey years.
@@ -58,22 +46,16 @@ def create_dataset_from_variables(
         Otherwise, `min_and_max_survey_years=(2024,2025)`
         and `survey_years=[2024, 2025]`
         both return a merged dataset with information from the two survey years.
-        `variable_to_data_file_mapping` is created automatically by the pipeline,
-        it can be accessed and provided to the function at
-        `DATA_CATALOGS["metadata"]["merged"]`.
-        Specify `merging_behavior` to control the creation of the dataset
-        from the different variables.
-        The default value is "outer" and sufficient for most cases.
 
     Examples:
         For an example see `task_example.py`.
     """
+    variable_mapping = DATA_CATALOGS["metadata"]["variable_mapping"].load()
     _error_handling(
-        variable_to_data_file_mapping,
         variables,
         min_and_max_survey_years,
         survey_years,
-        merging_behavior,
+        variable_mapping,
     )
 
     survey_years, variables = _fix_user_input(
@@ -81,28 +63,22 @@ def create_dataset_from_variables(
         min_and_max_survey_years,
         variables,
     )
-    dataset_merging_information = _get_sorted_dataset_merging_information(
-        variable_to_data_file_mapping,
+
+    merging_information = _get_sorted_dataset_merging_information(
         variables,
         survey_years,
+        variable_mapping,
     )
 
-    return _merge_variables(
-        merging_information=dataset_merging_information,
-        merging_behavior=merging_behavior,
-    )
+    return _merge_variables(merging_information)
 
 
 def _error_handling(
-    variable_to_data_file_mapping: dict[str, list[str]],
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None,
     survey_years: list[int] | None,
-    merging_behavior: str,
+    variable_mapping: dict[str, list[str]],
 ) -> None:
-    fail_if_input_has_invalid_type(
-        input_=variable_to_data_file_mapping, expected_dtypes=["dict"]
-    )
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
     fail_if_input_has_invalid_type(
         input_=min_and_max_survey_years, expected_dtypes=("tuple", "None")
@@ -110,8 +86,6 @@ def _error_handling(
     fail_if_input_has_invalid_type(
         input_=survey_years, expected_dtypes=("list", "None")
     )
-    fail_if_input_has_invalid_type(input_=merging_behavior, expected_dtypes=["str"])
-    _fail_if_empty(variable_to_data_file_mapping)
     _fail_if_empty(variables)
     if survey_years is not None:
         _fail_if_survey_years_not_valid(
@@ -122,27 +96,22 @@ def _error_handling(
             survey_years=min_and_max_survey_years, valid_survey_years=SURVEY_YEARS
         )
         _fail_if_min_larger_max(min_and_max_survey_years)
-    _fail_if_invalid_variable(
-        variables=variables, variable_to_data_file_mapping=variable_to_data_file_mapping
-    )
-    _fail_if_invalid_merging_behavior(merging_behavior)
+    _fail_if_invalid_variable(variables=variables, variable_mapping=variable_mapping)
 
 
 def _fail_if_invalid_variable(
     variables: list[str],
-    variable_to_data_file_mapping: dict[str, list[str]],
+    variable_mapping: dict[str, list[str]],
 ) -> None:
     for variable in variables:
-        if variable not in variable_to_data_file_mapping:
+        if (variable not in variable_mapping) and (variable not in ID_VARIABLES):
             closest_matches = get_close_matches(
                 variable,
-                variable_to_data_file_mapping.keys(),
+                variable_mapping.keys(),
                 n=3,
                 cutoff=0.6,
             )
-            matches = {
-                match: variable_to_data_file_mapping[match] for match in closest_matches
-            }
+            matches = {match: variable_mapping[match] for match in closest_matches}
             msg = f"""variable {variable} not found in any data file.
             The closest matches with the corresponding data files are:
             {matches}"""
@@ -172,22 +141,14 @@ def _fail_if_min_larger_max(min_and_max_survey_years: tuple[int, int]) -> None:
         raise ValueError(msg)
 
 
-def _fail_if_invalid_merging_behavior(merging_behavior: str) -> None:
-    valid_merging_behaviors = ["left", "right", "outer", "inner"]
-    if merging_behavior not in valid_merging_behaviors:
-        msg = f"""Expected merging behavior to be in {valid_merging_behaviors},
-        got {merging_behavior} instead."""
-        raise ValueError(msg)
-
-
 def _get_data_file_name_to_variables_mapping(
-    variable_to_data_file_mapping: dict[str, str],
+    variable_mapping: dict[str, str],
     variables: list[str],
 ) -> dict[str, list[str]]:
     data_file_name_to_variables_mapping = {}
     for variable in variables:
-        if variable in variable_to_data_file_mapping:
-            data_file_name = variable_to_data_file_mapping[variable]
+        if variable in variable_mapping:
+            data_file_name = variable_mapping[variable]
             if data_file_name not in data_file_name_to_variables_mapping:
                 data_file_name_to_variables_mapping[data_file_name] = []
             data_file_name_to_variables_mapping[data_file_name].append(variable)
@@ -215,19 +176,18 @@ def _fix_user_input(
         survey_years = [
             *range(min_and_max_survey_years[0], min_and_max_survey_years[1] + 1),
         ]
-    id_variables = ["hh_id", "hh_id_original", "p_id", "survey_year"]
-    if any(id_variable in variables for id_variable in id_variables):
-        variables = [col for col in variables if col not in id_variables]
+    if any(id_variable in variables for id_variable in ID_VARIABLES):
+        variables = [col for col in variables if col not in ID_VARIABLES]
     return survey_years, variables
 
 
 def _get_sorted_dataset_merging_information(
-    variable_to_data_file_mapping: dict[str, dict],
     variables: list,
     survey_years: list[int],
+    variable_mapping: dict[str, dict],
 ) -> dict[str, dict]:
     data_mapping = _get_data_file_name_to_variables_mapping(
-        variable_to_data_file_mapping,
+        variable_mapping,
         variables,
     )
 
@@ -256,10 +216,9 @@ def _get_sorted_dataset_merging_information(
 
 def _merge_variables(
     merging_information: dict[str, dict],
-    merging_behavior: str = "outer",
 ) -> pd.DataFrame:
     dataframes = [dataframe["data"] for dataframe in merging_information.values()]
     out = pd.DataFrame()
     for dataframe in dataframes:
-        out = dataframe if out.empty else out.merge(dataframe, how=merging_behavior)
+        out = dataframe if out.empty else out.merge(dataframe, how="outer")
     return out.reset_index(drop=True)

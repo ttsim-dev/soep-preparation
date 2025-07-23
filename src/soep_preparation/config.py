@@ -19,6 +19,8 @@ ROOT = SRC.parent.parent.resolve()
 DATA_ROOT = ROOT.joinpath("data").resolve()
 TEST_DIR = ROOT.joinpath("tests").resolve()
 
+ID_VARIABLES = ["hh_id", "hh_id_original", "p_id", "survey_year"]
+
 SOEP_VERSION = "V38"
 
 if SOEP_VERSION == "V38":
@@ -47,6 +49,7 @@ __all__ = [
     "DATA_CATALOGS",
     "DATA_FILE_NAMES",
     "DATA_ROOT",
+    "ID_VARIABLES",
     "ROOT",
     "SOEP_VERSION",
     "SRC",

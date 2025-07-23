@@ -5,7 +5,7 @@ from typing import Annotated, Any
 import pandas as pd
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOGS
+from soep_preparation.config import DATA_CATALOGS, ID_VARIABLES
 from soep_preparation.utilities.error_handling import (
     fail_if_input_has_invalid_type,
 )
@@ -85,12 +85,11 @@ for name, data in (single_data_files | combined_variables).items():
         fail_if_input_has_invalid_type(
             input_=data, expected_dtypes=["pandas.core.frame.DataFrame"]
         )
-        potential_index_variables = ["p_id", "hh_id", "hh_id_original", "survey_year"]
         index_variables = _get_index_variables(
-            dataset=data, potential_index_variables=potential_index_variables
+            dataset=data, potential_index_variables=ID_VARIABLES
         )
         variable_dtypes = _get_variable_dtypes(
-            dataset=data, potential_index_variables=potential_index_variables
+            dataset=data, potential_index_variables=ID_VARIABLES
         )
         return {
             "index_variables": index_variables,
@@ -101,7 +100,7 @@ for name, data in (single_data_files | combined_variables).items():
 @task(after="task_create_metadata")
 def task_create_metadata_mapping(
     single_metadata_mapping: Annotated[dict, DATA_CATALOGS["metadata"]],
-) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["merged"]]:
+) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["variable_mapping"]]:
     """Create a mapping of variable names to data file names.
 
     Args:
