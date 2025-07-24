@@ -51,7 +51,7 @@ def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
 
 
-def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     """Create cleaned and sensible data type variables from the pl data file.
 
     Args:
@@ -97,7 +97,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
-    out["mutterschaftsgeld_bezug_pl"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_empfangen_pl"] = object_to_bool_categorical(
         series=raw_data["plc0126_v1"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
@@ -111,16 +111,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["mutterschaftsgeld_bezug_aktuell"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_empfangen_aktuell"] = object_to_bool_categorical(
         series=raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
-    out["mutterschaftsgeld_brutto_betrag_m_aktuell"] = object_to_float(
-        raw_data["plc0153_h"]
-    )
-    out["mutterschaftsgeld_betrag_durchschnittlich_m"] = object_to_float(
-        raw_data["plc0155_h"]
-    )
+    out["mutterschaftsgeld_brutto_m_aktuell"] = object_to_float(raw_data["plc0153_h"])
+    out["mutterschaftsgeld_durchschnittlich_m"] = object_to_float(raw_data["plc0155_h"])
     out["child_alimony_m"] = object_to_int(raw_data["plc0178"])
 
     # private pension plan
