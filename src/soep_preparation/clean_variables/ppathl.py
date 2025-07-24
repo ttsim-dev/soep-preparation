@@ -40,8 +40,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["birth_bundesland"] = object_to_str_categorical(raw_data["birthregion"])
 
     # individual current information
-    out["current_survey_status"] = object_to_str_categorical(raw_data["netto"])
-    out["current_place_of_residence"] = object_to_str_categorical(
+    out["survey_status_current"] = object_to_str_categorical(raw_data["netto"])
+    out["place_of_residence_current"] = object_to_str_categorical(
         series=raw_data["sampreg"],
         renaming={
             "[1] Westdeutschland, alte Bundeslaender": (
