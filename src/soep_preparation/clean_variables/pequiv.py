@@ -86,8 +86,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["arbeitslosengeld_y"] = object_to_int(raw_data["iunby"])
     # arbeitslosenhilfe only available 1984 through 2005
     out["arbeitslosenhilfe_y"] = object_to_int(raw_data["iunay"])
-    # sozialhilfe only available 1984 through 2014
-    out["sozialhilfe_y"] = object_to_int(raw_data["isuby"])
+    # grundsicherung only available 1984 through 2014
+    out["grundsicherung_y"] = object_to_int(raw_data["isuby"])
 
     # private transfers contains
     # alimony in 1984 through 2000
@@ -101,7 +101,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # divorce alimony only available in 2015
     out["divorce_alimony_received_amount_y"] = object_to_int(raw_data["ispou"])
     # unterhaltsvorschuss available since 2010
-    out["unterhaltsvorschuss_empfangenener_betrag_y"] = object_to_int(raw_data["iachm"])
+    out["unterhaltsvorschuss_erhaltenener_betrag_y"] = object_to_int(raw_data["iachm"])
     out["student_grants_received_amount_y"] = object_to_int(raw_data["istuy"])
 
     # gesetzliche rente available since 1986

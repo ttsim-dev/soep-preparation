@@ -97,7 +97,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
-    out["mutterschaftsgeld_empfangen_pl"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_erhalten_pl"] = object_to_bool_categorical(
         series=raw_data["plc0126_v1"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
@@ -111,7 +111,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["mutterschaftsgeld_empfangen_aktuell"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_erhalten_aktuell"] = object_to_bool_categorical(
         series=raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
