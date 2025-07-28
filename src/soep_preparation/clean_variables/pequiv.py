@@ -58,7 +58,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["kindergeld_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["kindergeld_y_hh_pequiv"] / 12
     )
-    out["mutterschaftsgeld_y"] = object_to_int(raw_data["imaty"])
+    out["mutterschaftsgeld_erhalten_y"] = object_to_int(raw_data["imaty"])
     # betreuungsgeld only available 2014 through 2016
     out["betreuungsgeld_y_hh"] = object_to_int(raw_data["chsub"])
 
@@ -99,6 +99,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["unterhalt_erhalten_y"] = object_to_int(raw_data["ialim"])
     # caregiver alimony received available since 2015
     out["kindesunterhalt_erhalten_y"] = object_to_int(raw_data["ichsu"])
+    out["kindesunterhalt_erhalten_m_pequiv"] = out["kindesunterhalt_erhalten_y"] / 12
     # divorce alimony only available in 2015
     out["ehegattenunterhalt_erhalten_y"] = object_to_int(raw_data["ispou"])
     # unterhaltsvorschuss available since 2010
@@ -146,7 +147,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["gesetzliche_unfallversicherung_rente_hinterbliebene_y"] = object_to_int(
         raw_data["iguv2"]
     )
-    # andere rente available since 1986
+    # andere rente available since 1986;
+    # changes its content because different kinds of private pensions
+    # are asked for explicitly in different years.
     out["andere_rente_y"] = object_to_int(raw_data["ison1"])
     out["andere_rente_hinterbliebene_y"] = object_to_int(raw_data["ison2"])
 
