@@ -115,7 +115,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         series=raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
-    out["aktuell_erhaltenes_mutterschaftsgeld_m"] = object_to_float(
+    out["im_letzten_monat_erhaltenes_mutterschaftsgeld_m"] = object_to_float(
         raw_data["plc0153_h"]
     )
     out["durchschnittlich_erhaltenes_mutterschaftsgeld_m"] = object_to_float(
