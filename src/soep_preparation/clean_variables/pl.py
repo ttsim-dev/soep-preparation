@@ -97,7 +97,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
-    out["mutterschaftsgeld_erhalten_pl"] = object_to_bool_categorical(
+    out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
         series=raw_data["plc0126_v1"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
@@ -111,13 +111,15 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["mutterschaftsgeld_erhalten_aktuell"] = object_to_bool_categorical(
+    out["bezieht_aktuell_mutterschaftsgeld"] = object_to_bool_categorical(
         series=raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
-    out["mutterschaftsgeld_brutto_m_aktuell"] = object_to_float(raw_data["plc0153_h"])
-    out["mutterschaftsgeld_durchschnittlich_m"] = object_to_float(raw_data["plc0155_h"])
-    out["child_alimony_m"] = object_to_int(raw_data["plc0178"])
+    out["aktuelles_mutterschaftsgeld_m"] = object_to_float(raw_data["plc0153_h"])
+    out["durchschnittliches_mutterschaftsgeld_m"] = object_to_float(
+        raw_data["plc0155_h"]
+    )
+    out["kindesunterhalt_m"] = object_to_int(raw_data["plc0178"])
 
     # private pension plan
     out["in_private_rente_eingezahlt"] = object_to_bool_categorical(

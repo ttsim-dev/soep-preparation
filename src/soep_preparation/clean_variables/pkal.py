@@ -88,14 +88,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["unemployed_anzahl_monate"] = object_to_int(raw_data["kal1d02"]).fillna(0)
     out["early_retirement_pension_number_months"] = object_to_int(raw_data["kal1e02"])
     out["unemployment_benefits_number_months"] = object_to_int(raw_data["kal2f02"])
-    out["mutterschaftsgeld_erhalten_pkal"] = object_to_bool_categorical(
+    out["bezog_mutterschaftsgeld_pkal"] = object_to_bool_categorical(
         series=raw_data["kal2j01_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["mutterschaftsgeld_anzahl_monate"] = _mutterschaftsgeld_anzahl_monate(
         monate=raw_data["kal2j02"],
-        bezug=out["mutterschaftsgeld_erhalten_pkal"],
+        bezug=out["bezog_mutterschaftsgeld_pkal"],
     )
 
     # the first full time employment variables includes the timeframe 1984 until 1997,

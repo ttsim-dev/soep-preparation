@@ -37,10 +37,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])
     out["number_of_children_hh"] = apply_smallest_int_dtype(raw_data["d11107"])
     # hh income
-    out["einkommen_vor_steuer_y_hh"] = object_to_int(raw_data["i11101"])
-    out["einkommen_nach_steuer_y_hh"] = object_to_int(raw_data["i11102"])
-    out["einkommen_vermietung_verpachtung_y_hh"] = object_to_int(raw_data["renty"])
-    out["einkommen_zinsen_dividenden_y_hh"] = object_to_int(raw_data["divdy"])
+    out["einkommen_vor_steuern_y_hh"] = object_to_int(raw_data["i11101"])
+    out["einkommen_nach_steuern_y_hh"] = object_to_int(raw_data["i11102"])
+    out["einkommen_aus_vermietung_verpachtung_y_hh"] = object_to_int(raw_data["renty"])
+    out["einkommen_aus_zinsen_dividenden_y_hh"] = object_to_int(raw_data["divdy"])
 
     # individual characteristics
     out["gender"] = object_to_str_categorical(
@@ -54,55 +54,56 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # hh social benefits
-    out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_int(raw_data["alg2"])
-    out["arbeitslosengeld_2_m_hh_pequiv"] = apply_smallest_float_dtype(
-        out["arbeitslosengeld_2_y_hh_pequiv"] / 12
-    )
-    out["mutterschaftsgeld_y"] = object_to_int(raw_data["imaty"])
     out["kindergeld_y_hh_pequiv"] = object_to_int(raw_data["chspt"])
     out["kindergeld_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["kindergeld_y_hh_pequiv"] / 12
     )
+    out["mutterschaftsgeld_y"] = object_to_int(raw_data["imaty"])
+    # betreuungsgeld only available 2014 through 2016
+    out["betreuungsgeld_y_hh"] = object_to_int(raw_data["chsub"])
+
     out["kinderzuschlag_y_hh_pequiv"] = object_to_int(raw_data["adchb"])
     out["kinderzuschlag_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["kinderzuschlag_y_hh_pequiv"] / 12
     )
-    # betreuungsgeld only available 2014 through 2016
-    out["betreuungsgeld_y_hh"] = object_to_int(raw_data["chsub"])
     out["wohngeld_y_hh_pequiv"] = object_to_int(raw_data["house"])
     out["wohngeld_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["wohngeld_y_hh_pequiv"] / 12
     )
-    # eigenheimzulage only available 1996 through 2014
-    out["eigenheimzulage_y_hh"] = object_to_int(raw_data["hsup"])
-
-    out["allgemeine_sozialhilfe_y_hh"] = object_to_int(raw_data["subst"])
-    out["grundsicherung_im_alter_y_hh"] = object_to_int(raw_data["ssold"])
-    out["pflegegeld_y_hh"] = object_to_int(raw_data["nursh"])
-    # sonstige sozialhilfe available in 1984 through 1991 and 2001 through 2009
-    out["sonstige_sozialhilfe_y_hh"] = object_to_int(raw_data["sphlp"])
 
     # individual social benefits
     out["arbeitslosengeld_y"] = object_to_int(raw_data["iunby"])
-    # arbeitslosenhilfe only available 1984 through 2005
+    # arbeitslosenhilfe available 1984 through 2005
     out["arbeitslosenhilfe_y"] = object_to_int(raw_data["iunay"])
+    out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_int(raw_data["alg2"])
+    out["arbeitslosengeld_2_m_hh_pequiv"] = apply_smallest_float_dtype(
+        out["arbeitslosengeld_2_y_hh_pequiv"] / 12
+    )
+
+    out["allgemeine_sozialhilfe_y_hh"] = object_to_int(raw_data["subst"])
+    # sonstige sozialhilfe available in 1984 through 1991 and 2001 through 2009
+    out["sonstige_sozialhilfe_y_hh"] = object_to_int(raw_data["sphlp"])
     # grundsicherung only available 1984 through 2014
     out["grundsicherung_y"] = object_to_int(raw_data["isuby"])
+    out["grundsicherung_im_alter_y_hh"] = object_to_int(raw_data["ssold"])
+    out["pflegegeld_y_hh"] = object_to_int(raw_data["nursh"])
 
+    # eigenheimzulage only available 1996 through 2014
+    out["eigenheimzulage_y_hh"] = object_to_int(raw_data["hsup"])
     # private transfers contains
     # alimony in 1984 through 2000
     # divorce and caregiver alimonies in 1984 through 2014
     # unterhaltsvorschuss in 1984 through 2009
-    out["private_transfers_received_amount_y"] = object_to_int(raw_data["ielse"])
+    out["private_transfers_erhalten_y"] = object_to_int(raw_data["ielse"])
     # alimony received only available 2001 through 2014
-    out["alimony_received_amount_y"] = object_to_int(raw_data["ialim"])
+    out["unterhalt_erhalten_y"] = object_to_int(raw_data["ialim"])
     # caregiver alimony received available since 2015
-    out["caregiver_alimony_received_amount_y"] = object_to_int(raw_data["ichsu"])
+    out["kindesunterhalt_erhalten_y"] = object_to_int(raw_data["ichsu"])
     # divorce alimony only available in 2015
-    out["divorce_alimony_received_amount_y"] = object_to_int(raw_data["ispou"])
+    out["ehegattenunterhalt_erhalten_y"] = object_to_int(raw_data["ispou"])
     # unterhaltsvorschuss available since 2010
-    out["unterhaltsvorschuss_erhaltenener_betrag_y"] = object_to_int(raw_data["iachm"])
-    out["student_grants_received_amount_y"] = object_to_int(raw_data["istuy"])
+    out["unterhaltsvorschuss_erhalten_y"] = object_to_int(raw_data["iachm"])
+    out["bafög_y"] = object_to_int(raw_data["istuy"])
 
     # gesetzliche rente available since 1986
     # contains knappschaftliche rente and alterssicherung landwirte since 2002
@@ -166,13 +167,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["einkünfte_aus_selbstständiger_arbeit_y"] = object_to_int(
         raw_data["iself"]
     ).fillna(0)
-    out["christmas_bonus_y"] = object_to_int(raw_data["ixmas"])
-    out["vacation_bonus_y"] = object_to_int(raw_data["iholy"])
-    out["profit_share_y"] = object_to_int(raw_data["igray"])
-    out["other_bonuses_y"] = object_to_int(raw_data["iothy"])
+    out["weihnachtsgeld_y"] = object_to_int(raw_data["ixmas"])
+    out["urlaubsgeld_y"] = object_to_int(raw_data["iholy"])
+    out["gewinnbeteiligung_y"] = object_to_int(raw_data["igray"])
+    out["sonstige_boni_y"] = object_to_int(raw_data["iothy"])
 
     # hh costs
-    out["maintenance_costs_y_hh"] = object_to_int(raw_data["opery"])
+    out["operation_maintenance_costs_y_hh"] = object_to_int(raw_data["opery"])
 
     # individual medical characteristics
     out["med_krankenhaus_pequiv"] = object_to_bool_categorical(

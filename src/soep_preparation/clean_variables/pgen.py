@@ -161,7 +161,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         value_for_comparison="NE: Wehr- und Zivildienst",
     )
 
-    out["erwerbstätig_y"] = (
+    out["erwerbstätig"] = (
         create_dummy(
             series=out["employment_status"],
             value_for_comparison="Nicht erwerbstätig",
@@ -169,63 +169,65 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         )
     ) & (~out["in_education"])
 
-    out["nicht_erwerbstätig_y"] = create_dummy(
+    out["nicht_erwerbstätig"] = create_dummy(
         series=out["employment_status"],
         value_for_comparison="Nicht erwerbstätig",
     )
-    out["unemployed_y"] = create_dummy(
+    out["arbeitslos_gemeldet"] = create_dummy(
         series=out["occupation_status"],
         value_for_comparison="NE: arbeitslos gemeldet",
     )
-    out["ft_y"] = create_dummy(
+    out["voll_erwerbstätig"] = create_dummy(
         series=out["employment_status"], value_for_comparison="Voll erwerbstätig"
     )
-    out["pt_employed_y"] = create_dummy(
+    out["in_teilzeit_erwerbstätig"] = create_dummy(
         series=out["employment_status"], value_for_comparison="Teilzeitbeschäftigung"
     )
-    out["geringfügig_erwbstätig"] = create_dummy(
+    out["unregelmäßig_oder_geringfügig_erwerbstätig"] = create_dummy(
         series=out["employment_status"],
         value_for_comparison="Unregelmässig, geringfügig erwerbstät.",
     )
-    out["werkstatt"] = create_dummy(
+    out["werkstatt_für_behinderte_menschen"] = create_dummy(
         series=out["employment_status"],
         value_for_comparison="Werkstatt für behinderte Menschen (seit 1998)",
     )
-    out["beamte"] = create_dummy(
+    out["beamter"] = create_dummy(
         series=out["occupation_status"],
         value_for_comparison="Beamte",
         comparison_type="startswith",
     )
-    out["parental_leave"] = create_dummy(
+    out["mutterschutz_elternzeit"] = create_dummy(
         series=out["labor_force_status"],
         value_for_comparison="NE: Mutterschutz/Elternzeit (seit 1991)",
     )
 
     # individual work information
-    out["gross_labor_income_previous_month"] = object_to_float(
+    out["gross_labor_income_previous_month_m"] = object_to_float(
         raw_data["pglabgro"]
     ).fillna(0)
-    out["net_labor_income_previous_month"] = object_to_float(
+    out["net_labor_income_previous_month_m"] = object_to_float(
         raw_data["pglabnet"]
     ).fillna(0)
-    out["weekly_working_hours_actual"] = _weekly_working_hours_fill_non_working(
+    out["tatsächliche_arbeitszeit_w"] = _weekly_working_hours_fill_non_working(
         working_hours=raw_data["pgtatzeit"],
         employment_status=out["employment_status"],
     )
-    out["weekly_working_hours_contract"] = _weekly_working_hours_fill_non_working(
+    out["vertragliche_arbeitszeit_w"] = _weekly_working_hours_fill_non_working(
         working_hours=raw_data["pgvebzeit"],
         employment_status=out["employment_status"],
     )
-    out["employed_in_public_service"] = object_to_bool_categorical(
+    out["im_öffentlichen_dienst"] = object_to_bool_categorical(
         series=raw_data["pgoeffd"],
         renaming={"[2] nein": False, "[1] ja": True},
         ordered=True,
     )
-    out["firm_size"] = object_to_str_categorical(raw_data["pgallbet"])
-    out["firm_size_granular_but_inconsistent_over_time"] = object_to_str_categorical(
-        raw_data["pgbetr"].replace(
-            {-5: "[-5] in Fragebogenversion nicht enthalten"},
-        ),
+    out["betriebsgröße"] = object_to_str_categorical(raw_data["pgallbet"])
+    out["betriebsgröße_detailliert_aber_inkonsistente_kategorien"] = (
+        object_to_str_categorical(
+            raw_data["pgbetr"].replace(
+                {-5: "[-5] in Fragebogenversion nicht enthalten"},
+            ),
+        )
     )
     out["grund_beschäftigungsende"] = object_to_str_categorical(
         raw_data["pgjobend"],

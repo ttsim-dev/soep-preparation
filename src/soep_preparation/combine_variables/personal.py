@@ -108,9 +108,9 @@ def derive_p_received_transfers(pl: pd.DataFrame, pkal: pd.DataFrame) -> pd.Data
     out = pd.DataFrame(index=pl.index)
     merged = pd.merge(pl, pkal, on=["hh_id", "survey_year"], how="outer")
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
-    out["mutterschaftsgeld_bezug"] = combine_first_and_make_categorical(
-        series_1=merged["mutterschaftsgeld_erhalten_pl"],
-        series_2=merged["mutterschaftsgeld_erhalten_pkal"],
+    out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
+        series_1=merged["bezog_mutterschaftsgeld_pl"],
+        series_2=merged["bezog_mutterschaftsgeld_pkal"],
         ordered=False,
     )
     return out
