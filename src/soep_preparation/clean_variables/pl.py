@@ -51,7 +51,7 @@ def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
 
 
-def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     """Create cleaned and sensible data type variables from the pl data file.
 
     Args:
@@ -97,31 +97,30 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
-    out["mutterschaftsgeld_bezug_pl"] = object_to_bool_categorical(
-        series=raw_data["plc0126_v1"],
+    out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
+        series=raw_data["plc0126_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
-    out["arbeitslosengeld_bezug"] = object_to_bool_categorical(
+    out["bezog_arbeitslosengeld_im_letzten_monat"] = object_to_bool_categorical(
         series=raw_data["plc0130_v1"],
         renaming={"[1] Ja": True},
         ordered=True,
     )
-    out["arbeitslosengeld_m3_m5_bezug"] = object_to_bool_categorical(
+    # bezog arbeitslosengeld m3-m5 available 2017 through 2020
+    out["bezog_arbeitslosengeld_m3_m5"] = object_to_bool_categorical(
         series=raw_data["plc0130_v2"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["mutterschaftsgeld_bezug_aktuell"] = object_to_bool_categorical(
+    out["bezog_mutterschaftsgeld_im_letzten_monat"] = object_to_bool_categorical(
         series=raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
-    out["mutterschaftsgeld_brutto_betrag_m_aktuell"] = object_to_float(
+    out["erhaltenes_mutterschaftsgeld_im_letzten_monat_m"] = object_to_float(
         raw_data["plc0153_h"]
     )
-    out["mutterschaftsgeld_betrag_durchschnittlich_m"] = object_to_float(
-        raw_data["plc0155_h"]
-    )
-    out["child_alimony_m"] = object_to_int(raw_data["plc0178"])
+    out["erhaltenes_mutterschaftsgeld_m"] = object_to_float(raw_data["plc0155_h"])
+    out["kindesunterhalt_erhalten_m_pl"] = object_to_int(raw_data["plc0178"])
 
     # private pension plan
     out["in_private_rente_eingezahlt"] = object_to_bool_categorical(
@@ -129,16 +128,16 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["in_private_rente_eingezahlt_monate"] = object_to_int(raw_data["plc0438"])
+    out["in_private_rente_eingezahlte_monate"] = object_to_int(raw_data["plc0438"])
     out["private_rente_beitrag_m_2013"] = _private_rente_beitrag_m_ein_umfragejahr(
         private_rente_beitrag_jahr=raw_data["plc0439_v1"],
-        eingezahlte_monate=out["in_private_rente_eingezahlt_monate"],
+        eingezahlte_monate=out["in_private_rente_eingezahlte_monate"],
         eingezahlt=out["in_private_rente_eingezahlt"],
         survey_year=2013,
     )
     out["private_rente_beitrag_m_2018"] = _private_rente_beitrag_m_ein_umfragejahr(
         private_rente_beitrag_jahr=raw_data["plc0439_v2"],
-        eingezahlte_monate=out["in_private_rente_eingezahlt_monate"],
+        eingezahlte_monate=out["in_private_rente_eingezahlte_monate"],
         eingezahlt=out["in_private_rente_eingezahlt"],
         survey_year=2018,
     )
