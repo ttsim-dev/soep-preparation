@@ -17,6 +17,7 @@ pd.set_option("plotting.backend", "plotly")
 SRC = Path(__file__).parent.resolve()
 ROOT = SRC.parent.parent.resolve()
 DATA_ROOT = ROOT.joinpath("data").resolve()
+DATA_ROOT = ROOT.joinpath("data").resolve()
 TEST_DIR = ROOT.joinpath("tests").resolve()
 
 ID_VARIABLES = ["hh_id", "hh_id_original", "p_id", "survey_year"]

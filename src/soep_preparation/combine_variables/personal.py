@@ -95,22 +95,47 @@ def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataF
     return out
 
 
-def derive_p_received_transfers(pl: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
-    """Merge the personal received transfer variables from pl and pkal.
+def derive_p_bezog_mutterschaftsgeld(
+    pl: pd.DataFrame, pkal: pd.DataFrame
+) -> pd.DataFrame:
+    """Merge the personal bezog_mutterschaftsgeld variable from pl and pkal.
 
     Args:
         pl: Cleaned pl data.
         pkal: Cleaned pkal data.
 
     Returns:
-        Merged received transfer variables.
+        Merged bezog_mutterschaftsgeld variable.
     """
     out = pd.DataFrame(index=pl.index)
     merged = pd.merge(pl, pkal, on=["hh_id", "survey_year"], how="outer")
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
-    out["mutterschaftsgeld_bezug"] = combine_first_and_make_categorical(
-        series_1=merged["mutterschaftsgeld_bezug_pl"],
-        series_2=merged["mutterschaftsgeld_bezug_pkal"],
+    out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
+        series_1=merged["bezog_mutterschaftsgeld_pl"],
+        series_2=merged["bezog_mutterschaftsgeld_pkal"],
+        ordered=False,
+    )
+    return out
+
+
+def derive_p_kindesunterhalt_erhalten(
+    pl: pd.DataFrame, pequiv: pd.DataFrame
+) -> pd.DataFrame:
+    """Merge the personal kindesunterhalt_erhalten variable from pl and pequiv.
+
+    Args:
+        pl: Cleaned pl data.
+        pequiv: Cleaned pequiv data.
+
+    Returns:
+        Merged kindesunterhalt_erhalten variable.
+    """
+    out = pd.DataFrame(index=pl.index)
+    merged = pd.merge(pl, pequiv, on=["hh_id", "survey_year"], how="outer")
+    out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
+    out["kindesunterhalt_erhalten_m_pequiv"] = combine_first_and_make_categorical(
+        series_1=merged["kindesunterhalt_erhalten_m_pl"],
+        series_2=merged["kindesunterhalt_erhalten_m_pequiv"],
         ordered=False,
     )
     return out
