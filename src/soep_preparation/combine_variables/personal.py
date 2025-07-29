@@ -7,7 +7,7 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
-def derive_birth_month(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFrame:
+def combine_birth_month(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFrame:
     """Combine the birth_month variables from ppathl and bioedu.
 
     Args:
@@ -28,7 +28,7 @@ def derive_birth_month(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFra
     return out
 
 
-def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
+def combine_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
     """Combine the medical variables from pequiv and pl.
 
     Args:
@@ -95,7 +95,7 @@ def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataF
     return out
 
 
-def derive_p_bezog_mutterschaftsgeld(
+def combine_p_bezog_mutterschaftsgeld(
     pl: pd.DataFrame, pkal: pd.DataFrame
 ) -> pd.DataFrame:
     """Merge the personal bezog_mutterschaftsgeld variable from pl and pkal.
@@ -118,7 +118,7 @@ def derive_p_bezog_mutterschaftsgeld(
     return out
 
 
-def derive_p_kindesunterhalt_erhalten(
+def combine_p_kindesunterhalt_erhalten(
     pl: pd.DataFrame, pequiv: pd.DataFrame
 ) -> pd.DataFrame:
     """Merge the personal kindesunterhalt_erhalten variable from pl and pequiv.

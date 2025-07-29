@@ -7,7 +7,7 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
-def derive_hh_soep_sample(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.DataFrame:
+def combine_hh_soep_sample(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.DataFrame:
     """Merge the hh_soep_sample variable from hpathl and design.
 
     Args:
@@ -28,7 +28,7 @@ def derive_hh_soep_sample(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.Data
     return out
 
 
-def derive_hh_received_transfers(
+def combine_hh_received_transfers(
     pequiv: pd.DataFrame, hl: pd.DataFrame
 ) -> pd.DataFrame:
     """Merge the household received transfer variables from pequiv and hl.

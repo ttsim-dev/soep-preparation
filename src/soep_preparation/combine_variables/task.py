@@ -50,9 +50,9 @@ def _get_variable_names_in_module(module: Any) -> list[str]:
         The variable names in the module.
     """
     return [
-        variable_name.split("derive_")[-1]
+        variable_name.split("combine_")[-1]
         for variable_name in module.__dict__
-        if variable_name.startswith("derive_")
+        if variable_name.startswith("combine_")
     ]
 
 
@@ -61,7 +61,7 @@ for script_name in script_names:
     module = load_module(SRC / "combine_variables" / f"{script_name}.py")
     variable_names = _get_variable_names_in_module(module)
     for variable_name in variable_names:
-        function_ = getattr(module, f"derive_{variable_name}")
+        function_ = getattr(module, f"combine_{variable_name}")
         data_files = _get_relevant_data_files_mapping(function_=function_)
 
         @task(id=variable_name)
