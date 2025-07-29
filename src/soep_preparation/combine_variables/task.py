@@ -30,12 +30,12 @@ def _get_relevant_data_files_mapping(
     data_names = [
         data_name
         for data_name in function_.__annotations__
-        if data_name in DATA_CATALOGS["data_files"]
+        if data_name in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
     ]
     # create a mapping of data file names to DataFrames
     # using the data catalog
     return {
-        data_name: DATA_CATALOGS["data_files"][data_name]["cleaned"]
+        data_name: DATA_CATALOGS["cleaned_variables"][data_name]
         for data_name in data_names
     }
 

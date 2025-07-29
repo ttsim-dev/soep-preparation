@@ -5,7 +5,7 @@ from typing import Annotated, Any
 import pandas as pd
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOGS, ID_VARIABLES
+from soep_preparation.config import DATA_CATALOGS
 from soep_preparation.utilities.error_handling import (
     fail_if_input_has_invalid_type,
 )
@@ -26,9 +26,6 @@ def _get_variable_dtypes(
     dataset: pd.DataFrame,
     potential_index_variables: list[str],
 ) -> dict:
-    # TODO (@hmgaudecker): do we want to just have the "name" of the dtype # noqa: TD003
-    # (e.g. `uint16[pyarrow]`, `category`) or also the dtype itself
-    # (only relevant for categorical data which then return the `CategoricalDtype`)
     return {
         col: dtype_.name
         for col, dtype_ in dataset.dtypes.items()
@@ -49,8 +46,10 @@ def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
     for data_name, data in metadata._entries.items():  # noqa: SLF001
         if (
             data_name not in DATA_CATALOGS["combined_variables"]._entries  # noqa: SLF001
-        ) and (data_name not in DATA_CATALOGS["data_files"]):
-            # Skip if data_name is not in either combined variables or data files
+        ) and (
+            data_name not in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
+        ):
+            # Skip if data_name is neither among combined variables nor among data files
             continue
         variable_names = data.load()["variable_dtypes"].keys()
         for variable_name in variable_names:
@@ -58,11 +57,12 @@ def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
     return mapping
 
 
-single_data_files = {
-    name: data_catalog["cleaned"]
-    for name, data_catalog in DATA_CATALOGS["data_files"].items()
-}
-combined_variables = dict(DATA_CATALOGS["combined_variables"]._entries)  # noqa: SLF001
+single_data_files = dict(
+    DATA_CATALOGS["cleaned_variables"]._entries.items()  # noqa: SLF001
+)
+combined_variables = dict(
+    DATA_CATALOGS["combined_variables"]._entries.items()  # noqa: SLF001
+)
 
 
 for name, data in (single_data_files | combined_variables).items():
@@ -85,11 +85,12 @@ for name, data in (single_data_files | combined_variables).items():
         fail_if_input_has_invalid_type(
             input_=data, expected_dtypes=["pandas.core.frame.DataFrame"]
         )
+        potential_index_variables = ["p_id", "hh_id", "hh_id_original", "survey_year"]
         index_variables = _get_index_variables(
-            dataset=data, potential_index_variables=ID_VARIABLES
+            dataset=data, potential_index_variables=potential_index_variables
         )
         variable_dtypes = _get_variable_dtypes(
-            dataset=data, potential_index_variables=ID_VARIABLES
+            dataset=data, potential_index_variables=potential_index_variables
         )
         return {
             "index_variables": index_variables,

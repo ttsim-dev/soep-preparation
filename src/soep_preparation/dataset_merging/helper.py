@@ -194,8 +194,8 @@ def _get_sorted_dataset_merging_information(
     dataset_merging_information = {}
     for data_name, data_variables in data_mapping.items():
         raw_data = (
-            DATA_CATALOGS["data_files"][data_name]["cleaned"].load()
-            if data_name in DATA_CATALOGS["data_files"]
+            DATA_CATALOGS["cleaned_variables"][data_name].load()
+            if data_name in DATA_CATALOGS["raw_pandas"]._entries  # noqa: SLF001
             else DATA_CATALOGS["combined_variables"][data_name].load()
         )
         index_variables = sorted(
