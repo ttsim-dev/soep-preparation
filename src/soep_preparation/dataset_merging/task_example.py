@@ -43,5 +43,7 @@ def task_merge_variables(
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
     return create_dataset(
         variables=variables,
-        min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
+        min_survey_year=min(SURVEY_YEARS),
+        max_survey_year=max(SURVEY_YEARS),
+        survey_years=None,
     )

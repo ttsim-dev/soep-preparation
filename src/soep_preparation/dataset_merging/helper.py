@@ -12,7 +12,8 @@ from soep_preparation.utilities.error_handling import (
 
 def create_dataset(
     variables: list[str],
-    min_and_max_survey_years: tuple[int, int] | None = None,
+    min_survey_year: int | None = None,
+    max_survey_year: int | None = None,
     survey_years: list[int] | None = None,
 ) -> pd.DataFrame:
     """Create a dataset by merging different specified variables.
@@ -22,9 +23,11 @@ def create_dataset(
 
     Args:
         variables: A list of variable names for the merged dataset to contain.
-        min_and_max_survey_years: Range of survey years.
+        min_survey_year: Minimum survey year to be included.
+        max_survey_year: Maximum survey year to be included.
         survey_years: Survey years to be included in the dataset.
-        Either `survey_years` or `min_and_max_survey_years` must be provided.
+        Either `min_survey_year` and `max_survey_year` or
+        `survey_years` must be provided.
 
     Returns:
         The dataset with specified variables and survey years.
@@ -40,10 +43,10 @@ def create_dataset(
         `variables` needs to be specified and are the variables
         created, renamed, and derived from the raw SOEP data files
         that will be part of the merged dataset.
-        Either specify `min_and_max_survey_years` or `survey_years`.
+        Either specify `min_survey_year` and `max_survey_year` or `survey_years`.
         To receive data for just one year (e.g. `2025`) either input
-        `min_and_max_survey_years=(2025,2025)` or `survey_years=[2025]`.
-        Otherwise, `min_and_max_survey_years=(2024,2025)`
+        `min_survey_year=2025` and `max_survey_year=2025` or `survey_years=[2025]`.
+        Otherwise, `min_survey_year=2024` and `max_survey_year=2025`
         and `survey_years=[2024, 2025]`
         both return a merged dataset with information from the two survey years.
 
@@ -52,22 +55,24 @@ def create_dataset(
     """
     variable_mapping = DATA_CATALOGS["metadata"]["variable_mapping"].load()
     _error_handling(
-        variables,
-        min_and_max_survey_years,
-        survey_years,
-        variable_mapping,
+        variables=variables,
+        min_survey_year=min_survey_year,
+        max_survey_year=max_survey_year,
+        survey_years=survey_years,
+        variable_mapping=variable_mapping,
     )
 
     survey_years, variables = _fix_user_input(
-        survey_years,
-        min_and_max_survey_years,
-        variables,
+        min_survey_year=min_survey_year,
+        max_survey_year=max_survey_year,
+        survey_years=survey_years,
+        variables=variables,
     )
 
     merging_information = _get_sorted_dataset_merging_information(
-        variables,
-        survey_years,
-        variable_mapping,
+        variables=variables,
+        survey_years=survey_years,
+        variable_mapping=variable_mapping,
     )
 
     return _merge_variables(merging_information)
@@ -75,13 +80,17 @@ def create_dataset(
 
 def _error_handling(
     variables: list[str],
-    min_and_max_survey_years: tuple[int, int] | None,
+    min_survey_year: int | None,
+    max_survey_year: int | None,
     survey_years: list[int] | None,
     variable_mapping: dict[str, list[str]],
 ) -> None:
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
     fail_if_input_has_invalid_type(
-        input_=min_and_max_survey_years, expected_dtypes=("tuple", "None")
+        input_=min_survey_year, expected_dtypes=("int", "None")
+    )
+    fail_if_input_has_invalid_type(
+        input_=max_survey_year, expected_dtypes=("int", "None")
     )
     fail_if_input_has_invalid_type(
         input_=survey_years, expected_dtypes=("list", "None")
@@ -91,11 +100,14 @@ def _error_handling(
         _fail_if_survey_years_not_valid(
             survey_years=survey_years, valid_survey_years=SURVEY_YEARS
         )
-    else:
+    elif min_survey_year is not None and max_survey_year is not None:
         _fail_if_survey_years_not_valid(
-            survey_years=min_and_max_survey_years, valid_survey_years=SURVEY_YEARS
+            survey_years=(min_survey_year, max_survey_year),
+            valid_survey_years=SURVEY_YEARS,
         )
-        _fail_if_min_larger_max(min_and_max_survey_years)
+        _fail_if_min_larger_max((min_survey_year, max_survey_year))
+    else:
+        _fail_if_no_valid_survey_years_provided()
     _fail_if_invalid_variable(variables=variables, variable_mapping=variable_mapping)
 
 
@@ -125,7 +137,7 @@ def _fail_if_empty(input_: dict | list) -> None:
 
 
 def _fail_if_survey_years_not_valid(
-    survey_years: list[int] | tuple[int],
+    survey_years: list[int] | tuple[int, int],
     valid_survey_years: list[int],
 ) -> None:
     if not all(year in valid_survey_years for year in survey_years):
@@ -139,6 +151,12 @@ def _fail_if_min_larger_max(min_and_max_survey_years: tuple[int, int]) -> None:
         msg = f"""Expected min survey year to be smaller than max survey year,
         got {min_and_max_survey_years} instead."""
         raise ValueError(msg)
+
+
+def _fail_if_no_valid_survey_years_provided() -> None:
+    msg = """Expected either survey_years or min_survey_year and max_survey_year
+    to be provided, got None for all of them."""
+    raise ValueError(msg)
 
 
 def _get_data_file_name_to_variables_mapping(
@@ -168,13 +186,16 @@ def _sort_dataset_merging_information(
 
 
 def _fix_user_input(
+    min_survey_year: int | None,
+    max_survey_year: int | None,
     survey_years: list[int] | None,
-    min_and_max_survey_years: tuple[int, int] | None,
     variables: list[str],
 ) -> tuple[list[int], list[str]]:
-    if survey_years is None and min_and_max_survey_years is not None:
+    if survey_years is None and (
+        min_survey_year is not None and max_survey_year is not None
+    ):
         survey_years = [
-            *range(min_and_max_survey_years[0], min_and_max_survey_years[1] + 1),
+            *range(min_survey_year, max_survey_year + 1),
         ]
     if any(id_variable in variables for id_variable in ID_VARIABLES):
         variables = [col for col in variables if col not in ID_VARIABLES]
