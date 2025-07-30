@@ -101,7 +101,9 @@ for name, data in (single_data_files | combined_variables).items():
 @task(after="task_create_metadata")
 def task_create_metadata_mapping(
     single_metadata_mapping: Annotated[dict, DATA_CATALOGS["metadata"]],
-) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["variable_mapping"]]:
+) -> Annotated[
+    dict[str, dict], DATA_CATALOGS["metadata"]["mapping_variable_to_file_names"]
+]:
     """Create a mapping of variable names to data file names.
 
     Args:

@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    combine_first_and_make_categorical,
+    combined_categorical,
 )
 
 
@@ -20,7 +20,7 @@ def combine_birth_month(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFr
     out = pd.DataFrame()
     merged = pd.merge(left=ppathl, right=bioedu, on="p_id", how="outer")
     out["p_id"] = merged["p_id"].unique()
-    out["birth_month"] = combine_first_and_make_categorical(
+    out["birth_month"] = combined_categorical(
         series_1=merged["birth_month_ppathl"],
         series_2=merged["birth_month_bioedu"],
         ordered=False,
@@ -44,37 +44,37 @@ def combine_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.Data
         ["p_id", "hh_id", "survey_year", "hh_id_original"]
     ].copy()
 
-    out["med_schw_treppen"] = combine_first_and_make_categorical(
+    out["med_schw_treppen"] = combined_categorical(
         series_1=merged["med_schwierigkeiten_treppen_pequiv"],
         series_2=merged["med_schwierigkeit_treppen_pl"],
         ordered=True,
     )
-    out["med_bluthochdruck"] = combine_first_and_make_categorical(
+    out["med_bluthochdruck"] = combined_categorical(
         series_1=merged["med_bluthochdruck_pequiv"],
         series_2=merged["med_bluthochdruck_pl"],
         ordered=True,
     )
-    out["med_diabetes"] = combine_first_and_make_categorical(
+    out["med_diabetes"] = combined_categorical(
         series_1=merged["med_diabetes_pequiv"],
         series_2=merged["med_diabetes_pl"],
         ordered=True,
     )
-    out["med_krebs"] = combine_first_and_make_categorical(
+    out["med_krebs"] = combined_categorical(
         series_1=merged["med_krebs_pequiv"],
         series_2=merged["med_krebs_pl"],
         ordered=True,
     )
-    out["med_herzkrankheit"] = combine_first_and_make_categorical(
+    out["med_herzkrankheit"] = combined_categorical(
         series_1=merged["med_herzkrankheit_pequiv"],
         series_2=merged["med_herzkrankheit_pl"],
         ordered=True,
     )
-    out["med_schlaganfall"] = combine_first_and_make_categorical(
+    out["med_schlaganfall"] = combined_categorical(
         series_1=merged["med_schlaganfall_pequiv"],
         series_2=merged["med_schlaganfall_pl"],
         ordered=True,
     )
-    out["med_gelenk"] = combine_first_and_make_categorical(
+    out["med_gelenk"] = combined_categorical(
         series_1=merged["med_gelenk_pequiv"],
         series_2=merged["med_gelenk_pl"],
         ordered=True,
@@ -110,7 +110,7 @@ def combine_p_bezog_mutterschaftsgeld(
     out = pd.DataFrame(index=pl.index)
     merged = pd.merge(pl, pkal, on=["hh_id", "survey_year"], how="outer")
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
-    out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
+    out["bezog_mutterschaftsgeld"] = combined_categorical(
         series_1=merged["bezog_mutterschaftsgeld_pl"],
         series_2=merged["bezog_mutterschaftsgeld_pkal"],
         ordered=False,
@@ -133,7 +133,7 @@ def combine_p_kindesunterhalt_erhalten(
     out = pd.DataFrame(index=pl.index)
     merged = pd.merge(pl, pequiv, on=["hh_id", "survey_year"], how="outer")
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
-    out["kindesunterhalt_erhalten_m_pequiv"] = combine_first_and_make_categorical(
+    out["kindesunterhalt_erhalten_m_pequiv"] = combined_categorical(
         series_1=merged["kindesunterhalt_erhalten_m_pl"],
         series_2=merged["kindesunterhalt_erhalten_m_pequiv"],
         ordered=False,

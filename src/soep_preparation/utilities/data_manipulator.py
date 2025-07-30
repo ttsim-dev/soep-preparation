@@ -385,7 +385,7 @@ def object_to_str_categorical(
     return sr_str.astype(raw_cat_dtype)
 
 
-def combine_first_and_make_categorical(
+def combined_categorical(
     series_1: pd.Series,
     series_2: pd.Series,
     ordered: bool,

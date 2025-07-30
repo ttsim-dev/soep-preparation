@@ -65,7 +65,7 @@ for script_name in script_names:
         data_files = _get_relevant_data_files_mapping(function_=function_)
 
         @task(id=variable_name)
-        def task_create_merged_variables(
+        def task_create_combined_variables(
             data_files: Annotated[dict[str, pd.DataFrame], data_files],
             function_: Annotated[Any, function_],
         ) -> Annotated[

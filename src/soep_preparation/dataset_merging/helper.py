@@ -53,13 +53,15 @@ def create_dataset(
     Examples:
         For an example see `task_example.py`.
     """
-    variable_mapping = DATA_CATALOGS["metadata"]["variable_mapping"].load()
+    mapping_variable_to_file_names = DATA_CATALOGS["metadata"][
+        "mapping_variable_to_file_names"
+    ].load()
     _error_handling(
         variables=variables,
         min_survey_year=min_survey_year,
         max_survey_year=max_survey_year,
         survey_years=survey_years,
-        variable_mapping=variable_mapping,
+        mapping_variable_to_file_names=mapping_variable_to_file_names,
     )
 
     survey_years, variables = _fix_user_input(
@@ -72,7 +74,7 @@ def create_dataset(
     merging_information = _get_sorted_dataset_merging_information(
         variables=variables,
         survey_years=survey_years,
-        variable_mapping=variable_mapping,
+        mapping_variable_to_file_names=mapping_variable_to_file_names,
     )
 
     return _merge_variables(merging_information)
@@ -83,7 +85,7 @@ def _error_handling(
     min_survey_year: int | None,
     max_survey_year: int | None,
     survey_years: list[int] | None,
-    variable_mapping: dict[str, list[str]],
+    mapping_variable_to_file_names: dict[str, list[str]],
 ) -> None:
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
     fail_if_input_has_invalid_type(
@@ -108,22 +110,30 @@ def _error_handling(
         _fail_if_min_larger_max((min_survey_year, max_survey_year))
     else:
         _fail_if_no_valid_survey_years_provided()
-    _fail_if_invalid_variable(variables=variables, variable_mapping=variable_mapping)
+    _fail_if_invalid_variable(
+        variables=variables,
+        mapping_variable_to_file_names=mapping_variable_to_file_names,
+    )
 
 
 def _fail_if_invalid_variable(
     variables: list[str],
-    variable_mapping: dict[str, list[str]],
+    mapping_variable_to_file_names: dict[str, list[str]],
 ) -> None:
     for variable in variables:
-        if (variable not in variable_mapping) and (variable not in ID_VARIABLES):
+        if (variable not in mapping_variable_to_file_names) and (
+            variable not in ID_VARIABLES
+        ):
             closest_matches = get_close_matches(
                 variable,
-                variable_mapping.keys(),
+                mapping_variable_to_file_names.keys(),
                 n=3,
                 cutoff=0.6,
             )
-            matches = {match: variable_mapping[match] for match in closest_matches}
+            matches = {
+                match: mapping_variable_to_file_names[match]
+                for match in closest_matches
+            }
             msg = f"""variable {variable} not found in any data file.
             The closest matches with the corresponding data files are:
             {matches}"""
@@ -160,13 +170,13 @@ def _fail_if_no_valid_survey_years_provided() -> None:
 
 
 def _get_data_file_name_to_variables_mapping(
-    variable_mapping: dict[str, str],
+    mapping_variable_to_file_names: dict[str, str],
     variables: list[str],
 ) -> dict[str, list[str]]:
     data_file_name_to_variables_mapping = {}
     for variable in variables:
-        if variable in variable_mapping:
-            data_file_name = variable_mapping[variable]
+        if variable in mapping_variable_to_file_names:
+            data_file_name = mapping_variable_to_file_names[variable]
             if data_file_name not in data_file_name_to_variables_mapping:
                 data_file_name_to_variables_mapping[data_file_name] = []
             data_file_name_to_variables_mapping[data_file_name].append(variable)
@@ -205,10 +215,10 @@ def _fix_user_input(
 def _get_sorted_dataset_merging_information(
     variables: list,
     survey_years: list[int],
-    variable_mapping: dict[str, dict],
+    mapping_variable_to_file_names: dict[str, dict],
 ) -> dict[str, dict]:
     data_mapping = _get_data_file_name_to_variables_mapping(
-        variable_mapping,
+        mapping_variable_to_file_names,
         variables,
     )
 
