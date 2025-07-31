@@ -5,8 +5,6 @@ from pathlib import Path
 import pandas as pd
 from pytask import DataCatalog
 
-from soep_preparation.utilities.general import get_data_file_names
-
 pd.set_option("mode.copy_on_write", True)  # noqa: FBT003
 pd.set_option("future.infer_string", True)  # noqa: FBT003
 pd.set_option("future.no_silent_downcasting", True)  # noqa: FBT003
@@ -24,12 +22,6 @@ if SOEP_VERSION == "V38":
 else:
     SURVEY_YEARS = [*range(1984, 2020 + 1)]
 
-DATA_FILE_NAMES = get_data_file_names(
-    directory=SRC / "clean_variables",
-    data_root=DATA_ROOT,
-    soep_version=SOEP_VERSION,
-)
-
 DATA_CATALOGS = {
     "raw_pandas": DataCatalog(name="raw_pandas"),
     "cleaned_variables": DataCatalog(name="cleaned_variables"),
@@ -40,7 +32,6 @@ DATA_CATALOGS = {
 
 __all__ = [
     "DATA_CATALOGS",
-    "DATA_FILE_NAMES",
     "DATA_ROOT",
     "ROOT",
     "SOEP_VERSION",
