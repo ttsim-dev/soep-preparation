@@ -33,6 +33,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
     out["survey_year"] = float_to_int(raw_data["syear"])
 
+    out["net_income_hh_m"] = object_to_float(raw_data["hghinc"])
+
     out["building_year_hh_max"] = object_to_int(raw_data["hgcnstyrmax"])
     out["building_year_hh_min"] = object_to_int(raw_data["hgcnstyrmin"])
     out["heating_costs_m_hh"] = object_to_int(raw_data["hgheat"])
