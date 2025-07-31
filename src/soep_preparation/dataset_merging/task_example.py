@@ -3,7 +3,6 @@
 from typing import Annotated, Any
 
 import pandas as pd
-import pytask
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.dataset_merging.helper import create_dataset_from_variables
@@ -22,15 +21,14 @@ VARIABLES = [
 ]
 
 
-@pytask.mark.try_last
 def task_merge_variables(
-    variable_to_data_file_mapping: Annotated[dict, DATA_CATALOGS["metadata"]["merged"]],
+    mapping_variable_to_data_file: Annotated[dict, DATA_CATALOGS["metadata"]["merged"]],
     variables: Annotated[list[str], VARIABLES],
 ) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]]:
     """Example task merging based on variable names to create dataset.
 
     Args:
-        variable_to_data_file_mapping: A mapping of variable names to dataset names.
+        mapping_variable_to_data_file: A mapping of variable names to dataset names.
         variables: A list of variable names to be used for merging.
 
     Returns:
@@ -39,11 +37,11 @@ def task_merge_variables(
     Raises:
         TypeError: If input mapping or variables is not of expected type.
     """
-    _error_handling_task(mapping=variable_to_data_file_mapping, variables=variables)
+    _error_handling_task(mapping=mapping_variable_to_data_file, variables=variables)
     return create_dataset_from_variables(
         variables=variables,
         min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
-        variable_to_data_file_mapping=variable_to_data_file_mapping,
+        mapping_variable_to_data_file=mapping_variable_to_data_file,
     )
 
 
