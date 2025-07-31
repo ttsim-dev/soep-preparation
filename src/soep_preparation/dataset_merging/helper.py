@@ -99,7 +99,8 @@ def _error_handling(
     merging_behavior: str,
 ) -> None:
     fail_if_input_has_invalid_type(
-        input_=mapping_variable_to_data_file, expected_dtypes=["dict"]
+        input_=mapping_variable_to_data_file,
+        expected_dtypes=["dict", "PNode", "PProvisionalNode"],
     )
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
     fail_if_input_has_invalid_type(
