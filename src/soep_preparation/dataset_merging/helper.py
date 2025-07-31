@@ -1,6 +1,7 @@
 """Helper functions for merging variables to dataset."""
 
 from difflib import get_close_matches
+from typing import Any
 
 import pandas as pd
 
@@ -170,7 +171,7 @@ def _fail_if_no_valid_survey_years_provided() -> None:
 
 
 def _get_data_file_name_to_variables_mapping(
-    mapping_variable_to_file_names: dict[str, str],
+    mapping_variable_to_file_names: dict[str, dict[Any, Any]],
     variables: list[str],
 ) -> dict[str, list[str]]:
     data_file_name_to_variables_mapping = {}
