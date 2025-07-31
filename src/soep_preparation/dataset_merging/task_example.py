@@ -4,7 +4,7 @@ from typing import Annotated, Any
 
 import pandas as pd
 
-from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
+from soep_preparation.config import DATA_CATALOGS, ROOT, SURVEY_YEARS
 from soep_preparation.dataset_merging.helper import create_dataset_from_variables
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
@@ -43,6 +43,19 @@ def task_merge_variables(
         min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
         mapping_variable_to_data_file=mapping_variable_to_data_file,
     )
+
+
+def task_copy_to_root(
+    example_merged_dataset: Annotated[
+        pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]
+    ],
+) -> None:
+    """Copy the example merged dataset to the root directory.
+
+    Args:
+        example_merged_dataset: The merged dataset to be copied.
+    """
+    example_merged_dataset.to_pickle(ROOT / "example_merged_dataset.pkl")
 
 
 def _error_handling_task(mapping: Any, variables: Any) -> None:  # noqa: ANN401
