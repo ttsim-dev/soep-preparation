@@ -11,6 +11,25 @@ from soep_preparation.utilities.error_handling import (
 )
 
 
+def _create_name_to_data_mapping() -> dict[str, pd.DataFrame]:
+    """Mapping of data file and combined variable names to corresponding data."""
+    single_data_files = dict(
+        DATA_CATALOGS["cleaned_variables"]._entries.items()  # noqa: SLF001
+    )
+    combined_variables = dict(
+        DATA_CATALOGS["combined_variables"]._entries.items()  # noqa: SLF001
+    )
+
+    return single_data_files | combined_variables
+
+
+def _create_name_to_metadata_mapping(
+    metadata_names: list[str],
+) -> dict[str, pd.DataFrame]:
+    """Mapping of metadata names to corresponding data."""
+    return {name: DATA_CATALOGS["metadata"][name] for name in metadata_names}
+
+
 def _get_index_variables(
     dataset: pd.DataFrame,
     potential_index_variables: list[str],
@@ -33,39 +52,27 @@ def _get_variable_dtypes(
     }
 
 
-def _create_metadata_mapping(metadata: dict) -> dict[str, str]:
-    """Create a mapping of column names to data file names.
+def _create_metadata_mapping(data: dict) -> dict[str, str]:
+    """Create a mapping of variable names to metadata file names.
 
     Args:
-        metadata: A dictionary containing metadata entries.
+        data: A dictionary containing metadata entries.
 
     Returns:
-        A mapping of variable names to data file names.
+        A mapping of variable names to metadata file names.
     """
     mapping = {}
-    for data_name, data in metadata._entries.items():  # noqa: SLF001
-        if (
-            data_name not in DATA_CATALOGS["combined_variables"]._entries  # noqa: SLF001
-        ) and (
-            data_name not in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
-        ):
-            # Skip if data_name is neither among combined variables nor among data files
-            continue
-        variable_names = data.load()["variable_dtypes"].keys()
+    for metadata_name, metadata in data.items():
+        variable_names = metadata["variable_dtypes"].keys()
         for variable_name in variable_names:
-            mapping[variable_name] = data_name
+            mapping[variable_name] = metadata_name
     return mapping
 
 
-single_data_files = dict(
-    DATA_CATALOGS["cleaned_variables"]._entries.items()  # noqa: SLF001
-)
-combined_variables = dict(
-    DATA_CATALOGS["combined_variables"]._entries.items()  # noqa: SLF001
-)
+MAPPING_NAME_TO_DATA = _create_name_to_data_mapping()
 
 
-for name, data in (single_data_files | combined_variables).items():
+for name, data in MAPPING_NAME_TO_DATA.items():
 
     @task(id=name)
     def task_create_metadata(
@@ -98,14 +105,18 @@ for name, data in (single_data_files | combined_variables).items():
         }
 
 
-@task(after="task_create_metadata")
+MAPPING_NAME_TO_METADATA = _create_name_to_metadata_mapping(MAPPING_NAME_TO_DATA.keys())
+
+
 def task_create_metadata_mapping(
-    single_metadata_mapping: Annotated[dict, DATA_CATALOGS["metadata"]],
+    mapping_name_to_metadata: Annotated[
+        dict[str, pd.DataFrame], MAPPING_NAME_TO_METADATA
+    ],
 ) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["merged"]]:
     """Create a mapping of variable names to data file names.
 
     Args:
-        single_metadata_mapping: A dictionary containing single metadata entries.
+        mapping_name_to_metadata: A dictionary containing single metadata entries.
 
     Returns:
         A mapping of variable names to data file names.
@@ -113,16 +124,12 @@ def task_create_metadata_mapping(
     Raises:
         TypeError: If input data or data name is not of expected type.
     """
-    _error_handling_mapping_task(single_metadata_mapping)
-    return _create_metadata_mapping(single_metadata_mapping)
+    _error_handling_mapping_task(mapping_name_to_metadata)
+    return _create_metadata_mapping(mapping_name_to_metadata)
 
 
 def _error_handling_mapping_task(mapping: Any) -> None:
-    fail_if_input_has_invalid_type(
-        input_=mapping, expected_dtypes=["_pytask.data_catalog.DataCatalog"]
-    )
-    for data_name, data in mapping._entries.items():  # noqa: SLF001
-        fail_if_input_has_invalid_type(input_=data_name, expected_dtypes=["str"])
-        fail_if_input_has_invalid_type(
-            input_=data, expected_dtypes=["_pytask.nodes.PickleNode"]
-        )
+    fail_if_input_has_invalid_type(input_=mapping, expected_dtypes=["dict"])
+    for metadata_name, metadata in mapping.items():
+        fail_if_input_has_invalid_type(input_=metadata_name, expected_dtypes=["str"])
+        fail_if_input_has_invalid_type(input_=metadata, expected_dtypes=["dict"])
