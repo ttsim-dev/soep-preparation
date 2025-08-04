@@ -9,15 +9,18 @@ from soep_preparation.dataset_merging.helper import create_dataset_from_variable
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
 VARIABLES = [
+    "hh_id",
+    "p_id",
+    "survey_year",
+    "net_income_hh_m",
+    "east_germany",
     "age",
-    "birth_month",
-    "bmi",
-    "hh_weighting_factor_new_only",
-    "relationship_to_head_of_hh",
-    "hh_strat",
+    "disabled",
+    "vertragliche_arbeitszeit_w",  # use tatsächliche_arbeitszeit_w?
     "number_of_children",
-    "p_id_father",
-    "frailty",
+    "child_number",
+    "p_id_child",
+    "birth_year_child",
 ]
 
 

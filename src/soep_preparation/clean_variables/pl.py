@@ -158,6 +158,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         series=raw_data["plj0582"],
         value_for_comparison=1,
     )
+    out["disabled"] = create_dummy(
+        series=raw_data["ple0040"], value_for_comparison="[1] Ja"
+    )
     out["disability_degree"] = object_to_int(raw_data["ple0041"]).fillna(0)
     out["med_schwierigkeit_treppen_pl"] = object_to_int_categorical(
         raw_data["ple0004"],
