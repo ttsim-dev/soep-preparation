@@ -26,7 +26,7 @@ def _create_name_to_data_mapping() -> dict[str, pd.DataFrame]:
 def _create_name_to_metadata_mapping(
     metadata_names: list[str],
 ) -> dict[str, pd.DataFrame]:
-    """Mapping of metadata names to corresponding data."""
+    """Mapping of names to corresponding metadata."""
     return {name: DATA_CATALOGS["metadata"][name] for name in metadata_names}
 
 
@@ -69,10 +69,10 @@ def _create_metadata_mapping(data: dict) -> dict[str, str]:
     return mapping
 
 
-MAPPING_NAME_TO_DATA = _create_name_to_data_mapping()
+MAP_NAME_TO_DATA = _create_name_to_data_mapping()
 
 
-for name, data in MAPPING_NAME_TO_DATA.items():
+for name, data in MAP_NAME_TO_DATA.items():
 
     @task(id=name)
     def task_create_metadata(
@@ -105,18 +105,16 @@ for name, data in MAPPING_NAME_TO_DATA.items():
         }
 
 
-MAPPING_NAME_TO_METADATA = _create_name_to_metadata_mapping(MAPPING_NAME_TO_DATA.keys())
+MAP_NAME_TO_METADATA = _create_name_to_metadata_mapping(MAP_NAME_TO_DATA.keys())
 
 
 def task_create_metadata_mapping(
-    mapping_name_to_metadata: Annotated[
-        dict[str, pd.DataFrame], MAPPING_NAME_TO_METADATA
-    ],
-) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["merged"]]:
+    map_name_to_metadata: Annotated[dict[str, pd.DataFrame], MAP_NAME_TO_METADATA],
+) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["mapping"]]:
     """Create a mapping of variable names to data file names.
 
     Args:
-        mapping_name_to_metadata: A dictionary containing single metadata entries.
+        map_name_to_metadata: A dictionary containing single metadata entries.
 
     Returns:
         A mapping of variable names to data file names.
@@ -124,8 +122,8 @@ def task_create_metadata_mapping(
     Raises:
         TypeError: If input data or data name is not of expected type.
     """
-    _error_handling_mapping_task(mapping_name_to_metadata)
-    return _create_metadata_mapping(mapping_name_to_metadata)
+    _error_handling_mapping_task(map_name_to_metadata)
+    return _create_metadata_mapping(map_name_to_metadata)
 
 
 def _error_handling_mapping_task(mapping: Any) -> None:

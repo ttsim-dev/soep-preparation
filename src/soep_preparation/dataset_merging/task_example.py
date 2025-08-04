@@ -22,13 +22,13 @@ VARIABLES = [
 
 
 def task_merge_variables(
-    mapping_variable_to_data_file: Annotated[dict, DATA_CATALOGS["metadata"]["merged"]],
+    map_variable_to_data_file: Annotated[dict, DATA_CATALOGS["metadata"]["mapping"]],
     variables: Annotated[list[str], VARIABLES],
 ) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]]:
     """Example task merging based on variable names to create dataset.
 
     Args:
-        mapping_variable_to_data_file: A mapping of variable names to dataset names.
+        map_variable_to_data_file: A mapping of variable names to dataset names.
         variables: A list of variable names to be used for merging.
 
     Returns:
@@ -37,11 +37,11 @@ def task_merge_variables(
     Raises:
         TypeError: If input mapping or variables is not of expected type.
     """
-    _error_handling_task(mapping=mapping_variable_to_data_file, variables=variables)
+    _error_handling_task(mapping=map_variable_to_data_file, variables=variables)
     return create_dataset_from_variables(
         variables=variables,
         min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
-        mapping_variable_to_data_file=mapping_variable_to_data_file,
+        map_variable_to_data_file=map_variable_to_data_file,
     )
 
 

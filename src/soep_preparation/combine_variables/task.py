@@ -62,11 +62,15 @@ for script_name in script_names:
     variable_names = _get_variable_names_in_module(module)
     for variable_name in variable_names:
         function_ = getattr(module, f"derive_{variable_name}")
-        data_files = _get_relevant_data_files_mapping(function_=function_)
+        map_data_file_name_to_data = _get_relevant_data_files_mapping(
+            function_=function_
+        )
 
         @task(id=variable_name)
         def task_create_merged_variables(
-            data_files: Annotated[dict[str, pd.DataFrame], data_files],
+            map_data_file_name_to_data: Annotated[
+                dict[str, pd.DataFrame], map_data_file_name_to_data
+            ],
             function_: Annotated[Any, function_],
         ) -> Annotated[
             pd.DataFrame, DATA_CATALOGS["combined_variables"][variable_name]
@@ -74,7 +78,7 @@ for script_name in script_names:
             """Merge variables for the meta dataset.
 
             Args:
-                data_files: A mapping of data file names to DataFrames.
+                map_data_file_name_to_data: A mapping of data file names to DataFrames.
                 function_: Function to create derived variables.
 
             Returns:
@@ -84,11 +88,13 @@ for script_name in script_names:
                 TypeError: If input data files or function is not of expected type.
                 ValueError: If number of dataframes is not as expected.
             """
-            _error_handling_derived_variables(data=data_files, function_=function_)
-            return function_(**data_files)
+            _error_handling_derived_variables(
+                mapping=map_data_file_name_to_data, function_=function_
+            )
+            return function_(**map_data_file_name_to_data)
 
 
-def _error_handling_derived_variables(data: Any, function_: Any) -> None:
-    fail_if_input_has_invalid_type(input_=data, expected_dtypes=["dict"])
-    _fail_if_too_many_or_too_few_dataframes(dataframes=data, expected_entries=2)
+def _error_handling_derived_variables(mapping: Any, function_: Any) -> None:
+    fail_if_input_has_invalid_type(input_=mapping, expected_dtypes=["dict"])
+    _fail_if_too_many_or_too_few_dataframes(dataframes=mapping, expected_entries=2)
     fail_if_input_has_invalid_type(input_=function_, expected_dtypes=["function"])

@@ -15,9 +15,9 @@ def create_dataset_from_variables(
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None = None,
     survey_years: list[int] | None = None,
-    mapping_variable_to_data_file: (
+    map_variable_to_data_file: (
         dict[str, list[str]] | PNode | PProvisionalNode
-    ) = DATA_CATALOGS["metadata"]["merged"],
+    ) = DATA_CATALOGS["metadata"]["mapping"],
     merging_behavior: str = "outer",  # make only outer
 ) -> pd.DataFrame:
     """Create a dataset by merging different specified variables.
@@ -30,8 +30,8 @@ def create_dataset_from_variables(
         min_and_max_survey_years: Range of survey years.
         survey_years: Survey years to be included in the dataset.
         Either `survey_years` or `min_and_max_survey_years` must be provided.
-        mapping_variable_to_data_file: A mapping of variable names to dataset names.
-        Defaults to `DATA_CATALOGS["metadata"]["merged"]`.
+        map_variable_to_data_file: A mapping of variable names to dataset names.
+        Defaults to `DATA_CATALOGS["metadata"]["mapping"]`.
         merging_behavior: The merging behavior to be used.
         Any out of "left", "right", "outer", or "inner".
         Defaults to "outer".
@@ -56,9 +56,9 @@ def create_dataset_from_variables(
         Otherwise, `min_and_max_survey_years=(2024,2025)`
         and `survey_years=[2024, 2025]`
         both return a merged dataset with information from the two survey years.
-        `mapping_variable_to_data_file` is created automatically by the pipeline,
+        `map_variable_to_data_file` is created automatically by the pipeline,
         it can be accessed and provided to the function at
-        `DATA_CATALOGS["metadata"]["merged"]`.
+        `DATA_CATALOGS["metadata"]["mapping"]`.
         Specify `merging_behavior` to control the creation of the dataset
         from the different variables.
         The default value is "outer" and sufficient for most cases.
@@ -67,7 +67,7 @@ def create_dataset_from_variables(
         For an example see `task_example.py`.
     """
     _error_handling(
-        mapping_variable_to_data_file,
+        map_variable_to_data_file,
         variables,
         min_and_max_survey_years,
         survey_years,
@@ -80,7 +80,7 @@ def create_dataset_from_variables(
         variables,
     )
     dataset_merging_information = _get_sorted_dataset_merging_information(
-        mapping_variable_to_data_file,
+        map_variable_to_data_file,
         variables,
         survey_years,
     )
@@ -92,14 +92,14 @@ def create_dataset_from_variables(
 
 
 def _error_handling(
-    mapping_variable_to_data_file: dict[str, list[str]],
+    map_variable_to_data_file: dict[str, list[str]],
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None,
     survey_years: list[int] | None,
     merging_behavior: str,
 ) -> None:
     fail_if_input_has_invalid_type(
-        input_=mapping_variable_to_data_file,
+        input_=map_variable_to_data_file,
         expected_dtypes=["dict", "PNode", "PProvisionalNode"],
     )
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
@@ -110,7 +110,7 @@ def _error_handling(
         input_=survey_years, expected_dtypes=("list", "None")
     )
     fail_if_input_has_invalid_type(input_=merging_behavior, expected_dtypes=["str"])
-    _fail_if_empty(mapping_variable_to_data_file)
+    _fail_if_empty(map_variable_to_data_file)
     _fail_if_empty(variables)
     if survey_years is not None:
         _fail_if_survey_years_not_valid(
@@ -122,25 +122,25 @@ def _error_handling(
         )
         _fail_if_min_larger_max(min_and_max_survey_years)
     _fail_if_invalid_variable(
-        variables=variables, mapping_variable_to_data_file=mapping_variable_to_data_file
+        variables=variables, map_variable_to_data_file=map_variable_to_data_file
     )
     _fail_if_invalid_merging_behavior(merging_behavior)
 
 
 def _fail_if_invalid_variable(
     variables: list[str],
-    mapping_variable_to_data_file: dict[str, list[str]],
+    map_variable_to_data_file: dict[str, list[str]],
 ) -> None:
     for variable in variables:
-        if variable not in mapping_variable_to_data_file:
+        if variable not in map_variable_to_data_file:
             closest_matches = get_close_matches(
                 variable,
-                mapping_variable_to_data_file.keys(),
+                map_variable_to_data_file.keys(),
                 n=3,
                 cutoff=0.6,
             )
             matches = {
-                match: mapping_variable_to_data_file[match] for match in closest_matches
+                match: map_variable_to_data_file[match] for match in closest_matches
             }
             msg = f"""variable {variable} not found in any data file.
             The closest matches with the corresponding data files are:
@@ -180,13 +180,13 @@ def _fail_if_invalid_merging_behavior(merging_behavior: str) -> None:
 
 
 def _get_data_file_name_to_variables_mapping(
-    mapping_variable_to_data_file: dict[str, str],
+    map_variable_to_data_file: dict[str, str],
     variables: list[str],
 ) -> dict[str, list[str]]:
     data_file_name_to_variables_mapping = {}
     for variable in variables:
-        if variable in mapping_variable_to_data_file:
-            data_file_name = mapping_variable_to_data_file[variable]
+        if variable in map_variable_to_data_file:
+            data_file_name = map_variable_to_data_file[variable]
             if data_file_name not in data_file_name_to_variables_mapping:
                 data_file_name_to_variables_mapping[data_file_name] = []
             data_file_name_to_variables_mapping[data_file_name].append(variable)
@@ -221,12 +221,12 @@ def _fix_user_input(
 
 
 def _get_sorted_dataset_merging_information(
-    mapping_variable_to_data_file: dict[str, dict],
+    map_variable_to_data_file: dict[str, dict],
     variables: list,
     survey_years: list[int],
 ) -> dict[str, dict]:
     data_mapping = _get_data_file_name_to_variables_mapping(
-        mapping_variable_to_data_file,
+        map_variable_to_data_file,
         variables,
     )
 
