@@ -52,14 +52,14 @@ def _get_variable_dtypes(
     }
 
 
-def _create_metadata_mapping(data: dict) -> dict[str, str]:
-    """Create a mapping of variable names to metadata file names.
+def _create_variable_to_metadata_name_mapping(data: dict) -> dict[str, str]:
+    """Create a mapping of variable names to metadata names.
 
     Args:
         data: A dictionary containing metadata entries.
 
     Returns:
-        A mapping of variable names to metadata file names.
+        A mapping of variable names to metadata names.
     """
     mapping = {}
     for metadata_name, metadata in data.items():
@@ -108,22 +108,22 @@ for name, data in MAP_NAME_TO_DATA.items():
 MAP_NAME_TO_METADATA = _create_name_to_metadata_mapping(MAP_NAME_TO_DATA.keys())
 
 
-def task_create_metadata_mapping(
+def task_create_variable_to_metadata_name_mapping(
     map_name_to_metadata: Annotated[dict[str, pd.DataFrame], MAP_NAME_TO_METADATA],
-) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["mapping"]]:
-    """Create a mapping of variable names to data file names.
+) -> Annotated[dict[str, str], DATA_CATALOGS["metadata"]["mapping"]]:
+    """Create a mapping of variable names to metadata names.
 
     Args:
         map_name_to_metadata: A dictionary containing single metadata entries.
 
     Returns:
-        A mapping of variable names to data file names.
+        A mapping of variable names to data names.
 
     Raises:
         TypeError: If input data or data name is not of expected type.
     """
     _error_handling_mapping_task(map_name_to_metadata)
-    return _create_metadata_mapping(map_name_to_metadata)
+    return _create_variable_to_metadata_name_mapping(map_name_to_metadata)
 
 
 def _error_handling_mapping_task(mapping: Any) -> None:
