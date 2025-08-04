@@ -103,6 +103,7 @@ types-pytz = "*"
 
 [tool.pixi.feature.test.tasks]
 tests = "pytest"
+tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 
 [tool.pixi.feature.test.pypi-dependencies]
 pytest-cov = "*"
