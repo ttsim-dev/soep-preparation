@@ -83,6 +83,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
+    out["bezog_arbeitslosengeld_2_hh"] = object_to_bool_categorical(
+        series=raw_data["hlc0052"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
     out["arbeitslosengeld_2_anzahl_monate_hh"] = object_to_int(raw_data["hlc0053"])
     out["arbeitslosengeld_2_m_hh_hl"] = object_to_float(raw_data["hlc0054"])
 

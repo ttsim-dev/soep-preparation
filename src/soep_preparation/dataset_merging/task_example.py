@@ -9,18 +9,23 @@ from soep_preparation.dataset_merging.helper import create_dataset_from_variable
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
 VARIABLES = [
-    "hh_id",
-    "p_id",
-    "survey_year",
+    # "hh_id",
+    # "p_id",
+    # "survey_year",
     "net_income_hh_m",
+    "vertragliche_arbeitszeit_w",  # use tatsächliche_arbeitszeit_w?
     "east_germany",
     "age",
     "disabled",
-    "vertragliche_arbeitszeit_w",  # use tatsächliche_arbeitszeit_w?
     "number_of_children",
     "child_number",
     "p_id_child",
     "birth_year_child",
+    "bezog_wohngeld_hh",
+    "bezog_arbeitslosengeld_2_hh",
+    "bezog_kinderzuschlag_hh",
+    "employment_status",
+    "occupation_status",
 ]
 
 
