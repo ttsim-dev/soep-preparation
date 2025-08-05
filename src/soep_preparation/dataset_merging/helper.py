@@ -7,6 +7,7 @@ from pytask import PNode, PProvisionalNode
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.utilities.error_handling import (
+    fail_if_empty,
     fail_if_input_has_invalid_type,
 )
 
@@ -110,8 +111,8 @@ def _error_handling(
         input_=survey_years, expected_dtypes=("list", "None")
     )
     fail_if_input_has_invalid_type(input_=merging_behavior, expected_dtypes=["str"])
-    _fail_if_empty(map_variable_to_data_file)
-    _fail_if_empty(variables)
+    fail_if_empty(input_=map_variable_to_data_file, name="map_variable_to_data_file")
+    fail_if_empty(variables, name="variables")
     if survey_years is not None:
         _fail_if_survey_years_not_valid(
             survey_years=survey_years, valid_survey_years=SURVEY_YEARS
@@ -146,12 +147,6 @@ def _fail_if_invalid_variable(
             The closest matches with the corresponding data files are:
             {matches}"""
             raise ValueError(msg)
-
-
-def _fail_if_empty(input_: dict | list) -> None:
-    if len(input_) == 0:
-        msg = f"Expected {input_} to be non-empty."
-        raise ValueError(msg)
 
 
 def _fail_if_survey_years_not_valid(

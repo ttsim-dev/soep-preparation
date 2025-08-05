@@ -7,6 +7,7 @@ from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS
 from soep_preparation.utilities.error_handling import (
+    fail_if_empty,
     fail_if_input_has_invalid_type,
 )
 
@@ -128,6 +129,7 @@ def task_create_variable_to_metadata_name_mapping(
 
 def _error_handling_mapping_task(mapping: Any) -> None:
     fail_if_input_has_invalid_type(input_=mapping, expected_dtypes=["dict"])
+    fail_if_empty(input_=mapping, name="mapping")
     for metadata_name, metadata in mapping.items():
         fail_if_input_has_invalid_type(input_=metadata_name, expected_dtypes=["str"])
         fail_if_input_has_invalid_type(input_=metadata, expected_dtypes=["dict"])
