@@ -26,17 +26,17 @@ def _fail_if_too_many_or_too_few_dataframes(
 def _get_relevant_data_files_mapping(
     function_: Any,
 ) -> dict[str, PickleNode]:
-    # get the relevant data file names from the function annotations
-    relevant_data_file_names = [
-        data_file_name
-        for data_file_name in function_.__annotations__
-        if data_file_name in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
+    # arguments to the function (data files required for the variable)
+    data_names = [
+        data_name
+        for data_name in function_.__annotations__
+        if data_name in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
     ]
     # create a mapping of data file names to DataFrames
     # using the data catalog
     return {
         data_name: DATA_CATALOGS["cleaned_variables"][data_name]
-        for data_name in relevant_data_file_names
+        for data_name in data_names
     }
 
 
@@ -50,9 +50,9 @@ def _get_variable_names_in_module(module: Any) -> list[str]:
         The variable names in the module.
     """
     return [
-        variable_name.split("derive_")[-1]
+        variable_name.split("combine_")[-1]
         for variable_name in module.__dict__
-        if variable_name.startswith("derive_")
+        if variable_name.startswith("combine_")
     ]
 
 
@@ -61,11 +61,11 @@ for script_name in script_names:
     module = load_module(SRC / "combine_variables" / f"{script_name}.py")
     variable_names = _get_variable_names_in_module(module)
     for variable_name in variable_names:
-        function_ = getattr(module, f"derive_{variable_name}")
+        function_ = getattr(module, f"combine_{variable_name}")
         data_files = _get_relevant_data_files_mapping(function_=function_)
 
         @task(id=variable_name)
-        def task_create_merged_variables(
+        def task_create_combined_variables(
             data_files: Annotated[dict[str, pd.DataFrame], data_files],
             function_: Annotated[Any, function_],
         ) -> Annotated[

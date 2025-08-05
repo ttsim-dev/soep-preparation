@@ -5,7 +5,7 @@ import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
-    combine_first_and_make_categorical,
+    combined_categorical,
     object_to_bool_categorical,
     object_to_int,
     object_to_str_categorical,
@@ -113,7 +113,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Jan Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_1"] = combine_first_and_make_categorical(
+    out["ft_employed_m_1"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_1"],
         series_2=out["tmp_ft_employed_m_v2_1"],
         ordered=False,
@@ -142,7 +142,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Feb Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_2"] = combine_first_and_make_categorical(
+    out["ft_employed_m_2"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_2"],
         series_2=out["tmp_ft_employed_m_v2_2"],
         ordered=False,
@@ -171,7 +171,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Mrz Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_3"] = combine_first_and_make_categorical(
+    out["ft_employed_m_3"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_3"],
         series_2=out["tmp_ft_employed_m_v2_3"],
         ordered=False,
@@ -200,7 +200,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Apr Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_4"] = combine_first_and_make_categorical(
+    out["ft_employed_m_4"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_4"],
         series_2=out["tmp_ft_employed_m_v2_4"],
         ordered=False,
@@ -229,7 +229,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Mai Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_5"] = combine_first_and_make_categorical(
+    out["ft_employed_m_5"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_5"],
         series_2=out["tmp_ft_employed_m_v2_5"],
         ordered=False,
@@ -258,7 +258,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Jun Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_6"] = combine_first_and_make_categorical(
+    out["ft_employed_m_6"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_6"],
         series_2=out["tmp_ft_employed_m_v2_6"],
         ordered=False,
@@ -287,7 +287,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Jul Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_7"] = combine_first_and_make_categorical(
+    out["ft_employed_m_7"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_7"],
         series_2=out["tmp_ft_employed_m_v2_7"],
         ordered=False,
@@ -316,7 +316,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Aug Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_8"] = combine_first_and_make_categorical(
+    out["ft_employed_m_8"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_8"],
         series_2=out["tmp_ft_employed_m_v2_8"],
         ordered=False,
@@ -345,7 +345,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Sep Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_9"] = combine_first_and_make_categorical(
+    out["ft_employed_m_9"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_9"],
         series_2=out["tmp_ft_employed_m_v2_9"],
         ordered=False,
@@ -374,7 +374,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Okt Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_10"] = combine_first_and_make_categorical(
+    out["ft_employed_m_10"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_10"],
         series_2=out["tmp_ft_employed_m_v2_10"],
         ordered=False,
@@ -403,7 +403,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Nov Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_11"] = combine_first_and_make_categorical(
+    out["ft_employed_m_11"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_11"],
         series_2=out["tmp_ft_employed_m_v2_11"],
         ordered=False,
@@ -432,7 +432,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Dez Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["ft_employed_m_12"] = combine_first_and_make_categorical(
+    out["ft_employed_m_12"] = combined_categorical(
         series_1=out["tmp_ft_employed_m_v1_12"],
         series_2=out["tmp_ft_employed_m_v2_12"],
         ordered=False,
