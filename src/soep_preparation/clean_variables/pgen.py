@@ -45,7 +45,7 @@ def _education(
     cat_type = pd.CategoricalDtype(
         categories=pd.Series(
             ["PRIMARY_AND_LOWER_SECONDARY", "UPPER_SECONDARY", "TERTIARY"],
-        ).astype("str[pyarrow]"),
+        ).astype("string[pyarrow]"),
         ordered=True,
     )
     return out.astype(cat_type)
