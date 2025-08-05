@@ -36,7 +36,7 @@ def test_object_to_bool_categorical_assert_remove_missing():
 def test_object_to_str_categorical_assert_dtype():
     expected_categories = pd.array(
         ["Cat 0", "Cat 10"],
-        dtype="str[pyarrow]",
+        dtype="string[pyarrow]",
     )
     expected = pd.Series(pd.Categorical(expected_categories, ordered=True)).dtype
     sr = pd.Series(["[0] Cat 0", "[10] Cat 10"], dtype=object)
@@ -47,7 +47,7 @@ def test_object_to_str_categorical_assert_dtype():
 def test_object_to_str_categorical_assert_renaming_1_identifier():
     expected_categories = pd.array(
         ["Cat 0", "Cat 10"],
-        dtype="str[pyarrow]",
+        dtype="string[pyarrow]",
     )
     expected = pd.Series(pd.Categorical(expected_categories, ordered=True))
     sr = pd.Series(["[0] Cat 0", "[10] Cat 10"], dtype=object)
@@ -58,7 +58,7 @@ def test_object_to_str_categorical_assert_renaming_1_identifier():
 def test_object_to_str_categorical_assert_renaming_2_identifier():
     expected_categories = pd.array(
         ["Cat 0", "Cat 10"],
-        dtype="str[pyarrow]",
+        dtype="string[pyarrow]",
     )
     expected = pd.Series(pd.Categorical(expected_categories, ordered=True))
     sr = pd.Series(["[0] A Cat 0", "[10] B Cat 10"], dtype=object)
