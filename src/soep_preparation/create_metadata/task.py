@@ -25,7 +25,7 @@ def _create_name_to_data_mapping() -> dict[str, PNode | PProvisionalNode]:
     single_data_file_names = get_data_file_names(
         SRC / "clean_variables", data_root=DATA_ROOT, soep_version=SOEP_VERSION
     )
-    single_data_files = {
+    map_single_data_files = {
         name: DATA_CATALOGS["cleaned_variables"][name]
         for name in single_data_file_names
     }
@@ -40,28 +40,35 @@ def _create_name_to_data_mapping() -> dict[str, PNode | PProvisionalNode]:
         for module in modules
         for combined_variable_name in get_variable_names_in_module(module)
     ]
-    combined_variables = {
+    map_combined_variables = {
         name: DATA_CATALOGS["combined_variables"][name]
         for name in combined_variable_names
     }
 
-    return single_data_files | combined_variables
+    return map_single_data_files | map_combined_variables
 
 
 def _create_name_to_metadata_mapping(
     metadata_names: list[str],
 ) -> dict[str, PNode | PProvisionalNode]:
-    """Mapping of names to corresponding metadata."""
+    """Mapping of metadata names to corresponding metadata.
+
+    Args:
+        metadata_names: Names of previously created metadata information.
+
+    Returns:
+        A mapping of names to metadata information.
+    """
     return {name: DATA_CATALOGS["metadata"][name] for name in metadata_names}
 
 
-def _get_index_variables(
-    dataset: pd.DataFrame,
+def _get_index_variables_metadata(
+    data: pd.DataFrame,
     potential_index_variables: list[str],
 ) -> dict:
     return {
         col: dtype_
-        for col, dtype_ in dataset.dtypes.items()
+        for col, dtype_ in data.dtypes.items()
         if col in potential_index_variables
     }
 
@@ -83,25 +90,38 @@ def _serialize_category_dtype(variable_dtype: pd.CategoricalDtype) -> dict:
 
 
 def _get_variable_metadata(
-    dataset: pd.DataFrame,
+    data: pd.DataFrame,
     potential_index_variables: list[str],
 ) -> dict:
-    columns = dataset.columns.tolist()
+    """Get metadata for variables in the DataFrame.
+
+    Args:
+        data: The DataFrame containing the data.
+        potential_index_variables: A list of potential index variable names.
+
+    Returns:
+        Metadata for each variable, including dtype and survey year availability.
+    """
+    columns = data.columns.tolist()
     survey_year_in_columns = "survey_year" in columns
     variables = [col for col in columns if col not in potential_index_variables]
 
     metadata = {}
+    # for each variable/column in data
     for variable in variables:
-        variable_dtype = dataset[variable].dtype
-        variable_survey_years = None
-
+        # determine dtype of variable
+        variable_dtype = data[variable].dtype
         if variable_dtype.name == "category":
+            # categorical dtypes are serialized
             serialized_variable_dtype = _serialize_category_dtype(variable_dtype)
         else:
             serialized_variable_dtype = variable_dtype.name
+
+        # determine survey year availability of variable
+        variable_survey_years = None
         if survey_year_in_columns:
             variable_survey_years = sorted(
-                set(dataset[["survey_year", variable]].dropna()["survey_year"])
+                set(data[["survey_year", variable]].dropna()["survey_year"])
             )
 
         metadata[variable] = {
@@ -143,7 +163,7 @@ for name, data in MAP_NAME_TO_DATA.items():
             data: The data to create metadata for.
 
         Returns:
-            Metadata information for DataFrame.
+            Metadata information for index and variable data.
 
         Raises:
             TypeError: If input data is not of expected type.
@@ -152,14 +172,14 @@ for name, data in MAP_NAME_TO_DATA.items():
             input_=data, expected_dtypes=["pandas.core.frame.DataFrame"]
         )
         potential_index_variables = ["p_id", "hh_id", "hh_id_original", "survey_year"]
-        index_variables = _get_index_variables(
-            dataset=data, potential_index_variables=potential_index_variables
+        index_variables_metadata = _get_index_variables_metadata(
+            data=data, potential_index_variables=potential_index_variables
         )
         variable_metadata = _get_variable_metadata(
-            dataset=data, potential_index_variables=potential_index_variables
+            data=data, potential_index_variables=potential_index_variables
         )
         return {
-            "index_variables": index_variables,
+            "index_variables": index_variables_metadata,
             "variable_metadata": variable_metadata,
         }
 
@@ -173,10 +193,10 @@ def task_create_variable_to_metadata_name_mapping(
     """Create a mapping of variable names to metadata names.
 
     Args:
-        map_name_to_metadata: A dictionary containing single metadata entries.
+        map_name_to_metadata: Map of metadata names to metadata information.
 
     Returns:
-        A mapping of variable names to data names.
+        A mapping of variable names to metadata names.
 
     Raises:
         TypeError: If input data or data name is not of expected type.
