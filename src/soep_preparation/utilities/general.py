@@ -5,6 +5,7 @@ import re
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
+from typing import Any
 
 
 def _fail_if_raw_data_file_missing(
@@ -18,6 +19,22 @@ def _fail_if_raw_data_file_missing(
             f" corresponding to the specified wave."
         )
         raise FileNotFoundError(msg)
+
+
+def get_variable_names_in_module(module: Any) -> list[str]:  # noqa: ANN401
+    """Get the variable names in the module.
+
+    Args:
+        module: The module to get the variable names from.
+
+    Returns:
+        The variable names in the module.
+    """
+    return [
+        variable_name.split("derive_")[-1]
+        for variable_name in module.__dict__
+        if variable_name.startswith("derive_")
+    ]
 
 
 def get_script_names(directory: Path) -> list[str]:

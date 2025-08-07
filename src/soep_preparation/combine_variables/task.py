@@ -9,6 +9,7 @@ from soep_preparation.config import DATA_CATALOGS, SRC
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import (
     get_script_names,
+    get_variable_names_in_module,
     load_module,
 )
 
@@ -40,26 +41,10 @@ def _get_relevant_data_files_mapping(
     }
 
 
-def _get_variable_names_in_module(module: Any) -> list[str]:
-    """Get the variable names in the module.
-
-    Args:
-        module: The module to get the variable names from.
-
-    Returns:
-        The variable names in the module.
-    """
-    return [
-        variable_name.split("derive_")[-1]
-        for variable_name in module.__dict__
-        if variable_name.startswith("derive_")
-    ]
-
-
 script_names = get_script_names(SRC / "combine_variables")
 for script_name in script_names:
     module = load_module(SRC / "combine_variables" / f"{script_name}.py")
-    variable_names = _get_variable_names_in_module(module)
+    variable_names = get_variable_names_in_module(module)
     for variable_name in variable_names:
         function_ = getattr(module, f"derive_{variable_name}")
         map_data_file_name_to_data = _get_relevant_data_files_mapping(

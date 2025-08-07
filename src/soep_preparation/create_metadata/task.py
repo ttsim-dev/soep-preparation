@@ -5,21 +5,43 @@ from typing import Annotated, Any
 import pandas as pd
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOGS
+from soep_preparation.config import DATA_CATALOGS, DATA_ROOT, SOEP_VERSION, SRC
 from soep_preparation.utilities.error_handling import (
     fail_if_empty,
     fail_if_input_has_invalid_type,
+)
+from soep_preparation.utilities.general import (
+    get_data_file_names,
+    get_script_names,
+    get_variable_names_in_module,
+    load_module,
 )
 
 
 def _create_name_to_data_mapping() -> dict[str, pd.DataFrame]:
     """Mapping of data file and combined variable names to corresponding data."""
-    single_data_files = dict(
-        DATA_CATALOGS["cleaned_variables"]._entries.items()  # noqa: SLF001
+    single_data_file_names = get_data_file_names(
+        SRC / "clean_variables", data_root=DATA_ROOT, soep_version=SOEP_VERSION
     )
-    combined_variables = dict(
-        DATA_CATALOGS["combined_variables"]._entries.items()  # noqa: SLF001
-    )
+    single_data_files = {
+        name: DATA_CATALOGS["cleaned_variables"][name]
+        for name in single_data_file_names
+    }
+
+    script_names = get_script_names(SRC / "combine_variables")
+    modules = [
+        load_module(SRC / "combine_variables" / f"{script_name}.py")
+        for script_name in script_names
+    ]
+    combined_variable_names = [
+        combined_variable_name
+        for module in modules
+        for combined_variable_name in get_variable_names_in_module(module)
+    ]
+    combined_variables = {
+        name: DATA_CATALOGS["combined_variables"][name]
+        for name in combined_variable_names
+    }
 
     return single_data_files | combined_variables
 
