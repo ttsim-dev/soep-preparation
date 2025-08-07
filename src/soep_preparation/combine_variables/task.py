@@ -9,6 +9,7 @@ from soep_preparation.config import DATA_CATALOGS, SRC
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import (
     get_script_names,
+    get_variable_names_in_module,
     load_module,
 )
 
@@ -40,55 +41,45 @@ def _get_relevant_data_files_mapping(
     }
 
 
-def _get_variable_names_in_module(module: Any) -> list[str]:
-    """Get the variable names in the module.
-
-    Args:
-        module: The module to get the variable names from.
-
-    Returns:
-        The variable names in the module.
-    """
-    return [
-        variable_name.split("derive_")[-1]
-        for variable_name in module.__dict__
-        if variable_name.startswith("derive_")
-    ]
-
-
 script_names = get_script_names(SRC / "combine_variables")
 for script_name in script_names:
     module = load_module(SRC / "combine_variables" / f"{script_name}.py")
-    variable_names = _get_variable_names_in_module(module)
+    variable_names = get_variable_names_in_module(module)
     for variable_name in variable_names:
         function_ = getattr(module, f"derive_{variable_name}")
-        data_files = _get_relevant_data_files_mapping(function_=function_)
+        map_data_file_name_to_data = _get_relevant_data_files_mapping(
+            function_=function_
+        )
 
         @task(id=variable_name)
-        def task_create_merged_variables(
-            data_files: Annotated[dict[str, pd.DataFrame], data_files],
+        def task_create_combined_variables(
+            map_data_file_name_to_data: Annotated[
+                dict[str, pd.DataFrame], map_data_file_name_to_data
+            ],
             function_: Annotated[Any, function_],
         ) -> Annotated[
             pd.DataFrame, DATA_CATALOGS["combined_variables"][variable_name]
         ]:
-            """Merge variables for the meta dataset.
+            """Combine variables from multiple sources.
 
             Args:
-                data_files: A mapping of data file names to DataFrames.
-                function_: Function to create derived variables.
+                map_data_file_name_to_data: A mapping of data file names to DataFrames.
+                function_: Function to create combined variables.
 
             Returns:
-                Derived variables.
+                Combined variables.
 
             Raises:
                 TypeError: If input data files or function is not of expected type.
                 ValueError: If number of dataframes is not as expected.
             """
-            _error_handling_derived_variables(data=data_files, function_=function_)
-            return function_(**data_files)
+            _error_handling_derived_variables(
+                mapping=map_data_file_name_to_data, function_=function_
+            )
+            return function_(**map_data_file_name_to_data)
 
 
-def _error_handling_derived_variables(data: Any, function_: Any) -> None:
-    fail_if_input_has_invalid_type(input_=data, expected_dtypes=["dict"])
-    _fail_if_too_many_or_too_few_dataframes(dataframes=data, expected_entries=2)
+def _error_handling_derived_variables(mapping: Any, function_: Any) -> None:
+    fail_if_input_has_invalid_type(input_=mapping, expected_dtypes=["dict"])
+    _fail_if_too_many_or_too_few_dataframes(dataframes=mapping, expected_entries=2)
     fail_if_input_has_invalid_type(input_=function_, expected_dtypes=["function"])

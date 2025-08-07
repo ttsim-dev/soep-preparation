@@ -133,9 +133,7 @@ def derive_p_kindesunterhalt_erhalten(
     out = pd.DataFrame(index=pl.index)
     merged = pd.merge(pl, pequiv, on=["hh_id", "survey_year"], how="outer")
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
-    out["kindesunterhalt_erhalten_m_pequiv"] = combine_first_and_make_categorical(
-        series_1=merged["kindesunterhalt_erhalten_m_pl"],
-        series_2=merged["kindesunterhalt_erhalten_m_pequiv"],
-        ordered=False,
-    )
+    out["kindesunterhalt_erhalten_m"] = merged[
+        "kindesunterhalt_erhalten_m_pl"
+    ].combine_first(merged["kindesunterhalt_erhalten_m_pequiv"])
     return out

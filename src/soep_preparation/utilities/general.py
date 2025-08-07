@@ -5,6 +5,11 @@ import re
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
+from typing import Any
+
+import yaml
+
+from soep_preparation.config import BLD, SRC
 
 
 def _fail_if_raw_data_file_missing(
@@ -12,9 +17,28 @@ def _fail_if_raw_data_file_missing(
 ) -> None:
     raw_data_file_path = data_root / f"{soep_version}" / f"{script_name}.dta"
     if not raw_data_file_path.exists():
-        msg = f"""Raw data file {raw_data_file_path} not found for SOEP {soep_version}.
-        Ensure the file is present in the data directory for the corresponding wave."""
+        msg = (
+            f"Raw data file {raw_data_file_path} not found for SOEP {soep_version}.\n"
+            f"Ensure the file is present in the data directory\n"
+            f" corresponding to the specified wave."
+        )
         raise FileNotFoundError(msg)
+
+
+def get_variable_names_in_module(module: Any) -> list[str]:  # noqa: ANN401
+    """Get the variable names in the module.
+
+    Args:
+        module: The module to get the variable names from.
+
+    Returns:
+        The variable names in the module.
+    """
+    return [
+        variable_name.split("derive_")[-1]
+        for variable_name in module.__dict__
+        if variable_name.startswith("derive_")
+    ]
 
 
 def get_script_names(directory: Path) -> list[str]:
@@ -90,3 +114,19 @@ def load_module(script_path: Path) -> ModuleType:
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def move_yaml_to_src() -> None:
+    """Move the YAML file from BLD to SRC directory."""
+    with (
+        Path.open(
+            BLD / "variable_to_metadata_mapping.yaml", "r", encoding="utf-8"
+        ) as origin_file,
+        Path.open(
+            SRC / "dataset_merging" / "variable_to_metadata_mapping.yaml",
+            "w",
+            encoding="utf-8",
+        ) as destination_file,
+    ):
+        content = yaml.safe_load(origin_file)
+        yaml.dump(content, destination_file, sort_keys=False, encoding="utf-8")

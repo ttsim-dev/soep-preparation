@@ -12,6 +12,21 @@ def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str) -> None:
         raise TypeError(msg)
 
 
+def fail_if_empty(input_: dict | list, name: str) -> None:
+    """Fail if the input is empty.
+
+    Args:
+        input_: The input to check.
+        name: The name of the input (for error messages).
+
+    Raises:
+        ValueError: If input is empty.
+    """
+    if len(input_) == 0:
+        msg = f"Expected {name} to be non-empty."
+        raise ValueError(msg)
+
+
 def fail_if_input_has_invalid_type(input_: Any, expected_dtypes: Iterable[str]) -> None:  # noqa: ANN401
     """Fail if input is not of any of expected types.
 
