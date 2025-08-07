@@ -369,14 +369,16 @@ def object_to_str_categorical(
     sr_relevant_values_only = _remove_missing_data_values(series)
     if renaming:
         sr_renamed = sr_relevant_values_only.replace(renaming)
-        sr_str = sr_renamed.astype("str[pyarrow]")
-        categories = pd.Series(data=pd.Series(renaming).unique(), dtype="str[pyarrow]")
+        sr_str = sr_renamed.astype("string[pyarrow]")
+        categories = pd.Series(
+            data=pd.Series(renaming).unique(), dtype="string[pyarrow]"
+        )
     else:
         sr_renamed = sr_relevant_values_only.str.split(pat=" ", n=nr_identifiers).str[
             -1
         ]
-        sr_str = sr_renamed.astype("str[pyarrow]")
-        categories = _get_sorted_not_na_unique_values(sr_str).astype("str[pyarrow]")
+        sr_str = sr_renamed.astype("string[pyarrow]")
+        categories = _get_sorted_not_na_unique_values(sr_str).astype("string[pyarrow]")
 
     raw_cat_dtype = CategoricalDtype(
         categories=categories,
