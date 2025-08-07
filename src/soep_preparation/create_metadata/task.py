@@ -1,11 +1,13 @@
 """Tasks to create metadata."""
 
+from pathlib import Path
 from typing import Annotated, Any
 
 import pandas as pd
-from pytask import task
+import yaml
+from pytask import PNode, PProvisionalNode, Product, task
 
-from soep_preparation.config import DATA_CATALOGS, DATA_ROOT, SOEP_VERSION, SRC
+from soep_preparation.config import BLD, DATA_CATALOGS, DATA_ROOT, SOEP_VERSION, SRC
 from soep_preparation.utilities.error_handling import (
     fail_if_empty,
     fail_if_input_has_invalid_type,
@@ -18,7 +20,7 @@ from soep_preparation.utilities.general import (
 )
 
 
-def _create_name_to_data_mapping() -> dict[str, pd.DataFrame]:
+def _create_name_to_data_mapping() -> dict[str, PNode | PProvisionalNode]:
     """Mapping of data file and combined variable names to corresponding data."""
     single_data_file_names = get_data_file_names(
         SRC / "clean_variables", data_root=DATA_ROOT, soep_version=SOEP_VERSION
@@ -48,7 +50,7 @@ def _create_name_to_data_mapping() -> dict[str, pd.DataFrame]:
 
 def _create_name_to_metadata_mapping(
     metadata_names: list[str],
-) -> dict[str, pd.DataFrame]:
+) -> dict[str, PNode | PProvisionalNode]:
     """Mapping of names to corresponding metadata."""
     return {name: DATA_CATALOGS["metadata"][name] for name in metadata_names}
 
@@ -64,27 +66,53 @@ def _get_index_variables(
     }
 
 
+def _serialize_category_dtype(variable_dtype: pd.CategoricalDtype) -> dict:
+    """Serialize a pandas CategoricalDtype to a dictionary.
+
+    Args:
+        variable_dtype: The CategoricalDtype to serialize.
+
+    Returns:
+        A dictionary representation of the CategoricalDtype.
+    """
+    return {
+        "categories": variable_dtype.categories.tolist(),
+        "categories_dtype": variable_dtype.categories.dtype.name,
+        "ordered": variable_dtype.ordered,
+    }
+
+
 def _get_variable_metadata(
     dataset: pd.DataFrame,
     potential_index_variables: list[str],
 ) -> dict:
     columns = dataset.columns.tolist()
-
+    survey_year_in_columns = "survey_year" in columns
     variables = [col for col in columns if col not in potential_index_variables]
-    metadata = {
-        var: {"dtype": dataset[var].dtype, "survey_years": None} for var in variables
-    }
-    if "survey_year" in columns:
-        for var in variables:
-            # Get unique survey years of each variable in which it is present
-            metadata[var]["survey_years"] = sorted(
-                set(dataset[["survey_year", var]].dropna()["survey_year"])
+
+    metadata = {}
+    for variable in variables:
+        variable_dtype = dataset[variable].dtype
+        variable_survey_years = None
+
+        if variable_dtype.name == "category":
+            serialized_variable_dtype = _serialize_category_dtype(variable_dtype)
+        else:
+            serialized_variable_dtype = variable_dtype.name
+        if survey_year_in_columns:
+            variable_survey_years = sorted(
+                set(dataset[["survey_year", variable]].dropna()["survey_year"])
             )
+
+        metadata[variable] = {
+            "dtype": serialized_variable_dtype,
+            "survey_years": variable_survey_years,
+        }
 
     return metadata
 
 
-def _create_variable_to_metadata_name_mapping(data: dict) -> dict[str, str]:
+def _create_variable_to_metadata_name_mapping(data: dict) -> dict[str, dict]:
     """Create a mapping of variable names to metadata names.
 
     Args:
@@ -94,10 +122,9 @@ def _create_variable_to_metadata_name_mapping(data: dict) -> dict[str, str]:
         A mapping of variable names to metadata names.
     """
     mapping = {}
-    for metadata_name, metadata in data.items():
-        variable_names = metadata["variable_metadata"].keys()
-        for variable_name in variable_names:
-            mapping[variable_name] = metadata_name
+    for data_file, metadata in data.items():
+        for variable_name, variable_metadata in metadata["variable_metadata"].items():
+            mapping[variable_name] = {"data_file": data_file} | variable_metadata
     return mapping
 
 
@@ -142,7 +169,7 @@ MAP_NAME_TO_METADATA = _create_name_to_metadata_mapping(MAP_NAME_TO_DATA.keys())
 
 def task_create_variable_to_metadata_name_mapping(
     map_name_to_metadata: Annotated[dict[str, pd.DataFrame], MAP_NAME_TO_METADATA],
-) -> Annotated[dict[str, str], DATA_CATALOGS["metadata"]["mapping"]]:
+) -> Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["mapping"]]:
     """Create a mapping of variable names to metadata names.
 
     Args:
@@ -156,6 +183,41 @@ def task_create_variable_to_metadata_name_mapping(
     """
     _error_handling_mapping_task(map_name_to_metadata)
     return _create_variable_to_metadata_name_mapping(map_name_to_metadata)
+
+
+def task_yaml_dump_mapping_bld(
+    mapping: Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["mapping"]],
+    path: Annotated[Path, Product] = BLD / "variable_to_metadata_mapping.yaml",
+) -> None:
+    """Dump the variable to metadata mapping to a YAML file and store in BLD.
+
+    Args:
+        mapping: The mapping of variable names to metadata names.
+        path: The path to the YAML file to write.
+    """
+    with Path.open(path, "w", encoding="utf-8") as file:
+        yaml.dump(mapping, file, encoding="utf-8", allow_unicode=True)
+
+
+def task_yaml_dump_mapping_src(
+    mapping: Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["mapping"]],
+    path: Annotated[Path, Product] = SRC
+    / "dataset_merging"
+    / "variable_to_metadata_mapping.yaml",
+) -> None:
+    """Dump the variable to metadata mapping to a YAML file and store in SRC.
+
+    Args:
+        mapping: The mapping of variable names to metadata names.
+        path: The path to the YAML file to write.
+    """
+    with Path.open(path, "w", encoding="utf-8") as file:
+        yaml.dump(
+            mapping,
+            file,
+            encoding="utf-8",
+            allow_unicode=True,
+        )
 
 
 def _error_handling_mapping_task(mapping: Any) -> None:

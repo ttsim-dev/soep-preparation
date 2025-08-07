@@ -12,6 +12,7 @@ pd.set_option("plotting.backend", "plotly")
 
 SRC = Path(__file__).parent.resolve()
 ROOT = SRC.parent.parent.resolve()
+BLD = ROOT.joinpath("bld").resolve()
 DATA_ROOT = ROOT.joinpath("data").resolve()
 TEST_DIR = ROOT.joinpath("tests").resolve()
 
@@ -31,6 +32,7 @@ DATA_CATALOGS = {
 }
 
 __all__ = [
+    "BLD",
     "DATA_CATALOGS",
     "DATA_ROOT",
     "ROOT",

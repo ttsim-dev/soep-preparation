@@ -3,6 +3,7 @@
 from typing import Annotated, Any
 
 import pandas as pd
+import pytask
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.dataset_merging.helper import create_dataset_from_variables
@@ -21,6 +22,7 @@ VARIABLES = [
 ]
 
 
+@pytask.mark.skip()
 def task_merge_variables(
     map_variable_to_data_file: Annotated[dict, DATA_CATALOGS["metadata"]["mapping"]],
     variables: Annotated[list[str], VARIABLES],
