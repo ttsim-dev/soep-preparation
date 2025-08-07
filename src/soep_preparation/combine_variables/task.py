@@ -52,7 +52,7 @@ for script_name in script_names:
         )
 
         @task(id=variable_name)
-        def task_create_merged_variables(
+        def task_create_combined_variables(
             map_data_file_name_to_data: Annotated[
                 dict[str, pd.DataFrame], map_data_file_name_to_data
             ],
@@ -60,14 +60,14 @@ for script_name in script_names:
         ) -> Annotated[
             pd.DataFrame, DATA_CATALOGS["combined_variables"][variable_name]
         ]:
-            """Merge variables for the meta dataset.
+            """Combine variables from multiple sources.
 
             Args:
                 map_data_file_name_to_data: A mapping of data file names to DataFrames.
-                function_: Function to create derived variables.
+                function_: Function to create combined variables.
 
             Returns:
-                Derived variables.
+                Combined variables.
 
             Raises:
                 TypeError: If input data files or function is not of expected type.
