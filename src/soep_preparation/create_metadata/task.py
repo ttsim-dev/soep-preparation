@@ -64,15 +64,24 @@ def _get_index_variables(
     }
 
 
-def _get_variable_dtypes(
+def _get_variable_metadata(
     dataset: pd.DataFrame,
     potential_index_variables: list[str],
 ) -> dict:
-    return {
-        col: dtype_.name
-        for col, dtype_ in dataset.dtypes.items()
-        if col not in potential_index_variables
+    columns = dataset.columns.tolist()
+
+    variables = [col for col in columns if col not in potential_index_variables]
+    metadata = {
+        var: {"dtype": dataset[var].dtype, "survey_years": None} for var in variables
     }
+    if "survey_year" in columns:
+        for var in variables:
+            # Get unique survey years of each variable in which it is present
+            metadata[var]["survey_years"] = sorted(
+                set(dataset[["survey_year", var]].dropna()["survey_year"])
+            )
+
+    return metadata
 
 
 def _create_variable_to_metadata_name_mapping(data: dict) -> dict[str, str]:
@@ -86,7 +95,7 @@ def _create_variable_to_metadata_name_mapping(data: dict) -> dict[str, str]:
     """
     mapping = {}
     for metadata_name, metadata in data.items():
-        variable_names = metadata["variable_dtypes"].keys()
+        variable_names = metadata["variable_metadata"].keys()
         for variable_name in variable_names:
             mapping[variable_name] = metadata_name
     return mapping
@@ -119,12 +128,12 @@ for name, data in MAP_NAME_TO_DATA.items():
         index_variables = _get_index_variables(
             dataset=data, potential_index_variables=potential_index_variables
         )
-        variable_dtypes = _get_variable_dtypes(
+        variable_metadata = _get_variable_metadata(
             dataset=data, potential_index_variables=potential_index_variables
         )
         return {
             "index_variables": index_variables,
-            "variable_dtypes": variable_dtypes,
+            "variable_metadata": variable_metadata,
         }
 
 
