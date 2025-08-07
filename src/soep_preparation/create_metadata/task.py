@@ -219,27 +219,6 @@ def task_yaml_dump_mapping_bld(
         yaml.dump(mapping, file, encoding="utf-8", allow_unicode=True)
 
 
-def task_yaml_dump_mapping_src(
-    mapping: Annotated[dict[str, dict], DATA_CATALOGS["metadata"]["mapping"]],
-    path: Annotated[Path, Product] = SRC
-    / "dataset_merging"
-    / "variable_to_metadata_mapping.yaml",
-) -> None:
-    """Dump the variable to metadata mapping to a YAML file and store in SRC.
-
-    Args:
-        mapping: The mapping of variable names to metadata names.
-        path: The path to the YAML file to write.
-    """
-    with Path.open(path, "w", encoding="utf-8") as file:
-        yaml.dump(
-            mapping,
-            file,
-            encoding="utf-8",
-            allow_unicode=True,
-        )
-
-
 def _error_handling_mapping_task(mapping: Any) -> None:
     fail_if_input_has_invalid_type(input_=mapping, expected_dtypes=["dict"])
     fail_if_empty(input_=mapping, name="mapping")

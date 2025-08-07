@@ -7,6 +7,10 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+import yaml
+
+from soep_preparation.config import BLD, SRC
+
 
 def _fail_if_raw_data_file_missing(
     script_name: str, data_root: Path, soep_version: str
@@ -110,3 +114,19 @@ def load_module(script_path: Path) -> ModuleType:
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def move_yaml_to_src() -> None:
+    """Move the YAML file from BLD to SRC directory."""
+    with (
+        Path.open(
+            BLD / "variable_to_metadata_mapping.yaml", "r", encoding="utf-8"
+        ) as origin_file,
+        Path.open(
+            SRC / "dataset_merging" / "variable_to_metadata_mapping.yaml",
+            "w",
+            encoding="utf-8",
+        ) as destination_file,
+    ):
+        content = yaml.safe_load(origin_file)
+        yaml.dump(content, destination_file, sort_keys=False, encoding="utf-8")
