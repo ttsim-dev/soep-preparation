@@ -13,7 +13,7 @@ VARIABLES = [
     # "p_id",
     # "survey_year",
     "net_income_hh_m",
-    "vertragliche_arbeitszeit_w",  # use tatsächliche_arbeitszeit_w?
+    "vertragliche_arbeitszeit_w_current",  # use tatsächliche_arbeitszeit_w_current?
     "east_germany",
     "age",
     "disabled",
