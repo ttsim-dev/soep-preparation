@@ -208,11 +208,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["net_labor_income_previous_month_m"] = object_to_float(
         raw_data["pglabnet"]
     ).fillna(0)
-    out["tatsächliche_arbeitszeit_w"] = _weekly_working_hours_fill_non_working(
+    out["tatsächliche_arbeitszeit_w_current"] = _weekly_working_hours_fill_non_working(
         working_hours=raw_data["pgtatzeit"],
         employment_status=out["employment_status"],
     )
-    out["vertragliche_arbeitszeit_w"] = _weekly_working_hours_fill_non_working(
+    out["vertragliche_arbeitszeit_w_current"] = _weekly_working_hours_fill_non_working(
         working_hours=raw_data["pgvebzeit"],
         employment_status=out["employment_status"],
     )

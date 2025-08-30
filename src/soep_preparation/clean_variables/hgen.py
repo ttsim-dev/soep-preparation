@@ -3,7 +3,9 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
+    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    create_dummy,
     float_to_int,
     object_to_float,
     object_to_int,
@@ -33,6 +35,19 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
     out["survey_year"] = float_to_int(raw_data["syear"])
 
+    out["net_income_m_hh"] = object_to_float(raw_data["hghinc"])
+    out["average_imputed_net_income_m_hh"] = apply_smallest_float_dtype(
+        pd.DataFrame(
+            [
+                object_to_float(raw_data["hgi1hinc"]),
+                object_to_float(raw_data["hgi2hinc"]),
+                object_to_float(raw_data["hgi3hinc"]),
+                object_to_float(raw_data["hgi4hinc"]),
+                object_to_float(raw_data["hgi5hinc"]),
+            ]
+        ).mean(axis=0)
+    )
+
     out["building_year_hh_max"] = object_to_int(raw_data["hgcnstyrmax"])
     out["building_year_hh_min"] = object_to_int(raw_data["hgcnstyrmin"])
     out["heating_costs_m_hh"] = object_to_int(raw_data["hgheat"])
@@ -47,6 +62,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[5] Heimbewohner oder Gemeinschaftsunterkunft": "Heimbewohner oder Gemeinschaftsunterkunft",  # noqa: E501
         },
     )
+    out["owned"] = create_dummy(
+        series=out["rented_or_owned"],
+        value_for_comparison="Eigentümer",
+        comparison_type="equal",
+    )
     out["rent_minus_heating_costs_m_hh"] = _bruttokaltmiete_m_hh(
         miete=raw_data["hgrent"],
         rented_or_owned=out["rented_or_owned"],
@@ -56,6 +76,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["hgheatinfo"],
         ordered=False,
     )
+
     out["hh_typ_one_digit"] = object_to_str_categorical(
         series=raw_data["hgtyp1hh"],
         nr_identifiers=2,

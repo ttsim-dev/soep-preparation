@@ -3,34 +3,44 @@
 from typing import Annotated, Any
 
 import pandas as pd
-import pytask
 
-from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
+from soep_preparation.config import DATA_CATALOGS, ROOT, SURVEY_YEARS
 from soep_preparation.dataset_merging.helper import create_dataset_from_variables
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
 VARIABLES = [
+    # "hh_id",
+    # "p_id",
+    # "survey_year",
+    "net_income_hh_m",
+    "vertragliche_arbeitszeit_w_current",
+    "gross_labor_income_previous_month_m",
+    # for comparison with GETTSIM calculations only
+    "net_labor_income_previous_month_m",
+    "east_germany",
     "age",
-    "birth_month",
-    "bmi",
-    "hh_weighting_factor_new_only",
-    "relationship_to_head_of_hh",
-    "hh_strat",
+    "disabled",
     "number_of_children",
-    "p_id_father",
-    "frailty",
+    "child_number",
+    "p_id_child",
+    "birth_year_child",
+    "bezog_wohngeld_hh",
+    "bezog_arbeitslosengeld_2_hh",
+    "bezog_kinderzuschlag_hh",
+    "employment_status",
+    "labor_force_status",
+    "occupation_status",
 ]
 
 
-@pytask.mark.try_last
 def task_merge_variables(
-    variable_to_data_file_mapping: Annotated[dict, DATA_CATALOGS["metadata"]["merged"]],
+    mapping_variable_to_data_file: Annotated[dict, DATA_CATALOGS["metadata"]["merged"]],
     variables: Annotated[list[str], VARIABLES],
 ) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]]:
     """Example task merging based on variable names to create dataset.
 
     Args:
-        variable_to_data_file_mapping: A mapping of variable names to dataset names.
+        mapping_variable_to_data_file: A mapping of variable names to dataset names.
         variables: A list of variable names to be used for merging.
 
     Returns:
@@ -39,12 +49,25 @@ def task_merge_variables(
     Raises:
         TypeError: If input mapping or variables is not of expected type.
     """
-    _error_handling_task(mapping=variable_to_data_file_mapping, variables=variables)
+    _error_handling_task(mapping=mapping_variable_to_data_file, variables=variables)
     return create_dataset_from_variables(
         variables=variables,
         min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
-        variable_to_data_file_mapping=variable_to_data_file_mapping,
+        mapping_variable_to_data_file=mapping_variable_to_data_file,
     )
+
+
+def task_copy_to_root(
+    example_merged_dataset: Annotated[
+        pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]
+    ],
+) -> None:
+    """Copy the example merged dataset to the root directory.
+
+    Args:
+        example_merged_dataset: The merged dataset to be copied.
+    """
+    example_merged_dataset.to_pickle(ROOT / "example_merged_dataset.pkl")
 
 
 def _error_handling_task(mapping: Any, variables: Any) -> None:  # noqa: ANN401

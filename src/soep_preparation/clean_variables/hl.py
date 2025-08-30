@@ -34,6 +34,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
+    out["nursing_case_in_hh"] = object_to_bool_categorical(
+        series=raw_data["hlf0291"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+
     out["bezieht_aktuell_kindergeld_hh"] = object_to_bool_categorical(
         series=raw_data["hlc0044_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
@@ -63,11 +69,22 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
+    out["wohngeld_m_aktuell_hh_hl"] = object_to_int(raw_data["hlc0084_h"])
+    out["bezog_wohngeld_hh"] = object_to_bool_categorical(
+        series=raw_data["hlc0080_h"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
     out["wohngeld_m_hh_hl"] = object_to_int(raw_data["hlc0082_h"])
 
     # Variables contain Arbeitslosengeld II Bedarf, Sozialgeld, Kosten der Unterkunft
     out["bezieht_aktuell_arbeitslosengeld_2_hh"] = object_to_bool_categorical(
         series=raw_data["hlc0064_h"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["bezog_arbeitslosengeld_2_hh"] = object_to_bool_categorical(
+        series=raw_data["hlc0052"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )

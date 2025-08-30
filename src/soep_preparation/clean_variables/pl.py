@@ -68,7 +68,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["person_number_surveyed"] = object_to_int(raw_data["pnr"])
     out["years_worked_last_job"] = object_to_int(raw_data["plb0301"])
     out["months_worked_last_job"] = object_to_float(raw_data["plb0302"])
-    out["hourly_wage_current"] = object_to_float(raw_data["plh0354_h"])
+    out["gross_hourly_wage_current"] = object_to_float(raw_data["plh0354_h"])
+    out["steuerklasse"] = object_to_str_categorical(raw_data["plc0091_h"])
 
     # non-working or partly working conditions
     out["altersteilzeit"] = object_to_bool_categorical(
@@ -97,20 +98,27 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
-    out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
-        series=raw_data["plc0126_h"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+    out["bezog_arbeitslosengeld_2"] = object_to_bool_categorical(
+        series=raw_data["plc0138_v1"],
+        renaming={"[1] Ja": True},
+    )
+    out["bezog_arbeitslosengeld"] = object_to_bool_categorical(
+        series=raw_data["plc0130_h"],
+        renaming={"[1] Ja": True},
     )
     out["bezog_arbeitslosengeld_im_letzten_monat"] = object_to_bool_categorical(
         series=raw_data["plc0130_v1"],
         renaming={"[1] Ja": True},
-        ordered=True,
     )
     # bezog arbeitslosengeld m3-m5 available 2017 through 2020
     out["bezog_arbeitslosengeld_m3_m5"] = object_to_bool_categorical(
         series=raw_data["plc0130_v2"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
+    )
+    out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
+        series=raw_data["plc0126_h"],
+        renaming={"[1] Ja": True},
     )
     out["bezog_mutterschaftsgeld_im_letzten_monat"] = object_to_bool_categorical(
         series=raw_data["plc0152_v1"],
@@ -157,6 +165,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["motor_disability"] = create_dummy(
         series=raw_data["plj0582"],
         value_for_comparison=1,
+    )
+    out["disabled"] = create_dummy(
+        series=raw_data["ple0040"], value_for_comparison="[1] Ja"
     )
     out["disability_degree"] = object_to_int(raw_data["ple0041"]).fillna(0)
     out["med_schwierigkeit_treppen_pl"] = object_to_int_categorical(
