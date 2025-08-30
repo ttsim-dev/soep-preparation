@@ -13,7 +13,10 @@ VARIABLES = [
     # "p_id",
     # "survey_year",
     "net_income_hh_m",
-    "vertragliche_arbeitszeit_w_current",  # use tatsächliche_arbeitszeit_w_current?
+    "vertragliche_arbeitszeit_w_current",
+    "gross_labor_income_previous_month_m",
+    # for comparison with GETTSIM calculations only
+    "net_labor_income_previous_month_m",
     "east_germany",
     "age",
     "disabled",
@@ -25,6 +28,7 @@ VARIABLES = [
     "bezog_arbeitslosengeld_2_hh",
     "bezog_kinderzuschlag_hh",
     "employment_status",
+    "labor_force_status",
     "occupation_status",
 ]
 
