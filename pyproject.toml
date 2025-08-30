@@ -22,7 +22,7 @@ authors = [
 maintainers = [
     { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
 ]
-dependencies = [ "pytask", "gettsim>=0.7.0,<0.8"]
+dependencies = [ "pytask", "gettsim>=1.0a1", ]
 
 [project.readme]
 file = "README.md"
