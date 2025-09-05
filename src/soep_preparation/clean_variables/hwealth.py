@@ -109,4 +109,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
         ordered=True,
     )
+    out["assets_hh"] = out[
+        [
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_a",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_b",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_c",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_d",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_e",
+        ]
+    ].mean(axis=1)
     return out

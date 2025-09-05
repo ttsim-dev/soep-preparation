@@ -68,7 +68,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["person_number_surveyed"] = object_to_int(raw_data["pnr"])
     out["years_worked_last_job"] = object_to_int(raw_data["plb0301"])
     out["months_worked_last_job"] = object_to_float(raw_data["plb0302"])
-    out["gross_hourly_wage_current"] = object_to_float(raw_data["plh0354_h"])
+    out["gross_wage_h_current"] = object_to_float(raw_data["plh0354_h"])
     out["steuerklasse"] = object_to_str_categorical(raw_data["plc0091_h"])
 
     # non-working or partly working conditions
@@ -98,30 +98,17 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
-    out["bezog_arbeitslosengeld_2"] = object_to_bool_categorical(
+    out["bezieht_arbeitslosengeld_2"] = object_to_bool_categorical(
         series=raw_data["plc0138_v1"],
         renaming={"[1] Ja": True},
     )
-    out["bezog_arbeitslosengeld"] = object_to_bool_categorical(
+    out["arbeitslosengeld_anzahl_monate_y"] = object_to_int(raw_data["plc0136"])
+    out["bezieht_arbeitslosengeld"] = object_to_bool_categorical(
         series=raw_data["plc0130_h"],
         renaming={"[1] Ja": True},
     )
-    out["bezog_arbeitslosengeld_im_letzten_monat"] = object_to_bool_categorical(
-        series=raw_data["plc0130_v1"],
-        renaming={"[1] Ja": True},
-    )
-    # bezog arbeitslosengeld m3-m5 available 2017 through 2020
-    out["bezog_arbeitslosengeld_m3_m5"] = object_to_bool_categorical(
-        series=raw_data["plc0130_v2"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
-        ordered=True,
-    )
-    out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
+    out["bezieht_mutterschaftsgeld_pl"] = object_to_bool_categorical(
         series=raw_data["plc0126_h"],
-        renaming={"[1] Ja": True},
-    )
-    out["bezog_mutterschaftsgeld_im_letzten_monat"] = object_to_bool_categorical(
-        series=raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
     out["erhaltenes_mutterschaftsgeld_im_letzten_monat_m"] = object_to_float(
@@ -162,6 +149,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
 
     # health and medical characteristics
     out["type_of_health_insurance"] = object_to_str_categorical(raw_data["ple0097"])
+    out["private_health_insurance_contribution_m_current"] = object_to_int_categorical(
+        raw_data["ple0136_h"]
+    )
     out["motor_disability"] = create_dummy(
         series=raw_data["plj0582"],
         value_for_comparison=1,

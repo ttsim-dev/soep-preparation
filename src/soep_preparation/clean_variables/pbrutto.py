@@ -4,6 +4,7 @@ import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
+    create_dummy,
     object_to_int,
     object_to_str_categorical,
 )
@@ -66,6 +67,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[71] keine Angabe": "Other",
             "[99] Stellung zu HV unbekannt": "Other",
         },
+    )
+    out["head_of_hh"] = create_dummy(
+        series=out["relationship_to_head_of_hh"],
+        value_for_comparison="Household head",
+        comparison_type="equal",
     )
     out["relationship_to_hh"] = object_to_str_categorical(raw_data["pzugv"])
 

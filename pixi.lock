@@ -13067,12 +13067,12 @@ packages:
   timestamp: 1733244175724
 - pypi: .
   name: soep-preparation
-  version: 0.1.dev109+g01cb90666.d20250830
-  sha256: 25d6e63ea253977b94fec262e1b905aebf0848c8cab3b13ebfd4e60debec8bcb
+  version: 0.1.dev122+g6feb9c6f0.d20250905
+  sha256: 5c7707d58dbed530c69c3b0194605a535c0657f98d1df54808c324073acf9b74
   requires_dist:
   - gettsim>=1.0a1
   - pytask>=0.5.5,<0.6
-  requires_python: '>=3.13'
+  requires_python: '>=3.12'
   editable: true
 - conda: https://conda.anaconda.org/conda-forge/noarch/soupsieve-2.8-pyhd8ed1ab_0.conda
   sha256: c978576cf9366ba576349b93be1cfd9311c00537622a2f9e14ba2b90c97cae9c

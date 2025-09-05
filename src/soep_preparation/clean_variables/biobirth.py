@@ -124,6 +124,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     long = pd.DataFrame()
     long["hh_id_original"] = tmp_long["hh_id_original"]
     long["p_id"] = tmp_long["p_id"]
+    # this logic is flawed, since we create a constant which should be time-varying
     long["number_of_children"] = tmp_long["tmp_number_of_children"]
     long["child_number"] = tmp_long["tmp_child_number"]
     long["p_id_child"] = tmp_long["tmp_p_id_child"]

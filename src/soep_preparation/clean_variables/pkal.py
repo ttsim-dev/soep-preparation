@@ -25,11 +25,11 @@ def _mutterschaftsgeld_anzahl_monate(
     return apply_smallest_int_dtype(sr.where(bezug != 0, 0))
 
 
-def _number_of_months_employed(
+def _number_of_months_employed_kind(
     data: pd.DataFrame,
+    kinds: list[str],
 ) -> pd.Series:
     months = range(1, 13)
-    kinds = ["ft", "pt", "minijob"]
 
     # Per-month: employed if any of the types has a category in [0,1]
     employed = pd.concat(
@@ -49,15 +49,13 @@ def _number_of_months_employed(
     # Compute per-month non-missingness
     nonmissing = pd.concat(
         [
-            data[[f"{kind}_employed_m_{month}" for kind in ["ft", "pt", "minijob"]]]
-            .notna()
-            .any(axis=1)
+            data[[f"{kind}_employed_m_{month}" for kind in kinds]].notna().any(axis=1)
             for month in months
         ],
         axis=1,
     )
 
-    # Mask employed months where all 3 types were NA
+    # Mask employed months where all types were NA
     employed_masked = employed.where(nonmissing, pd.NA)
 
     # Mask full-row NA
@@ -88,14 +86,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["unemployed_anzahl_monate"] = object_to_int(raw_data["kal1d02"]).fillna(0)
     out["early_retirement_pension_number_months"] = object_to_int(raw_data["kal1e02"])
     out["unemployment_benefits_number_months"] = object_to_int(raw_data["kal2f02"])
-    out["bezog_mutterschaftsgeld_pkal"] = object_to_bool_categorical(
+    out["bezieht_mutterschaftsgeld_pkal"] = object_to_bool_categorical(
         series=raw_data["kal2j01_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     out["mutterschaftsgeld_anzahl_monate"] = _mutterschaftsgeld_anzahl_monate(
         monate=raw_data["kal2j02"],
-        bezug=out["bezog_mutterschaftsgeld_pkal"],
+        bezug=out["bezieht_mutterschaftsgeld_pkal"],
     )
 
     # the first full time employment variables includes the timeframe 1984 until 1997,
@@ -449,7 +447,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={1: "Minijob erwerbstätig"},
     )
 
-    out["number_of_months_employed"] = _number_of_months_employed(out)
-    out["employed_in_at_least_one_month"] = out["number_of_months_employed"] > 0
+    out["number_of_months_ft_pt_employment_y"] = _number_of_months_employed_kind(
+        out, kinds=["ft", "pt"]
+    )
+    out["number_of_months_employed_y"] = _number_of_months_employed_kind(
+        out, kinds=["ft", "pt", "minijob"]
+    )
+    out["employed_in_at_least_one_month_y"] = out["number_of_months_employed_y"] > 0
 
     return out

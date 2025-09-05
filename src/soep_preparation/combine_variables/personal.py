@@ -111,8 +111,8 @@ def derive_p_bezog_mutterschaftsgeld(
     merged = pd.merge(pl, pkal, on=["hh_id", "survey_year"], how="outer")
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
     out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
-        series_1=merged["bezog_mutterschaftsgeld_pl"],
-        series_2=merged["bezog_mutterschaftsgeld_pkal"],
+        series_1=merged["bezieht_mutterschaftsgeld_pl"],
+        series_2=merged["bezieht_mutterschaftsgeld_pkal"],
         ordered=False,
     )
     return out
@@ -133,7 +133,7 @@ def derive_p_kindesunterhalt_erhalten(
     out = pd.DataFrame(index=pl.index)
     merged = pd.merge(pl, pequiv, on=["hh_id", "survey_year"], how="outer")
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
-    out["kindesunterhalt_erhalten_m_pequiv"] = combine_first_and_make_categorical(
+    out["kindesunterhalt_erhalten_m"] = combine_first_and_make_categorical(
         series_1=merged["kindesunterhalt_erhalten_m_pl"],
         series_2=merged["kindesunterhalt_erhalten_m_pequiv"],
         ordered=False,

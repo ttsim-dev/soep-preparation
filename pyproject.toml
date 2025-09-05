@@ -5,7 +5,7 @@
 [project]
 name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = ["gettsim>=1.0a1", "pytask>=0.5.5,<0.6"]
 dynamic = ["version"]
 classifiers = [

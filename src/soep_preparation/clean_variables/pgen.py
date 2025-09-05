@@ -173,6 +173,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=out["employment_status"],
         value_for_comparison="Nicht erwerbstätig",
     )
+    out["erwerbsfähig"] = (
+        out["nicht_erwerbstätig"] & ~out["in_education"] & ~out["retired"]
+    )
     out["arbeitslos_gemeldet"] = create_dummy(
         series=out["occupation_status"],
         value_for_comparison="NE: arbeitslos gemeldet",
@@ -202,12 +205,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # individual work information
-    out["gross_labor_income_previous_month_m"] = object_to_float(
-        raw_data["pglabgro"]
-    ).fillna(0)
-    out["net_labor_income_previous_month_m"] = object_to_float(
-        raw_data["pglabnet"]
-    ).fillna(0)
+    out["gross_labor_income_m_current"] = object_to_float(raw_data["pglabgro"]).fillna(
+        0
+    )
+    out["net_labor_income_m_current"] = object_to_float(raw_data["pglabnet"]).fillna(0)
     out["tatsächliche_arbeitszeit_w_current"] = _weekly_working_hours_fill_non_working(
         working_hours=raw_data["pgtatzeit"],
         employment_status=out["employment_status"],
