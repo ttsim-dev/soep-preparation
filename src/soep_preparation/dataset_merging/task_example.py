@@ -40,6 +40,7 @@ VARIABLES = [
     "partnership_status",
     "einkommen_aus_zinsen_dividenden_m_hh",
     "einkommen_aus_vermietung_verpachtung_m_hh",
+    "erwerbstätig",
 ]
 
 
