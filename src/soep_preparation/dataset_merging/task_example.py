@@ -9,17 +9,16 @@ from soep_preparation.dataset_merging.helper import create_dataset_from_variable
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
 VARIABLES = [
-    # "hh_id",
-    # "p_id",
-    # "survey_year",
-    "net_income_hh_m",
-    "vertragliche_arbeitszeit_w_current",
-    "gross_labor_income_previous_month_m",
-    # for comparison with GETTSIM calculations only
-    "net_labor_income_previous_month_m",
-    "east_germany",
     "age",
-    "disabled",
+    "vertragliche_arbeitszeit_w_current",
+    "disability_degree",
+    "east_germany",
+    "self_employed",
+    "gross_labor_income_previous_month_m",
+    "gender",
+    # for comparison with GETTSIM calculations only
+    "net_income_m_hh",
+    "net_labor_income_previous_month_m",
     "number_of_children",
     "child_number",
     "p_id_child",
@@ -30,6 +29,17 @@ VARIABLES = [
     "employment_status",
     "labor_force_status",
     "occupation_status",
+    # wage equation
+    "full_time_working_experience",
+    "part_time_working_experience",
+    "unemployment_experience",
+    "tenure",
+    "highest_education",
+    "foreigner",
+    "federal_state_of_residence",
+    "partnership_status",
+    "einkommen_aus_zinsen_dividenden_m_hh",
+    "einkommen_aus_vermietung_verpachtung_m_hh",
 ]
 
 

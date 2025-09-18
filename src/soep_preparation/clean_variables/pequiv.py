@@ -40,7 +40,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["einkommen_vor_steuern_y_hh"] = object_to_int(raw_data["i11101"])
     out["einkommen_nach_steuern_y_hh"] = object_to_int(raw_data["i11102"])
     out["einkommen_aus_vermietung_verpachtung_y_hh"] = object_to_int(raw_data["renty"])
+    out["einkommen_aus_vermietung_verpachtung_m_hh"] = (
+        out["einkommen_aus_vermietung_verpachtung_y_hh"] / 12
+    )
     out["einkommen_aus_zinsen_dividenden_y_hh"] = object_to_int(raw_data["divdy"])
+    out["einkommen_aus_zinsen_dividenden_m_hh"] = (
+        out["einkommen_aus_zinsen_dividenden_y_hh"] / 12
+    )
 
     # individual characteristics
     out["gender"] = object_to_str_categorical(
