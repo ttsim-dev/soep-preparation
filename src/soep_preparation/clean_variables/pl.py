@@ -68,7 +68,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["person_number_surveyed"] = object_to_int(raw_data["pnr"])
     out["years_worked_last_job"] = object_to_int(raw_data["plb0301"])
     out["months_worked_last_job"] = object_to_float(raw_data["plb0302"])
-    out["gross_hourly_wage_current"] = object_to_float(raw_data["plh0354_h"])
+    out["gross_wage_h_current"] = object_to_float(raw_data["plh0354_h"])
     out["steuerklasse"] = object_to_str_categorical(raw_data["plc0091_h"])
 
     # non-working or partly working conditions

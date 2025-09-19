@@ -97,6 +97,15 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_net_overall_wealth_including_vehicles_and_student_loans_e"] = (
         apply_smallest_float_dtype(raw_data["n011he"])
     )
+    out["hh_net_overall_wealth_including_vehicles_and_student_loans"] = out[
+        [
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_a",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_b",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_c",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_d",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans_e",
+        ]
+    ].mean(axis=1)
 
     out[
         "imputation_flag_hh_net_overall_wealth_including_vehicles_and_student_loans"

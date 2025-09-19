@@ -207,12 +207,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # individual work information
-    out["gross_labor_income_previous_month_m"] = object_to_float(
-        raw_data["pglabgro"]
-    ).fillna(0)
-    out["net_labor_income_previous_month_m"] = object_to_float(
-        raw_data["pglabnet"]
-    ).fillna(0)
+    out["gross_labor_income_m_current"] = object_to_float(raw_data["pglabgro"]).fillna(
+        0
+    )
+    out["net_labor_income_m_current"] = object_to_float(raw_data["pglabnet"]).fillna(0)
     out["tatsächliche_arbeitszeit_w_current"] = _weekly_working_hours_fill_non_working(
         working_hours=raw_data["pgtatzeit"],
         employment_status=out["employment_status"],

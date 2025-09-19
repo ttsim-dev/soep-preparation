@@ -5,7 +5,7 @@
 [project]
 name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
-requires-python = ">=3.13"
+requires-python = ">=3.12,<3.13"
 dependencies = ["gettsim>=1.0a1", "pytask>=0.5.5,<0.6"]
 dynamic = ["version"]
 classifiers = [
@@ -72,7 +72,7 @@ channels = ["conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
 [tool.pixi.dependencies]
-python = "~=3.13"
+python = "~=3.12"
 jupyterlab = ">=4.4.5,<5"
 plotly = ">=6.2.0,<7"
 pre-commit = ">=4.2.0,<5"
@@ -104,8 +104,8 @@ kaleido = ">=0.1.0.post1,<=0.1.0.post1"
 # Features and Tasks
 # --------------------------------------------------------------------------------------
 
-[tool.pixi.feature.py313.dependencies]
-python = "~=3.13"
+[tool.pixi.feature.py312.dependencies]
+python = "~=3.12"
 
 [tool.pixi.feature.mypy.pypi-dependencies]
 mypy = ">=1.17"
@@ -131,7 +131,7 @@ mypy = "mypy --ignore-missing-imports"
 
 [tool.pixi.environments]
 mypy = ["mypy"]
-py313 = ["test", "py313"]
+py312 = ["test", "py312"]
 
 
 
@@ -140,7 +140,7 @@ py313 = ["test", "py313"]
 # ======================================================================================
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py312"
 fix = true
 
 [tool.ruff.lint]
