@@ -21,6 +21,7 @@ VARIABLES = [
     "living_space_hh",
     "retired",
     "gross_wage_h_current",
+    "sample_weight_hh",
     "age",
     "vertragliche_arbeitszeit_w_current",
     "disability_degree",

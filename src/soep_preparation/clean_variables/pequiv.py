@@ -36,6 +36,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # hh characteristics
     out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])
     out["number_of_children_hh"] = apply_smallest_int_dtype(raw_data["d11107"])
+    out["sample_weight_hh"] = apply_smallest_float_dtype(raw_data["w11102"])
     # hh income
     out["einkommen_vor_steuern_y_hh"] = object_to_int(raw_data["i11101"])
     out["einkommen_nach_steuern_y_hh"] = object_to_int(raw_data["i11102"])
