@@ -36,11 +36,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # hh characteristics
     out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])
     out["number_of_children_hh"] = apply_smallest_int_dtype(raw_data["d11107"])
+    out["sample_weight_hh"] = apply_smallest_float_dtype(raw_data["w11102"])
     # hh income
     out["einkommen_vor_steuern_y_hh"] = object_to_int(raw_data["i11101"])
     out["einkommen_nach_steuern_y_hh"] = object_to_int(raw_data["i11102"])
     out["einkommen_aus_vermietung_verpachtung_y_hh"] = object_to_int(raw_data["renty"])
+    out["einkommen_aus_vermietung_verpachtung_m_hh"] = (
+        out["einkommen_aus_vermietung_verpachtung_y_hh"] / 12
+    )
     out["einkommen_aus_zinsen_dividenden_y_hh"] = object_to_int(raw_data["divdy"])
+    out["einkommen_aus_zinsen_dividenden_m_hh"] = (
+        out["einkommen_aus_zinsen_dividenden_y_hh"] / 12
+    )
 
     # individual characteristics
     out["gender"] = object_to_str_categorical(

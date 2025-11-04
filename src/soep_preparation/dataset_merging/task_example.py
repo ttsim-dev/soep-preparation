@@ -9,20 +9,31 @@ from soep_preparation.dataset_merging.helper import create_dataset_from_variable
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
 VARIABLES = [
+    "average_imputed_net_income_m_hh",
+    "in_education",
+    "pointer_partner",
+    "nursing_case_in_hh",
+    "year_of_immigration",
+    "beamter",
+    "hh_net_overall_wealth_including_vehicles_and_student_loans",
+    "rent_minus_heating_costs_m_hh",
+    "heating_costs_m_hh",
+    "living_space_hh",
+    "retired",
+    "gross_wage_h_current",
+    "sample_weight_hh",
     "age",
     "vertragliche_arbeitszeit_w_current",
     "disability_degree",
     "east_germany",
     "self_employed",
-    "beamter",
-    "refugee_status",
-    "year_of_immigration",
     "gross_labor_income_m_current",
-    "gross_wage_h_current",
-    "children_care_facility_costs_m_current",
-    "head_of_hh",
-    "partnership_status",
-    "private_health_insurance_contribution_m_current",
+    "gender",
+    "net_income_m_hh",
+    "net_labor_income_m_current",
+    "number_of_children",
+    "child_number",
+    "p_id_child",
     "birth_year_child",
     "pointer_partner",
     "in_education",
@@ -47,13 +58,27 @@ VARIABLES = [
     "bezog_wohngeld_hh",
     "bezog_arbeitslosengeld_2_hh",
     "bezog_kinderzuschlag_hh",
+    "employment_status",
+    "labor_force_status",
+    "occupation_status",
+    # wage equation
+    "full_time_working_experience",
+    "part_time_working_experience",
+    "unemployment_experience",
+    "tenure",
+    "highest_education",
+    "foreigner",
+    "partnership_status",
+    "einkommen_aus_zinsen_dividenden_m_hh",
+    "einkommen_aus_vermietung_verpachtung_m_hh",
+    "erwerbstätig",
 ]
 
 
 def task_merge_variables(
     mapping_variable_to_data_file: Annotated[dict, DATA_CATALOGS["metadata"]["merged"]],
     variables: Annotated[list[str], VARIABLES],
-) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]]:
+) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["merged_dataset"]]:
     """Example task merging based on variable names to create dataset.
 
     Args:
@@ -75,16 +100,14 @@ def task_merge_variables(
 
 
 def task_copy_to_root(
-    example_merged_dataset: Annotated[
-        pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]
-    ],
+    merged_dataset: Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["merged_dataset"]],
 ) -> None:
     """Copy the example merged dataset to the root directory.
 
     Args:
-        example_merged_dataset: The merged dataset to be copied.
+        merged_dataset: The merged dataset to be copied.
     """
-    example_merged_dataset.to_pickle(ROOT / "example_merged_dataset.pkl")
+    merged_dataset.to_pickle(ROOT / "merged_dataset.pkl")
 
 
 def _error_handling_task(mapping: Any, variables: Any) -> None:  # noqa: ANN401

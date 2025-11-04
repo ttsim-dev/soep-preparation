@@ -135,14 +135,19 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["german"] = create_dummy(
         series=out["first_nationality"], value_for_comparison="Deutschland"
     )
+    out["foreigner"] = create_dummy(
+        series=out["first_nationality"],
+        value_for_comparison="Deutschland",
+        comparison_type="neq",
+    )
     out["refugee_status"] = object_to_str_categorical(raw_data["pgstatus_refu"])
     out["marital_status"] = object_to_str_categorical(raw_data["pgfamstd"])
     out["labor_force_status"] = object_to_str_categorical(raw_data["pglfs"])
     out["occupation_status"] = object_to_str_categorical(raw_data["pgstib"])
     out["employment_status"] = object_to_str_categorical(raw_data["pgemplst"])
-    out["total_full_time_working_experience"] = object_to_float(raw_data["pgexpft"])
-    out["total_part_time_working_experience"] = object_to_float(raw_data["pgexppt"])
-    out["total_unemployment_experience"] = object_to_float(raw_data["pgexpue"])
+    out["full_time_working_experience"] = object_to_float(raw_data["pgexpft"])
+    out["part_time_working_experience"] = object_to_float(raw_data["pgexppt"])
+    out["unemployment_experience"] = object_to_float(raw_data["pgexpue"])
     out["tenure"] = object_to_float(raw_data["pgerwzeit"])
     out["retired"] = create_dummy(
         series=out["occupation_status"], value_for_comparison="NE: Rentner/Rentnerin"
