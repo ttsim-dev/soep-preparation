@@ -91,7 +91,7 @@ of primary residence (see
 If you want to understand the variable `number_of_children` contains, search in the
 directory `src/soep_preparation` for the corresponding script and `raw_data` variable
 name e.g. `biobirth.py`and `sumkids`. From here one can use the URL
-[https://paneldata.org/soep-core/datasets/biobirth/sumkids] to get an understanding of
+\[https://paneldata.org/soep-core/datasets/biobirth/sumkids\] to get an understanding of
 the variable. The "Codebook (PDF)" might be helpful in understanding. The URL takes
 hence the general form:
 \[https://paneldata.org/soep-core/datasets/*dataset_name*/*variable_name*\]
