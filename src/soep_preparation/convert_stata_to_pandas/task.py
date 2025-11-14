@@ -36,7 +36,7 @@ def _iteratively_read_one_data_file(
 
 
 DATA_FILE_NAMES = get_data_file_names(
-    directory=SRC / "clean_variables",
+    directory=SRC / "clean_modules",
     data_root=DATA_ROOT,
     soep_version=SOEP_VERSION,
 )
@@ -50,7 +50,7 @@ for data_file_name in DATA_FILE_NAMES:
         ],
         cleaning_script: Annotated[
             Path,
-            SRC / "clean_variables" / f"{data_file_name}.py",
+            SRC / "clean_modules" / f"{data_file_name}.py",
         ],
     ) -> Annotated[pd.DataFrame, DATA_CATALOGS["raw_pandas"][data_file_name]]:
         """Saves the raw data file to the data catalog.

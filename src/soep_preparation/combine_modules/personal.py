@@ -1,4 +1,4 @@
-"""Module to combine personal variables from multiple sources."""
+"""Script to combine personal variables from multiple sources."""
 
 import pandas as pd
 

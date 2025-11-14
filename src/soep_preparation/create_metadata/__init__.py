@@ -1,1 +1,1 @@
-"""Modules for creating metadata information for data."""
+"""Scripts for creating metadata information for data."""

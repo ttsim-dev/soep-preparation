@@ -1,4 +1,4 @@
-"""Module to combine household variables from multiple sources."""
+"""Script to combine household variables from multiple sources."""
 
 import pandas as pd
 

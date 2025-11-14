@@ -25,8 +25,8 @@ else:
 
 DATA_CATALOGS = {
     "raw_pandas": DataCatalog(name="raw_pandas"),
-    "cleaned_variables": DataCatalog(name="cleaned_variables"),
-    "combined_variables": DataCatalog(name="combined_variables"),
+    "cleaned_modules": DataCatalog(name="cleaned_modules"),
+    "combined_modules": DataCatalog(name="combined_modules"),
     "metadata": DataCatalog(name="metadata"),
     "merged": DataCatalog(name="merged"),
 }

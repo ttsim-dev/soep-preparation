@@ -25,18 +25,18 @@ def _fail_if_raw_data_file_missing(
         raise FileNotFoundError(msg)
 
 
-def get_variable_names_in_module(module: Any) -> list[str]:  # noqa: ANN401
-    """Get the variable names in the module.
+def get_variable_names_in_script(script: Any) -> list[str]:  # noqa: ANN401
+    """Get the variable names in the script.
 
     Args:
-        module: The module to get the variable names from.
+        script: The script to get the variable names from.
 
     Returns:
-        The variable names in the module.
+        The variable names in the script.
     """
     return [
         variable_name.split("derive_")[-1]
-        for variable_name in module.__dict__
+        for variable_name in script.__dict__
         if variable_name.startswith("derive_")
     ]
 
@@ -86,12 +86,12 @@ def get_relevant_column_names(script_path: Path) -> list[str]:
     Returns:
         A list of relevant column names.
     """
-    module = load_module(script_path)
+    script = load_script(script_path)
     # Remove the docstring, if existent.
     function_source = re.sub(
         r'""".*?"""|\'\'\'.*?\'\'\'',
         "",
-        inspect.getsource(module.clean),
+        inspect.getsource(script.clean),
         flags=re.DOTALL,
     )
     # Find all occurrences of raw["column_name"] or ['column_name'].
@@ -100,20 +100,20 @@ def get_relevant_column_names(script_path: Path) -> list[str]:
     return list(dict.fromkeys(matches))
 
 
-def load_module(script_path: Path) -> ModuleType:
-    """Load module from path.
+def load_script(script_path: Path) -> ModuleType:
+    """Load script from path.
 
     Args:
         script_path: The path to the script.
 
     Returns:
-        The loaded module.
+        The loaded script.
     """
-    module_name = script_path.stem
-    spec = spec_from_file_location(name=module_name, location=script_path)
-    module = module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    script_name = script_path.stem
+    spec = spec_from_file_location(name=script_name, location=script_path)
+    script = module_from_spec(spec)
+    spec.loader.exec_module(script)
+    return script
 
 
 def move_yaml_to_src() -> None:
