@@ -1,4 +1,4 @@
-"""Script to combine personal variables from multiple sources."""
+"""Combine variables from the modules pequiv and pl."""
 
 import pandas as pd
 
@@ -7,36 +7,15 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
-def derive_birth_month(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFrame:
-    """Combine the birth_month variables from ppathl and bioedu.
+def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
+    """Combine variables from the cleaned pequiv and pl modules.
 
     Args:
-        ppathl: Cleaned ppathl data.
-        bioedu: Cleaned bioedu data.
+        pequiv: Cleaned pequiv module.
+        pl: Cleaned pl module.
 
     Returns:
-        Combined birth_month variable.
-    """
-    out = pd.DataFrame()
-    merged = pd.merge(left=ppathl, right=bioedu, on="p_id", how="outer")
-    out["p_id"] = merged["p_id"].unique()
-    out["birth_month"] = combine_first_and_make_categorical(
-        series_1=merged["birth_month_ppathl"],
-        series_2=merged["birth_month_bioedu"],
-        ordered=False,
-    )
-    return out
-
-
-def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
-    """Combine the medical variables from pequiv and pl.
-
-    Args:
-        pequiv: Cleaned pequiv data.
-        pl: Cleaned pl data.
-
-    Returns:
-        Combined medical variables.
+        Combined pequiv and pl modules.
     """
     out = pd.DataFrame(index=pequiv.index)
     merged = pd.merge(pequiv, pl, on=["p_id", "hh_id", "survey_year"], how="outer")
@@ -92,48 +71,9 @@ def derive_medical_variables(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataF
         "med_subjective_status_dummy_pequiv"
     ].combine_first(merged["med_subjective_status_dummy_pl"])
     out["frailty"] = merged["frailty_pequiv"].combine_first(merged["frailty_pl"])
-    return out
 
-
-def derive_p_bezog_mutterschaftsgeld(
-    pl: pd.DataFrame, pkal: pd.DataFrame
-) -> pd.DataFrame:
-    """Merge the personal bezog_mutterschaftsgeld variable from pl and pkal.
-
-    Args:
-        pl: Cleaned pl data.
-        pkal: Cleaned pkal data.
-
-    Returns:
-        Merged bezog_mutterschaftsgeld variable.
-    """
-    out = pd.DataFrame(index=pl.index)
-    merged = pd.merge(pl, pkal, on=["hh_id", "survey_year"], how="outer")
-    out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
-    out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
-        series_1=merged["bezog_mutterschaftsgeld_pl"],
-        series_2=merged["bezog_mutterschaftsgeld_pkal"],
-        ordered=False,
-    )
-    return out
-
-
-def derive_p_kindesunterhalt_erhalten(
-    pl: pd.DataFrame, pequiv: pd.DataFrame
-) -> pd.DataFrame:
-    """Merge the personal kindesunterhalt_erhalten variable from pl and pequiv.
-
-    Args:
-        pl: Cleaned pl data.
-        pequiv: Cleaned pequiv data.
-
-    Returns:
-        Merged kindesunterhalt_erhalten variable.
-    """
-    out = pd.DataFrame(index=pl.index)
-    merged = pd.merge(pl, pequiv, on=["hh_id", "survey_year"], how="outer")
-    out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
     out["kindesunterhalt_erhalten_m"] = merged[
-        "kindesunterhalt_erhalten_m_pl"
-    ].combine_first(merged["kindesunterhalt_erhalten_m_pequiv"])
+        "kindesunterhalt_erhalten_m_pequiv"
+    ].combine_first(merged["kindesunterhalt_erhalten_m_pl"])
+
     return out
