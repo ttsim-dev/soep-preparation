@@ -1,26 +1,17 @@
 """Script to clean existing variables in SOEP data files."""
 
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated
 
 import pandas as pd
 from pytask import task
 
 from soep_preparation.config import DATA_CATALOGS, SRC
-from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
+from soep_preparation.utilities.error_handling import (
+    fail_if_expected_function_missing,
+    fail_if_input_has_invalid_type,
+)
 from soep_preparation.utilities.general import load_script
-
-
-def _fail_if_cleaning_function_missing(script_path: Path) -> None:
-    script = load_script(script_path)
-
-    if not hasattr(script, "clean"):
-        msg = f"""The cleaning script at {script_path}
-          does not contain the expected cleaning function."""
-        raise AttributeError(
-            msg,
-        )
-
 
 for data_file_name, raw_data in DATA_CATALOGS["raw_pandas"]._entries.items():  # noqa: SLF001
 
@@ -53,18 +44,16 @@ for data_file_name, raw_data in DATA_CATALOGS["raw_pandas"]._entries.items():  #
             AttributeError: If cleaning script does not
             contain expected function.
         """
-        _error_handling_task(data=raw_data, script_path=script_path)
+        fail_if_input_has_invalid_type(
+            input_=raw_data, expected_dtypes=["pandas.core.frame.DataFrame"]
+        )
+        fail_if_input_has_invalid_type(
+            input_=script_path, expected_dtypes=["pathlib._local.PosixPath"]
+        )
+        fail_if_expected_function_missing(
+            script_path=script_path, expected_function="clean"
+        )
         script = load_script(script_path)
         return script.clean(
             raw_data=raw_data,
         )
-
-
-def _error_handling_task(data: Any, script_path: Any) -> None:
-    fail_if_input_has_invalid_type(
-        input_=data, expected_dtypes=["pandas.core.frame.DataFrame"]
-    )
-    fail_if_input_has_invalid_type(
-        input_=script_path, expected_dtypes=["pathlib._local.PosixPath"]
-    )
-    _fail_if_cleaning_function_missing(script_path)
