@@ -10,12 +10,12 @@ from pytask import task
 from soep_preparation.config import (
     DATA_CATALOGS,
     DATA_ROOT,
+    MODULE_STRUCTURE,
     SOEP_VERSION,
     SRC,
 )
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import (
-    get_data_file_names,
     get_relevant_column_names,
 )
 
@@ -35,13 +35,7 @@ def _iteratively_read_one_data_file(
     return pd.concat(processed_chunks)
 
 
-DATA_FILE_NAMES = get_data_file_names(
-    directory=SRC / "clean_modules",
-    data_root=DATA_ROOT,
-    soep_version=SOEP_VERSION,
-)
-
-for data_file_name in DATA_FILE_NAMES:
+for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
 
     @task(id=data_file_name)
     def task_read_one_data_file(
@@ -78,7 +72,7 @@ for data_file_name in DATA_FILE_NAMES:
             )
 
 
-if not DATA_FILE_NAMES:
+if not MODULE_STRUCTURE["cleaned_modules"]:
 
     @task
     def _raise_no_data_files_found() -> None:
