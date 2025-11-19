@@ -6,18 +6,18 @@ from typing import Annotated
 import pandas as pd
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOGS, SRC
+from soep_preparation.config import DATA_CATALOGS, MODULE_STRUCTURE, SRC
 from soep_preparation.utilities.error_handling import (
     fail_if_expected_function_missing,
     fail_if_input_has_invalid_type,
 )
 from soep_preparation.utilities.general import load_script
 
-for data_file_name, raw_data in DATA_CATALOGS["raw_pandas"]._entries.items():  # noqa: SLF001
+for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
 
     @task(id=data_file_name)
     def task_clean_one_data_file(
-        raw_data: Annotated[Path, raw_data],
+        raw_data: Annotated[pd.DataFrame, DATA_CATALOGS["raw_pandas"][data_file_name]],
         script_path: Annotated[
             Path,
             SRC / "clean_modules" / f"{data_file_name}.py",
@@ -31,7 +31,7 @@ for data_file_name, raw_data in DATA_CATALOGS["raw_pandas"]._entries.items():  #
         The result is stored in the corresponding DataCatalog for further processing.
 
         Parameters:
-            raw_data: The path to the data file to be cleaned.
+            raw_data: The raw pandas DataFrame to be cleaned.
             script_path: The path to the cleaning script.
 
         Returns:

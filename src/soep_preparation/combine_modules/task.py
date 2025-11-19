@@ -6,18 +6,16 @@ from typing import Annotated
 import pandas as pd
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOGS, SRC
+from soep_preparation.config import DATA_CATALOGS, MODULE_STRUCTURE, SRC
 from soep_preparation.utilities.error_handling import (
     fail_if_expected_function_missing,
     fail_if_input_has_invalid_type,
 )
 from soep_preparation.utilities.general import (
-    get_script_names,
     load_script,
 )
 
-script_names = get_script_names(SRC / "combine_modules")
-for script_name in script_names:
+for script_name in MODULE_STRUCTURE["combined_modules"]:
     modules_to_combine = {
         module: DATA_CATALOGS["cleaned_modules"][module]
         for module in script_name.split("_")
