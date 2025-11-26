@@ -17,8 +17,8 @@ def combine(pl: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     Returns:
         Combined pl and pkal modules.
     """
-    out = pd.DataFrame(index=pl.index)
-    merged = pd.merge(pl, pkal, on=["hh_id", "survey_year"], how="outer")
+    merged = pd.merge(left=pl, right=pkal, on=["hh_id", "survey_year"], how="outer")
+    out = pd.DataFrame(index=merged.index)
     out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
     out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
         series_1=merged["bezog_mutterschaftsgeld_pl"],

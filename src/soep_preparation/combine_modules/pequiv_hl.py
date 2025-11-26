@@ -13,8 +13,8 @@ def combine(pequiv: pd.DataFrame, hl: pd.DataFrame) -> pd.DataFrame:
     Returns:
         Combined pequiv and hl modules.
     """
-    out = pd.DataFrame(index=pequiv.index)
-    merged = pd.merge(pequiv, hl, on=["hh_id", "survey_year"], how="outer")
+    merged = pd.merge(left=pequiv, right=hl, on=["hh_id", "survey_year"], how="outer")
+    out = pd.DataFrame(index=merged.index)
     out[["p_id", "hh_id", "survey_year"]] = pequiv[
         ["p_id", "hh_id", "survey_year"]
     ].copy()
