@@ -41,7 +41,8 @@ for script_name in MODULE_STRUCTURE["combined_modules"]:
         fail_if_input_has_invalid_type(input_=script_path, expected_dtypes=["path"])
         fail_if_expected_function_missing(script_path, "combine")
         _fail_if_too_many_or_too_few_dataframes(
-            dataframes=modules_to_combine, expected_entries=len(script_name.split("_"))
+            observed_number_of_modules=len(modules_to_combine.keys()),
+            expected_number_of_entries=len(script_name.split("_")),
         )
         fail_if_input_has_invalid_type(
             input_=modules_to_combine, expected_dtypes=["dict"]
@@ -51,10 +52,11 @@ for script_name in MODULE_STRUCTURE["combined_modules"]:
 
 
 def _fail_if_too_many_or_too_few_dataframes(
-    dataframes: dict, expected_entries: int
+    observed_number_of_modules: int, expected_number_of_entries: int
 ) -> None:
-    if len(dataframes.keys()) != expected_entries:
-        msg = f"Expected {expected_entries} dataframes, got {len(dataframes.keys())}"
+    if observed_number_of_modules != expected_number_of_entries:
+        msg = f"""Expected {expected_number_of_entries} dataframes,"""
+        f""" got {observed_number_of_modules}."""
         raise ValueError(
             msg,
         )
