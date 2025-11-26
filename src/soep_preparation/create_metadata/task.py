@@ -92,21 +92,45 @@ def _get_variable_metadata(
     return metadata
 
 
-def _create_variable_to_metadata_mapping(
-    map_module_to_metadata: dict,
+def _fail_if_variable_in_multiple_modules(
+    variable_name: str, module_name: str, mapping: dict
+) -> None:
+    msg = (
+        f"Variable '{variable_name}' found in multiple modules:"
+        f"'{mapping[variable_name]['module']}' and '{module_name}'."
+        f" Each variable must be unique to a single module."
+        f" Either combine the variable from both modules inside a script"
+        f" or rename the variable in one of the cleaning scripts of the modules."
+    )
+    raise ValueError(msg)
+
+
+def _create_variable_metadata(
+    map_modules_to_variables_and_their_metadata: dict,
 ) -> dict[str, dict]:
-    """Create a mapping of variable to metadata.
+    """Return a mapping of variables to their metadata.
 
     Args:
-        map_module_to_metadata: Map of module to metadata information.
+        map_modules_to_variables_and_their_metadata: Map of module to variables
+             and their metadata information.
 
     Returns:
         A mapping of variable to metadata.
     """
     mapping = {}
-    for module_name, metadata in map_module_to_metadata.items():
-        for variable_name, variable_metadata in metadata["variable_metadata"].items():
-            mapping[variable_name] = {"module": module_name} | variable_metadata
+    for (
+        module_name,
+        variables_to_metadata,
+    ) in map_modules_to_variables_and_their_metadata.items():
+        for name, metadata in variables_to_metadata["variables_to_metadata"].items():
+            if name not in mapping:
+                mapping[name] = {"module": module_name} | metadata
+            else:
+                _fail_if_variable_in_multiple_modules(
+                    variable_name=name,
+                    module_name=module_name,
+                    mapping=mapping,
+                )
     return mapping
 
 
@@ -139,7 +163,7 @@ for level, module_names in MODULE_STRUCTURE.items():
             }
 
 
-def task_create_variable_to_metadata_mapping(
+def task_create_variable_metadata(
     modules_metadata: Annotated[
         dict[str, pd.DataFrame], DATA_CATALOGS["metadata"]._entries
     ],
@@ -155,7 +179,7 @@ def task_create_variable_to_metadata_mapping(
         TypeError: If input data or data name is not of expected type.
     """
     _error_handling_mapping_task(modules_metadata)
-    mapping = _create_variable_to_metadata_mapping(modules_metadata)
+    mapping = _create_variable_metadata(modules_metadata)
     with Path.open(path, "w", encoding="utf-8") as file:
         yaml.dump(mapping, file, encoding="utf-8", allow_unicode=True)
 
