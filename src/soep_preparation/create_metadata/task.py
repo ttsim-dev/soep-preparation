@@ -1,6 +1,5 @@
 """Tasks to create metadata."""
 
-import shutil
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -122,7 +121,7 @@ def _create_variable_metadata(
         module_name,
         variables_to_metadata,
     ) in map_modules_to_variables_and_their_metadata.items():
-        for name, metadata in variables_to_metadata["variables_to_metadata"].items():
+        for name, metadata in variables_to_metadata["variable_metadata"].items():
             if name not in mapping:
                 mapping[name] = {"module": module_name} | metadata
             else:
@@ -167,31 +166,34 @@ def task_create_variable_metadata(
     modules_metadata: Annotated[
         dict[str, pd.DataFrame], DATA_CATALOGS["metadata"]._entries
     ],
-    path: Annotated[Path, Product] = BLD / "variable_to_metadata_mapping.yaml",
+    in_path: Annotated[
+        Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
+    ],
+    out_path: Annotated[Path, Product] = BLD / "variable_to_metadata_mapping.yaml",
 ) -> None:
     """Create a mapping of variables to metadata and store as YAML file.
 
     Args:
         modules_metadata: Map of module to metadata information.
-        path: The path to the YAML file to write.
+        in_path: The path to compare the output against.
+        out_path: The path to the YAML file to write.
 
     Raises:
         TypeError: If input data or data name is not of expected type.
     """
     _error_handling_mapping_task(modules_metadata)
     mapping = _create_variable_metadata(modules_metadata)
-    with Path.open(path, "w", encoding="utf-8") as file:
+    with Path.open(in_path, "r", encoding="utf-8") as file:
+        existing_mapping = yaml.safe_load(file)
+    if mapping != existing_mapping:
+        msg = (
+            f"The generated variable to metadata mapping differs from the existing"
+            f" mapping at {in_path}."
+            f" Please review the changes before proceeding."
+        )
+        raise ValueError(msg)
+    with Path.open(out_path, "w", encoding="utf-8") as file:
         yaml.dump(mapping, file, encoding="utf-8", allow_unicode=True)
-
-
-def task_copy_yaml_mapping_to_src(
-    in_path: Annotated[Path, BLD / "variable_to_metadata_mapping.yaml"],
-    out_path: Annotated[Path, Product] = SRC
-    / "create_metadata"
-    / "variable_to_metadata_mapping.yaml",
-) -> None:
-    """Copy the YAML mapping file from BLD to SRC."""
-    shutil.copy(in_path, out_path)
 
 
 def _error_handling_mapping_task(modules_metadata: Any) -> None:
