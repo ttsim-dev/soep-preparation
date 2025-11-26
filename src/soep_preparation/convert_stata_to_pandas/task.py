@@ -72,16 +72,6 @@ for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
             )
 
 
-if not MODULE_STRUCTURE["cleaned_modules"]:
-
-    @task
-    def _raise_no_data_files_found() -> None:
-        msg = """Please add at least one raw data file to the data directory under
-        the specified SOEP version and create a cleaning script for it.
-        For further instructions, please refer to the README file."""
-        raise FileNotFoundError(msg)
-
-
 def _error_handling_task(data: Any, script_path: Any) -> None:
     fail_if_input_has_invalid_type(
         input_=data, expected_dtypes=["pathlib._local.PosixPath"]

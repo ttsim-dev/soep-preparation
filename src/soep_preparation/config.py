@@ -7,7 +7,7 @@ from pytask import DataCatalog
 
 from soep_preparation.utilities.general import (
     get_combine_module_names,
-    get_data_file_names,
+    get_raw_data_file_names,
 )
 
 pd.set_option("mode.copy_on_write", True)  # noqa: FBT003
@@ -30,7 +30,7 @@ else:
 
 
 MODULE_STRUCTURE = {
-    "cleaned_modules": get_data_file_names(
+    "cleaned_modules": get_raw_data_file_names(
         directory=SRC / "clean_modules",
         data_root=DATA_ROOT,
         soep_version=SOEP_VERSION,

@@ -5,10 +5,21 @@ import re
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
-from typing import Any
 
 
-def _fail_if_raw_data_file_missing(
+def _fail_if_no_raw_soep_module_exists(data_root: Path, soep_version: str) -> None:
+    raw_data_path = data_root / soep_version
+    if not any(raw_data_path.glob("*.dta")):
+        msg = (
+            f"No raw SOEP data files found in {raw_data_path} for SOEP {soep_version}."
+            f"Please add at least one raw data file to the data directory under"
+            f" the specified SOEP version and create a cleaning script for it."
+            f" For further instructions, please refer to the documentation at https://github.com/ttsim-dev/soep-preparation?tab=readme-ov-file#usage"
+        )
+        raise FileNotFoundError(msg)
+
+
+def _fail_if_raw_soep_module_missing(
     script_name: str, data_root: Path, soep_version: str
 ) -> None:
     raw_data_file_path = data_root / f"{soep_version}" / f"{script_name}.dta"
@@ -19,22 +30,6 @@ def _fail_if_raw_data_file_missing(
             f" corresponding to the specified wave."
         )
         raise FileNotFoundError(msg)
-
-
-def get_variable_names_in_script(script: Any) -> list[str]:  # noqa: ANN401
-    """Get the variable names in the script.
-
-    Args:
-        script: The script to get the variable names from.
-
-    Returns:
-        The variable names in the script.
-    """
-    return [
-        variable_name.split("derive_")[-1]
-        for variable_name in script.__dict__
-        if variable_name.startswith("derive_")
-    ]
 
 
 def get_script_names(directory: Path) -> list[str]:
@@ -53,7 +48,7 @@ def get_script_names(directory: Path) -> list[str]:
     ]
 
 
-def get_data_file_names(
+def get_raw_data_file_names(
     directory: Path, data_root: Path, soep_version: str
 ) -> list[str]:
     """Get names of all scripts in the directory with corresponding raw data files.
@@ -68,8 +63,9 @@ def get_data_file_names(
 
     """
     script_names = get_script_names(directory)
+    _fail_if_no_raw_soep_module_exists(data_root, soep_version)
     for script_name in script_names:
-        _fail_if_raw_data_file_missing(script_name, data_root, soep_version)
+        _fail_if_raw_soep_module_missing(script_name, data_root, soep_version)
     return script_names
 
 
