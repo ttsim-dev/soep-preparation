@@ -19,7 +19,7 @@ def combine(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFrame:
     """
     merged = pd.merge(left=ppathl, right=bioedu, on="p_id", how="outer")
     out = pd.DataFrame(index=merged.index)
-    out["p_id"] = merged["p_id"].unique()
+    out["p_id"] = merged["p_id"]
     out["birth_month"] = combine_first_and_make_categorical(
         series_1=merged["birth_month_ppathl"],
         series_2=merged["birth_month_bioedu"],
