@@ -5,10 +5,6 @@ repos:
       - id: check-useless-excludes
       # - id: check-hooks-apply  # Leave mdformat and nbstripout in here.
       # - id: identity  # Prints all files passed to pre-commits. Debugging.
-  - repo: https://github.com/lyz-code/yamlfix
-    rev: 1.17.0
-    hooks:
-      - id: yamlfix
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:

@@ -115,7 +115,9 @@ def _get_variable_metadata(
         variable_dtype = module[variable].dtype
         if variable_dtype.name == "category":
             # categorical dtypes are serialized
-            serialized_variable_dtype = _serialize_category_dtype(variable_dtype)
+            serialized_variable_dtype = {
+                "categorical": _serialize_category_dtype(variable_dtype)
+            }
         else:
             serialized_variable_dtype = variable_dtype.name
 
@@ -218,8 +220,9 @@ def _fail_if_mapping_changed(
         elif metadata != existing_mapping[variable]:
             if metadata["dtype"] != existing_mapping[variable]["dtype"]:
                 dtype_change_msg = (
-                    f"The dtype changed from"
-                    f" {existing_mapping[variable]['dtype']} to {metadata['dtype']}."
+                    f"The dtype changed from\n"
+                    f" {existing_mapping[variable]['dtype']} to\n"
+                    f" {metadata['dtype']}.\n"
                     f" If the change was not intended, inspect changes to the script"
                     f" creating module {module_name} at {corresponding_script_path},"
                     f" to ensure dtype consistency."

@@ -1,12 +1,13 @@
 ---
 1989_place_of_residence:
   dtype:
-    categories:
-      - Abroad (Ausland)
-      - East Germany (DDR) incl. East Berlin
-      - West Germany (FRG) incl. West Berlin
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Abroad (Ausland)
+        - East Germany (DDR) incl. East Berlin
+        - West Germany (FRG) incl. West Berlin
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -49,9 +50,10 @@
     - 2021
 active_work_search_last_four_weeks:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years:
     - 1999
@@ -247,9 +249,10 @@ alterssicherung_landwirte_y:
     - 2021
 altersteilzeit:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years:
     - 2002
@@ -267,16 +270,18 @@ altersteilzeit:
     - 2014
 altersteilzeit_2001:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2001]
 altersteilzeit_art_aktuell:
   dtype:
-    categories: [Reduzierte Arbeitszeit, 'Reduziertes Gehalt, gleiche Arbeitszeit']
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Reduzierte Arbeitszeit, 'Reduziertes Gehalt, gleiche Arbeitszeit']
+      categories_dtype: string
+      ordered: false
   module: pl
   survey_years:
     - 2002
@@ -922,24 +927,26 @@ beamter:
     - 2021
 beendigung_beschäftigungsverhältnis_betriebsstillegung:
   dtype:
-    categories: [Betriebsstillegung]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Betriebsstillegung]
+      categories_dtype: string
+      ordered: false
   module: pl
   survey_years: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
 beendigung_beschäftigungsverhältnis_grund:
   dtype:
-    categories:
-      - Aufgabe der selbstaendigen Taetigkeit
-      - Befristete Beschaeftigung war beendet
-      - Beurlaubung/Mutterschutz/Elternzeit
-      - Durch Aufloesungsvertrag
-      - Durch Kuendigung des Arbeitgebers
-      - Durch eigene Kuendigung
-      - Erreichen der Altersgrenze
-      - Wegen Betriebsstilllegung
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Aufgabe der selbstaendigen Taetigkeit
+        - Befristete Beschaeftigung war beendet
+        - Beurlaubung/Mutterschutz/Elternzeit
+        - Durch Aufloesungsvertrag
+        - Durch Kuendigung des Arbeitgebers
+        - Durch eigene Kuendigung
+        - Erreichen der Altersgrenze
+        - Wegen Betriebsstilllegung
+      categories_dtype: string
+      ordered: false
   module: pl
   survey_years:
     - 2001
@@ -965,16 +972,17 @@ beendigung_beschäftigungsverhältnis_grund:
     - 2021
 beendigung_beschäftigungsverhältnis_grund_1999:
   dtype:
-    categories:
-      - Aufloesungsvertrag
-      - Beurlaubung
-      - Eigene Kuendigung
-      - Ende Befristung
-      - Geschaeftsaufgabe, Selbstaendige
-      - Kuendigung Arbeitgeber
-      - Verrentung,Pensionierung
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Aufloesungsvertrag
+        - Beurlaubung
+        - Eigene Kuendigung
+        - Ende Befristung
+        - Geschaeftsaufgabe, Selbstaendige
+        - Kuendigung Arbeitgeber
+        - Verrentung,Pensionierung
+      categories_dtype: string
+      ordered: false
   module: pl
   survey_years: [1999, 2000]
 betreuungsgeld_y_hh:
@@ -1105,14 +1113,15 @@ betriebliche_altersversorgung_y:
     - 2021
 betriebsgröße:
   dtype:
-    categories:
-      - GE 20 LT 200
-      - GE 200 LT 2000
-      - GE 2000
-      - LT 20
-      - Selbstaendig, ohne Mitarbeitende
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - GE 20 LT 200
+        - GE 200 LT 2000
+        - GE 2000
+        - LT 20
+        - Selbstaendig, ohne Mitarbeitende
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1984
@@ -1155,20 +1164,21 @@ betriebsgröße:
     - 2021
 betriebsgröße_detailliert_aber_inkonsistente_kategorien:
   dtype:
-    categories:
-      - 100 bis unter 200
-      - 11 bis unter 20
-      - 20 bis unter 100
-      - 200 bis unter 2000
-      - 2000 und mehr
-      - 5 bis 10
-      - '91 bis 04: 5 bis unter 20'
-      - Selbstaendig-ohne Mitarb.
-      - Unter 5
-      - 'bis 90: unter 20'
-      - 'bis 98: 20 bis unter 200'
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - 100 bis unter 200
+        - 11 bis unter 20
+        - 20 bis unter 100
+        - 200 bis unter 2000
+        - 2000 und mehr
+        - 5 bis 10
+        - '91 bis 04: 5 bis unter 20'
+        - Selbstaendig-ohne Mitarb.
+        - Unter 5
+        - 'bis 90: unter 20'
+        - 'bis 98: 20 bis unter 200'
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1984
@@ -1211,9 +1221,10 @@ betriebsgröße_detailliert_aber_inkonsistente_kategorien:
     - 2021
 bezieht_aktuell_arbeitslosengeld_2_hh:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: hl
   survey_years:
     - 2005
@@ -1235,9 +1246,10 @@ bezieht_aktuell_arbeitslosengeld_2_hh:
     - 2021
 bezieht_aktuell_hilfe_zum_lebensunterhalt_hh:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: hl
   survey_years:
     - 1995
@@ -1269,9 +1281,10 @@ bezieht_aktuell_hilfe_zum_lebensunterhalt_hh:
     - 2021
 bezieht_aktuell_kindergeld_hh:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: hl
   survey_years:
     - 1995
@@ -1303,9 +1316,10 @@ bezieht_aktuell_kindergeld_hh:
     - 2021
 bezieht_aktuell_kinderzuschlag_hh:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: hl
   survey_years:
     - 2009
@@ -1323,9 +1337,10 @@ bezieht_aktuell_kinderzuschlag_hh:
     - 2021
 bezieht_aktuell_wohngeld_hh:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: hl
   survey_years:
     - 1995
@@ -1357,9 +1372,10 @@ bezieht_aktuell_wohngeld_hh:
     - 2021
 bezog_arbeitslosengeld_im_letzten_monat:
   dtype:
-    categories: [true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years:
     - 1995
@@ -1391,16 +1407,18 @@ bezog_arbeitslosengeld_im_letzten_monat:
     - 2021
 bezog_arbeitslosengeld_m3_m5:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2017, 2018, 2019, 2020]
 bezog_kinderzuschlag_hh:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: hl
   survey_years:
     - 2009
@@ -1418,9 +1436,10 @@ bezog_kinderzuschlag_hh:
     - 2021
 bezog_mutterschaftsgeld:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool
-    ordered: false
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool
+      ordered: false
   module: pl_pkal
   survey_years:
     - 1984
@@ -1463,9 +1482,10 @@ bezog_mutterschaftsgeld:
     - 2021
 bezog_mutterschaftsgeld_im_letzten_monat:
   dtype:
-    categories: [true]
-    categories_dtype: bool[pyarrow]
-    ordered: false
+    categorical:
+      categories: [true]
+      categories_dtype: bool[pyarrow]
+      ordered: false
   module: pl
   survey_years:
     - 1995
@@ -1497,9 +1517,10 @@ bezog_mutterschaftsgeld_im_letzten_monat:
     - 2021
 bezog_mutterschaftsgeld_pkal:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pkal
   survey_years:
     - 1984
@@ -1542,9 +1563,10 @@ bezog_mutterschaftsgeld_pkal:
     - 2021
 bezog_mutterschaftsgeld_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: false
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: false
   module: pl
   survey_years:
     - 1995
@@ -1576,25 +1598,26 @@ bezog_mutterschaftsgeld_pl:
     - 2021
 birth_bundesland:
   dtype:
-    categories:
-      - Baden-Wuerttemberg
-      - Bayern
-      - Berlin
-      - Brandenburg
-      - Bremen
-      - Hamburg
-      - Hessen
-      - Mecklenburg-Vorpommern
-      - Niedersachsen
-      - Nordrhein-Westfalen
-      - Rheinland-Pfalz
-      - Saarland
-      - Sachsen
-      - Sachsen-Anhalt
-      - Schleswig-Holstein
-      - Thueringen
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Baden-Wuerttemberg
+        - Bayern
+        - Berlin
+        - Brandenburg
+        - Bremen
+        - Hamburg
+        - Hessen
+        - Mecklenburg-Vorpommern
+        - Niedersachsen
+        - Nordrhein-Westfalen
+        - Rheinland-Pfalz
+        - Saarland
+        - Sachsen
+        - Sachsen-Anhalt
+        - Schleswig-Holstein
+        - Thueringen
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -1637,30 +1660,34 @@ birth_bundesland:
     - 2021
 birth_month:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    categories_dtype: int64
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      categories_dtype: int64
+      ordered: false
   module: ppathl_bioedu
   survey_years: null
 birth_month_bioedu:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: bioedu
   survey_years: null
 birth_month_child:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: biobirth
   survey_years: null
 birth_month_ppathl:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: ppathl
   survey_years:
     - 1984
@@ -1748,9 +1775,10 @@ birth_year_child:
   survey_years: null
 birthplace:
   dtype:
-    categories: [Deutschland, ausserhalb Deutschlands]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Deutschland, ausserhalb Deutschlands]
+      categories_dtype: string
+      ordered: false
   module: biol
   survey_years:
     - 1996
@@ -1778,9 +1806,10 @@ birthplace:
     - 2018
 birthplace_germany_father:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: biol
   survey_years:
     - 2006
@@ -1798,9 +1827,10 @@ birthplace_germany_father:
     - 2018
 birthplace_germany_mother:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: biol
   survey_years:
     - 2006
@@ -1863,9 +1893,10 @@ bmi_pl:
   survey_years: [2002, 2004, 2006, 2008, 2010, 2012, 2014, 2016, 2018, 2020]
 born_in_germany:
   dtype:
-    categories: [in Deutschland geboren oder immigr.<1950, nicht in Deutschland geboren]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [in Deutschland geboren oder immigr.<1950, nicht in Deutschland geboren]
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -2011,31 +2042,33 @@ children_care_facility_costs_m_current:
     - 2021
 confession:
   dtype:
-    categories:
-      - Mitglied einer anderen Religionsgemeinschaft
-      - Mitglied einer christlichen Religion
-      - Mitglied einer islamischen Religion
-      - Nein, konfessionslos
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Mitglied einer anderen Religionsgemeinschaft
+        - Mitglied einer christlichen Religion
+        - Mitglied einer islamischen Religion
+        - Nein, konfessionslos
+      categories_dtype: string
+      ordered: false
   module: pl
   survey_years: [2013, 2016, 2017, 2018, 2019, 2020, 2021]
 confession_specific:
   dtype:
-    categories:
-      - Alevitische Rel.gemeinschaft
-      - Andere Religionsgemeinschaft
-      - Andere christlische Religionsgemeinschaft
-      - Christlich orthodox
-      - Evangelisch
-      - Islamische Religionsgemeinschaft
-      - Katholisch
-      - Konfessionslos
-      - Mehrfachnennung
-      - Schiitische Rel.gemeinschaft
-      - Sunnitische Rel.gemeinschaft
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Alevitische Rel.gemeinschaft
+        - Andere Religionsgemeinschaft
+        - Andere christlische Religionsgemeinschaft
+        - Christlich orthodox
+        - Evangelisch
+        - Islamische Religionsgemeinschaft
+        - Katholisch
+        - Konfessionslos
+        - Mehrfachnennung
+        - Schiitische Rel.gemeinschaft
+        - Sunnitische Rel.gemeinschaft
+      categories_dtype: string
+      ordered: false
   module: pl
   survey_years:
     - 1990
@@ -2054,165 +2087,166 @@ confession_specific:
     - 2021
 country_of_birth:
   dtype:
-    categories:
-      - Afghanistan
-      - Albanien
-      - Algerien
-      - Amerikanisch-Samoa
-      - Angola
-      - Argentinien
-      - Armenien
-      - Aserbaidschan
-      - Australien
-      - Bangladesch
-      - Belgien
-      - Benin
-      - Bolivien
-      - Bosnien und Herzegowina
-      - Botsuana
-      - Brasilien
-      - Britisches Territorium im Indischen Ozean
-      - Bulgarien
-      - Burkina Faso
-      - Cabo Verde
-      - Chile
-      - China
-      - Costa Rica
-      - Côte d’Ivoire
-      - Deutschland
-      - Dominikanische Republik
-      - Dschibuti
-      - Dänemark
-      - Ecuador
-      - El Salvador
-      - Eritrea
-      - Estland
-      - Finnland
-      - Frankreich
-      - Gambia
-      - Georgien
-      - Ghana
-      - Grenada
-      - Griechenland
-      - Guatemala
-      - Guinea
-      - Haiti
-      - Honduras
-      - Hongkong
-      - Indien
-      - Indonesien
-      - Irak
-      - Iran
-      - Irland
-      - Israel
-      - Italien
-      - Jamaika
-      - Japan
-      - Jemen
-      - Jordanien
-      - Kambodscha
-      - Kamerun
-      - Kanada
-      - Kasachstan
-      - Katar
-      - Kenia
-      - Kirgistan
-      - Kolumbien
-      - Kongo
-      - Kongo, Demokratische Republik
-      - Korea, Republik
-      - Kosovo
-      - Kroatien
-      - Kuba
-      - Kuwait
-      - Laos
-      - Lesotho
-      - Lettland
-      - Libanon
-      - Liberia
-      - Libyen
-      - Litauen
-      - Luxemburg
-      - Madagaskar
-      - Malaysia
-      - Mali
-      - Marokko
-      - Mauritius
-      - Mexiko
-      - Moldau
-      - Monaco
-      - Mongolei
-      - Montenegro
-      - Mosambik
-      - Myanmar
-      - Namibia
-      - Nepal
-      - Neuseeland
-      - Nicaragua
-      - Niederlande
-      - Niger
-      - Nigeria
-      - Nordmazedonien
-      - Norwegen
-      - Pakistan
-      - Palästina
-      - Panama
-      - Paraguay
-      - Peru
-      - Philippinen
-      - Polen
-      - Portugal
-      - Ruanda
-      - Rumänien
-      - Russische Föderation
-      - Sambia
-      - Samoa
-      - Saudi-Arabien
-      - Schweden
-      - Schweiz
-      - Senegal
-      - Serbien
-      - Sierra Leone
-      - Simbabwe
-      - Singapur
-      - Slowakei
-      - Slowenien
-      - Somalia
-      - Spanien
-      - Sri Lanka
-      - St. Kitts und Nevis
-      - Sudan
-      - Suriname
-      - Syrien
-      - Südafrika
-      - Tadschikistan
-      - Taiwan
-      - Tansania
-      - Thailand
-      - Togo
-      - Trinidad und Tobago
-      - Tschad
-      - Tschechien
-      - Tunesien
-      - Turkmenistan
-      - Türkei
-      - Uganda
-      - Ukraine
-      - Ungarn
-      - Uruguay
-      - Usbekistan
-      - Venezuela
-      - Vereinigte Arabische Emirate
-      - Vereinigte Staaten
-      - Vereinigtes Königreich
-      - Vietnam
-      - Weißrussland
-      - Zypern
-      - Ägypten
-      - Äthiopien
-      - Österreich
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Afghanistan
+        - Albanien
+        - Algerien
+        - Amerikanisch-Samoa
+        - Angola
+        - Argentinien
+        - Armenien
+        - Aserbaidschan
+        - Australien
+        - Bangladesch
+        - Belgien
+        - Benin
+        - Bolivien
+        - Bosnien und Herzegowina
+        - Botsuana
+        - Brasilien
+        - Britisches Territorium im Indischen Ozean
+        - Bulgarien
+        - Burkina Faso
+        - Cabo Verde
+        - Chile
+        - China
+        - Costa Rica
+        - Côte d’Ivoire
+        - Deutschland
+        - Dominikanische Republik
+        - Dschibuti
+        - Dänemark
+        - Ecuador
+        - El Salvador
+        - Eritrea
+        - Estland
+        - Finnland
+        - Frankreich
+        - Gambia
+        - Georgien
+        - Ghana
+        - Grenada
+        - Griechenland
+        - Guatemala
+        - Guinea
+        - Haiti
+        - Honduras
+        - Hongkong
+        - Indien
+        - Indonesien
+        - Irak
+        - Iran
+        - Irland
+        - Israel
+        - Italien
+        - Jamaika
+        - Japan
+        - Jemen
+        - Jordanien
+        - Kambodscha
+        - Kamerun
+        - Kanada
+        - Kasachstan
+        - Katar
+        - Kenia
+        - Kirgistan
+        - Kolumbien
+        - Kongo
+        - Kongo, Demokratische Republik
+        - Korea, Republik
+        - Kosovo
+        - Kroatien
+        - Kuba
+        - Kuwait
+        - Laos
+        - Lesotho
+        - Lettland
+        - Libanon
+        - Liberia
+        - Libyen
+        - Litauen
+        - Luxemburg
+        - Madagaskar
+        - Malaysia
+        - Mali
+        - Marokko
+        - Mauritius
+        - Mexiko
+        - Moldau
+        - Monaco
+        - Mongolei
+        - Montenegro
+        - Mosambik
+        - Myanmar
+        - Namibia
+        - Nepal
+        - Neuseeland
+        - Nicaragua
+        - Niederlande
+        - Niger
+        - Nigeria
+        - Nordmazedonien
+        - Norwegen
+        - Pakistan
+        - Palästina
+        - Panama
+        - Paraguay
+        - Peru
+        - Philippinen
+        - Polen
+        - Portugal
+        - Ruanda
+        - Rumänien
+        - Russische Föderation
+        - Sambia
+        - Samoa
+        - Saudi-Arabien
+        - Schweden
+        - Schweiz
+        - Senegal
+        - Serbien
+        - Sierra Leone
+        - Simbabwe
+        - Singapur
+        - Slowakei
+        - Slowenien
+        - Somalia
+        - Spanien
+        - Sri Lanka
+        - St. Kitts und Nevis
+        - Sudan
+        - Suriname
+        - Syrien
+        - Südafrika
+        - Tadschikistan
+        - Taiwan
+        - Tansania
+        - Thailand
+        - Togo
+        - Trinidad und Tobago
+        - Tschad
+        - Tschechien
+        - Tunesien
+        - Turkmenistan
+        - Türkei
+        - Uganda
+        - Ukraine
+        - Ungarn
+        - Uruguay
+        - Usbekistan
+        - Venezuela
+        - Vereinigte Arabische Emirate
+        - Vereinigte Staaten
+        - Vereinigtes Königreich
+        - Vietnam
+        - Weißrussland
+        - Zypern
+        - Ägypten
+        - Äthiopien
+        - Österreich
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -2339,19 +2373,20 @@ early_retirement_pension_number_months:
     - 2021
 education_casmin:
   dtype:
-    categories:
-      - basic vocational qualification
-      - general elementary school
-      - general maturity certificate
-      - higher tertiary education
-      - in school
-      - inadequately completed
-      - intermediate general qualification
-      - intermediate vocational
-      - lower tertiary education
-      - vocational maturity certificate
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - basic vocational qualification
+        - general elementary school
+        - general maturity certificate
+        - higher tertiary education
+        - in school
+        - inadequately completed
+        - intermediate general qualification
+        - intermediate vocational
+        - lower tertiary education
+        - vocational maturity certificate
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1984
@@ -2436,18 +2471,19 @@ education_casmin_cat:
     - 2021
 education_isced:
   dtype:
-    categories:
-      - Bachelor s or equivalent level
-      - Doctoral or equivalent level
-      - Lower secondary education
-      - Master s or equivalent level
-      - Post-secondary non-tertiary education
-      - Primary education
-      - Short-cycle tertiary education
-      - Upper secondary education
-      - in school
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Bachelor s or equivalent level
+        - Doctoral or equivalent level
+        - Lower secondary education
+        - Master s or equivalent level
+        - Post-secondary non-tertiary education
+        - Primary education
+        - Short-cycle tertiary education
+        - Upper secondary education
+        - in school
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 2010
@@ -2464,16 +2500,17 @@ education_isced:
     - 2021
 education_isced_97:
   dtype:
-    categories:
-      - general elementary
-      - higher education
-      - higher vocational
-      - in school
-      - inadequately
-      - middle vocational
-      - vocational + Abi
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - general elementary
+        - higher education
+        - higher vocational
+        - in school
+        - inadequately
+        - middle vocational
+        - vocational + Abi
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years: []
 education_isced_cat:
@@ -3024,9 +3061,10 @@ employed_y:
     - 2021
 employment_level:
   dtype:
-    categories: [Full Time, Not Working, Part Time]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Full Time, Not Working, Part Time]
+      categories_dtype: string
+      ordered: false
   module: pequiv
   survey_years:
     - 1984
@@ -3069,16 +3107,17 @@ employment_level:
     - 2021
 employment_status:
   dtype:
-    categories:
-      - Ausbildung, Lehre
-      - Nicht erwerbstätig
-      - Teilzeitbeschäftigung
-      - Unregelmässig, geringfügig erwerbstät.
-      - Voll erwerbstätig
-      - Werkstatt für behinderte Menschen (seit 1998)
-      - in Kurzarbeit (seit 2021)
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Ausbildung, Lehre
+        - Nicht erwerbstätig
+        - Teilzeitbeschäftigung
+        - Unregelmässig, geringfügig erwerbstät.
+        - Voll erwerbstätig
+        - Werkstatt für behinderte Menschen (seit 1998)
+        - in Kurzarbeit (seit 2021)
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1984
@@ -3230,25 +3269,26 @@ erwerbstätig:
     - 2021
 federal_state_of_residence:
   dtype:
-    categories:
-      - Baden-Wuerttemberg
-      - Bavaria
-      - Berlin
-      - Brandenburg
-      - Bremen
-      - Hamburg
-      - Hessen
-      - Lower Saxony
-      - Mecklenburg-Vorpommern
-      - North-Rhine-Westfalia
-      - Rheinland-Pfalz
-      - Saarland
-      - Saxony
-      - Saxony-Anhalt
-      - Schleswig-Holstein
-      - Thuringia
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Baden-Wuerttemberg
+        - Bavaria
+        - Berlin
+        - Brandenburg
+        - Bremen
+        - Hamburg
+        - Hessen
+        - Lower Saxony
+        - Mecklenburg-Vorpommern
+        - North-Rhine-Westfalia
+        - Rheinland-Pfalz
+        - Saarland
+        - Saxony
+        - Saxony-Anhalt
+        - Schleswig-Holstein
+        - Thuringia
+      categories_dtype: string
+      ordered: false
   module: pequiv
   survey_years:
     - 1984
@@ -3291,159 +3331,160 @@ federal_state_of_residence:
     - 2021
 first_nationality:
   dtype:
-    categories:
-      - Aegypten
-      - Afghanistan
-      - Afrika
-      - Albanien
-      - Algerien
-      - Angola
-      - Argentinien
-      - Armenien
-      - Aserbaidschan
-      - Australien
-      - Bahamas
-      - Bangladesch
-      - Belgien
-      - Benelux
-      - Benin
-      - Bolivien
-      - Bosnien/Herzegowina
-      - Botswana
-      - Brasilien
-      - Bulgarien
-      - Burkina Faso
-      - Cap Verde
-      - Chile
-      - China
-      - Costa Rica
-      - Deutschland
-      - Dominikanische Republik
-      - Dänemark
-      - Ecuador
-      - El Salvador
-      - Elfenbeinkueste
-      - Eritrea
-      - Estland
-      - Ethnische Minderheiten (z.B. Jesiden, Roma)
-      - Finnland
-      - Frankreich
-      - Gambia
-      - Georgien
-      - Ghana
-      - Griechenland
-      - Grobritannien
-      - Guinea
-      - Holland
-      - Honduras
-      - Indien
-      - Indonesien
-      - Inguschetien
-      - Irak
-      - Iran
-      - Irland
-      - Israel
-      - Italien
-      - Jamaika
-      - Japan
-      - Jemen
-      - Jordanien
-      - Jugoslawien/MontenegroSerbien
-      - Kabardino-Balkarien
-      - Kambodscha
-      - Kamerun
-      - Kanada
-      - Kasachstan
-      - Kaukasus
-      - Kenia
-      - Kirgistan
-      - Kolumbien
-      - Kongo
-      - Korea
-      - Kosovo
-      - Kosovo-Albaner
-      - Kroatien
-      - Kuba
-      - Kurdistan
-      - Lettland
-      - Libanon
-      - Libyen
-      - Litauen
-      - Luxemburg
-      - Madagaskar
-      - Makedonien
-      - Malaysia
-      - Mali
-      - Marokko
-      - Mauritius
-      - Mexiko
-      - Mocambique
-      - Moldawien
-      - Mongolei
-      - Montenegro
-      - Myanmar
-      - Namibia
-      - Nepal
-      - Neuseeland
-      - Nicaragua
-      - Niger
-      - Nigeria
-      - Norwegen
-      - Oesterreich
-      - Pakistan
-      - Palstina
-      - Paraquay
-      - Peru
-      - Philippinen
-      - Polen
-      - Portugal
-      - Ruanda
-      - Rumänien
-      - Russland
-      - Sambia
-      - Samoa
-      - Saudi Arabien
-      - Schweden
-      - Schweiz
-      - Senegal
-      - Serbien
-      - Seychellen
-      - Sierra Leone
-      - Simbabwe
-      - Singapur
-      - Slowakei
-      - Slowenien
-      - Somalia
-      - Spanien
-      - Sri Lanka
-      - St. Lucia
-      - Staatenlos
-      - Sudan
-      - Suedafrika
-      - Syrien
-      - Tadschikistan
-      - Taiwan
-      - Tansania
-      - Thailand
-      - Togo
-      - Tschad
-      - Tschechien
-      - Tschetschenien
-      - Tuerkei
-      - Tunesien
-      - Turkmenistan
-      - USA
-      - Uganda
-      - Ukraine
-      - Ungarn
-      - Uruguay
-      - Usbekistan
-      - Venezuela
-      - Vietnam
-      - Weissruland
-      - Äthiopien
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Aegypten
+        - Afghanistan
+        - Afrika
+        - Albanien
+        - Algerien
+        - Angola
+        - Argentinien
+        - Armenien
+        - Aserbaidschan
+        - Australien
+        - Bahamas
+        - Bangladesch
+        - Belgien
+        - Benelux
+        - Benin
+        - Bolivien
+        - Bosnien/Herzegowina
+        - Botswana
+        - Brasilien
+        - Bulgarien
+        - Burkina Faso
+        - Cap Verde
+        - Chile
+        - China
+        - Costa Rica
+        - Deutschland
+        - Dominikanische Republik
+        - Dänemark
+        - Ecuador
+        - El Salvador
+        - Elfenbeinkueste
+        - Eritrea
+        - Estland
+        - Ethnische Minderheiten (z.B. Jesiden, Roma)
+        - Finnland
+        - Frankreich
+        - Gambia
+        - Georgien
+        - Ghana
+        - Griechenland
+        - Grobritannien
+        - Guinea
+        - Holland
+        - Honduras
+        - Indien
+        - Indonesien
+        - Inguschetien
+        - Irak
+        - Iran
+        - Irland
+        - Israel
+        - Italien
+        - Jamaika
+        - Japan
+        - Jemen
+        - Jordanien
+        - Jugoslawien/MontenegroSerbien
+        - Kabardino-Balkarien
+        - Kambodscha
+        - Kamerun
+        - Kanada
+        - Kasachstan
+        - Kaukasus
+        - Kenia
+        - Kirgistan
+        - Kolumbien
+        - Kongo
+        - Korea
+        - Kosovo
+        - Kosovo-Albaner
+        - Kroatien
+        - Kuba
+        - Kurdistan
+        - Lettland
+        - Libanon
+        - Libyen
+        - Litauen
+        - Luxemburg
+        - Madagaskar
+        - Makedonien
+        - Malaysia
+        - Mali
+        - Marokko
+        - Mauritius
+        - Mexiko
+        - Mocambique
+        - Moldawien
+        - Mongolei
+        - Montenegro
+        - Myanmar
+        - Namibia
+        - Nepal
+        - Neuseeland
+        - Nicaragua
+        - Niger
+        - Nigeria
+        - Norwegen
+        - Oesterreich
+        - Pakistan
+        - Palstina
+        - Paraquay
+        - Peru
+        - Philippinen
+        - Polen
+        - Portugal
+        - Ruanda
+        - Rumänien
+        - Russland
+        - Sambia
+        - Samoa
+        - Saudi Arabien
+        - Schweden
+        - Schweiz
+        - Senegal
+        - Serbien
+        - Seychellen
+        - Sierra Leone
+        - Simbabwe
+        - Singapur
+        - Slowakei
+        - Slowenien
+        - Somalia
+        - Spanien
+        - Sri Lanka
+        - St. Lucia
+        - Staatenlos
+        - Sudan
+        - Suedafrika
+        - Syrien
+        - Tadschikistan
+        - Taiwan
+        - Tansania
+        - Thailand
+        - Togo
+        - Tschad
+        - Tschechien
+        - Tschetschenien
+        - Tuerkei
+        - Tunesien
+        - Turkmenistan
+        - USA
+        - Uganda
+        - Ukraine
+        - Ungarn
+        - Uruguay
+        - Usbekistan
+        - Venezuela
+        - Vietnam
+        - Weissruland
+        - Äthiopien
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1984
@@ -3602,9 +3643,10 @@ frailty_pl:
     - 2021
 ft_employed_m_1:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3647,9 +3689,10 @@ ft_employed_m_1:
     - 2021
 ft_employed_m_10:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3692,9 +3735,10 @@ ft_employed_m_10:
     - 2021
 ft_employed_m_11:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3737,9 +3781,10 @@ ft_employed_m_11:
     - 2021
 ft_employed_m_12:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3782,9 +3827,10 @@ ft_employed_m_12:
     - 2021
 ft_employed_m_2:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3827,9 +3873,10 @@ ft_employed_m_2:
     - 2021
 ft_employed_m_3:
   dtype:
-    categories: [Vollzeit erwerbstätig]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3848,9 +3895,10 @@ ft_employed_m_3:
     - 1997
 ft_employed_m_4:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3893,9 +3941,10 @@ ft_employed_m_4:
     - 2021
 ft_employed_m_5:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3938,9 +3987,10 @@ ft_employed_m_5:
     - 2021
 ft_employed_m_6:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -3983,9 +4033,10 @@ ft_employed_m_6:
     - 2021
 ft_employed_m_7:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -4028,9 +4079,10 @@ ft_employed_m_7:
     - 2021
 ft_employed_m_8:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -4073,9 +4125,10 @@ ft_employed_m_8:
     - 2021
 ft_employed_m_9:
   dtype:
-    categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories: [Vollzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: object
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -4118,9 +4171,10 @@ ft_employed_m_9:
     - 2021
 gender:
   dtype:
-    categories: [male, female]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [male, female]
+      categories_dtype: string
+      ordered: false
   module: pequiv
   survey_years:
     - 1984
@@ -4163,9 +4217,10 @@ gender:
     - 2021
 general_trust_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2003, 2008, 2013, 2018]
 german:
@@ -4463,27 +4518,28 @@ gross_labor_income_previous_month_m:
     - 2021
 grund_beschäftigungsende:
   dtype:
-    categories:
-      - Arbeitserlaubnis nicht verlängert (seit 2019)
-      - Arbeitsverhältnis befristet (1985-1998)
-      - Arbeitsverhältnis befristet, Ausbildungsverhältnis beendet (seit 1999)
-      - Aufgabe eigenes Geschäfts
-      - Ausbildungsverhältnis beendet (1985-1998)
-      - Betriebsstilllegung (1991-1998, seit 2001)
-      - Beurlaubung, Mutterschutz, Elternzeit (1991-1998, seit 2011)
-      - Beurlaubung, freigstellt (1999-2010)
-      - Eigene Kündigung
-      - Einvernehmliche Auflösung, Auflösungsvertrag (1985-1990, seit 1999)
-      - Kündigung durch Arbeitgeber
-      - Sonst. inkl. Stilllegung, Rente/Pension, beurlaubt, freigestellt (1987-1990)
-      - Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig. (1985-1986)
-      - Sonst. inkl. einvernehm. Auflösung/Auflösungsvertrag (1991-1998)
-      - Versetzung durch Betrieb (1985-1998)
-      - Versetzung eigener Wunsch (1985-1998)
-      - Vorruhestandsregelung (1987-1998)
-      - in Rente, Pension gegangen (seit 1991)
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Arbeitserlaubnis nicht verlängert (seit 2019)
+        - Arbeitsverhältnis befristet (1985-1998)
+        - Arbeitsverhältnis befristet, Ausbildungsverhältnis beendet (seit 1999)
+        - Aufgabe eigenes Geschäfts
+        - Ausbildungsverhältnis beendet (1985-1998)
+        - Betriebsstilllegung (1991-1998, seit 2001)
+        - Beurlaubung, Mutterschutz, Elternzeit (1991-1998, seit 2011)
+        - Beurlaubung, freigstellt (1999-2010)
+        - Eigene Kündigung
+        - Einvernehmliche Auflösung, Auflösungsvertrag (1985-1990, seit 1999)
+        - Kündigung durch Arbeitgeber
+        - Sonst. inkl. Stilllegung, Rente/Pension, beurlaubt, freigestellt (1987-1990)
+        - Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig. (1985-1986)
+        - Sonst. inkl. einvernehm. Auflösung/Auflösungsvertrag (1991-1998)
+        - Versetzung durch Betrieb (1985-1998)
+        - Versetzung eigener Wunsch (1985-1998)
+        - Vorruhestandsregelung (1987-1998)
+        - in Rente, Pension gegangen (seit 1991)
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1985
@@ -4670,9 +4726,10 @@ heating_costs_m_hh:
     - 2021
 heating_costs_reason_missing:
   dtype:
-    categories: [Heizkosten unbekannt, Keine Heizkosten]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Heizkosten unbekannt, Keine Heizkosten]
+      categories_dtype: string
+      ordered: false
   module: hgen
   survey_years: [2014, 2016, 2017, 2018, 2019, 2020, 2021]
 hh_financial_assets_value_a:
@@ -4801,101 +4858,104 @@ hh_random_group:
   survey_years: null
 hh_soep_sample:
   dtype:
-    categories:
-      - 1984 Ausgangs-Sample (West)
-      - 1984 Migration (bis 1983, West)
-      - 1990 Ausgangs-Sample (Ost)
-      - 1994/5 Migration (1984-92/94, West)
-      - 1998 Aufstockung
-      - 2000 Aufstockung
-      - 2002 Hoch-Einkommen
-      - 2006 Aufstockung
-      - 2009 Innovation Sample
-      - 2010 Familientypen(NiedrigEinkommen,AlleinErziehend,MehrKindFamilien)
-      - 2010 Geburtskohorten (2007-2010)
-      - 2011 Aufstockung
-      - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
-      - 2012 Aufstockung
-      - 2013 Migration (1995-2010)
-      - 2015 Migration (2009-2013)
-      - 2016 Flucht (2013-2015)
-      - 2016 Flucht/Familie (2013-2015)
-      - 2017 Aufstockung (PIAAC-L)
-      - 2017 Flucht (2013-2016)
-      - 2018 Soziale Stadt
-      - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
-      - 2019 Top-Gesellschafter
-      - 2020 Migration
-      - 2020 Migration-Fachkräfteeinwanderung
-      - 2020 Schutzsuchende
-    categories_dtype: object
-    ordered: false
+    categorical:
+      categories:
+        - 1984 Ausgangs-Sample (West)
+        - 1984 Migration (bis 1983, West)
+        - 1990 Ausgangs-Sample (Ost)
+        - 1994/5 Migration (1984-92/94, West)
+        - 1998 Aufstockung
+        - 2000 Aufstockung
+        - 2002 Hoch-Einkommen
+        - 2006 Aufstockung
+        - 2009 Innovation Sample
+        - 2010 Familientypen(NiedrigEinkommen,AlleinErziehend,MehrKindFamilien)
+        - 2010 Geburtskohorten (2007-2010)
+        - 2011 Aufstockung
+        - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
+        - 2012 Aufstockung
+        - 2013 Migration (1995-2010)
+        - 2015 Migration (2009-2013)
+        - 2016 Flucht (2013-2015)
+        - 2016 Flucht/Familie (2013-2015)
+        - 2017 Aufstockung (PIAAC-L)
+        - 2017 Flucht (2013-2016)
+        - 2018 Soziale Stadt
+        - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
+        - 2019 Top-Gesellschafter
+        - 2020 Migration
+        - 2020 Migration-Fachkräfteeinwanderung
+        - 2020 Schutzsuchende
+      categories_dtype: object
+      ordered: false
   module: hpathl_design
   survey_years: null
 hh_soep_sample_design:
   dtype:
-    categories:
-      - 1984 Ausgangs-Sample (West)
-      - 1984 Migration (bis 1983, West)
-      - 1990 Ausgangs-Sample (Ost)
-      - 1994/5 Migration (1984-92/94, West)
-      - 1998 Aufstockung
-      - 2000 Aufstockung
-      - 2002 Hoch-Einkommen
-      - 2006 Aufstockung
-      - 2009 Innovation Sample
-      - 2010 Familientypen(NiedrigEinkommen,AlleinErziehend,MehrKindFamilien)
-      - 2010 Geburtskohorten (2007-2010)
-      - 2011 Aufstockung
-      - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
-      - 2012 Aufstockung
-      - 2013 Migration (1995-2010)
-      - 2015 Migration (2009-2013)
-      - 2016 Flucht (2013-2015)
-      - 2016 Flucht/Familie (2013-2015)
-      - 2017 Aufstockung (PIAAC-L)
-      - 2017 Flucht (2013-2016)
-      - 2018 Aufstockung
-      - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
-      - 2019 Top-Gesellschafter
-      - 2020 Migration
-      - 2020 Migration-Fachkräfteeinwanderung
-      - 2020 Schutzsuchende
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - 1984 Ausgangs-Sample (West)
+        - 1984 Migration (bis 1983, West)
+        - 1990 Ausgangs-Sample (Ost)
+        - 1994/5 Migration (1984-92/94, West)
+        - 1998 Aufstockung
+        - 2000 Aufstockung
+        - 2002 Hoch-Einkommen
+        - 2006 Aufstockung
+        - 2009 Innovation Sample
+        - 2010 Familientypen(NiedrigEinkommen,AlleinErziehend,MehrKindFamilien)
+        - 2010 Geburtskohorten (2007-2010)
+        - 2011 Aufstockung
+        - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
+        - 2012 Aufstockung
+        - 2013 Migration (1995-2010)
+        - 2015 Migration (2009-2013)
+        - 2016 Flucht (2013-2015)
+        - 2016 Flucht/Familie (2013-2015)
+        - 2017 Aufstockung (PIAAC-L)
+        - 2017 Flucht (2013-2016)
+        - 2018 Aufstockung
+        - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
+        - 2019 Top-Gesellschafter
+        - 2020 Migration
+        - 2020 Migration-Fachkräfteeinwanderung
+        - 2020 Schutzsuchende
+      categories_dtype: string
+      ordered: false
   module: design
   survey_years: null
 hh_soep_sample_hpathl:
   dtype:
-    categories:
-      - 1984 Ausgangs-Sample (West)
-      - 1984 Migration (bis 1983, West)
-      - 1990 Ausgangs-Sample (Ost)
-      - 1994/5 Migration (1984-92/94, West)
-      - 1998 Aufstockung
-      - 2000 Aufstockung
-      - 2002 Hoch-Einkommen
-      - 2006 Aufstockung
-      - 2009 Innovation Sample
-      - 2010 Familientypen(NiedrigEinkommen,AlleinErziehend,MehrKindFamilien)
-      - 2010 Geburtskohorten (2007-2010)
-      - 2011 Aufstockung
-      - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
-      - 2012 Aufstockung
-      - 2013 Migration (1995-2010)
-      - 2015 Migration (2009-2013)
-      - 2016 Flucht (2013-2015)
-      - 2016 Flucht/Familie (2013-2015)
-      - 2017 Aufstockung (PIAAC-L)
-      - 2017 Flucht (2013-2016)
-      - 2018 Soziale Stadt
-      - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
-      - 2019 Top-Gesellschafter
-      - 2020 Migration
-      - 2020 Migration-Fachkräfteeinwanderung
-      - 2020 Schutzsuchende
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - 1984 Ausgangs-Sample (West)
+        - 1984 Migration (bis 1983, West)
+        - 1990 Ausgangs-Sample (Ost)
+        - 1994/5 Migration (1984-92/94, West)
+        - 1998 Aufstockung
+        - 2000 Aufstockung
+        - 2002 Hoch-Einkommen
+        - 2006 Aufstockung
+        - 2009 Innovation Sample
+        - 2010 Familientypen(NiedrigEinkommen,AlleinErziehend,MehrKindFamilien)
+        - 2010 Geburtskohorten (2007-2010)
+        - 2011 Aufstockung
+        - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
+        - 2012 Aufstockung
+        - 2013 Migration (1995-2010)
+        - 2015 Migration (2009-2013)
+        - 2016 Flucht (2013-2015)
+        - 2016 Flucht/Familie (2013-2015)
+        - 2017 Aufstockung (PIAAC-L)
+        - 2017 Flucht (2013-2016)
+        - 2018 Soziale Stadt
+        - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
+        - 2019 Top-Gesellschafter
+        - 2020 Migration
+        - 2020 Migration-Fachkräfteeinwanderung
+        - 2020 Schutzsuchende
+      categories_dtype: string
+      ordered: false
   module: hpathl
   survey_years:
     - 1984
@@ -4984,17 +5044,18 @@ hh_strat:
   survey_years: null
 hh_typ_one_digit:
   dtype:
-    categories:
-      - (Ehe-)Paar ohne K.
-      - 1-Pers.-HH
-      - Alleinerziehende
-      - Mehr-Generationen-HH
-      - Paar + K. GT 16
-      - Paar + K. LE 16
-      - Paar + K. LE und GT 16
-      - Sonst. Kombination
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - (Ehe-)Paar ohne K.
+        - 1-Pers.-HH
+        - Alleinerziehende
+        - Mehr-Generationen-HH
+        - Paar + K. GT 16
+        - Paar + K. LE 16
+        - Paar + K. LE und GT 16
+        - Sonst. Kombination
+      categories_dtype: string
+      ordered: false
   module: hgen
   survey_years:
     - 1984
@@ -5037,32 +5098,33 @@ hh_typ_one_digit:
     - 2021
 hh_typ_two_digits:
   dtype:
-    categories:
-      - (Ehe-)Paar ohne K.
-      - 1-P-HH 35- LT 60 J.
-      - 1-P-HH GE 60 J.
-      - 1-P-HH LE 35 J.
-      - 3-Generationen-HH
-      - 4-Generationen-HH
-      - Alleinerz.+1 K. GT 16
-      - Alleinerz.+1 K. LE 16
-      - Alleinerz.+2 K. LE und GT 16
-      - Alleinerz.+2 u.m K. LE 16
-      - Alleinerz.+2 u.m. K. GT 16
-      - Alleinerz.+3 u.m. K. LE und GT 16
-      - Grosseltern-Enkel-HH
-      - Paar+1 K. GT 16
-      - Paar+1 K. LE 16
-      - Paar+2 K. GT 16
-      - Paar+2 K. LE 16
-      - Paar+2 K. LE und GT 16
-      - Paar+3 u.m. K. GT 16
-      - Paar+3 u.m. K. LE 16
-      - Paar+3 u.m. K. LE und GT 16
-      - Sonst. Kombination mit K. LE 16
-      - Sonst. Kombination ohne K. LE 16
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - (Ehe-)Paar ohne K.
+        - 1-P-HH 35- LT 60 J.
+        - 1-P-HH GE 60 J.
+        - 1-P-HH LE 35 J.
+        - 3-Generationen-HH
+        - 4-Generationen-HH
+        - Alleinerz.+1 K. GT 16
+        - Alleinerz.+1 K. LE 16
+        - Alleinerz.+2 K. LE und GT 16
+        - Alleinerz.+2 u.m K. LE 16
+        - Alleinerz.+2 u.m. K. GT 16
+        - Alleinerz.+3 u.m. K. LE und GT 16
+        - Grosseltern-Enkel-HH
+        - Paar+1 K. GT 16
+        - Paar+1 K. LE 16
+        - Paar+2 K. GT 16
+        - Paar+2 K. LE 16
+        - Paar+2 K. LE und GT 16
+        - Paar+3 u.m. K. GT 16
+        - Paar+3 u.m. K. LE 16
+        - Paar+3 u.m. K. LE und GT 16
+        - Sonst. Kombination mit K. LE 16
+        - Sonst. Kombination ohne K. LE 16
+      categories_dtype: string
+      ordered: false
   module: hgen
   survey_years:
     - 1984
@@ -5251,9 +5313,10 @@ hh_weighting_factor_without_new:
     - 2021
 highest_education:
   dtype:
-    categories: [PRIMARY_AND_LOWER_SECONDARY, UPPER_SECONDARY, TERTIARY]
-    categories_dtype: string
-    ordered: true
+    categorical:
+      categories: [PRIMARY_AND_LOWER_SECONDARY, UPPER_SECONDARY, TERTIARY]
+      categories_dtype: string
+      ordered: true
   module: pgen
   survey_years:
     - 1984
@@ -5953,9 +6016,10 @@ hours_worked_y:
     - 2021
 im_öffentlichen_dienst:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pgen
   survey_years:
     - 1984
@@ -5998,23 +6062,26 @@ im_öffentlichen_dienst:
     - 2021
 importance_faith_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2013, 2017, 2018, 2019, 2021]
 importance_faith_v2_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2016]
 imputation_flag_hh_net_overall_wealth_including_vehicles_and_student_loans:
   dtype:
-    categories: [No imputation, Edited, Imputed]
-    categories_dtype: string
-    ordered: true
+    categorical:
+      categories: [No imputation, Edited, Imputed]
+      categories_dtype: string
+      ordered: true
   module: hwealth
   survey_years: [2017]
 in_education:
@@ -6061,9 +6128,10 @@ in_education:
     - 2021
 in_private_rente_eingezahlt:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2013, 2018]
 in_private_rente_eingezahlte_monate:
@@ -6282,49 +6350,51 @@ individual_weighting_factor_without_new:
     - 2021
 interview_result_old:
   dtype:
-    categories:
-      - Adr.-problem, Haushalt in Adr.-erm. ueber Feldende hinaus
-      - Adr.-problem, neue Adresse ermittelt, jedoch nach Feldende
-      - Derz. nicht bereit, keine Zeit
-      - Derz. nicht bereit, sonstige/unklare Faelle
-      - Derz. nicht berereit trotz tel Zusage
-      - Endgueltig nicht mehr i.d.L. teilzunehmen (z.B. Pflegefall)
-      - Endgueltige Verweigerung
-      - 'Endgueltiger Ausf.: 2mal hintereinander temporarrer Ausfall'
-      - Haushalt endgueltig nicht auffindbar
-      - Nicht reaLaengere Zeit im Heimatland
-      - Nicht realisiert, 2mal temp. Ausfaelle
-      - Nicht realisiert, Krankheit/Krankenhaus ueber Feldende hinaus
-      - Nicht realisiert, waehrend gesamter Feldphase nicht erreichb.
-      - Nicht realisiert. in Schlussphase nicht mehr erreichbar
-      - Realisiert ohne Hinweise auf Folgewelle
-      - Realisiert, aber Pers. m. Befstat = 7 (harte Verweig.) im HH
-      - Realisiert, naechst. Welle nicht mehr bereit
-      - Realisiert, naechst. Welle unter keinen Umst. mehr bereit
-      - Sprachprobleme
-      - Teilw. realisiert ohne weitere Hinweise
-      - Teilw. realisiert, naechst. Welle nicht mehr bereit
-      - Teilw. realisiert, naechst. Welle u. keinen Umst. mehr bereit
-      - qna
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Adr.-problem, Haushalt in Adr.-erm. ueber Feldende hinaus
+        - Adr.-problem, neue Adresse ermittelt, jedoch nach Feldende
+        - Derz. nicht bereit, keine Zeit
+        - Derz. nicht bereit, sonstige/unklare Faelle
+        - Derz. nicht berereit trotz tel Zusage
+        - Endgueltig nicht mehr i.d.L. teilzunehmen (z.B. Pflegefall)
+        - Endgueltige Verweigerung
+        - 'Endgueltiger Ausf.: 2mal hintereinander temporarrer Ausfall'
+        - Haushalt endgueltig nicht auffindbar
+        - Nicht reaLaengere Zeit im Heimatland
+        - Nicht realisiert, 2mal temp. Ausfaelle
+        - Nicht realisiert, Krankheit/Krankenhaus ueber Feldende hinaus
+        - Nicht realisiert, waehrend gesamter Feldphase nicht erreichb.
+        - Nicht realisiert. in Schlussphase nicht mehr erreichbar
+        - Realisiert ohne Hinweise auf Folgewelle
+        - Realisiert, aber Pers. m. Befstat = 7 (harte Verweig.) im HH
+        - Realisiert, naechst. Welle nicht mehr bereit
+        - Realisiert, naechst. Welle unter keinen Umst. mehr bereit
+        - Sprachprobleme
+        - Teilw. realisiert ohne weitere Hinweise
+        - Teilw. realisiert, naechst. Welle nicht mehr bereit
+        - Teilw. realisiert, naechst. Welle u. keinen Umst. mehr bereit
+        - qna
+      categories_dtype: string
+      ordered: false
   module: pbrutto
   survey_years: [2017]
 interview_result_one_digit:
   dtype:
-    categories:
-      - Derzeit nicht durchfb.
-      - Derzeit z.Teiln.n.ber.
-      - Entgueltige Verweig.
-      - HHwechsel
-      - Haushalt aufgelöst (in anderen Panel-Haushalt verzogen)
-      - Ins Ausland verzogen
-      - Realisiert
-      - Verstorben
-      - endgueltig n.auffindbar
-      - in Feldz.n.auffindbar
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Derzeit nicht durchfb.
+        - Derzeit z.Teiln.n.ber.
+        - Entgueltige Verweig.
+        - HHwechsel
+        - Haushalt aufgelöst (in anderen Panel-Haushalt verzogen)
+        - Ins Ausland verzogen
+        - Realisiert
+        - Verstorben
+        - endgueltig n.auffindbar
+        - in Feldz.n.auffindbar
+      categories_dtype: string
+      ordered: false
   module: pbrutto
   survey_years:
     - 1985
@@ -6366,37 +6436,38 @@ interview_result_one_digit:
     - 2021
 interview_result_two_digits:
   dtype:
-    categories:
-      - Alt und krank
-      - Ausl.l.Zt in Heima
-      - Derz.n.durchfuehrbar
-      - Derz.n.teiln.bereit
-      - Ende Feldarb.n.err
-      - Endguelt.Verweig.
-      - HHwechsel
-      - Haushalt aufgelöst (in anderen Panel-Haushalt verzogen)
-      - Ins Ausland verzogen
-      - Intv.HH-L.Vj.bl.off.
-      - Intv.HH-L.Vj.geschl.
-      - Kein Fragebogen
-      - Keine Zeit-Lust
-      - Krank bis Feldende
-      - Luecke Vj. nacherh.
-      - Luecke Vj. nicht nacherh.
-      - Nicht auswertbar
-      - Nicht erreichbar
-      - Pers.interview, kein HH.interview
-      - Real. auch in Vorwelle
-      - Realisiert
-      - Realisiert nach Feldende
-      - Sonst.unkl.Faelle
-      - Sprachprobleme
-      - Verstorben
-      - endguelt.nicht verwertbar
-      - endgueltig n.auffindbar
-      - in Feldz.n.auffindbar
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Alt und krank
+        - Ausl.l.Zt in Heima
+        - Derz.n.durchfuehrbar
+        - Derz.n.teiln.bereit
+        - Ende Feldarb.n.err
+        - Endguelt.Verweig.
+        - HHwechsel
+        - Haushalt aufgelöst (in anderen Panel-Haushalt verzogen)
+        - Ins Ausland verzogen
+        - Intv.HH-L.Vj.bl.off.
+        - Intv.HH-L.Vj.geschl.
+        - Kein Fragebogen
+        - Keine Zeit-Lust
+        - Krank bis Feldende
+        - Luecke Vj. nacherh.
+        - Luecke Vj. nicht nacherh.
+        - Nicht auswertbar
+        - Nicht erreichbar
+        - Pers.interview, kein HH.interview
+        - Real. auch in Vorwelle
+        - Realisiert
+        - Realisiert nach Feldende
+        - Sonst.unkl.Faelle
+        - Sprachprobleme
+        - Verstorben
+        - endguelt.nicht verwertbar
+        - endgueltig n.auffindbar
+        - in Feldz.n.auffindbar
+      categories_dtype: string
+      ordered: false
   module: pbrutto
   survey_years:
     - 1985
@@ -6438,19 +6509,20 @@ interview_result_two_digits:
     - 2021
 interview_status:
   dtype:
-    categories:
-      - Erneut zu befragen
-      - Erstmals zu befragen, da Befragungsalter erreicht
-      - Erstmals zu befragen, da bisher temporaerer Ausfall
-      - Erstmals zu befragende neue Person
-      - Erwachsenes Haushaltsmitglied, aber keine Befragungsperson
-      - Jugendliche Befragungsperson
-      - Nicht zu befragen, da harter Verweigerer in Vorwelle/n
-      - Noch nicht zu befragende alte Person
-      - Noch nicht zu befragende neue Person
-      - Umwandlung von Code 7, da doch wieder teilgenommen
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Erneut zu befragen
+        - Erstmals zu befragen, da Befragungsalter erreicht
+        - Erstmals zu befragen, da bisher temporaerer Ausfall
+        - Erstmals zu befragende neue Person
+        - Erwachsenes Haushaltsmitglied, aber keine Befragungsperson
+        - Jugendliche Befragungsperson
+        - Nicht zu befragen, da harter Verweigerer in Vorwelle/n
+        - Noch nicht zu befragende alte Person
+        - Noch nicht zu befragende neue Person
+        - Umwandlung von Code 7, da doch wieder teilgenommen
+      categories_dtype: string
+      ordered: false
   module: pbrutto
   survey_years:
     - 1985
@@ -7159,21 +7231,22 @@ kriegsopferversorgung_rente_y:
     - 2021
 labor_force_status:
   dtype:
-    categories:
-      - Erwerbstätig
-      - Erwerbstätig, aber inaktiv in den letzten 7 Tagen (seit 2000)
-      - 'NE: 65 Jahre und älter'
-      - 'NE: Mutterschutz/Elternzeit (seit 1991)'
-      - 'NE: aber bezahlte Arbeit in den letzten 7 Tagen (seit 1999)'
-      - 'NE: aber bezahlte Nebentätigkeit (seit 2017)'
-      - 'NE: aber gelegentliche Nebentätigkeit (1985-2016)'
-      - 'NE: aber regelmäßig bezahlte Nebentätigkeit (1985-2016)'
-      - 'NE: arbeitslos registriert'
-      - 'NE: derzeit in Ausbildung'
-      - 'NE: im Militär-/Zivildienst'
-      - 'Nicht erwerbstätig (NE): keine weitere Angabe'
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Erwerbstätig
+        - Erwerbstätig, aber inaktiv in den letzten 7 Tagen (seit 2000)
+        - 'NE: 65 Jahre und älter'
+        - 'NE: Mutterschutz/Elternzeit (seit 1991)'
+        - 'NE: aber bezahlte Arbeit in den letzten 7 Tagen (seit 1999)'
+        - 'NE: aber bezahlte Nebentätigkeit (seit 2017)'
+        - 'NE: aber gelegentliche Nebentätigkeit (1985-2016)'
+        - 'NE: aber regelmäßig bezahlte Nebentätigkeit (1985-2016)'
+        - 'NE: arbeitslos registriert'
+        - 'NE: derzeit in Ausbildung'
+        - 'NE: im Militär-/Zivildienst'
+        - 'Nicht erwerbstätig (NE): keine weitere Angabe'
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1984
@@ -7216,9 +7289,10 @@ labor_force_status:
     - 2021
 life_satisfaction_low_to_high:
   dtype:
-    categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years:
     - 1984
@@ -7303,17 +7377,18 @@ living_space_hh:
     - 2021
 marital_status:
   dtype:
-    categories:
-      - Ehepartner im Ausland
-      - Eingetragene gleichgeschlechtliche Partnerschaft getrennt lebend
-      - Eingetragene gleichgeschlechtliche Partnerschaft zusammenlebend
-      - Geschieden / eingetragene gleichgeschlechtliche Partnerschaft aufgehoben
-      - Ledig
-      - Verheiratet, dauernd getrennt lebend
-      - Verheiratet, mit Ehepartner zusammenlebend
-      - Verwitwet / Lebenspartner/-in aus eingetragener gleichgeschlechtlicher Partnerschaft verstorben
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Ehepartner im Ausland
+        - Eingetragene gleichgeschlechtliche Partnerschaft getrennt lebend
+        - Eingetragene gleichgeschlechtliche Partnerschaft zusammenlebend
+        - Geschieden / eingetragene gleichgeschlechtliche Partnerschaft aufgehoben
+        - Ledig
+        - Verheiratet, dauernd getrennt lebend
+        - Verheiratet, mit Ehepartner zusammenlebend
+        - Verwitwet / Lebenspartner/-in aus eingetragener gleichgeschlechtlicher Partnerschaft verstorben
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1984
@@ -7356,86 +7431,98 @@ marital_status:
     - 2021
 med_asthma_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_bluthochdruck:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool
+      ordered: true
   module: pequiv_pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_bluthochdruck_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_bluthochdruck_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_demenz_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_depressiv_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_diabetes:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool
+      ordered: true
   module: pequiv_pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_diabetes_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_diabetes_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_gelenk:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool
+      ordered: true
   module: pequiv_pl
   survey_years: [2011, 2013, 2015, 2017, 2019, 2021]
 med_gelenk_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years: [2011, 2013, 2015, 2017, 2019, 2021]
 med_gelenk_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: false
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2011, 2013, 2015, 2017, 2019, 2021]
 med_gewicht:
@@ -7533,30 +7620,34 @@ med_größe_pl:
   survey_years: [2002, 2004, 2006, 2008, 2010, 2012, 2014, 2016, 2018, 2020]
 med_herzkrankheit:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool
+      ordered: true
   module: pequiv_pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_herzkrankheit_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_herzkrankheit_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_krankenhaus_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years:
     - 1984
@@ -7597,44 +7688,50 @@ med_krankenhaus_pequiv:
     - 2021
 med_krebs:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool
+      ordered: true
   module: pequiv_pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_krebs_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_krebs_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_migräne_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_psych_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_raucher_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years:
     - 2002
@@ -7650,44 +7747,50 @@ med_raucher_pl:
     - 2021
 med_rücken_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: false
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2011, 2013, 2015, 2017, 2019, 2021]
 med_schlaf_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2011, 2013, 2015, 2017, 2019, 2021]
 med_schlaganfall:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool
+      ordered: true
   module: pequiv_pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_schlaganfall_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_schlaganfall_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_schw_treppen:
   dtype:
-    categories: [false, true, 2]
-    categories_dtype: object
-    ordered: true
+    categorical:
+      categories: [false, true, 2]
+      categories_dtype: object
+      ordered: true
   module: pequiv_pl
   survey_years:
     - 2002
@@ -7705,9 +7808,10 @@ med_schw_treppen:
     - 2021
 med_schwierigkeit_taten_pl:
   dtype:
-    categories: [0, 1, 2]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [0, 1, 2]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: pl
   survey_years:
     - 2002
@@ -7742,9 +7846,10 @@ med_schwierigkeit_treppen_dummy_pl:
     - 2021
 med_schwierigkeit_treppen_pl:
   dtype:
-    categories: [0, 1, 2]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [0, 1, 2]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: pl
   survey_years:
     - 2002
@@ -7762,9 +7867,10 @@ med_schwierigkeit_treppen_pl:
     - 2021
 med_schwierigkeiten_anziehen_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years:
     - 1991
@@ -7800,9 +7906,10 @@ med_schwierigkeiten_anziehen_pequiv:
     - 2021
 med_schwierigkeiten_bett:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years:
     - 1985
@@ -7844,9 +7951,10 @@ med_schwierigkeiten_bett:
     - 2021
 med_schwierigkeiten_einkauf:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years:
     - 1985
@@ -7888,9 +7996,10 @@ med_schwierigkeiten_einkauf:
     - 2021
 med_schwierigkeiten_hausarb:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years:
     - 1985
@@ -7932,9 +8041,10 @@ med_schwierigkeiten_hausarb:
     - 2021
 med_schwierigkeiten_treppen_pequiv:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pequiv
   survey_years:
     - 2002
@@ -7952,16 +8062,18 @@ med_schwierigkeiten_treppen_pequiv:
     - 2021
 med_sonst_pl:
   dtype:
-    categories: [false, true]
-    categories_dtype: bool[pyarrow]
-    ordered: true
+    categorical:
+      categories: [false, true]
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2009, 2011, 2013, 2015, 2017, 2019, 2021]
 med_subjective_status:
   dtype:
-    categories: [1, 2, 3, 4, 5]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [1, 2, 3, 4, 5]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: pequiv_pl
   survey_years:
     - 1992
@@ -8094,9 +8206,10 @@ med_subjective_status_dummy_pl:
     - 2021
 med_subjective_status_pequiv:
   dtype:
-    categories: [1, 2, 3, 4, 5]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [1, 2, 3, 4, 5]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: pequiv
   survey_years:
     - 1992
@@ -8130,9 +8243,10 @@ med_subjective_status_pequiv:
     - 2021
 med_subjective_status_pl:
   dtype:
-    categories: [1, 2, 3, 4, 5]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [1, 2, 3, 4, 5]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: pl
   survey_years:
     - 1992
@@ -8166,9 +8280,10 @@ med_subjective_status_pl:
     - 2021
 med_zufrieden_pequiv:
   dtype:
-    categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pequiv
   survey_years:
     - 1984
@@ -8211,12 +8326,13 @@ med_zufrieden_pequiv:
     - 2021
 migration_background:
   dtype:
-    categories:
-      - direkter Migrationshintergrund
-      - indirekter Migrationshintergrund
-      - kein Migrationshintergrund
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - direkter Migrationshintergrund
+        - indirekter Migrationshintergrund
+        - kein Migrationshintergrund
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -8301,9 +8417,10 @@ military:
     - 2021
 minijob_employed_m_1:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8325,9 +8442,10 @@ minijob_employed_m_1:
     - 2021
 minijob_employed_m_10:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8349,9 +8467,10 @@ minijob_employed_m_10:
     - 2021
 minijob_employed_m_11:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8373,9 +8492,10 @@ minijob_employed_m_11:
     - 2021
 minijob_employed_m_12:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8397,9 +8517,10 @@ minijob_employed_m_12:
     - 2021
 minijob_employed_m_2:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8421,9 +8542,10 @@ minijob_employed_m_2:
     - 2021
 minijob_employed_m_3:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8445,9 +8567,10 @@ minijob_employed_m_3:
     - 2021
 minijob_employed_m_4:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8469,9 +8592,10 @@ minijob_employed_m_4:
     - 2021
 minijob_employed_m_5:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8493,9 +8617,10 @@ minijob_employed_m_5:
     - 2021
 minijob_employed_m_6:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8517,9 +8642,10 @@ minijob_employed_m_6:
     - 2021
 minijob_employed_m_7:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8541,9 +8667,10 @@ minijob_employed_m_7:
     - 2021
 minijob_employed_m_8:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8565,9 +8692,10 @@ minijob_employed_m_8:
     - 2021
 minijob_employed_m_9:
   dtype:
-    categories: [Minijob erwerbstätig]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Minijob erwerbstätig]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 2005
@@ -8589,9 +8717,10 @@ minijob_employed_m_9:
     - 2021
 month_interview:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: pgen
   survey_years:
     - 1984
@@ -8963,86 +9092,98 @@ nicht_erwerbstätig:
     - 2021
 norm_career_mothers_same_warmth_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2012]
 norm_child_suffers_father_career_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2012]
 norm_child_suffers_under_3_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2012]
 norm_child_suffers_under_3_low_to_high_2018:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2018]
 norm_child_suffers_under_6_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2012]
 norm_child_suffers_under_6_low_to_high_2018:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2018]
 norm_genders_similar_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2012]
 norm_genders_similar_low_to_high_2018:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2018]
 norm_marry_when_together_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2012]
 norm_marry_when_together_low_to_high_2018:
   dtype:
-    categories: [1, 2, 3, 4, 5, 6, 7]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4, 5, 6, 7]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2018]
 norm_men_chores_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2012]
 norm_women_family_priority_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2012]
 number_of_children:
@@ -9222,53 +9363,54 @@ obese_pl:
   survey_years: [2002, 2004, 2006, 2008, 2010, 2012, 2014, 2016, 2018, 2020]
 occupation_status:
   dtype:
-    categories:
-      - Angestellte, Industrie- und Werkmeister
-      - Angestellte, einfache Tätigkeit (bis 1990)
-      - Angestellte, einfache Tätigkeit mit Ausbildungsabschluss (ab 1991)
-      - Angestellte, einfache Tätigkeit ohne Ausbildungsabschluss (ab 1991)
-      - Angestellte, hochqualifizierte Tätigkeit oder Leitungsfunktion
-      - Angestellte, qualifizierte Tätigkeit
-      - Angestellte, umfassende Führungsaufgaben
-      - Arbeiter in der Landwirtschaft (1990 Ost)
-      - Aspiranten (1990 Ost)
-      - Auszubildende (1984-1999), Lehrlinge (1990 Ost)
-      - Auszubildende, gewerblich-technisch (ab 2000)
-      - Auszubildende, kaufmännisch (ab 2000)
-      - Beamte, einfacher Dienst
-      - Beamte, gehobener Dienst
-      - Beamte, höherer Dienst
-      - Beamte, mittlerer Dienst
-      - Brigadier, Meister in der Landwirtschaft (1990 Ost)
-      - Facharbeiter in der Landwirtschaft (1990 Ost)
-      - Freiberufler, Akademiker
-      - Freiberufler, Akademiker ohne Mitarbeiter (ab 2000)
-      - Freiberufler, Akademiker, 1-9 Mitarbeiter (ab 2000)
-      - Freiberufler, Akademiker, 10+ Mitarbeiter (ab 2000)
-      - Geschäftsführender Gesellschafter und vergl. Angestellte im eigenen Betrieb (ab 2019)
-      - Meister, Polier
-      - 'NE: Rentner/Rentnerin'
-      - 'NE: Wehr- und Zivildienst'
-      - 'NE: arbeitslos gemeldet'
-      - 'NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre'
-      - Volontäre, Praktikanten
-      - Vorarbeiter, Kolonnenführer
-      - angelernter Arbeiter
-      - gelernte und Facharbeiter
-      - höhere Leitungsfunktion in der Landwirtschaft (1990 Ost)
-      - mithelfende Familienangehörige
-      - 'nicht erwerbstätig (NE): keine weitere Angaben'
-      - selbständiger Landwirt
-      - selbständiger Landwirt 1-9 Mitarbeiter (ab 2000)
-      - selbständiger Landwirt 10+ Mitarbeiter (ab 2000)
-      - selbständiger Landwirt ohne Mitarbeiter (ab 2000)
-      - sonstige selbständiger
-      - sonstige selbständiger, 1-9 Mitarbeiter (ab 1997)
-      - sonstige selbständiger, 10+ Mitarbeiter
-      - sonstige selbständiger, ohne Mitarbeiter (ab 1997)
-      - ungelernter Arbeiter
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Angestellte, Industrie- und Werkmeister
+        - Angestellte, einfache Tätigkeit (bis 1990)
+        - Angestellte, einfache Tätigkeit mit Ausbildungsabschluss (ab 1991)
+        - Angestellte, einfache Tätigkeit ohne Ausbildungsabschluss (ab 1991)
+        - Angestellte, hochqualifizierte Tätigkeit oder Leitungsfunktion
+        - Angestellte, qualifizierte Tätigkeit
+        - Angestellte, umfassende Führungsaufgaben
+        - Arbeiter in der Landwirtschaft (1990 Ost)
+        - Aspiranten (1990 Ost)
+        - Auszubildende (1984-1999), Lehrlinge (1990 Ost)
+        - Auszubildende, gewerblich-technisch (ab 2000)
+        - Auszubildende, kaufmännisch (ab 2000)
+        - Beamte, einfacher Dienst
+        - Beamte, gehobener Dienst
+        - Beamte, höherer Dienst
+        - Beamte, mittlerer Dienst
+        - Brigadier, Meister in der Landwirtschaft (1990 Ost)
+        - Facharbeiter in der Landwirtschaft (1990 Ost)
+        - Freiberufler, Akademiker
+        - Freiberufler, Akademiker ohne Mitarbeiter (ab 2000)
+        - Freiberufler, Akademiker, 1-9 Mitarbeiter (ab 2000)
+        - Freiberufler, Akademiker, 10+ Mitarbeiter (ab 2000)
+        - Geschäftsführender Gesellschafter und vergl. Angestellte im eigenen Betrieb (ab 2019)
+        - Meister, Polier
+        - 'NE: Rentner/Rentnerin'
+        - 'NE: Wehr- und Zivildienst'
+        - 'NE: arbeitslos gemeldet'
+        - 'NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre'
+        - Volontäre, Praktikanten
+        - Vorarbeiter, Kolonnenführer
+        - angelernter Arbeiter
+        - gelernte und Facharbeiter
+        - höhere Leitungsfunktion in der Landwirtschaft (1990 Ost)
+        - mithelfende Familienangehörige
+        - 'nicht erwerbstätig (NE): keine weitere Angaben'
+        - selbständiger Landwirt
+        - selbständiger Landwirt 1-9 Mitarbeiter (ab 2000)
+        - selbständiger Landwirt 10+ Mitarbeiter (ab 2000)
+        - selbständiger Landwirt ohne Mitarbeiter (ab 2000)
+        - sonstige selbständiger
+        - sonstige selbständiger, 1-9 Mitarbeiter (ab 1997)
+        - sonstige selbständiger, 10+ Mitarbeiter
+        - sonstige selbständiger, ohne Mitarbeiter (ab 1997)
+        - ungelernter Arbeiter
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years:
     - 1984
@@ -9365,15 +9507,16 @@ p_id_mother:
   survey_years: null
 partnership_status:
   dtype:
-    categories:
-      - Ehepartner / eingetragener Partner
-      - Lebenspartner
-      - kein Partner im Haushalt
-      - unklar
-      - wahrscheinlich Ehepartner / eingetragen
-      - wahrscheinlich Lebenspartner
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Ehepartner / eingetragener Partner
+        - Lebenspartner
+        - kein Partner im Haushalt
+        - unklar
+        - wahrscheinlich Ehepartner / eingetragen
+        - wahrscheinlich Lebenspartner
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -9416,38 +9559,39 @@ partnership_status:
     - 2021
 party_affiliation:
   dtype:
-    categories:
-      - AfD
-      - Andere
-      - Buendnis90/Gruene
-      - Buendnis90/Gruene/Die Linke
-      - CDU
-      - CDU+/oder CSU/AfD
-      - CDU/Buendnis90/Gruene
-      - CDU/CSU
-      - CDU/DVU(Rep/NPD)
-      - CDU/Die Linke
-      - CDU/FDP
-      - CSU
-      - CSU/FDP
-      - Die Linke
-      - Die Linke /DVU(Rep/NPD)
-      - FDP
-      - FDP/Die Linke
-      - FDP/NPD
-      - Gruene/DVU(Rep/NPD)
-      - Gruene/FDP
-      - NPD/Republikaner/Die Rechte
-      - Piratenpartei
-      - SPD
-      - SPD/AfD
-      - SPD/Buendnis90/Gruene
-      - SPD/CDU
-      - SPD/DVU(Rep/NPD)
-      - SPD/Die Linke
-      - SPD/FDP
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - AfD
+        - Andere
+        - Buendnis90/Gruene
+        - Buendnis90/Gruene/Die Linke
+        - CDU
+        - CDU+/oder CSU/AfD
+        - CDU/Buendnis90/Gruene
+        - CDU/CSU
+        - CDU/DVU(Rep/NPD)
+        - CDU/Die Linke
+        - CDU/FDP
+        - CSU
+        - CSU/FDP
+        - Die Linke
+        - Die Linke /DVU(Rep/NPD)
+        - FDP
+        - FDP/Die Linke
+        - FDP/NPD
+        - Gruene/DVU(Rep/NPD)
+        - Gruene/FDP
+        - NPD/Republikaner/Die Rechte
+        - Piratenpartei
+        - SPD
+        - SPD/AfD
+        - SPD/Buendnis90/Gruene
+        - SPD/CDU
+        - SPD/DVU(Rep/NPD)
+        - SPD/Die Linke
+        - SPD/FDP
+      categories_dtype: string
+      ordered: false
   module: pl
   survey_years:
     - 1984
@@ -9532,9 +9676,10 @@ party_affiliation_dummy:
     - 2021
 party_affiliation_intensity_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4, 5]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4, 5]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years:
     - 1984
@@ -9660,9 +9805,10 @@ pflegegeld_y_hh:
     - 2021
 place_of_residence_current:
   dtype:
-    categories: [Westdeutschland (alte Bundesländer), Ostdeutschland (neue Bundesländer)]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Westdeutschland (alte Bundesländer), Ostdeutschland (neue Bundesländer)]
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -9789,9 +9935,10 @@ pointer_partner:
     - 2021
 policital_interest_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years:
     - 1985
@@ -9833,9 +9980,10 @@ policital_interest_high_to_low:
     - 2021
 political_spectrum_left_to_right:
   dtype:
-    categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [2005, 2009, 2014, 2019]
 private_altersvorsorge_hinterbliebene_y:
@@ -10092,9 +10240,10 @@ private_transfers_erhalten_y:
     - 2021
 pt_employed_m_1:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10137,9 +10286,10 @@ pt_employed_m_1:
     - 2021
 pt_employed_m_10:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10182,9 +10332,10 @@ pt_employed_m_10:
     - 2021
 pt_employed_m_11:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10227,9 +10378,10 @@ pt_employed_m_11:
     - 2021
 pt_employed_m_12:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10272,9 +10424,10 @@ pt_employed_m_12:
     - 2021
 pt_employed_m_2:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10317,16 +10470,18 @@ pt_employed_m_2:
     - 2021
 pt_employed_m_3:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years: []
 pt_employed_m_4:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10369,9 +10524,10 @@ pt_employed_m_4:
     - 2021
 pt_employed_m_5:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10414,9 +10570,10 @@ pt_employed_m_5:
     - 2021
 pt_employed_m_6:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10459,9 +10616,10 @@ pt_employed_m_6:
     - 2021
 pt_employed_m_7:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10504,9 +10662,10 @@ pt_employed_m_7:
     - 2021
 pt_employed_m_8:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10549,9 +10708,10 @@ pt_employed_m_8:
     - 2021
 pt_employed_m_9:
   dtype:
-    categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Teilzeit erwerbstätig, Werkstatt für behinderte Menschen]
+      categories_dtype: string
+      ordered: false
   module: pkal
   survey_years:
     - 1984
@@ -10594,21 +10754,23 @@ pt_employed_m_9:
     - 2021
 refugee_status:
   dtype:
-    categories:
-      - Duldung
-      - Im Verfahren
-      - Schutzstatus zuerkannt (Asyl, Fluechtlingseigenschaft, Niederlassungserlaubnis, human. Aufnahme,
-        sonst. human. Aufnahme)
-      - Sonstiges
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Duldung
+        - Im Verfahren
+        - Schutzstatus zuerkannt (Asyl, Fluechtlingseigenschaft, Niederlassungserlaubnis, human. Aufnahme,
+          sonst. human. Aufnahme)
+        - Sonstiges
+      categories_dtype: string
+      ordered: false
   module: pgen
   survey_years: [2016, 2017]
 relationship_to_head_of_hh:
   dtype:
-    categories: [Household head, Spouse, Child, Other, Other relative, Parent]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Household head, Spouse, Child, Other, Other relative, Parent]
+      categories_dtype: string
+      ordered: false
   module: pbrutto
   survey_years:
     - 1984
@@ -10651,42 +10813,43 @@ relationship_to_head_of_hh:
     - 2021
 relationship_to_hh:
   dtype:
-    categories:
-      - Aktuelle Haushaltszugehoerigkeit ungeklaert
-      - Ausbildung,Studium
-      - Beruf,Montage
-      - Geboren
-      - Geboren im neuen Haushalt
-      - Geboren in Vorwelle/lebte immer im Haushalt, erstmals genannt
-      - In den Haushalt zurueckgekehrt
-      - Irrtuemlich in Vorwellen als Haushaltsmitglied gefhrt
-      - Keine Angabe
-      - Krankenhaus
-      - Lange Zeit verreist
-      - Lebt im neuen Haushalt
-      - Lebt in diesem Haushalt schon laenger
-      - Lebt jetzt in diesem Haushalt
-      - Lebt noch im Haushalt
-      - Verstorben
-      - Verzogen, jedoch keine Weiterverfolgung
-      - 'Voruebergehend abwesend: Ausbildung/Studium'
-      - 'Voruebergehend abwesend: Beruf/Montage'
-      - 'Voruebergehend abwesend: Bundeswehr'
-      - 'Voruebergehend abwesend: Krankenhaus/Kur'
-      - 'Voruebergehend abwesend: Laengere Zeit verreist'
-      - 'Voruebergehend abwesend: Sonstiges'
-      - Wehrdienst,Zivildnst
-      - Zuzug a. d. Ausland vor letzter Befragung, erstmals genannt
-      - Zuzug a. d. Inland vor letzter Befragung, erstmals genannt
-      - Zuzug aus Ostdeutschland
-      - Zuzug aus Westdeutschland
-      - Zuzug aus dem Ausland
-      - Zuzug in neuen Haushalt aus Ostdeutschland
-      - Zuzug in neuen Haushalt aus Westdeutschland
-      - Zuzug in neuen Haushalt aus dem Ausland
-      - kuesten Mal im Neuhaushalt genannt, aber bereits im Althaushalt geboren
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Aktuelle Haushaltszugehoerigkeit ungeklaert
+        - Ausbildung,Studium
+        - Beruf,Montage
+        - Geboren
+        - Geboren im neuen Haushalt
+        - Geboren in Vorwelle/lebte immer im Haushalt, erstmals genannt
+        - In den Haushalt zurueckgekehrt
+        - Irrtuemlich in Vorwellen als Haushaltsmitglied gefhrt
+        - Keine Angabe
+        - Krankenhaus
+        - Lange Zeit verreist
+        - Lebt im neuen Haushalt
+        - Lebt in diesem Haushalt schon laenger
+        - Lebt jetzt in diesem Haushalt
+        - Lebt noch im Haushalt
+        - Verstorben
+        - Verzogen, jedoch keine Weiterverfolgung
+        - 'Voruebergehend abwesend: Ausbildung/Studium'
+        - 'Voruebergehend abwesend: Beruf/Montage'
+        - 'Voruebergehend abwesend: Bundeswehr'
+        - 'Voruebergehend abwesend: Krankenhaus/Kur'
+        - 'Voruebergehend abwesend: Laengere Zeit verreist'
+        - 'Voruebergehend abwesend: Sonstiges'
+        - Wehrdienst,Zivildnst
+        - Zuzug a. d. Ausland vor letzter Befragung, erstmals genannt
+        - Zuzug a. d. Inland vor letzter Befragung, erstmals genannt
+        - Zuzug aus Ostdeutschland
+        - Zuzug aus Westdeutschland
+        - Zuzug aus dem Ausland
+        - Zuzug in neuen Haushalt aus Ostdeutschland
+        - Zuzug in neuen Haushalt aus Westdeutschland
+        - Zuzug in neuen Haushalt aus dem Ausland
+        - kuesten Mal im Neuhaushalt genannt, aber bereits im Althaushalt geboren
+      categories_dtype: string
+      ordered: false
   module: pbrutto
   survey_years:
     - 1985
@@ -10725,29 +10888,32 @@ relationship_to_hh:
     - 2018
 relevance_career_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [1990, 1992, 1995, 2004, 2008, 2010, 2012, 2016, 2021]
 relevance_children_high_to_low:
   dtype:
-    categories: [1, 2, 3, 4]
-    categories_dtype: uint8[pyarrow]
-    ordered: false
+    categorical:
+      categories: [1, 2, 3, 4]
+      categories_dtype: uint8[pyarrow]
+      ordered: false
   module: pl
   survey_years: [1990, 1992, 1995, 2004, 2008, 2010, 2012, 2016, 2021]
 religion_father:
   dtype:
-    categories:
-      - Andere Religionsgemeinschaft
-      - Andere christl. Rel.gemeinschaft
-      - Islamische Religionsgemeinschaft
-      - Konfessionslos
-      - evangelisch
-      - katholisch
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Andere Religionsgemeinschaft
+        - Andere christl. Rel.gemeinschaft
+        - Islamische Religionsgemeinschaft
+        - Konfessionslos
+        - evangelisch
+        - katholisch
+      categories_dtype: string
+      ordered: false
   module: biol
   survey_years:
     - 2003
@@ -10771,15 +10937,16 @@ religion_father:
     - 2021
 religion_mother:
   dtype:
-    categories:
-      - Andere Religionsgemeinschaft
-      - Andere christl. Rel.gemeinschaft
-      - Islamische Religionsgemeinschaft
-      - Konfessionslos
-      - evangelisch
-      - katholisch
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Andere Religionsgemeinschaft
+        - Andere christl. Rel.gemeinschaft
+        - Islamische Religionsgemeinschaft
+        - Konfessionslos
+        - evangelisch
+        - katholisch
+      categories_dtype: string
+      ordered: false
   module: biol
   survey_years:
     - 2003
@@ -10845,14 +11012,15 @@ rent_minus_heating_costs_m_hh:
     - 2021
 rented_or_owned:
   dtype:
-    categories:
-      - Eigentümer
-      - Hauptmieter
-      - Untermieter
-      - Mieter
-      - Heimbewohner oder Gemeinschaftsunterkunft
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Eigentümer
+        - Hauptmieter
+        - Untermieter
+        - Mieter
+        - Heimbewohner oder Gemeinschaftsunterkunft
+      categories_dtype: string
+      ordered: false
   module: hgen
   survey_years:
     - 1984
@@ -10895,9 +11063,10 @@ rented_or_owned:
     - 2021
 residence_childhood:
   dtype:
-    categories: [Auf dem Land, Kleinstadt, Mittelgroße Stadt, Großstadt]
-    categories_dtype: string
-    ordered: true
+    categorical:
+      categories: [Auf dem Land, Kleinstadt, Mittelgroße Stadt, Großstadt]
+      categories_dtype: string
+      ordered: true
   module: biol
   survey_years:
     - 1984
@@ -11123,9 +11292,10 @@ self_employed:
     - 2021
 sexual_orientation:
   dtype:
-    categories: [insufficient information, probably bi/homosexual, probably heterosexual]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [insufficient information, probably bi/homosexual, probably heterosexual]
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -11252,45 +11422,46 @@ sonstige_sozialhilfe_y_hh:
     - 2021
 survey_status_current:
   dtype:
-    categories:
-      - Befragungsperson mit real. Interview (_P)
-      - Erstbefr, Personenfragebogen, 17 Jahre
-      - Erstbefragung, Jugendfragebogen, 17 Jahre
-      - Hinweise zu Verstorbenen (Exit)
-      - Hinweise zu Verstorbenen (_VP)
-      - Jugendliche (17 Jahre) in nicht-real. HHen
-      - Jugendliche 16-17 Jahre (Refug)
-      - Kinder (0-16 Jahre) in nicht-real. HHen
-      - Kinder (nur) in BioAgeL
-      - Kinder in Kidlong
-      - Kinder in realisierten Haushalten (_KIND)
-      - Kinder ohne Kinderangabe
-      - Nacherhebung (_LUECKE) in nicht-real. HHen
-      - Nacherhobene Luecke bei Ausfall
-      - Nacherhobene Luecke ohne HH-Bezug
-      - Person ohne aktuelle Angabe ohne Austritt
-      - Personen in nicht-real. Brutto-HHen
-      - Personen in real. Brutto-HHen ohne P.Interview
-      - Personenausfaelle (PBR_EXIT)
-      - Personenausfall mit weiteren Hinweisen
-      - Personenfrabo ohne Haushaltsinterview
-      - Personenfragebogen und Experimente, Test
-      - Personenfragebogen und Lebenslauf
-      - Realisierte Nacherhebung (_LUECKE)
-      - Realisierte Tests und Experimente
-      - Realisierter Biografiefragebogen
-      - Realisierter Biografiefragebogen in nicht-real. HHen
-      - Realisierter Jugendfragebogen
-      - Rueckkehrer - (zuvor Ausfaelle [90])
-      - Teilrealisiert ohne Haushaltsinterview
-      - Test und Experimente in nicht-real. HHen
-      - Verstorben
-      - Vormals Befragte(ERSTBEF) ohne akt.Angabe
-      - Wegzug ins Ausland
-      - Wegzug ins Ausland (Abroad)
-      - Wegzug ins Ausland (Exit)
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories:
+        - Befragungsperson mit real. Interview (_P)
+        - Erstbefr, Personenfragebogen, 17 Jahre
+        - Erstbefragung, Jugendfragebogen, 17 Jahre
+        - Hinweise zu Verstorbenen (Exit)
+        - Hinweise zu Verstorbenen (_VP)
+        - Jugendliche (17 Jahre) in nicht-real. HHen
+        - Jugendliche 16-17 Jahre (Refug)
+        - Kinder (0-16 Jahre) in nicht-real. HHen
+        - Kinder (nur) in BioAgeL
+        - Kinder in Kidlong
+        - Kinder in realisierten Haushalten (_KIND)
+        - Kinder ohne Kinderangabe
+        - Nacherhebung (_LUECKE) in nicht-real. HHen
+        - Nacherhobene Luecke bei Ausfall
+        - Nacherhobene Luecke ohne HH-Bezug
+        - Person ohne aktuelle Angabe ohne Austritt
+        - Personen in nicht-real. Brutto-HHen
+        - Personen in real. Brutto-HHen ohne P.Interview
+        - Personenausfaelle (PBR_EXIT)
+        - Personenausfall mit weiteren Hinweisen
+        - Personenfrabo ohne Haushaltsinterview
+        - Personenfragebogen und Experimente, Test
+        - Personenfragebogen und Lebenslauf
+        - Realisierte Nacherhebung (_LUECKE)
+        - Realisierte Tests und Experimente
+        - Realisierter Biografiefragebogen
+        - Realisierter Biografiefragebogen in nicht-real. HHen
+        - Realisierter Jugendfragebogen
+        - Rueckkehrer - (zuvor Ausfaelle [90])
+        - Teilrealisiert ohne Haushaltsinterview
+        - Test und Experimente in nicht-real. HHen
+        - Verstorben
+        - Vormals Befragte(ERSTBEF) ohne akt.Angabe
+        - Wegzug ins Ausland
+        - Wegzug ins Ausland (Abroad)
+        - Wegzug ins Ausland (Exit)
+      categories_dtype: string
+      ordered: false
   module: ppathl
   survey_years:
     - 1984
@@ -11543,23 +11714,26 @@ total_unemployment_experience:
     - 2021
 trust_government_low_to_high:
   dtype:
-    categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2018]
 trust_public_admin_low_to_high:
   dtype:
-    categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    categories_dtype: uint8[pyarrow]
-    ordered: true
+    categorical:
+      categories: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      categories_dtype: uint8[pyarrow]
+      ordered: true
   module: pl
   survey_years: [2018]
 type_of_health_insurance:
   dtype:
-    categories: [Gesetzliche KV, Private KV, Weder-noch]
-    categories_dtype: string
-    ordered: false
+    categorical:
+      categories: [Gesetzliche KV, Private KV, Weder-noch]
+      categories_dtype: string
+      ordered: false
   module: pl
   survey_years:
     - 1999
@@ -12048,9 +12222,10 @@ werkstatt_für_behinderte_menschen:
     - 2021
 willingness_to_participate:
   dtype:
-    categories: [sehr schlecht, schlecht, gut, sehr gut]
-    categories_dtype: string
-    ordered: true
+    categorical:
+      categories: [sehr schlecht, schlecht, gut, sehr gut]
+      categories_dtype: string
+      ordered: true
   module: pbrutto
   survey_years: [2002, 2003, 2004, 2005, 2006]
 wohngeld_m_hh:
