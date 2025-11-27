@@ -80,11 +80,19 @@ calendar year (e.g. "What was your annual income _last year_?").
 
 ### Terminology
 
-One wave contains "data files" based on different survey modules. For example
+One wave contains "SOEP data files" based on different survey modules. For example
 `hwealth.dta` contains the wealth information on household level. One of the "variables"
 in the dataset is `p010ha` describing roughly speaking the market value of the property
 of primary residence (see
 [https://paneldata.org/soep-core/datasets/hwealth/p010ha](https://paneldata.org/soep-core/datasets/hwealth/p010ha)).
+
+We will call data in different formats a "module", after converting the "SOEP data file"
+from STATA `.dta` format to a pandas DataFrame. "Modules" may contain variables just
+from a single "SOEP data file" in e.g. raw or cleaned format, they may also contains
+variables combined from multiple "SOEP data files".
+
+The final returned variables merged into one table is called a "dataset". We try to
+follow this syntax as close as possible.
 
 ### Understanding the SOEP-Core Data
 
@@ -153,10 +161,10 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
 ### Advanced: Creating Derived Variables from Multiple Data Sources
 
 See the modules `household.py` and `personal.py` in the directory
-`src/soep_preparation/create_derived_variables` for functions creating new variables
-from data sources. Inside `personal.py` the function `derive_birth_month` takes as
-arguments the cleaned data `ppathl` and `bioedu`, both contain a `birth_month_from_`
-variable. The function returns a DataFrame with an unique `birth_month` variable
+`src/soep_preparation/combine_modules` for functions creating new variables from data
+sources. Inside `ppathl_bioedu.py` the function `combine` takes as arguments the cleaned
+data `ppathl` and `bioedu`, both contain a `birth_month_from_` variable. The function
+returns a DataFrame with an unique `birth_month` variable.
 
 You can do so similarly by either creating your own function to derive a certain
 variable or by adding your variable to an existing function.
@@ -169,7 +177,7 @@ To add a new SOEP-Core dataset to the project, follow these steps:
 
    Each dataset should be placed in appropriate data directory (e.g., inside
    `soep_preparation/data/V38`). As an example, say you want to add the dataset
-   `pequiv.dta` (nevermind this already exists).
+   `pequiv.dta` (this already exists).
 
 1. Create a Corresponding Python Script
 
