@@ -4,11 +4,11 @@ from unittest.mock import MagicMock, patch
 from soep_preparation.utilities.general import get_relevant_column_names
 
 
-@patch("soep_preparation.utilities.general.load_module")
+@patch("soep_preparation.utilities.general.load_script")
 @patch("inspect.getsource")
 def test_get_relevant_column_names_with_raw_data_in_docstring(
     mock_getsource: MagicMock,
-    mock_load_module: MagicMock,
+    mock_load_script: MagicMock,
 ) -> None:
     function_content = '''
     def clean():
@@ -21,7 +21,7 @@ def test_get_relevant_column_names_with_raw_data_in_docstring(
 
     mock_module = MagicMock()
     mock_module.clean = lambda: None
-    mock_load_module.return_value = mock_module
+    mock_load_script.return_value = mock_module
 
     script_path = Path("dummy/path")
     actual = get_relevant_column_names(script_path)
@@ -29,11 +29,11 @@ def test_get_relevant_column_names_with_raw_data_in_docstring(
     assert actual == expected
 
 
-@patch("soep_preparation.utilities.general.load_module")
+@patch("soep_preparation.utilities.general.load_script")
 @patch("inspect.getsource")
 def test_get_relevant_column_names_with_empty_string(
     mock_getsource: MagicMock,
-    mock_load_module: MagicMock,
+    mock_load_script: MagicMock,
 ) -> None:
     function_content = """
     def clean():
@@ -43,7 +43,7 @@ def test_get_relevant_column_names_with_empty_string(
 
     mock_module = MagicMock()
     mock_module.clean = lambda: None
-    mock_load_module.return_value = mock_module
+    mock_load_script.return_value = mock_module
 
     script_path = Path("dummy/path")
     actual = get_relevant_column_names(script_path)
@@ -51,11 +51,11 @@ def test_get_relevant_column_names_with_empty_string(
     assert actual == expected
 
 
-@patch("soep_preparation.utilities.general.load_module")
+@patch("soep_preparation.utilities.general.load_script")
 @patch("inspect.getsource")
 def test_get_relevant_column_names_valid_cases(
     mock_getsource: MagicMock,
-    mock_load_module: MagicMock,
+    mock_load_script: MagicMock,
 ) -> None:
     function_content = """
     def clean():
@@ -67,7 +67,7 @@ def test_get_relevant_column_names_valid_cases(
 
     mock_module = MagicMock()
     mock_module.clean = lambda: None
-    mock_load_module.return_value = mock_module
+    mock_load_script.return_value = mock_module
 
     script_path = Path("dummy/path")
     actual = get_relevant_column_names(script_path)
@@ -75,11 +75,11 @@ def test_get_relevant_column_names_valid_cases(
     assert actual == expected
 
 
-@patch("soep_preparation.utilities.general.load_module")
+@patch("soep_preparation.utilities.general.load_script")
 @patch("inspect.getsource")
 def test_get_relevant_column_names_mixed_cases(
     mock_getsource: MagicMock,
-    mock_load_module: MagicMock,
+    mock_load_script: MagicMock,
 ) -> None:
     function_content = """
     def clean():
@@ -91,7 +91,7 @@ def test_get_relevant_column_names_mixed_cases(
 
     mock_module = MagicMock()
     mock_module.clean = lambda: None
-    mock_load_module.return_value = mock_module
+    mock_load_script.return_value = mock_module
 
     script_path = Path("dummy/path")
     actual = get_relevant_column_names(script_path)

@@ -84,7 +84,7 @@ def test_get_data_file_name_to_variables_mapping_assert_type():
         },
     )
     input_ = {
-        "map_variable_to_data_file": {
+        "map_variable_to_module": {
             "column1": "dataset1",
             "column2": "dataset2",
             "column3": "dataset1",
@@ -101,7 +101,7 @@ def test_get_data_file_name_to_variables_mapping_assert_mapping():
         "dataset2": ["column2"],
     }
     input_ = {
-        "map_variable_to_data_file": {
+        "map_variable_to_module": {
             "column1": "dataset1",
             "column2": "dataset2",
             "column3": "dataset1",
@@ -115,7 +115,7 @@ def test_get_data_file_name_to_variables_mapping_assert_mapping():
 def test_get_data_file_name_to_variables_mapping_assert_datasets():
     expected = ["dataset1", "dataset2"]
     input_ = {
-        "map_variable_to_data_file": {
+        "map_variable_to_module": {
             "column1": "dataset1",
             "column2": "dataset2",
             "column3": "dataset1",
