@@ -52,9 +52,7 @@ repos:
     rev: 0.8.1
     hooks:
       - id: nbstripout
-        args:
-          - --extra-keys
-          - metadata.kernelspec metadata.language_info.version metadata.vscode
+        args: [--extra-keys, metadata.kernelspec metadata.language_info.version metadata.vscode]
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.22
     hooks:

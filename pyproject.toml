@@ -183,5 +183,5 @@ norecursedirs = ["docs"]
 # ======================================================================================
 
 [tool.yamlfix]
-line_length = 88
+line_length = 100
 none_representation = "null"

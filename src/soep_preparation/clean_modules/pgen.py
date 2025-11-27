@@ -111,7 +111,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming=month_mapping.de,
         ordered=True,
     )
-    out["education_isced_97"] = object_to_str_categorical(raw_data["pgisced97"])
+    out["education_isced_97"] = object_to_str_categorical(
+        raw_data["pgisced97"],
+        renaming={
+            "general elemantary": "general elementary",  # codespell:ignore elemantary
+            "higher education": "higher education",
+            "higher vocational": "higher vocational",
+            "in school": "in school",
+            "inadequately": "inadequately",
+            "middle vocational": "middle vocational",
+            "vocational + Abi": "vocational + Abi",
+        },
+    )
     out["education_isced"] = object_to_str_categorical(raw_data["pgisced11"])
     out["education_isced_cat"] = apply_smallest_int_dtype(
         out["education_isced"].cat.codes

@@ -45,6 +45,3 @@ sandbox/
 
 # ignore pickle files
 *.pickle
-
-# ignore yaml files
-*.yaml
