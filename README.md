@@ -82,9 +82,8 @@ calendar year (e.g. "What was your annual income _last year_?").
 
 One wave contains "SOEP data files" based on different survey modules. For example
 `hwealth.dta` contains the wealth information on household level. One of the "variables"
-in the dataset is `p010ha` describing roughly speaking the market value of the property
-of primary residence (see
-[https://paneldata.org/soep-core/datasets/hwealth/p010ha](https://paneldata.org/soep-core/datasets/hwealth/p010ha)).
+in the dataset is `p010ha` describing roughly the market value of the property of
+primary residence (see https://paneldata.org/soep-core/datasets/hwealth/p010ha).
 
 We will call data in different formats a "module", after converting the "SOEP data file"
 from STATA `.dta` format to a pandas DataFrame. "Modules" may contain variables just
@@ -96,13 +95,15 @@ follow this syntax as close as possible.
 
 ### Understanding the SOEP-Core Data
 
-If you want to understand the variable `number_of_children` contains, search in the
-directory `src/soep_preparation` for the corresponding script and `raw_data` variable
-name e.g. `biobirth.py`and `sumkids`. From here one can use the URL
-[https://paneldata.org/soep-core/datasets/biobirth/sumkids] to get an understanding of
-the variable. The "Codebook (PDF)" might be helpful in understanding. The URL takes
-hence the general form:
-\[https://paneldata.org/soep-core/datasets/*dataset_name*/*variable_name*\]
+To understand the related raw SOEP variable(s) and applied conversions of a variable
+provided by this package, have a look at the corresponding script in the directory
+`src/soep_preparation/raw_data/`, e.g. the variable `number_of_children` can be found in
+this manner in the script `biobirth.py` depending on the SOEP-variable `sumkids`. To
+further understand the content of `sumkids`, the
+[documentation of the SOEP variable](https://paneldata.org/soep-core/datasets/biobirth/sumkids),
+especially the "Codebook (PDF)", is helpful. The SOEP documentation URL for a dataset
+and variable has the general form:
+`https://paneldata.org/soep-core/datasets/{dataset_name}/{variable_name}`
 
 To understand which variables are additionally available for a dataset, the URL
 `https://paneldata.org/soep-core/datasets/{dataset_name}` might be helpful. Here you can
