@@ -15,7 +15,8 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
         pl: Cleaned pl module.
 
     Returns:
-        Combined pequiv and pl modules.
+        Combined pequiv and pl modules. If contents conflict with each other,
+             the one from pequiv takes precedence.
     """
     merged = pd.merge(
         left=pequiv,
@@ -28,7 +29,7 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
         ["p_id", "hh_id", "survey_year", "hh_id_original"]
     ].copy()
 
-    out["med_schw_treppen"] = combine_first_and_make_categorical(
+    out["med_schwierigkeiten_treppen"] = combine_first_and_make_categorical(
         series_1=merged["med_schwierigkeiten_treppen_pequiv"],
         series_2=merged["med_schwierigkeit_treppen_pl"],
         ordered=True,

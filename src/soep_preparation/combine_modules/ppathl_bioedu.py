@@ -15,11 +15,12 @@ def combine(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFrame:
         bioedu: Cleaned bioedu module.
 
     Returns:
-        Combined ppathl and bioedu modules.
+        Combined ppathl and bioedu modules. If contents conflict with each other,
+             the one from ppathl takes precedence.
     """
     merged = pd.merge(left=ppathl, right=bioedu, on="p_id", how="outer")
     out = pd.DataFrame(index=merged.index)
-    out["p_id"] = merged["p_id"]
+    out["p_id"] = merged["p_id"].copy()
     out["birth_month"] = combine_first_and_make_categorical(
         series_1=merged["birth_month_ppathl"],
         series_2=merged["birth_month_bioedu"],

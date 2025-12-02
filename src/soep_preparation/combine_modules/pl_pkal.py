@@ -15,11 +15,16 @@ def combine(pl: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
         pkal: Cleaned pkal module.
 
     Returns:
-        Combined pl and pkal modules.
+        Combined pl and pkal modules. If contents conflict with each other,
+             the one from pl takes precedence.
     """
-    merged = pd.merge(left=pl, right=pkal, on=["hh_id", "survey_year"], how="outer")
+    merged = pd.merge(
+        left=pl, right=pkal, on=["p_id", "hh_id", "survey_year"], how="outer"
+    )
     out = pd.DataFrame(index=merged.index)
-    out[["p_id", "hh_id", "survey_year"]] = pl[["p_id", "hh_id", "survey_year"]].copy()
+    out[["p_id", "hh_id", "survey_year"]] = merged[
+        ["p_id", "hh_id", "survey_year"]
+    ].copy()
     out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
         series_1=merged["bezog_mutterschaftsgeld_pl"],
         series_2=merged["bezog_mutterschaftsgeld_pkal"],

@@ -16,7 +16,7 @@ for level, module_names in MODULE_STRUCTURE.items():
     for module_name in module_names:
 
         @task(id=module_name)
-        def task_create_metadata(
+        def task_create_metadata_for_one_module(
             module: Annotated[pd.DataFrame, DATA_CATALOGS[level][module_name]],
         ) -> Annotated[dict, DATA_CATALOGS["metadata"][module_name]]:
             """Create metadata for a single module.
@@ -38,7 +38,7 @@ for level, module_names in MODULE_STRUCTURE.items():
             }
 
 
-def task_create_variable_metadata(
+def task_create_variable_to_metadata_mapping_yaml(
     modules_metadata: Annotated[dict[str, dict], DATA_CATALOGS["metadata"]._entries],
     in_path: Annotated[
         Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
@@ -56,7 +56,22 @@ def task_create_variable_metadata(
         TypeError: If input data or data name is not of expected type.
     """
     mapping = _create_variable_metadata(modules_metadata)
-    _yaml_dump_and_compare(mapping, in_path, out_path)
+
+    with out_path.open("w", encoding="utf-8") as file:
+        yaml.dump(
+            mapping,
+            file,
+            encoding="utf-8",
+            allow_unicode=True,
+            explicit_start=True,
+            default_flow_style=False,
+        )
+    with in_path.open("r", encoding="utf-8") as file:
+        existing_mapping = yaml.safe_load(file)
+    if mapping != existing_mapping:
+        _fail_if_mapping_changed(
+            new_mapping=mapping, existing_mapping=existing_mapping, in_path=in_path
+        )
 
 
 def _get_index_variables_metadata(
@@ -77,7 +92,7 @@ def _get_index_variables_metadata(
     }
 
 
-def _serialize_category_dtype(variable_dtype: pd.CategoricalDtype) -> dict:
+def _serialize_categorical_dtype(variable_dtype: pd.CategoricalDtype) -> dict:
     """Serialize a pandas CategoricalDtype to a dictionary.
 
     Args:
@@ -116,7 +131,7 @@ def _get_variable_metadata(
         if variable_dtype.name == "category":
             # categorical dtypes are serialized
             serialized_variable_dtype = {
-                "categorical": _serialize_category_dtype(variable_dtype)
+                "categorical": _serialize_categorical_dtype(variable_dtype)
             }
         else:
             serialized_variable_dtype = variable_dtype.name
@@ -176,19 +191,6 @@ def _create_variable_metadata(
                     mapping=mapping,
                 )
     return mapping
-
-
-def _yaml_dump_and_compare(
-    mapping: dict[str, Any], in_path: Path, out_path: Path
-) -> None:
-    with out_path.open("w", encoding="utf-8") as file:
-        yaml.dump(mapping, file, encoding="utf-8", allow_unicode=True)
-    with in_path.open("r", encoding="utf-8") as file:
-        existing_mapping = yaml.safe_load(file)
-    if mapping != existing_mapping:
-        _fail_if_mapping_changed(
-            new_mapping=mapping, existing_mapping=existing_mapping, in_path=in_path
-        )
 
 
 def _fail_if_mapping_changed(

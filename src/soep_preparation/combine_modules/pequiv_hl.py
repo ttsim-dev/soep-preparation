@@ -11,11 +11,12 @@ def combine(pequiv: pd.DataFrame, hl: pd.DataFrame) -> pd.DataFrame:
         hl: Cleaned hl module.
 
     Returns:
-        Combined pequiv and hl modules.
+        Combined pequiv and hl modules. If contents conflict with each other,
+             the one from pequiv takes precedence.
     """
     merged = pd.merge(left=pequiv, right=hl, on=["hh_id", "survey_year"], how="outer")
     out = pd.DataFrame(index=merged.index)
-    out[["p_id", "hh_id", "survey_year"]] = pequiv[
+    out[["p_id", "hh_id", "survey_year"]] = merged[
         ["p_id", "hh_id", "survey_year"]
     ].copy()
     out["arbeitslosengeld_2_m_hh"] = merged[

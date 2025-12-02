@@ -15,7 +15,8 @@ def combine(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.DataFrame:
         design: Cleaned design module.
 
     Returns:
-        Combined hpathl and design modules.
+        Combined hpathl and design modules. If contents conflict with each other,
+             the one from hpathl takes precedence.
     """
     merged = pd.merge(left=hpathl, right=design, on=["hh_id"], how="outer")
     out = pd.DataFrame(index=merged.index)
