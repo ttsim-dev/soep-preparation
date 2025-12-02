@@ -7,27 +7,23 @@ from pathlib import Path
 from types import ModuleType
 
 
-def _fail_if_no_raw_soep_module_exists(data_root: Path, soep_version: str) -> None:
-    raw_data_path = data_root / soep_version
-    if not any(raw_data_path.glob("*.dta")):
-        msg = (
-            f"No raw SOEP data files found in {raw_data_path} for SOEP {soep_version}."
-            f"Please add at least one raw data file to the data directory under"
-            f" the specified SOEP version and create a cleaning script for it."
-            f" For further instructions, please refer to the documentation at https://github.com/ttsim-dev/soep-preparation?tab=readme-ov-file#usage"
-        )
-        raise FileNotFoundError(msg)
-
-
-def _fail_if_raw_soep_module_missing(
-    script_name: str, data_root: Path, soep_version: str
+def _fail_if_raw_data_files_are_missing(
+    data_root: Path, soep_version: str, script_names: list[str]
 ) -> None:
-    raw_data_file_path = data_root / f"{soep_version}" / f"{script_name}.dta"
-    if not raw_data_file_path.exists():
+    missing_files = []
+    raw_data_dir = data_root / soep_version
+    for script_name in script_names:
+        raw_data_file_path = raw_data_dir / f"{script_name}.dta"
+        if not raw_data_file_path.exists():
+            missing_files.append(raw_data_file_path)
+    if missing_files:
+        missing_files_str = "\n".join(str(file) for file in missing_files)
         msg = (
-            f"Raw data file {raw_data_file_path} not found for SOEP {soep_version}.\n"
-            f"Ensure the file is present in the data directory\n"
-            f" corresponding to the specified wave."
+            f"The following raw data files are missing for SOEP {soep_version}:\n"
+            f"{missing_files_str}\n"
+            f"Please ensure these files are present in the data directory\n"
+            f" {raw_data_dir}"
+            f" For further instructions, please refer to the documentation at https://github.com/ttsim-dev/soep-preparation?tab=readme-ov-file#usage"
         )
         raise FileNotFoundError(msg)
 
@@ -63,9 +59,11 @@ def get_raw_data_file_names(
 
     """
     script_names = get_script_names(directory)
-    _fail_if_no_raw_soep_module_exists(data_root, soep_version)
-    for script_name in script_names:
-        _fail_if_raw_soep_module_missing(script_name, data_root, soep_version)
+    _fail_if_raw_data_files_are_missing(
+        data_root=data_root,
+        soep_version=soep_version,
+        script_names=script_names,
+    )
     return script_names
 
 
