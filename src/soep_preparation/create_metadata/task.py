@@ -59,12 +59,12 @@ def task_create_variable_to_metadata_mapping_yaml(
 
     with out_path.open("w", encoding="utf-8") as file:
         yaml.dump(
-            mapping,
-            file,
+            data=mapping,
+            stream=file,
+            width=80,
             encoding="utf-8",
             allow_unicode=True,
             explicit_start=True,
-            default_flow_style=False,
         )
     with in_path.open("r", encoding="utf-8") as file:
         existing_mapping = yaml.safe_load(file)
