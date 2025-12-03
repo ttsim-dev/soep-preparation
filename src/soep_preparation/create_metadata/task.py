@@ -61,7 +61,7 @@ def task_create_variable_to_metadata_mapping_yaml(
         yaml.dump(
             data=mapping,
             stream=file,
-            width=60,
+            width=60,  # Big differences how Python / yamllint count, leave buffer.
             default_flow_style=False,
             encoding="utf-8",
             allow_unicode=True,

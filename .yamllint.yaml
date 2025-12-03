@@ -22,6 +22,7 @@ rules:
   key-duplicates: enable
   key-ordering: disable
   line-length:
+    max: 88
     allow-non-breakable-words: true
   new-line-at-end-of-file: enable
   new-lines:
