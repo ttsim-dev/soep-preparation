@@ -9,7 +9,7 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned variables with sensible data type from the raw design module.
+    """Create cleaned variables from the design module.
 
     Args:
         raw_data: The raw design data.

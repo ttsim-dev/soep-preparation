@@ -22,7 +22,7 @@ def _kindergeld_m_hh(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned variables with sensible data type from the raw hl module.
+    """Create cleaned variables from the hl module.
 
     Args:
         raw_data: The raw hl data.

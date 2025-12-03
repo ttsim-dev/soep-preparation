@@ -20,7 +20,7 @@ def _bruttokaltmiete_m_hh(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned variables with sensible data type from the raw hgen module.
+    """Create cleaned variables from the hgen module.
 
     Args:
         raw_data: The raw hgen data.

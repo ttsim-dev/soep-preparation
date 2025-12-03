@@ -10,7 +10,7 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned variables with sensible data type from the raw bioedu module.
+    """Create cleaned variables from the bioedu module.
 
     Args:
         raw_data: The raw bioedu data.

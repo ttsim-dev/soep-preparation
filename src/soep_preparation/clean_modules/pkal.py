@@ -69,7 +69,7 @@ def _number_of_months_employed(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned variables with sensible data type from the raw pkal module.
+    """Create cleaned variables from the pkal module.
 
     Args:
         raw_data: The raw pkal data.
