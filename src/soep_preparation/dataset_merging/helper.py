@@ -3,9 +3,11 @@
 from difflib import get_close_matches
 
 import pandas as pd
+from pytask import PNode, PProvisionalNode
 
 from soep_preparation.config import DATA_CATALOGS, SURVEY_YEARS
 from soep_preparation.utilities.error_handling import (
+    fail_if_empty,
     fail_if_input_has_invalid_type,
 )
 
@@ -14,9 +16,7 @@ def create_dataset_from_variables(
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None = None,
     survey_years: list[int] | None = None,
-    variable_to_data_file_mapping: dict[str, list[str]] = DATA_CATALOGS["metadata"][
-        "merged"
-    ],
+    map_variable_to_module: (dict[str, list[str]] | PNode | PProvisionalNode) = {},  # noqa : B006
     merging_behavior: str = "outer",  # make only outer
 ) -> pd.DataFrame:
     """Create a dataset by merging different specified variables.
@@ -29,8 +29,8 @@ def create_dataset_from_variables(
         min_and_max_survey_years: Range of survey years.
         survey_years: Survey years to be included in the dataset.
         Either `survey_years` or `min_and_max_survey_years` must be provided.
-        variable_to_data_file_mapping: A mapping of variable names to dataset names.
-        Defaults to `DATA_CATALOGS["metadata"]["merged"]`.
+        map_variable_to_module: A mapping of variable names to dataset names.
+        Defaults to `DATA_CATALOGS["metadata"]["mapping"]`.
         merging_behavior: The merging behavior to be used.
         Any out of "left", "right", "outer", or "inner".
         Defaults to "outer".
@@ -55,9 +55,9 @@ def create_dataset_from_variables(
         Otherwise, `min_and_max_survey_years=(2024,2025)`
         and `survey_years=[2024, 2025]`
         both return a merged dataset with information from the two survey years.
-        `variable_to_data_file_mapping` is created automatically by the pipeline,
+        `map_variable_to_module` is created automatically by the pipeline,
         it can be accessed and provided to the function at
-        `DATA_CATALOGS["metadata"]["merged"]`.
+        `DATA_CATALOGS["metadata"]["mapping"]`.
         Specify `merging_behavior` to control the creation of the dataset
         from the different variables.
         The default value is "outer" and sufficient for most cases.
@@ -66,7 +66,7 @@ def create_dataset_from_variables(
         For an example see `task_example.py`.
     """
     _error_handling(
-        variable_to_data_file_mapping,
+        map_variable_to_module,
         variables,
         min_and_max_survey_years,
         survey_years,
@@ -79,7 +79,7 @@ def create_dataset_from_variables(
         variables,
     )
     dataset_merging_information = _get_sorted_dataset_merging_information(
-        variable_to_data_file_mapping,
+        map_variable_to_module,
         variables,
         survey_years,
     )
@@ -91,14 +91,15 @@ def create_dataset_from_variables(
 
 
 def _error_handling(
-    variable_to_data_file_mapping: dict[str, list[str]],
+    map_variable_to_module: dict[str, list[str]],
     variables: list[str],
     min_and_max_survey_years: tuple[int, int] | None,
     survey_years: list[int] | None,
     merging_behavior: str,
 ) -> None:
     fail_if_input_has_invalid_type(
-        input_=variable_to_data_file_mapping, expected_dtypes=["dict"]
+        input_=map_variable_to_module,
+        expected_dtypes=["dict", "PNode", "PProvisionalNode"],
     )
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
     fail_if_input_has_invalid_type(
@@ -108,8 +109,8 @@ def _error_handling(
         input_=survey_years, expected_dtypes=("list", "None")
     )
     fail_if_input_has_invalid_type(input_=merging_behavior, expected_dtypes=["str"])
-    _fail_if_empty(variable_to_data_file_mapping)
-    _fail_if_empty(variables)
+    fail_if_empty(input_=map_variable_to_module, name="map_variable_to_module")
+    fail_if_empty(variables, name="variables")
     if survey_years is not None:
         _fail_if_survey_years_not_valid(
             survey_years=survey_years, valid_survey_years=SURVEY_YEARS
@@ -120,36 +121,30 @@ def _error_handling(
         )
         _fail_if_min_larger_max(min_and_max_survey_years)
     _fail_if_invalid_variable(
-        variables=variables, variable_to_data_file_mapping=variable_to_data_file_mapping
+        variables=variables, map_variable_to_module=map_variable_to_module
     )
     _fail_if_invalid_merging_behavior(merging_behavior)
 
 
 def _fail_if_invalid_variable(
     variables: list[str],
-    variable_to_data_file_mapping: dict[str, list[str]],
+    map_variable_to_module: dict[str, list[str]],
 ) -> None:
     for variable in variables:
-        if variable not in variable_to_data_file_mapping:
+        if variable not in map_variable_to_module:
             closest_matches = get_close_matches(
                 variable,
-                variable_to_data_file_mapping.keys(),
+                map_variable_to_module.keys(),
                 n=3,
                 cutoff=0.6,
             )
             matches = {
-                match: variable_to_data_file_mapping[match] for match in closest_matches
+                match: map_variable_to_module[match] for match in closest_matches
             }
             msg = f"""variable {variable} not found in any data file.
             The closest matches with the corresponding data files are:
             {matches}"""
             raise ValueError(msg)
-
-
-def _fail_if_empty(input_: dict | list) -> None:
-    if len(input_) == 0:
-        msg = f"Expected {input_} to be non-empty."
-        raise ValueError(msg)
 
 
 def _fail_if_survey_years_not_valid(
@@ -178,13 +173,13 @@ def _fail_if_invalid_merging_behavior(merging_behavior: str) -> None:
 
 
 def _get_data_file_name_to_variables_mapping(
-    variable_to_data_file_mapping: dict[str, str],
+    map_variable_to_module: dict[str, str],
     variables: list[str],
 ) -> dict[str, list[str]]:
     data_file_name_to_variables_mapping = {}
     for variable in variables:
-        if variable in variable_to_data_file_mapping:
-            data_file_name = variable_to_data_file_mapping[variable]
+        if variable in map_variable_to_module:
+            data_file_name = map_variable_to_module[variable]
             if data_file_name not in data_file_name_to_variables_mapping:
                 data_file_name_to_variables_mapping[data_file_name] = []
             data_file_name_to_variables_mapping[data_file_name].append(variable)
@@ -219,21 +214,21 @@ def _fix_user_input(
 
 
 def _get_sorted_dataset_merging_information(
-    variable_to_data_file_mapping: dict[str, dict],
+    map_variable_to_module: dict[str, dict],
     variables: list,
     survey_years: list[int],
 ) -> dict[str, dict]:
     data_mapping = _get_data_file_name_to_variables_mapping(
-        variable_to_data_file_mapping,
+        map_variable_to_module,
         variables,
     )
 
     dataset_merging_information = {}
     for data_name, data_variables in data_mapping.items():
         raw_data = (
-            DATA_CATALOGS["cleaned_variables"][data_name].load()
-            if data_name in DATA_CATALOGS["cleaned_variables"]._entries  # noqa: SLF001
-            else DATA_CATALOGS["combined_variables"][data_name].load()
+            DATA_CATALOGS["cleaned_modules"][data_name].load()
+            if data_name in DATA_CATALOGS["cleaned_modules"]._entries  # noqa: SLF001
+            else DATA_CATALOGS["combined_modules"][data_name].load()
         )
         index_variables = sorted(
             DATA_CATALOGS["metadata"][data_name].load()["index_variables"].keys(),

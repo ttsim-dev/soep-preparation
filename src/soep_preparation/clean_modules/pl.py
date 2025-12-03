@@ -52,7 +52,7 @@ def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
-    """Create cleaned and sensible data type variables from the pl data file.
+    """Create cleaned variables from the pl module.
 
     Args:
         raw_data: The raw pl data.

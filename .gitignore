@@ -34,8 +34,10 @@ bld/
 #VSCode
 .vscode/
 
-# ignore data directory
-data/
+# ignore data directory, except for .gitkeep files
+data/**
+!data/**/
+!data/**/.gitkeep
 
 # ignore notebooks
 *.ipynb

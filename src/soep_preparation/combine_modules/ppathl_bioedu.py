@@ -1,0 +1,30 @@
+"""Combine variables from the modules ppathl and bioedu."""
+
+import pandas as pd
+
+from soep_preparation.utilities.data_manipulator import (
+    combine_first_and_make_categorical,
+)
+
+
+def combine(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFrame:
+    """Combine variables from the cleaned ppathl and bioedu modules.
+
+    Args:
+        ppathl: Cleaned ppathl module.
+        bioedu: Cleaned bioedu module.
+
+    Returns:
+        Combined ppathl and bioedu modules. If contents conflict with each other,
+             the one from ppathl takes precedence.
+    """
+    merged = pd.merge(left=ppathl, right=bioedu, on="p_id", how="outer")
+    out = pd.DataFrame(index=merged.index)
+    out["p_id"] = merged["p_id"]
+
+    out["birth_month"] = combine_first_and_make_categorical(
+        series_1=merged["birth_month_ppathl"],
+        series_2=merged["birth_month_bioedu"],
+        ordered=False,
+    )
+    return out

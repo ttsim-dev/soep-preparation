@@ -16,13 +16,14 @@ rules:
   empty-values: disable
   float-values: disable
   hyphens: enable
-  indentation: {spaces: 2}
+  indentation:
+    spaces: 2
+    indent-sequences: consistent
   key-duplicates: enable
   key-ordering: disable
   line-length:
     max: 88
     allow-non-breakable-words: true
-    allow-non-breakable-inline-mappings: false
   new-line-at-end-of-file: enable
   new-lines:
     type: unix

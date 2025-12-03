@@ -10,12 +10,12 @@ from pytask import task
 from soep_preparation.config import (
     DATA_CATALOGS,
     DATA_ROOT,
+    MODULE_STRUCTURE,
     SOEP_VERSION,
     SRC,
 )
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import (
-    get_data_file_names,
     get_relevant_column_names,
 )
 
@@ -35,13 +35,7 @@ def _iteratively_read_one_data_file(
     return pd.concat(processed_chunks)
 
 
-data_file_names = get_data_file_names(
-    directory=SRC / "clean_variables",
-    data_root=DATA_ROOT,
-    soep_version=SOEP_VERSION,
-)
-
-for data_file_name in data_file_names:
+for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
 
     @task(id=data_file_name)
     def task_read_one_data_file(
@@ -50,7 +44,7 @@ for data_file_name in data_file_names:
         ],
         cleaning_script: Annotated[
             Path,
-            SRC / "clean_variables" / f"{data_file_name}.py",
+            SRC / "clean_modules" / f"{data_file_name}.py",
         ],
     ) -> Annotated[pd.DataFrame, DATA_CATALOGS["raw_pandas"][data_file_name]]:
         """Saves the raw data file to the data catalog.
@@ -76,16 +70,6 @@ for data_file_name in data_file_names:
             return _iteratively_read_one_data_file(
                 iterator=stata_iterator, relevant_columns=relevant_columns
             )
-
-
-if not data_file_names:
-
-    @task
-    def _raise_no_data_files_found() -> None:
-        msg = """Please add at least one raw data file to the data directory under
-        the specified SOEP version and create a cleaning script for it.
-        For further instructions, please refer to the README file."""
-        raise FileNotFoundError(msg)
 
 
 def _error_handling_task(data: Any, script_path: Any) -> None:

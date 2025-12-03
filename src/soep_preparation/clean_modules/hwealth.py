@@ -10,7 +10,7 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned and sensible data type variables from the hwealth data file.
+    """Create cleaned variables from the hwealth module.
 
     Args:
         raw_data: The raw hwealth data.
@@ -60,42 +60,51 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_net_overall_wealth_d"] = apply_smallest_float_dtype(raw_data["w011hd"])
     out["hh_net_overall_wealth_e"] = apply_smallest_float_dtype(raw_data["w011he"])
 
-    out["hh_vehicles_value_a"] = apply_smallest_float_dtype(raw_data["v010ha"])
-    out["hh_vehicles_value_b"] = apply_smallest_float_dtype(raw_data["v010hb"])
-    out["hh_vehicles_value_c"] = apply_smallest_float_dtype(raw_data["v010hc"])
-    out["hh_vehicles_value_d"] = apply_smallest_float_dtype(raw_data["v010hd"])
-    out["hh_vehicles_value_e"] = apply_smallest_float_dtype(raw_data["v010he"])
+    out["hh_vehicles_value_a"] = apply_smallest_float_dtype(
+        raw_data["v010ha"].replace({-8: pd.NA})
+    )
+    out["hh_vehicles_value_b"] = apply_smallest_float_dtype(
+        raw_data["v010hb"].replace({-8: pd.NA})
+    )
+    out["hh_vehicles_value_c"] = apply_smallest_float_dtype(
+        raw_data["v010hc"].replace({-8: pd.NA})
+    )
+    out["hh_vehicles_value_d"] = apply_smallest_float_dtype(
+        raw_data["v010hd"].replace({-8: pd.NA})
+    )
+    out["hh_vehicles_value_e"] = apply_smallest_float_dtype(
+        raw_data["v010he"].replace({-8: pd.NA})
+    )
 
     out["hh_gross_overall_wealth_including_vehicles_a"] = apply_smallest_float_dtype(
-        raw_data["n010ha"]
+        raw_data["n010ha"].replace({-8: pd.NA})
     )
     out["hh_gross_overall_wealth_including_vehicles_b"] = apply_smallest_float_dtype(
-        raw_data["n010hb"]
+        raw_data["n010hb"].replace({-8: pd.NA})
     )
     out["hh_gross_overall_wealth_including_vehicles_c"] = apply_smallest_float_dtype(
-        raw_data["n010hc"]
+        raw_data["n010hc"].replace({-8: pd.NA})
     )
     out["hh_gross_overall_wealth_including_vehicles_d"] = apply_smallest_float_dtype(
-        raw_data["n010hd"]
+        raw_data["n010hd"].replace({-8: pd.NA})
     )
     out["hh_gross_overall_wealth_including_vehicles_e"] = apply_smallest_float_dtype(
-        raw_data["n010he"]
+        raw_data["n010he"].replace({-8: pd.NA})
     )
-
     out["hh_net_overall_wealth_including_vehicles_and_student_loans_a"] = (
-        apply_smallest_float_dtype(raw_data["n011ha"])
+        apply_smallest_float_dtype(raw_data["n011ha"].replace({-8: pd.NA}))
     )
     out["hh_net_overall_wealth_including_vehicles_and_student_loans_b"] = (
-        apply_smallest_float_dtype(raw_data["n011hb"])
+        apply_smallest_float_dtype(raw_data["n011hb"].replace({-8: pd.NA}))
     )
     out["hh_net_overall_wealth_including_vehicles_and_student_loans_c"] = (
-        apply_smallest_float_dtype(raw_data["n011hc"])
+        apply_smallest_float_dtype(raw_data["n011hc"].replace({-8: pd.NA}))
     )
     out["hh_net_overall_wealth_including_vehicles_and_student_loans_d"] = (
-        apply_smallest_float_dtype(raw_data["n011hd"])
+        apply_smallest_float_dtype(raw_data["n011hd"].replace({-8: pd.NA}))
     )
     out["hh_net_overall_wealth_including_vehicles_and_student_loans_e"] = (
-        apply_smallest_float_dtype(raw_data["n011he"])
+        apply_smallest_float_dtype(raw_data["n011he"].replace({-8: pd.NA}))
     )
 
     out[

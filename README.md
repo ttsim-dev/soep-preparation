@@ -41,9 +41,7 @@ This project processes the SOEP-Core data for use with research projects. The ex
 are geared towards using the data with
 [GETTSIM](https://gettsim.readthedocs.io/en/stable/). The raw data is provided by the
 German Institute for Economic Research (DIW Berlin) and is a panel dataset that follows
-the same individuals over time. The data is collected annually and contains information
-on various topics such as income, employment, and health. The data is available for
-scientific use, for more information visit the
+the same individuals over time. See the
 [Research Data Center SOEP](https://www.diw.de/en/diw_01.c.678568.en/research_data_center_soep.html).
 
 The top-level directory is structured as follows:
@@ -52,15 +50,16 @@ The top-level directory is structured as follows:
 - `src`: source code with tasks for preparing the raw data
 - `tests`: tests of the source code
 - other files include the processed output dataset (will be created automatically), the
-  environment configuration, pre-commit hooks, and some meta-files like this README
+  environment configuration, pre-commit hooks, and some meta information like this
+  README
 
 ## Usage
 
 To get started, install [pixi](https://prefix.dev/docs/pixi/overview#installation) if
-you haven't already.
+you do not have it on your machine already.
 
-**_Inside the directory `soep_preparation/data` place the folder `V38` containing the
-raw `.dta` datafiles._**
+**_Inside the directory `soep_preparation/data` fill the folder `V38` containing the raw
+`.dta` data files downloaded from the SOEP website._**
 
 To build the project, type
 
@@ -68,38 +67,67 @@ To build the project, type
 $ pixi run pytask
 ```
 
-If all tasks run, the file `example_merged_dataset.pickle` is created in the root
-directory.
+If all tasks run successfully, the file `example_merged_dataset.pickle` is created in
+the root directory.
 
 ## Working with the Data and Modules
 
-The SOEP data is available in different waves, with the latest being version 39. This
+The SOEP data is available in different versions, the latest being version 40. This
 project is currently set up to work with version 38. It is relevant to note that the
-SOEP is a survey, which usually asks questions regarding variables in the previous
-calendar year (e.g. "What was your annual income _last year_?").
+SOEP is a survey, which often asks questions about the previous calendar year (e.g.
+"What was your annual income _last year_?").
 
 ### Terminology
 
-One wave contains "data files" based on different survey modules. For example
-`hwealth.dta` contains the wealth information on household level. One of the "variables"
-in the dataset is `p010ha` describing roughly the market value of the property of
-primary residence (see https://paneldata.org/soep-core/datasets/hwealth/p010ha).
+One survey wave consists of different survey *modules*. Each of these is distributed by
+the SOEP team as one *raw data file*. For example `hwealth.dta` contains the wealth
+information on the household level. One of the *variables* in the module is `p010ha`
+describing the market value of primary residence (see
+https://paneldata.org/soep-core/datasets/hwealth/p010ha).
+
+After converting the *raw data file* from STATA `.dta` format to a pandas DataFrame, the
+variables inside the module are cleaned.
+
+In another step, variables from multiple modules are combined into a new module, which
+always carries a name of the form `{module_1}_{module_2}` (e.g., `pl_pkal`)
+
+In a final step, to be done by the user, the variables required for a particular project
+are merged into one table, which we call a *dataset*.
+
+We try to follow this terminology wherever possible.
 
 ### Understanding the SOEP-Core Data
 
-To understand the related raw SOEP variable(s) and applied conversions of a variable
-provided by this package, have a look at the corresponding script in the directory
-`src/soep_preparation/raw_data/`, e.g. the variable `number_of_children` can be found in
-this manner in the script `biobirth.py` depending on the SOEP-variable `sumkids`. To
-further understand the content of `sumkids`, the
-[documentation of the SOEP variable](https://paneldata.org/soep-core/datasets/biobirth/sumkids),
-especially the "Codebook (PDF)", is helpful. The SOEP documentation URL for a dataset
-and variable has the general form:
-`https://paneldata.org/soep-core/datasets/{dataset_name}/{variable_name}`
+To understand the contents of a variable in the final dataset, the following may help.
+Say we want to find out about the variable `andere_rente_hinterbliebene_y`.
 
-To understand which variables are additionally available for a dataset, the URL
-`https://paneldata.org/soep-core/datasets/{dataset_name}` might be helpful. Here you can
-search for variable names within this file.
+We search for it in the project. Doing so for any variable will turn up at least two
+occurrences:
+
+1. In the file `src/soep_preparation/create_metadata/variable_to_metadata_mapping.yaml`
+1. The definition of the variable, which is located either in the
+   `src/soep_preparation/clean_modules` directory or in the
+   `src/soep_preparation/combine_modules` directory.
+
+The metadata is useful to find out about the data type and the years where it is
+present.
+
+The definition tells us how the variable is created from the raw SOEP variable(s). In
+this case, the script `src/soep_preparation/clean_modules/pequiv.py` contains the line:
+
+```python
+out["andere_rente_hinterbliebene_y"] = object_to_int(raw_data["ison2"])
+```
+
+so we know that it is simply converting the contents of the raw SOEP variable `ison2` to
+an integer. We can look up the contents of that variable in the
+[online SOEP documentation](https://paneldata.org/soep-core/). URLs are formed as
+`https://paneldata.org/soep-core/datasets/<module>/<variable>`. So in this case, we
+would visit
+[https://paneldata.org/soep-core/datasets/pequiv/ison2](https://paneldata.org/soep-core/datasets/pequiv/ison2)
+and could take it from there. Y especially the "Codebook (PDF)", is helpful. The SOEP
+documentation URL for a dataset and variable has the general form:
+`https://paneldata.org/soep-core/datasets/{dataset_name}/{variable_name}`
 
 ### Creating your own Merged Dataset
 
@@ -154,40 +182,40 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
 ### Advanced: Creating Derived Variables from Multiple Data Sources
 
 See the modules `household.py` and `personal.py` in the directory
-`src/soep_preparation/create_derived_variables` for functions creating new variables
-from data sources. Inside `personal.py` the function `derive_birth_month` takes as
-arguments the cleaned data `ppathl` and `bioedu`, both contain a `birth_month_from_`
-variable. The function returns a DataFrame with an unique `birth_month` variable
+`src/soep_preparation/combine_modules` for functions creating new variables from data
+sources. Inside `ppathl_bioedu.py` the function `combine` takes as arguments the cleaned
+data `ppathl` and `bioedu`, both contain a `birth_month_from_` variable. The function
+returns a DataFrame with an unique `birth_month` variable.
 
 You can do so similarly by either creating your own function to derive a certain
 variable or by adding your variable to an existing function.
 
-### Advanced: Adding a New Dataset Module
+### Advanced: Adding a New Module
 
-To add a new SOEP-Core dataset to the project, follow these steps:
+To add a new SOEP-Core module to the project, follow these steps:
 
-1. Add the Dataset to the Data Directory
+1. Add the raw data file to the data directory
 
-   Each dataset should be placed in appropriate data directory (e.g., inside
-   `soep_preparation/data/V38`). As an example, say you want to add the dataset
-   `pequiv.dta` (nevermind this already exists).
+   Each raw data file should be placed in the appropriate data directory (e.g., inside
+   `soep_preparation/data/V38`). As an example, say you want to add the module
+   `pequiv.dta` (this is already present in the pipeline).
 
-1. Create a Corresponding Python Script
+1. Create a corresponding python script
 
-   For each new dataset, create a corresponding Python module (here: `pequiv.py`) inside
-   the initial_preparation directory. Each module must include a clean function that
-   takes a `pd.DataFrame` as input and returns the cleaned dataset, also as a
-   `pd.DataFrame`.
+   For each new module, create a corresponding python script (here: `pequiv.py`) inside
+   the directory `soep_preparation/clean_modules`. Each module must include a clean
+   function that takes a `pd.DataFrame` as input and returns the cleaned dataset, also
+   as a `pd.DataFrame`.
 
    Example template for the clean function:
 
    ```python
-   # to guarantee the correct pandas settings
-   from soep_preparation.config import pd
+   import pandas as pd
+   from soep_preparation.utilities.data_manipulator import cleaning_function
 
 
    def clean(raw: pd.DataFrame) -> pd.DataFrame:
-       """Clean the <dataset_name> dataset."""
+       """Create cleaned variables with sensible data type from the raw pequiv module."""
        out = pd.DataFrame()
 
        # Apply cleaning steps to raw data
@@ -201,17 +229,17 @@ To add a new SOEP-Core dataset to the project, follow these steps:
 **_Inside `data` place the folder `V38` containing all `.dta` files to be cleaned and
 processed._**
 
-The `src/soep_preparation` directory contains the subdirectories `data`,
-`dataset_merging` and `initial_preparation` and the python-scripts `config.py` and
-`utilities.py`.
+The `src/soep_preparation` directory contains the subdirectories
+`convert_stata_to_pandas`, `clean_modules`, `combine_modules`, `create_metadata`,
+`dataset_merging` and `utilities`. Further the script `config.py`.
 
-The `initial_preparation` directory contains the scripts for the initial cleaning of the
-datasets. Data cleaning follows the functional form introduced during the lecture and
-creates a task for cleaning and transforming depending on each specified raw dataset.
-For each group of datasets (bio, h, p and other), there is a `_specific_cleaner.py`
-script with the actual implementation of the respective dataset. Further the `helper.py`
-script contains functions to clean the different kinds of columns to be found inside the
-raw data. The usual implementation of cleaning a column is:
+Inside `convert_stata_to_pandas`, the raw data files are read and converted to pandas
+DataFrames. The scripts in the `clean_modules` directory follow the rules of functional
+data management using pandas, to select variables, manipulate them and apply sensible
+data types for each module. For an introduction see here:
+https://effective-programming-practices.vercel.app/pandas/index.html Inside the
+`task.py`, the module-specific script is loaded and executed with corresponding raw
+data. The usual implementation of cleaning a column is:
 
 ```python
 out["new_name"] = cleaning_function(raw["old_name"])
@@ -219,14 +247,22 @@ out["new_name"] = cleaning_function(raw["old_name"])
 
 where `out` is the dataset created from the bottom up with the results from
 `cleaning_function()`. The latter takes a `pd.Series` as argument (sometimes additional,
-but optional inputs) and return the cleaned series as `pd.Series`. `raw` is the original
-and uncleaned dataset currently being cleaned.
+but optional inputs) and returns the cleaned series as `pd.Series`. `raw` is the data
+currently being cleaned.
 
-The `dataset_merging` directory contains the scripts for merging the datasets (to be
-implemented).
+Further, inside `combine_modules`, scripts combine variables with the same information
+from multiple modules. This might happen for variables from monthly diary notes and the
+annual questionnaire. We call the result also a *module*.
 
-The `config.py` specifies global constants and sets the options for modern pandas.
-`utilities.py` contains general helper functions.
+For each module in `clean_modules` and `combine_modules`, we create metadata information
+in `create_metadata` and map variables to their metadata and corresponding module name.
+By this, the user can easily check in
+`src/soep_preparation/create_metadata/variable_to_metadata_mapping.yaml` which variables
+are available and where to access them. This is useful for merging any combination into
+a final dataset. The `dataset_merging` directory contains the script for merging the
+final dataset. `utilities/` contains scripts with general helper functions.
+
+The `config.py` specifies global constants.
 
 ## Credits
 

@@ -7,13 +7,24 @@ from pathlib import Path
 from types import ModuleType
 
 
-def _fail_if_raw_data_file_missing(
-    script_name: str, data_root: Path, soep_version: str
+def _fail_if_raw_data_files_are_missing(
+    data_root: Path, soep_version: str, script_names: list[str]
 ) -> None:
-    raw_data_file_path = data_root / f"{soep_version}" / f"{script_name}.dta"
-    if not raw_data_file_path.exists():
-        msg = f"""Raw data file {raw_data_file_path} not found for SOEP {soep_version}.
-        Ensure the file is present in the data directory for the corresponding wave."""
+    missing_files = []
+    raw_data_dir = data_root / soep_version
+    for script_name in script_names:
+        raw_data_file_path = raw_data_dir / f"{script_name}.dta"
+        if not raw_data_file_path.exists():
+            missing_files.append(raw_data_file_path)
+    if missing_files:
+        missing_files_str = "\n".join(str(file) for file in missing_files)
+        msg = (
+            f"The following raw data files are missing for SOEP {soep_version}:\n"
+            f"{missing_files_str}\n"
+            f"Please ensure these files are present in the data directory\n"
+            f" {raw_data_dir}"
+            f" For further instructions, please refer to the documentation at https://github.com/ttsim-dev/soep-preparation?tab=readme-ov-file#usage"
+        )
         raise FileNotFoundError(msg)
 
 
@@ -33,7 +44,7 @@ def get_script_names(directory: Path) -> list[str]:
     ]
 
 
-def get_data_file_names(
+def get_raw_data_file_names(
     directory: Path, data_root: Path, soep_version: str
 ) -> list[str]:
     """Get names of all scripts in the directory with corresponding raw data files.
@@ -48,9 +59,35 @@ def get_data_file_names(
 
     """
     script_names = get_script_names(directory)
-    for script_name in script_names:
-        _fail_if_raw_data_file_missing(script_name, data_root, soep_version)
+    _fail_if_raw_data_files_are_missing(
+        data_root=data_root,
+        soep_version=soep_version,
+        script_names=script_names,
+    )
     return script_names
+
+
+def get_combine_module_names(directory: Path) -> list[str]:
+    """Get names of all combine scripts in the directory with valid raw modules.
+
+    Args:
+        directory: The directory containing combine scripts.
+
+    Returns:
+        A list of combine module names.
+
+    """
+    combine_module_names = []
+    script_names = get_script_names(directory)
+    for combine_module in script_names:
+        for raw_module in combine_module.split("_"):
+            if raw_module not in get_script_names(
+                directory=directory.parent / "clean_modules"
+            ):
+                break
+        else:
+            combine_module_names.append(combine_module)
+    return combine_module_names
 
 
 def get_relevant_column_names(script_path: Path) -> list[str]:
@@ -62,12 +99,12 @@ def get_relevant_column_names(script_path: Path) -> list[str]:
     Returns:
         A list of relevant column names.
     """
-    module = load_module(script_path)
+    script = load_script(script_path)
     # Remove the docstring, if existent.
     function_source = re.sub(
         r'""".*?"""|\'\'\'.*?\'\'\'',
         "",
-        inspect.getsource(module.clean),
+        inspect.getsource(script.clean),
         flags=re.DOTALL,
     )
     # Find all occurrences of raw["column_name"] or ['column_name'].
@@ -76,17 +113,17 @@ def get_relevant_column_names(script_path: Path) -> list[str]:
     return list(dict.fromkeys(matches))
 
 
-def load_module(script_path: Path) -> ModuleType:
-    """Load module from path.
+def load_script(script_path: Path) -> ModuleType:
+    """Load script from path.
 
     Args:
         script_path: The path to the script.
 
     Returns:
-        The loaded module.
+        The loaded script.
     """
-    module_name = script_path.stem
-    spec = spec_from_file_location(name=module_name, location=script_path)
-    module = module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    script_name = script_path.stem
+    spec = spec_from_file_location(name=script_name, location=script_path)
+    script = module_from_spec(spec)
+    spec.loader.exec_module(script)
+    return script
