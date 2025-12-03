@@ -25,9 +25,10 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
         how="outer",
     )
     out = pd.DataFrame(index=merged.index)
-    out[["p_id", "hh_id", "survey_year", "hh_id_original"]] = merged[
-        ["p_id", "hh_id", "survey_year", "hh_id_original"]
-    ].copy()
+    out["p_id"] = merged["p_id"]
+    out["hh_id"] = merged["hh_id"]
+    out["hh_id_original"] = merged["hh_id_original"]
+    out["survey_year"] = merged["survey_year"]
 
     out["med_schwierigkeiten_treppen"] = combine_first_and_make_categorical(
         series_1=merged["med_schwierigkeiten_treppen_pequiv"],

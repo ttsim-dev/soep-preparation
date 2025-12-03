@@ -22,9 +22,10 @@ def combine(pl: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
         left=pl, right=pkal, on=["p_id", "hh_id", "survey_year"], how="outer"
     )
     out = pd.DataFrame(index=merged.index)
-    out[["p_id", "hh_id", "survey_year"]] = merged[
-        ["p_id", "hh_id", "survey_year"]
-    ].copy()
+    out["p_id"] = merged["p_id"]
+    out["hh_id"] = merged["hh_id"]
+    out["survey_year"] = merged["survey_year"]
+
     out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
         series_1=merged["bezog_mutterschaftsgeld_pl"],
         series_2=merged["bezog_mutterschaftsgeld_pkal"],

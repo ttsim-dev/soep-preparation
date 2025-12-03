@@ -16,9 +16,10 @@ def combine(pequiv: pd.DataFrame, hl: pd.DataFrame) -> pd.DataFrame:
     """
     merged = pd.merge(left=pequiv, right=hl, on=["hh_id", "survey_year"], how="outer")
     out = pd.DataFrame(index=merged.index)
-    out[["p_id", "hh_id", "survey_year"]] = merged[
-        ["p_id", "hh_id", "survey_year"]
-    ].copy()
+    out["p_id"] = merged["p_id"]
+    out["hh_id"] = merged["hh_id"]
+    out["survey_year"] = merged["survey_year"]
+
     out["arbeitslosengeld_2_m_hh"] = merged[
         "arbeitslosengeld_2_m_hh_pequiv"
     ].combine_first(merged["arbeitslosengeld_2_m_hh_hl"])
