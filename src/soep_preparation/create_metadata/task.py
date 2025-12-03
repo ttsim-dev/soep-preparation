@@ -61,7 +61,8 @@ def task_create_variable_to_metadata_mapping_yaml(
         yaml.dump(
             data=mapping,
             stream=file,
-            width=80,
+            width=60,
+            default_flow_style=False,
             encoding="utf-8",
             allow_unicode=True,
             explicit_start=True,

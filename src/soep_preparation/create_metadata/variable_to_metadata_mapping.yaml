@@ -4677,17 +4677,22 @@ grund_beschäftigungsende:
       categories:
       - Arbeitserlaubnis nicht verlängert (seit 2019)
       - Arbeitsverhältnis befristet (1985-1998)
-      - Arbeitsverhältnis befristet, Ausbildungsverhältnis beendet (seit 1999)
+      - Arbeitsverhältnis befristet, Ausbildungsverhältnis beendet
+        (seit 1999)
       - Aufgabe eigenes Geschäfts
       - Ausbildungsverhältnis beendet (1985-1998)
       - Betriebsstilllegung (1991-1998, seit 2001)
-      - Beurlaubung, Mutterschutz, Elternzeit (1991-1998, seit 2011)
+      - Beurlaubung, Mutterschutz, Elternzeit (1991-1998, seit
+        2011)
       - Beurlaubung, freigstellt (1999-2010)
       - Eigene Kündigung
-      - Einvernehmliche Auflösung, Auflösungsvertrag (1985-1990, seit 1999)
+      - Einvernehmliche Auflösung, Auflösungsvertrag (1985-1990,
+        seit 1999)
       - Kündigung durch Arbeitgeber
-      - Sonst. inkl. Stilllegung, Rente/Pension, beurlaubt, freigestellt (1987-1990)
-      - Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig. (1985-1986)
+      - Sonst. inkl. Stilllegung, Rente/Pension, beurlaubt, freigestellt
+        (1987-1990)
+      - Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension,
+        beurl., freig. (1985-1986)
       - Sonst. inkl. einvernehm. Auflösung/Auflösungsvertrag (1991-1998)
       - Versetzung durch Betrieb (1985-1998)
       - Versetzung eigener Wunsch (1985-1998)
@@ -6656,17 +6661,20 @@ interview_result_old:
       - Haushalt endgueltig nicht auffindbar
       - Nicht reaLaengere Zeit im Heimatland
       - Nicht realisiert, 2mal temp. Ausfaelle
-      - Nicht realisiert, Krankheit/Krankenhaus ueber Feldende hinaus
+      - Nicht realisiert, Krankheit/Krankenhaus ueber Feldende
+        hinaus
       - Nicht realisiert, waehrend gesamter Feldphase nicht erreichb.
       - Nicht realisiert. in Schlussphase nicht mehr erreichbar
       - Realisiert ohne Hinweise auf Folgewelle
-      - Realisiert, aber Pers. m. Befstat = 7 (harte Verweig.) im HH
+      - Realisiert, aber Pers. m. Befstat = 7 (harte Verweig.)
+        im HH
       - Realisiert, naechst. Welle nicht mehr bereit
       - Realisiert, naechst. Welle unter keinen Umst. mehr bereit
       - Sprachprobleme
       - Teilw. realisiert ohne weitere Hinweise
       - Teilw. realisiert, naechst. Welle nicht mehr bereit
-      - Teilw. realisiert, naechst. Welle u. keinen Umst. mehr bereit
+      - Teilw. realisiert, naechst. Welle u. keinen Umst. mehr
+        bereit
       - qna
       categories_dtype: string
       ordered: false
@@ -7534,10 +7542,12 @@ labor_force_status:
     categorical:
       categories:
       - Erwerbstätig
-      - Erwerbstätig, aber inaktiv in den letzten 7 Tagen (seit 2000)
+      - Erwerbstätig, aber inaktiv in den letzten 7 Tagen (seit
+        2000)
       - 'NE: 65 Jahre und älter'
       - 'NE: Mutterschutz/Elternzeit (seit 1991)'
-      - 'NE: aber bezahlte Arbeit in den letzten 7 Tagen (seit 1999)'
+      - 'NE: aber bezahlte Arbeit in den letzten 7 Tagen (seit
+        1999)'
       - 'NE: aber bezahlte Nebentätigkeit (seit 2017)'
       - 'NE: aber gelegentliche Nebentätigkeit (1985-2016)'
       - 'NE: aber regelmäßig bezahlte Nebentätigkeit (1985-2016)'
@@ -7691,14 +7701,16 @@ marital_status:
     categorical:
       categories:
       - Ehepartner im Ausland
-      - Eingetragene gleichgeschlechtliche Partnerschaft getrennt lebend
+      - Eingetragene gleichgeschlechtliche Partnerschaft getrennt
+        lebend
       - Eingetragene gleichgeschlechtliche Partnerschaft zusammenlebend
-      - Geschieden / eingetragene gleichgeschlechtliche Partnerschaft aufgehoben
+      - Geschieden / eingetragene gleichgeschlechtliche Partnerschaft
+        aufgehoben
       - Ledig
       - Verheiratet, dauernd getrennt lebend
       - Verheiratet, mit Ehepartner zusammenlebend
-      - Verwitwet / Lebenspartner/-in aus eingetragener gleichgeschlechtlicher Partnerschaft
-        verstorben
+      - Verwitwet / Lebenspartner/-in aus eingetragener gleichgeschlechtlicher
+        Partnerschaft verstorben
       categories_dtype: string
       ordered: false
   module: pgen
@@ -10083,8 +10095,10 @@ occupation_status:
       categories:
       - Angestellte, Industrie- und Werkmeister
       - Angestellte, einfache Tätigkeit (bis 1990)
-      - Angestellte, einfache Tätigkeit mit Ausbildungsabschluss (ab 1991)
-      - Angestellte, einfache Tätigkeit ohne Ausbildungsabschluss (ab 1991)
+      - Angestellte, einfache Tätigkeit mit Ausbildungsabschluss
+        (ab 1991)
+      - Angestellte, einfache Tätigkeit ohne Ausbildungsabschluss
+        (ab 1991)
       - Angestellte, hochqualifizierte Tätigkeit oder Leitungsfunktion
       - Angestellte, qualifizierte Tätigkeit
       - Angestellte, umfassende Führungsaufgaben
@@ -10103,13 +10117,14 @@ occupation_status:
       - Freiberufler, Akademiker ohne Mitarbeiter (ab 2000)
       - Freiberufler, Akademiker, 1-9 Mitarbeiter (ab 2000)
       - Freiberufler, Akademiker, 10+ Mitarbeiter (ab 2000)
-      - Geschäftsführender Gesellschafter und vergl. Angestellte im eigenen Betrieb
-        (ab 2019)
+      - Geschäftsführender Gesellschafter und vergl. Angestellte
+        im eigenen Betrieb (ab 2019)
       - Meister, Polier
       - 'NE: Rentner/Rentnerin'
       - 'NE: Wehr- und Zivildienst'
       - 'NE: arbeitslos gemeldet'
-      - 'NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre'
+      - 'NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung,
+        Lehre'
       - Volontäre, Praktikanten
       - Vorarbeiter, Kolonnenführer
       - angelernter Arbeiter
@@ -11525,8 +11540,9 @@ refugee_status:
       categories:
       - Duldung
       - Im Verfahren
-      - Schutzstatus zuerkannt (Asyl, Fluechtlingseigenschaft, Niederlassungserlaubnis,
-        human. Aufnahme, sonst. human. Aufnahme)
+      - Schutzstatus zuerkannt (Asyl, Fluechtlingseigenschaft,
+        Niederlassungserlaubnis, human. Aufnahme, sonst. human.
+        Aufnahme)
       - Sonstiges
       categories_dtype: string
       ordered: false
@@ -11595,7 +11611,8 @@ relationship_to_hh:
       - Beruf,Montage
       - Geboren
       - Geboren im neuen Haushalt
-      - Geboren in Vorwelle/lebte immer im Haushalt, erstmals genannt
+      - Geboren in Vorwelle/lebte immer im Haushalt, erstmals
+        genannt
       - In den Haushalt zurueckgekehrt
       - Irrtuemlich in Vorwellen als Haushaltsmitglied gefhrt
       - Keine Angabe
@@ -11622,7 +11639,8 @@ relationship_to_hh:
       - Zuzug in neuen Haushalt aus Ostdeutschland
       - Zuzug in neuen Haushalt aus Westdeutschland
       - Zuzug in neuen Haushalt aus dem Ausland
-      - kuesten Mal im Neuhaushalt genannt, aber bereits im Althaushalt geboren
+      - kuesten Mal im Neuhaushalt genannt, aber bereits im Althaushalt
+        geboren
       categories_dtype: string
       ordered: false
   module: pbrutto
