@@ -18,7 +18,7 @@ def _calculate_frailty(frailty_input: pd.DataFrame) -> pd.Series:
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned and sensible data type variables from the pequiv data file.
+    """Create cleaned variables with sensible data type from the raw pequiv module.
 
     Args:
         raw_data: The raw pequiv data.

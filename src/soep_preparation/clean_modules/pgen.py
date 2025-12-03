@@ -91,7 +91,7 @@ def _weekly_working_hours_fill_non_working(
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
-    """Create cleaned and sensible data type variables from the pgen data file.
+    """Create cleaned variables with sensible data type from the raw pgen module.
 
     Args:
         raw_data: The raw pgen data.
