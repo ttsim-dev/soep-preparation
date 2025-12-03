@@ -41,9 +41,7 @@ This project processes the SOEP-Core data for use with research projects. The ex
 are geared towards using the data with
 [GETTSIM](https://gettsim.readthedocs.io/en/stable/). The raw data is provided by the
 German Institute for Economic Research (DIW Berlin) and is a panel dataset that follows
-the same individuals over time. The data is collected annually and contains information
-on various topics such as income, employment, and health. The data is available for
-scientific use, for more information visit the
+the same individuals over time. See the
 [Research Data Center SOEP](https://www.diw.de/en/diw_01.c.678568.en/research_data_center_soep.html).
 
 The top-level directory is structured as follows:
@@ -52,15 +50,16 @@ The top-level directory is structured as follows:
 - `src`: source code with tasks for preparing the raw data
 - `tests`: tests of the source code
 - other files include the processed output dataset (will be created automatically), the
-  environment configuration, pre-commit hooks, and some meta-files like this README
+  environment configuration, pre-commit hooks, and some meta information like this
+  README
 
 ## Usage
 
 To get started, install [pixi](https://prefix.dev/docs/pixi/overview#installation) if
-you haven't already.
+you do not have it on your machine already.
 
-**_Inside the directory `soep_preparation/data` place the folder `V38` containing the
-raw `.dta` datafiles._**
+**_Inside the directory `soep_preparation/data` fill the folder `V38` containing the raw
+`.dta` data files downloaded from the SOEP website._**
 
 To build the project, type
 
@@ -68,46 +67,67 @@ To build the project, type
 $ pixi run pytask
 ```
 
-If all tasks run, the file `example_merged_dataset.pickle` is created in the root
-directory.
+If all tasks run successfully, the file `example_merged_dataset.pickle` is created in
+the root directory.
 
 ## Working with the Data and Modules
 
-The SOEP data is available in different waves, with the latest being version 39. This
+The SOEP data is available in different versions, the latest being version 40. This
 project is currently set up to work with version 38. It is relevant to note that the
-SOEP is a survey, which usually asks questions regarding variables in the previous
-calendar year (e.g. "What was your annual income _last year_?").
+SOEP is a survey, which often asks questions about the previous calendar year (e.g.
+"What was your annual income _last year_?").
 
 ### Terminology
 
-One wave consists of different survey *modules*. Each of these is distributed by the
-SOEP team as one *raw data file*. For example `hwealth.dta` contains the wealth
-information on household level. One of the "variables" in the dataset is `p010ha`
+One survey wave consists of different survey *modules*. Each of these is distributed by
+the SOEP team as one *raw data file*. For example `hwealth.dta` contains the wealth
+information on the household level. One of the *variables* in the module is `p010ha`
 describing the market value of primary residence (see
 https://paneldata.org/soep-core/datasets/hwealth/p010ha).
 
-After converting the "raw data file" from STATA `.dta` format to a pandas DataFrame, the
-variables inside the module are cleaned. Further, variables from multiple cleaned
-modules containing the same information are combined into a new module.
+After converting the *raw data file* from STATA `.dta` format to a pandas DataFrame, the
+variables inside the module are cleaned.
 
-The final returned variables merged into one table is called a "dataset". We try to
-follow this syntax as close as possible.
+In another step, variables from multiple modules are combined into a new module, which
+always carries a name of the form `{module_1}_{module_2}` (e.g., `pl_pkal`)
+
+In a final step, to be done by the user, the variables required for a particular project
+are merged into one table, which we call a *dataset*.
+
+We try to follow this terminology wherever possible.
 
 ### Understanding the SOEP-Core Data
 
-To understand the related raw SOEP variable(s) and applied conversions of a variable
-provided by this package, have a look at the corresponding script in the directory
-`src/soep_preparation/raw_data/`, e.g. the variable `number_of_children` can be found in
-this manner in the script `biobirth.py` depending on the SOEP-variable `sumkids`. To
-further understand the content of `sumkids`, the
-[documentation of the SOEP variable](https://paneldata.org/soep-core/datasets/biobirth/sumkids),
-especially the "Codebook (PDF)", is helpful. The SOEP documentation URL for a dataset
-and variable has the general form:
-`https://paneldata.org/soep-core/datasets/{dataset_name}/{variable_name}`
+To understand the contents of a variable in the final dataset, the following may help.
+Say we want to find out about the variable `andere_rente_hinterbliebene_y`.
 
-To understand which variables are additionally available for a dataset, the URL
-`https://paneldata.org/soep-core/datasets/{dataset_name}` might be helpful. Here you can
-search for variable names within this file.
+We search for it in the project. Doing so for any variable will turn up at least two
+occurrences:
+
+1. In the file `src/soep_preparation/create_metadata/variable_to_metadata_mapping.yaml`
+1. The definition of the variable, which is located either in the
+   `src/soep_preparation/clean_modules` directory or in the
+   `src/soep_preparation/combine_modules` directory.
+
+The metadata is useful to find out about the data type and the years where it is
+present.
+
+The definition tells us how the variable is created from the raw SOEP variable(s). In
+this case, the script `src/soep_preparation/clean_modules/pequiv.py` contains the line:
+
+```python
+out["andere_rente_hinterbliebene_y"] = object_to_int(raw_data["ison2"])
+```
+
+so we know that it is simply converting the contents of the raw SOEP variable `ison2` to
+an integer. We can look up the contents of that variable in the
+[online SOEP documentation](https://paneldata.org/soep-core/). URLs are formed as
+`https://paneldata.org/soep-core/datasets/<module>/<variable>`. So in this case, we
+would visit
+[https://paneldata.org/soep-core/datasets/pequiv/ison2](https://paneldata.org/soep-core/datasets/pequiv/ison2)
+and could take it from there. Y especially the "Codebook (PDF)", is helpful. The SOEP
+documentation URL for a dataset and variable has the general form:
+`https://paneldata.org/soep-core/datasets/{dataset_name}/{variable_name}`
 
 ### Creating your own Merged Dataset
 
