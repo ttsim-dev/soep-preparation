@@ -68,6 +68,27 @@ def _number_of_months_employed(
     )
 
 
+def _combine_versions_ft_employed_m(
+    data_v1: pd.Series,
+    renaming_v1: dict,
+    data_v2: pd.Series,
+    renaming_v2: dict,
+) -> pd.Series:
+    ft_employed_m_v1 = object_to_str_categorical(
+        series=data_v1,
+        renaming=renaming_v1,
+    )
+    ft_employed_m_v2 = object_to_str_categorical(
+        series=data_v2,
+        renaming=renaming_v2,
+    )
+    return combine_first_and_make_categorical(
+        series_1=ft_employed_m_v1,
+        series_2=ft_employed_m_v2,
+        ordered=False,
+    )
+
+
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned variables from the pkal module.
 
@@ -78,7 +99,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed pkal data.
     """
     out = pd.DataFrame()
-    tmp = pd.DataFrame()
 
     out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
     out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
@@ -103,21 +123,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # the second the timeframe 1998 until 2022
     # individual employment status by month
     # Month 1 - Jan
-    tmp["tmp_ft_employed_m_v1_1"] = object_to_str_categorical(
-        series=raw_data["kal1a001_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_1"] = object_to_str_categorical(
-        series=raw_data["kal1a001_v2"],
-        renaming={
+    out["ft_employed_m_1"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a001_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a001_v2"],
+        renaming_v2={
             "[1] Jan Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Jan Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_1"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_1"],
-        series_2=tmp["tmp_ft_employed_m_v2_1"],
-        ordered=False,
     )
     out["pt_employed_m_1"] = object_to_str_categorical(
         series=raw_data["kal1b001"],
@@ -132,21 +145,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 2 - Feb
-    tmp["tmp_ft_employed_m_v1_2"] = object_to_str_categorical(
-        series=raw_data["kal1a002_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_2"] = object_to_str_categorical(
-        series=raw_data["kal1a002_v2"],
-        renaming={
+    out["ft_employed_m_2"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a002_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a002_v2"],
+        renaming_v2={
             "[1] Feb Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Feb Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_2"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_2"],
-        series_2=tmp["tmp_ft_employed_m_v2_2"],
-        ordered=False,
     )
     out["pt_employed_m_2"] = object_to_str_categorical(
         series=raw_data["kal1b002"],
@@ -161,21 +167,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 3 - Mrz
-    tmp["tmp_ft_employed_m_v1_3"] = object_to_str_categorical(
-        series=raw_data["kal1a003_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_3"] = object_to_str_categorical(
-        series=raw_data["kal1a003_v2"],
-        renaming={
+    out["ft_employed_m_3"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a003_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a003_v2"],
+        renaming_v2={
             "[1] Mrz Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Mrz Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_3"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_3"],
-        series_2=tmp["tmp_ft_employed_m_v2_3"],
-        ordered=False,
     )
     out["pt_employed_m_3"] = object_to_str_categorical(
         series=raw_data["kal1b003"],
@@ -190,21 +189,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 4 - Apr
-    tmp["tmp_ft_employed_m_v1_4"] = object_to_str_categorical(
-        series=raw_data["kal1a004_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_4"] = object_to_str_categorical(
-        series=raw_data["kal1a004_v2"],
-        renaming={
+    out["ft_employed_m_4"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a004_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a004_v2"],
+        renaming_v2={
             "[1] Apr Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Apr Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_4"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_4"],
-        series_2=tmp["tmp_ft_employed_m_v2_4"],
-        ordered=False,
     )
     out["pt_employed_m_4"] = object_to_str_categorical(
         series=raw_data["kal1b004"],
@@ -219,21 +211,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 5 - Mai
-    tmp["tmp_ft_employed_m_v1_5"] = object_to_str_categorical(
-        series=raw_data["kal1a005_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_5"] = object_to_str_categorical(
-        series=raw_data["kal1a005_v2"],
-        renaming={
+    out["ft_employed_m_5"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a005_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a005_v2"],
+        renaming_v2={
             "[1] Mai Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Mai Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_5"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_5"],
-        series_2=tmp["tmp_ft_employed_m_v2_5"],
-        ordered=False,
     )
     out["pt_employed_m_5"] = object_to_str_categorical(
         series=raw_data["kal1b005"],
@@ -248,21 +233,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 6 - Jun
-    tmp["tmp_ft_employed_m_v1_6"] = object_to_str_categorical(
-        series=raw_data["kal1a006_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_6"] = object_to_str_categorical(
-        series=raw_data["kal1a006_v2"],
-        renaming={
+    out["ft_employed_m_6"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a006_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a006_v2"],
+        renaming_v2={
             "[1] Jun Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Jun Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_6"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_6"],
-        series_2=tmp["tmp_ft_employed_m_v2_6"],
-        ordered=False,
     )
     out["pt_employed_m_6"] = object_to_str_categorical(
         series=raw_data["kal1b006"],
@@ -277,21 +255,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 7 - Jul
-    tmp["tmp_ft_employed_m_v1_7"] = object_to_str_categorical(
-        series=raw_data["kal1a007_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_7"] = object_to_str_categorical(
-        series=raw_data["kal1a007_v2"],
-        renaming={
+    out["ft_employed_m_7"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a007_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a007_v2"],
+        renaming_v2={
             "[1] Jul Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Jul Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_7"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_7"],
-        series_2=tmp["tmp_ft_employed_m_v2_7"],
-        ordered=False,
     )
     out["pt_employed_m_7"] = object_to_str_categorical(
         series=raw_data["kal1b007"],
@@ -306,21 +277,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 8 - Aug
-    tmp["tmp_ft_employed_m_v1_8"] = object_to_str_categorical(
-        series=raw_data["kal1a008_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_8"] = object_to_str_categorical(
-        series=raw_data["kal1a008_v2"],
-        renaming={
+    out["ft_employed_m_8"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a008_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a008_v2"],
+        renaming_v2={
             "[1] Aug Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Aug Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_8"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_8"],
-        series_2=tmp["tmp_ft_employed_m_v2_8"],
-        ordered=False,
     )
     out["pt_employed_m_8"] = object_to_str_categorical(
         series=raw_data["kal1b008"],
@@ -335,21 +299,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 9 - Sep
-    tmp["tmp_ft_employed_m_v1_9"] = object_to_str_categorical(
-        series=raw_data["kal1a009_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_9"] = object_to_str_categorical(
-        series=raw_data["kal1a009_v2"],
-        renaming={
+    out["ft_employed_m_9"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a009_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a009_v2"],
+        renaming_v2={
             "[1] Sep Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Sep Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_9"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_9"],
-        series_2=tmp["tmp_ft_employed_m_v2_9"],
-        ordered=False,
     )
     out["pt_employed_m_9"] = object_to_str_categorical(
         series=raw_data["kal1b009"],
@@ -364,21 +321,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 10 - Okt
-    tmp["tmp_ft_employed_m_v1_10"] = object_to_str_categorical(
-        series=raw_data["kal1a010_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_10"] = object_to_str_categorical(
-        series=raw_data["kal1a010_v2"],
-        renaming={
+    out["ft_employed_m_10"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a010_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a010_v2"],
+        renaming_v2={
             "[1] Okt Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Okt Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_10"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_10"],
-        series_2=tmp["tmp_ft_employed_m_v2_10"],
-        ordered=False,
     )
     out["pt_employed_m_10"] = object_to_str_categorical(
         series=raw_data["kal1b010"],
@@ -393,21 +343,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 11 - Nov
-    tmp["tmp_ft_employed_m_v1_11"] = object_to_str_categorical(
-        series=raw_data["kal1a011_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_11"] = object_to_str_categorical(
-        series=raw_data["kal1a011_v2"],
-        renaming={
+    out["ft_employed_m_11"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a011_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a011_v2"],
+        renaming_v2={
             "[1] Nov Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Nov Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_11"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_11"],
-        series_2=tmp["tmp_ft_employed_m_v2_11"],
-        ordered=False,
     )
     out["pt_employed_m_11"] = object_to_str_categorical(
         series=raw_data["kal1b011"],
@@ -422,21 +365,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 12 - Dez
-    tmp["tmp_ft_employed_m_v1_12"] = object_to_str_categorical(
-        series=raw_data["kal1a012_v1"],
-        renaming={"[1] Ja": "Vollzeit erwerbstätig"},
-    )
-    tmp["tmp_ft_employed_m_v2_12"] = object_to_str_categorical(
-        series=raw_data["kal1a012_v2"],
-        renaming={
+    out["ft_employed_m_12"] = _combine_versions_ft_employed_m(
+        data_v1=raw_data["kal1a012_v1"],
+        renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
+        data_v2=raw_data["kal1a012_v2"],
+        renaming_v2={
             "[1] Dez Vollzeit erwerbst.": "Vollzeit erwerbstätig",
             "[8] Dez Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
-    )
-    out["ft_employed_m_12"] = combine_first_and_make_categorical(
-        series_1=tmp["tmp_ft_employed_m_v1_12"],
-        series_2=tmp["tmp_ft_employed_m_v2_12"],
-        ordered=False,
     )
     out["pt_employed_m_12"] = object_to_str_categorical(
         series=raw_data["kal1b012"],
