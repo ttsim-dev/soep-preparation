@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import pytest
-
 from soep_preparation.dataset_merging.helper import (
     _fix_user_input,
     _get_data_file_name_to_variables_mapping,
