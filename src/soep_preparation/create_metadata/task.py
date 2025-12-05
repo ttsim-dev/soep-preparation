@@ -7,39 +7,38 @@ import pandas as pd
 import yaml
 from pytask import Product, task
 
-from soep_preparation.config import BLD, DATA_CATALOGS, MODULE_STRUCTURE, SRC
+from soep_preparation.config import BLD, METADATA, MODULES, SRC
 
 POTENTIAL_INDEX_VARIABLES = ["p_id", "hh_id", "hh_id_original", "survey_year"]
 
 
-for level, module_names in MODULE_STRUCTURE.items():
-    for module_name in module_names:
+for module_name in MODULES._entries:  # noqa: SLF001
 
-        @task(id=module_name)
-        def task_create_metadata_for_one_module(
-            module: Annotated[pd.DataFrame, DATA_CATALOGS[level][module_name]],
-        ) -> Annotated[dict, DATA_CATALOGS["metadata"][module_name]]:
-            """Create metadata for a single module.
+    @task(id=module_name)
+    def task_create_metadata_for_one_module(
+        module: Annotated[pd.DataFrame, MODULES[module_name]],
+    ) -> Annotated[dict, METADATA[module_name]]:
+        """Create metadata for a single module.
 
-            Args:
-                module: The data module to create metadata for.
+        Args:
+            module: The data module to create metadata for.
 
-            Returns:
-                Metadata information for index and variables contained in the module.
+        Returns:
+            Metadata information for index and variables contained in the module.
 
-            Raises:
-                TypeError: If input data is not of expected type.
-            """
-            index_variables_metadata = _get_index_variables_metadata(module)
-            variable_metadata = _get_variable_metadata(module)
-            return {
-                "index_variables": index_variables_metadata,
-                "variable_metadata": variable_metadata,
-            }
+        Raises:
+            TypeError: If input data is not of expected type.
+        """
+        index_variables_metadata = _get_index_variables_metadata(module)
+        variable_metadata = _get_variable_metadata(module)
+        return {
+            "index_variables": index_variables_metadata,
+            "variable_metadata": variable_metadata,
+        }
 
 
 def task_create_variable_to_metadata_mapping_yaml(
-    modules_metadata: Annotated[dict[str, dict], DATA_CATALOGS["metadata"]._entries],
+    modules_metadata: Annotated[dict[str, dict], METADATA._entries],
     in_path: Annotated[
         Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
     ],

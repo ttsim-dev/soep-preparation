@@ -96,7 +96,9 @@ done by the user; this project provides a helper function to do so.
 
 ### Creating your own Merged Dataset
 
-Here is an example for creating a SOEP final dataset in a project:
+Here is an example for creating a SOEP final dataset in a project (for execution place
+the code below into a script called e.g. `task_create_final_dataset` inside the
+`src/soep_preparation/` directory):
 
 ```python
 from soep_preparation import create_final_dataset, DATA_CATALOG
@@ -111,17 +113,15 @@ def task_create_soep_dataset(
     """Example task merging based on variable names to create dataset.
 
     Args:
-        pbrutto: The pbrutto module created in the pipeline.
-        pl_pequiv: The pl_pequiv module created in the pipeline.
         metadata: The metadata created in the pipeline.
         variables: Variable names the dataset should contain.
         survey_years: Survey years the dataset should contain.
+        pbrutto: The pbrutto module created in the pipeline.
+        pl_pequiv: The pl_pequiv module created in the pipeline.
 
     Returns:
         The variables merged into a dataset.
 
-    Raises:
-        TypeError: If input mapping or variables is not of expected type.
     """
     return create_final_dataset(
         variables=variables,

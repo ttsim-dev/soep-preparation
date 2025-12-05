@@ -38,20 +38,17 @@ MODULE_STRUCTURE = {
     "combined_modules": get_combine_module_names(directory=SRC / "combine_modules"),
 }
 
-
-DATA_CATALOGS = {
-    "raw_pandas": DataCatalog(name="raw_pandas"),
-    "cleaned_modules": DataCatalog(name="cleaned_modules"),
-    "combined_modules": DataCatalog(name="combined_modules"),
-    "metadata": DataCatalog(name="metadata"),
-    "merged": DataCatalog(name="merged"),
-}
+RAW_DATA_CATALOG = DataCatalog(name="raw_pandas")
+MODULES = DataCatalog(name="modules")
+METADATA = DataCatalog(name="metadata")
 
 __all__ = [
     "BLD",
-    "DATA_CATALOGS",
     "DATA_ROOT",
+    "METADATA",
+    "MODULES",
     "MODULE_STRUCTURE",
+    "RAW_DATA_CATALOG",
     "ROOT",
     "SOEP_VERSION",
     "SRC",

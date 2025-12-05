@@ -1,84 +1,30 @@
 import numpy as np
 import pandas as pd
 
-from soep_preparation.merge_data.helper import (
-    _fix_user_input,
+from soep_preparation.final_dataset import (
     _get_module_to_variable,
+    _harmonize_variables,
     _merge_data,
 )
 
 
-def test_fix_user_input_assert_type():
-    tuple_ = ([*range(2010, 2022)], ["column1", "column2"])
-    expected = type(tuple_)
+def test_harmonize_variables_assert_type():
+    expected_variables = ["column1", "column2"]
+    expected = type(expected_variables)
     user_input_ = {
-        "survey_years": [*range(2010, 2022)],
-        "min_survey_year": None,
-        "max_survey_year": None,
         "variables": ["column1", "column2"],
     }
-    actual = type(_fix_user_input(**user_input_))
+    actual = type(_harmonize_variables(**user_input_))
     assert actual == expected
 
 
-def test_fix_user_input_assert_survey_years_type():
-    expected = list
+def test_harmonize_variables_assert_variables():
+    expected = ["column1", "column2"]
     user_input_ = {
-        "survey_years": [*range(2010, 2022)],
-        "min_survey_year": None,
-        "max_survey_year": None,
-        "variables": ["column1", "column2"],
+        "variables": ["p_id", "hh_id", "column1", "column2"],
     }
-    actual = _fix_user_input(**user_input_)
-    assert isinstance(actual[0], expected)
-
-
-def test_fix_user_input_assert_columns_type():
-    expected = list
-    user_input_ = {
-        "survey_years": [*range(2010, 2022)],
-        "min_survey_year": None,
-        "max_survey_year": None,
-        "variables": ["column1", "column2"],
-    }
-    actual = _fix_user_input(**user_input_)
-    assert isinstance(actual[1], expected)
-
-
-def test_fix_user_input_assert_survey_years():
-    expected = ([*range(2010, 2022)], ["column1", "column2"])
-    user_input_ = {
-        "survey_years": [*range(2010, 2022)],
-        "min_survey_year": None,
-        "max_survey_year": None,
-        "variables": ["column1", "column2"],
-    }
-    actual = _fix_user_input(**user_input_)
-    assert actual[0] == expected[0]
-
-
-def test_fix_user_input_assert_min_and_max_survey_years():
-    expected = ([*range(2010, 2022)], ["column1", "column2"])
-    user_input_ = {
-        "survey_years": None,
-        "min_survey_year": 2010,
-        "max_survey_year": 2021,
-        "variables": ["column1", "column2"],
-    }
-    actual = _fix_user_input(**user_input_)
-    assert actual[0] == expected[0]
-
-
-def test_fix_user_input_assert_columns():
-    expected = ([*range(2010, 2022)], ["column1", "column2"])
-    user_input_ = {
-        "survey_years": [*range(2010, 2022)],
-        "min_survey_year": None,
-        "max_survey_year": None,
-        "variables": ["column1", "column2"],
-    }
-    actual = _fix_user_input(**user_input_)
-    assert actual[1] == expected[1]
+    actual = _harmonize_variables(**user_input_)
+    assert actual == expected
 
 
 def test_get_module_to_variable_assert_type():
@@ -131,7 +77,7 @@ def test_get_module_to_variable_assert_modules():
     assert sorted(actual.keys()) == sorted(expected)
 
 
-def test_create_dataset_assert_type():
+def test_create_final_dataset_assert_type():
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
@@ -168,7 +114,7 @@ def test_create_dataset_assert_type():
     assert actual == expected
 
 
-def test_create_dataset_assert_data():
+def test_create_final_dataset_assert_data():
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],

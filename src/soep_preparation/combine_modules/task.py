@@ -6,7 +6,7 @@ from typing import Annotated
 import pandas as pd
 from pytask import task
 
-from soep_preparation.config import DATA_CATALOGS, MODULE_STRUCTURE, SRC
+from soep_preparation.config import MODULE_STRUCTURE, MODULES, SRC
 from soep_preparation.utilities.error_handling import (
     fail_if_expected_function_missing,
     fail_if_input_has_invalid_type,
@@ -16,17 +16,14 @@ from soep_preparation.utilities.general import (
 )
 
 for script_name in MODULE_STRUCTURE["combined_modules"]:
-    modules_to_combine = {
-        module: DATA_CATALOGS["cleaned_modules"][module]
-        for module in script_name.split("_")
-    }
+    modules_to_combine = {module: MODULES[module] for module in script_name.split("_")}
 
     @task(id=f"{script_name}")
     def task_combine_modules(
         modules_to_combine: Annotated[dict[str, pd.DataFrame], modules_to_combine],
         script_path: Annotated[Path, SRC / "combine_modules" / f"{script_name}.py"],
         script_name: Annotated[str, script_name],
-    ) -> Annotated[pd.DataFrame, DATA_CATALOGS["combined_modules"][script_name]]:
+    ) -> Annotated[pd.DataFrame, MODULES[script_name]]:
         """Combine variables from multiple modules into one module.
 
         Args:
