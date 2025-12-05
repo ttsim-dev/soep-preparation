@@ -1,4 +1,4 @@
-"""Example task to create merge variables to a dataset."""
+"""Example task to merge variables to dataset."""
 
 from pathlib import Path
 from typing import Annotated
@@ -8,7 +8,7 @@ import yaml
 from pytask import Product
 
 from soep_preparation.config import DATA_CATALOGS, ROOT, SRC
-from soep_preparation.dataset_merging.helper import create_dataset
+from soep_preparation.merge_data.helper import create_dataset
 
 VARIABLES_TO_MERGE = [
     "age",
@@ -25,7 +25,7 @@ VARIABLES_TO_MERGE = [
 SURVEY_YEARS_TO_MERGE = [*range(1984, 2021 + 1)]
 
 
-def task_merge_variables(
+def task_merge_data(
     combined_modules: Annotated[
         dict[str, pd.DataFrame], DATA_CATALOGS["combined_modules"]._entries
     ],

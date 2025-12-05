@@ -1,4 +1,4 @@
-"""Helper functions for merging variables to dataset."""
+"""Helper functions to merge variables to dataset."""
 
 from difflib import get_close_matches
 
@@ -20,7 +20,7 @@ def create_dataset(  # noqa: PLR0913
     max_survey_year: int | None = None,
     survey_years: list[int] | None = None,
 ) -> pd.DataFrame:
-    """Create a dataset by merging variables.
+    """Merge variables for specified survey years into dataset.
 
     A list of variables and timeframe needs to be specified to create a dataset.
     Variables are results of the pipeline of cleaning and combining variables.
@@ -86,7 +86,7 @@ def create_dataset(  # noqa: PLR0913
         survey_years=survey_years,
     )
 
-    return _merge_variables(
+    return _merge_data(
         merging_information=dataset_merging_information,
     )
 
@@ -261,11 +261,11 @@ def _get_sorted_dataset_merging_information(
     return _sort_dataset_merging_information(dataset_merging_information)
 
 
-def _merge_variables(
+def _merge_data(
     merging_information: dict[str, dict],
 ) -> pd.DataFrame:
-    dataframes = [dataframe["data"] for dataframe in merging_information.values()]
+    modules = [module["data"] for module in merging_information.values()]
     out = pd.DataFrame()
-    for dataframe in dataframes:
-        out = dataframe if out.empty else out.merge(dataframe, how="outer")
+    for module in modules:
+        out = module if out.empty else out.merge(module, how="outer")
     return out.reset_index(drop=True)
