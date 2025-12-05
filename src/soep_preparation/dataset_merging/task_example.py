@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import Annotated, Any
 
 import pandas as pd
-import pytask
 import yaml
+from pytask import Product
 
-from soep_preparation.config import DATA_CATALOGS, SRC, SURVEY_YEARS
-from soep_preparation.dataset_merging.helper import create_dataset_from_variables
+from soep_preparation.config import DATA_CATALOGS, ROOT, SRC, SURVEY_YEARS
+from soep_preparation.dataset_merging.helper import create_dataset
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
 VARIABLES = [
@@ -24,7 +24,6 @@ VARIABLES = [
 ]
 
 
-@pytask.mark.skip()
 def task_merge_variables(
     map_path: Annotated[
         Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
@@ -46,13 +45,33 @@ def task_merge_variables(
     _error_handling_task(map_path=map_path, variables=variables)
     with Path.open(map_path, "r", encoding="utf-8") as file:
         map_variable_to_module = yaml.safe_load(file)
-    return create_dataset_from_variables(
+    return create_dataset(
         variables=variables,
-        min_and_max_survey_years=(min(SURVEY_YEARS), max(SURVEY_YEARS)),
-        map_variable_to_data_file=map_variable_to_module,
+        min_survey_year=min(SURVEY_YEARS),
+        max_survey_year=max(SURVEY_YEARS),
+        map_variable_to_module=map_variable_to_module,
     )
 
 
+def task_save_dataset_to_root(
+    dataset: Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]],
+    out_path: Annotated[Path, Product] = ROOT / "example_merged_dataset.pkl",
+) -> None:
+    """Save the merged dataset to root folder.
+
+    Args:
+        dataset: The merged dataset.
+        out_path: The output path to save the dataset to.
+
+    Returns:
+        None
+    """
+    # TODO (@felixschmitz): Allow other formats than pickle.  # noqa: TD003
+    dataset.to_pickle(out_path)
+
+
 def _error_handling_task(map_path: Any, variables: Any) -> None:  # noqa: ANN401
-    fail_if_input_has_invalid_type(input_=map_path, expected_dtypes=["pathlib.Path"])
+    fail_if_input_has_invalid_type(
+        input_=map_path, expected_dtypes=["pathlib._local.PosixPath"]
+    )
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])

@@ -47,3 +47,4 @@ sandbox/
 
 # ignore pickle files
 *.pickle
+*.pkl
