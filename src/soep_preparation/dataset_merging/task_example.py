@@ -1,17 +1,16 @@
 """Example task to create merge variables to a dataset."""
 
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated
 
 import pandas as pd
 import yaml
 from pytask import Product
 
-from soep_preparation.config import DATA_CATALOGS, ROOT, SRC, SURVEY_YEARS
+from soep_preparation.config import DATA_CATALOGS, ROOT, SRC
 from soep_preparation.dataset_merging.helper import create_dataset
-from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 
-VARIABLES = [
+VARIABLES_TO_MERGE = [
     "age",
     "birth_month",
     "bmi",
@@ -23,18 +22,30 @@ VARIABLES = [
     "frailty",
 ]
 
+SURVEY_YEARS_TO_MERGE = [*range(1984, 2021 + 1)]
+
 
 def task_merge_variables(
-    map_path: Annotated[
+    combined_modules: Annotated[
+        dict[str, pd.DataFrame], DATA_CATALOGS["combined_modules"]._entries
+    ],
+    cleaned_modules: Annotated[
+        dict[str, pd.DataFrame], DATA_CATALOGS["cleaned_modules"]._entries
+    ],
+    metadata_input_path: Annotated[
         Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
     ],
-    variables: Annotated[list[str], VARIABLES],
+    variables: Annotated[list[str], VARIABLES_TO_MERGE],
+    survey_years: Annotated[list[int], SURVEY_YEARS_TO_MERGE],
 ) -> Annotated[pd.DataFrame, DATA_CATALOGS["merged"]["example_merged_dataset"]]:
     """Example task merging based on variable names to create dataset.
 
     Args:
-        map_path: Path to the variable to module mapping.
-        variables: A list of variable names to be used for merging.
+        combined_modules: The combined modules created in the pipeline.
+        cleaned_modules: The cleaned modules created in the pipeline.
+        metadata_input_path: Path to the variable to module mapping.
+        variables: Variable names the dataset should contain.
+        survey_years: Survey years the dataset should contain.
 
     Returns:
         The variables merged into a dataset.
@@ -42,14 +53,14 @@ def task_merge_variables(
     Raises:
         TypeError: If input mapping or variables is not of expected type.
     """
-    _error_handling_task(map_path=map_path, variables=variables)
-    with Path.open(map_path, "r", encoding="utf-8") as file:
-        map_variable_to_module = yaml.safe_load(file)
+    with Path.open(metadata_input_path, "r", encoding="utf-8") as file:
+        variable_to_metadata = yaml.safe_load(file)
     return create_dataset(
+        modules={**combined_modules, **cleaned_modules},
+        variable_to_metadata=variable_to_metadata,
         variables=variables,
-        min_survey_year=min(SURVEY_YEARS),
-        max_survey_year=max(SURVEY_YEARS),
-        map_variable_to_module=map_variable_to_module,
+        min_survey_year=min(survey_years),
+        max_survey_year=max(survey_years),
     )
 
 
@@ -68,10 +79,3 @@ def task_save_dataset_to_root(
     """
     # TODO (@felixschmitz): Allow other formats than pickle.  # noqa: TD003
     dataset.to_pickle(out_path)
-
-
-def _error_handling_task(map_path: Any, variables: Any) -> None:  # noqa: ANN401
-    fail_if_input_has_invalid_type(
-        input_=map_path, expected_dtypes=["pathlib._local.PosixPath"]
-    )
-    fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
