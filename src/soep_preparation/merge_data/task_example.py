@@ -11,6 +11,8 @@ from soep_preparation.config import DATA_CATALOGS, ROOT, SRC
 from soep_preparation.merge_data.helper import create_dataset
 
 VARIABLES_TO_MERGE = [
+    "survey_year",
+    "hh_id",
     "age",
     "birth_month",
     "bmi",

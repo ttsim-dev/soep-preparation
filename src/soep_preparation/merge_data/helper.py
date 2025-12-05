@@ -93,7 +93,7 @@ def create_dataset(  # noqa: PLR0913
 
 def _error_handling(  # noqa: PLR0913
     modules: dict[str, pd.DataFrame],
-    variable_to_metadata: dict[str, list[str]],
+    variable_to_metadata: dict[str, dict],
     variables: list[str],
     min_survey_year: int | None,
     max_survey_year: int | None,
@@ -149,10 +149,10 @@ def _fail_if_missing_survey_year_inputs(
 
 def _fail_if_invalid_variable(
     variables: list[str],
-    variable_to_metadata: dict[str, list[str]],
+    variable_to_metadata: dict[str, dict],
 ) -> None:
     for variable in variables:
-        if variable not in variable_to_metadata:
+        if variable not in variable_to_metadata and variable not in ID_VARIABLES:
             closest_matches = get_close_matches(
                 variable,
                 variable_to_metadata.keys(),
