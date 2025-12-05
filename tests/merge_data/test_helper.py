@@ -1,11 +1,10 @@
 import numpy as np
 import pandas as pd
-import pytest
 
 from soep_preparation.merge_data.helper import (
     _fix_user_input,
     _get_module_to_variable,
-    create_dataset,
+    _merge_data,
 )
 
 
@@ -118,7 +117,7 @@ def test_get_module_to_variable_assert_mapping():
     assert actual == expected
 
 
-def test_get_module_to_variable_assert_datasets():
+def test_get_module_to_variable_assert_modules():
     expected = ["dataset1", "dataset2"]
     input_ = {
         "variable_to_metadata": {
@@ -132,7 +131,6 @@ def test_get_module_to_variable_assert_datasets():
     assert sorted(actual.keys()) == sorted(expected)
 
 
-@pytest.mark.skip(reason="Skipped since the merging depends on DataCatalog content")
 def test_create_dataset_assert_type():
     data = pd.DataFrame(
         {
@@ -165,13 +163,11 @@ def test_create_dataset_assert_type():
                 "index_columns": ["id1", "id2"],
             },
         },
-        "merging_behavior": "outer",
     }
-    actual = type(create_dataset(**input_))
+    actual = type(_merge_data(**input_))
     assert actual == expected
 
 
-@pytest.mark.skip(reason="Skipped since the merging depends on DataCatalog content")
 def test_create_dataset_assert_data():
     data = pd.DataFrame(
         {
@@ -204,7 +200,6 @@ def test_create_dataset_assert_data():
                 "index_columns": ["id1", "id2"],
             },
         },
-        "merging_behavior": "outer",
     }
-    actual = create_dataset(**input_)
+    actual = _merge_data(**input_)
     pd.testing.assert_frame_equal(actual, expected)
