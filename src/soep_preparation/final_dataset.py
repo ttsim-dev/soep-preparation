@@ -116,8 +116,8 @@ def _fail_if_invalid_variable(
                 cutoff=0.6,
             )
             matches = {match: variable_to_metadata[match] for match in closest_matches}
-            msg = f"""variable {variable} not found in any data file.
-            The closest matches with the corresponding data files are:
+            msg = f"""variable {variable} not found in any module.
+            The closest matches with the corresponding modules are:
             {matches}"""
             raise ValueError(msg)
 

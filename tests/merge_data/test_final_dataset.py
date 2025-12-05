@@ -77,7 +77,7 @@ def test_get_module_to_variable_assert_modules():
     assert sorted(actual.keys()) == sorted(expected)
 
 
-def test_create_final_dataset_assert_type():
+def test_merge_data_assert_type():
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
@@ -114,7 +114,7 @@ def test_create_final_dataset_assert_type():
     assert actual == expected
 
 
-def test_create_final_dataset_assert_data():
+def test_merge_data_assert_data():
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
