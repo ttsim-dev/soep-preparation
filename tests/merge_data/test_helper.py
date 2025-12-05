@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
 import pytest
-from soep_preparation.dataset_merging.helper import (
+
+from soep_preparation.merge_data.helper import (
     _fix_user_input,
-    _get_data_file_name_to_variables_mapping,
-    create_dataset_from_variables,
+    _get_module_to_variable,
+    create_dataset,
 )
 
 
@@ -13,7 +14,8 @@ def test_fix_user_input_assert_type():
     expected = type(tuple_)
     user_input_ = {
         "survey_years": [*range(2010, 2022)],
-        "min_and_max_survey_years": None,
+        "min_survey_year": None,
+        "max_survey_year": None,
         "variables": ["column1", "column2"],
     }
     actual = type(_fix_user_input(**user_input_))
@@ -24,7 +26,8 @@ def test_fix_user_input_assert_survey_years_type():
     expected = list
     user_input_ = {
         "survey_years": [*range(2010, 2022)],
-        "min_and_max_survey_years": None,
+        "min_survey_year": None,
+        "max_survey_year": None,
         "variables": ["column1", "column2"],
     }
     actual = _fix_user_input(**user_input_)
@@ -35,7 +38,8 @@ def test_fix_user_input_assert_columns_type():
     expected = list
     user_input_ = {
         "survey_years": [*range(2010, 2022)],
-        "min_and_max_survey_years": None,
+        "min_survey_year": None,
+        "max_survey_year": None,
         "variables": ["column1", "column2"],
     }
     actual = _fix_user_input(**user_input_)
@@ -46,7 +50,8 @@ def test_fix_user_input_assert_survey_years():
     expected = ([*range(2010, 2022)], ["column1", "column2"])
     user_input_ = {
         "survey_years": [*range(2010, 2022)],
-        "min_and_max_survey_years": None,
+        "min_survey_year": None,
+        "max_survey_year": None,
         "variables": ["column1", "column2"],
     }
     actual = _fix_user_input(**user_input_)
@@ -57,7 +62,8 @@ def test_fix_user_input_assert_min_and_max_survey_years():
     expected = ([*range(2010, 2022)], ["column1", "column2"])
     user_input_ = {
         "survey_years": None,
-        "min_and_max_survey_years": (2010, 2021),
+        "min_survey_year": 2010,
+        "max_survey_year": 2021,
         "variables": ["column1", "column2"],
     }
     actual = _fix_user_input(**user_input_)
@@ -68,14 +74,15 @@ def test_fix_user_input_assert_columns():
     expected = ([*range(2010, 2022)], ["column1", "column2"])
     user_input_ = {
         "survey_years": [*range(2010, 2022)],
-        "min_and_max_survey_years": None,
+        "min_survey_year": None,
+        "max_survey_year": None,
         "variables": ["column1", "column2"],
     }
     actual = _fix_user_input(**user_input_)
     assert actual[1] == expected[1]
 
 
-def test_get_data_file_name_to_variables_mapping_assert_type():
+def test_get_module_to_variable_assert_type():
     expected = type(
         {
             "dataset1": ["column1", "column3"],
@@ -83,50 +90,50 @@ def test_get_data_file_name_to_variables_mapping_assert_type():
         },
     )
     input_ = {
-        "map_variable_to_module": {
-            "column1": "dataset1",
-            "column2": "dataset2",
-            "column3": "dataset1",
+        "variable_to_metadata": {
+            "column1": {"module": "dataset1"},
+            "column2": {"module": "dataset2"},
+            "column3": {"module": "dataset1"},
         },
         "variables": ["column1", "column2"],
     }
-    actual = type(_get_data_file_name_to_variables_mapping(**input_))
+    actual = type(_get_module_to_variable(**input_))
     assert actual == expected
 
 
-def test_get_data_file_name_to_variables_mapping_assert_mapping():
+def test_get_module_to_variable_assert_mapping():
     expected = {
         "dataset1": ["column1", "column3"],
         "dataset2": ["column2"],
     }
     input_ = {
-        "map_variable_to_module": {
-            "column1": "dataset1",
-            "column2": "dataset2",
-            "column3": "dataset1",
+        "variable_to_metadata": {
+            "column1": {"module": "dataset1"},
+            "column2": {"module": "dataset2"},
+            "column3": {"module": "dataset1"},
         },
         "variables": ["column1", "column2", "column3"],
     }
-    actual = _get_data_file_name_to_variables_mapping(**input_)
+    actual = _get_module_to_variable(**input_)
     assert actual == expected
 
 
-def test_get_data_file_name_to_variables_mapping_assert_datasets():
+def test_get_module_to_variable_assert_datasets():
     expected = ["dataset1", "dataset2"]
     input_ = {
-        "map_variable_to_module": {
-            "column1": "dataset1",
-            "column2": "dataset2",
-            "column3": "dataset1",
+        "variable_to_metadata": {
+            "column1": {"module": "dataset1"},
+            "column2": {"module": "dataset2"},
+            "column3": {"module": "dataset1"},
         },
         "variables": ["column1", "column2"],
     }
-    actual = _get_data_file_name_to_variables_mapping(**input_)
+    actual = _get_module_to_variable(**input_)
     assert sorted(actual.keys()) == sorted(expected)
 
 
 @pytest.mark.skip(reason="Skipped since the merging depends on DataCatalog content")
-def test_create_dataset_from_variables_assert_type():
+def test_create_dataset_assert_type():
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
@@ -160,12 +167,12 @@ def test_create_dataset_from_variables_assert_type():
         },
         "merging_behavior": "outer",
     }
-    actual = type(create_dataset_from_variables(**input_))
+    actual = type(create_dataset(**input_))
     assert actual == expected
 
 
 @pytest.mark.skip(reason="Skipped since the merging depends on DataCatalog content")
-def test_create_dataset_from_variables_assert_data():
+def test_create_dataset_assert_data():
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
@@ -199,5 +206,5 @@ def test_create_dataset_from_variables_assert_data():
         },
         "merging_behavior": "outer",
     }
-    actual = create_dataset_from_variables(**input_)
+    actual = create_dataset(**input_)
     pd.testing.assert_frame_equal(actual, expected)
