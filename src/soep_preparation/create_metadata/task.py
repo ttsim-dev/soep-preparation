@@ -8,9 +8,13 @@ import yaml
 from deepdiff import DeepHash
 from pytask import DataCatalog, Product, PythonNode, task
 
-from soep_preparation.config import BLD, METADATA, MODULES, SRC
-
-POTENTIAL_INDEX_VARIABLES = ["p_id", "hh_id", "hh_id_original", "survey_year"]
+from soep_preparation.config import (
+    BLD,
+    METADATA,
+    MODULES,
+    POTENTIAL_INDEX_VARIABLES,
+    SRC,
+)
 
 _METADATA_CATALOG = DataCatalog(name="metadata")
 

@@ -19,11 +19,11 @@ def _fail_if_raw_data_files_are_missing(
     if missing_files:
         missing_files_str = "\n".join(str(file) for file in missing_files)
         msg = (
-            f"The following raw data files are missing for SOEP {soep_version}:\n"
-            f"{missing_files_str}\n"
-            f"Please ensure these files are present in the data directory\n"
-            f" {raw_data_dir}"
-            f" For further instructions, please refer to the documentation at https://github.com/ttsim-dev/soep-preparation?tab=readme-ov-file#usage"
+            f"The following raw data files are missing for SOEP {soep_version}:\n\n"
+            f"{missing_files_str}\n\n"
+            "Please ensure these files are present in the data directory\n\n"
+            f"{raw_data_dir}\n\n"
+            f"Also see the documentation at https://github.com/ttsim-dev/soep-preparation?tab=readme-ov-file#usage"
         )
         raise FileNotFoundError(msg)
 

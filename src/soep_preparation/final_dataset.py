@@ -4,13 +4,11 @@ from difflib import get_close_matches
 
 import pandas as pd
 
-from soep_preparation.config import METADATA
+from soep_preparation.config import METADATA, POTENTIAL_INDEX_VARIABLES
 from soep_preparation.utilities.error_handling import (
     fail_if_empty,
     fail_if_input_has_invalid_type,
 )
-
-ID_VARIABLES = ["hh_id", "hh_id_original", "p_id", "survey_year"]
 
 
 def create_final_dataset(
@@ -108,7 +106,10 @@ def _fail_if_invalid_variable(
     variable_to_metadata: dict[str, dict],
 ) -> None:
     for variable in variables:
-        if variable not in variable_to_metadata and variable not in ID_VARIABLES:
+        if (
+            variable not in variable_to_metadata
+            and variable not in POTENTIAL_INDEX_VARIABLES
+        ):
             closest_matches = get_close_matches(
                 variable,
                 variable_to_metadata.keys(),
@@ -161,7 +162,7 @@ def _sort_dataset_merging_information(
 def _harmonize_variables(
     variables: list[str],
 ) -> list[str]:
-    return [v for v in variables if v not in ID_VARIABLES]
+    return [v for v in variables if v not in POTENTIAL_INDEX_VARIABLES]
 
 
 def _get_sorted_dataset_merging_information(
@@ -180,7 +181,9 @@ def _get_sorted_dataset_merging_information(
         # TODO (@hmgaudecker): I'm unhappy with `module_data`.  # noqa: TD003
         # Should we get rid off "module_" prefix in the loop variable names?
         module_data = modules[module_name]
-        index_variables = [v for v in module_data.columns if v in ID_VARIABLES]
+        index_variables = [
+            v for v in module_data.columns if v in POTENTIAL_INDEX_VARIABLES
+        ]
         if "survey_year" in index_variables:
             data = module_data.query(
                 f"{min(survey_years)} <= survey_year <= {max(survey_years)}",
