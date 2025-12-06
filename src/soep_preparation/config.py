@@ -40,12 +40,10 @@ MODULE_STRUCTURE = {
 
 RAW_DATA_CATALOG = DataCatalog(name="raw_pandas")
 MODULES = DataCatalog(name="modules")
-METADATA = DataCatalog(name="metadata")
 
 __all__ = [
     "BLD",
     "DATA_ROOT",
-    "METADATA",
     "MODULES",
     "MODULE_STRUCTURE",
     "RAW_DATA_CATALOG",

@@ -5,19 +5,20 @@ from typing import Annotated, Any
 
 import pandas as pd
 import yaml
-from pytask import Product, task
+from pytask import DataCatalog, Product, task
 
-from soep_preparation.config import BLD, METADATA, MODULES, SRC
+from soep_preparation.config import BLD, MODULES, SRC
 
 POTENTIAL_INDEX_VARIABLES = ["p_id", "hh_id", "hh_id_original", "survey_year"]
 
+_METADATA = DataCatalog(name="metadata")
 
 for module_name in MODULES._entries:  # noqa: SLF001
 
     @task(id=module_name)
     def task_create_metadata_for_one_module(
         module: Annotated[pd.DataFrame, MODULES[module_name]],
-    ) -> Annotated[dict, METADATA[module_name]]:
+    ) -> Annotated[dict, _METADATA[module_name]]:
         """Create metadata for a single module.
 
         Args:
@@ -38,7 +39,7 @@ for module_name in MODULES._entries:  # noqa: SLF001
 
 
 def task_create_variable_to_metadata_mapping_yaml(
-    modules_metadata: Annotated[dict[str, dict], METADATA._entries],
+    modules_metadata: Annotated[dict[str, dict], _METADATA._entries],
     in_path: Annotated[
         Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
     ],
