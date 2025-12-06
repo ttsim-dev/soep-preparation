@@ -147,12 +147,9 @@ def _get_sorted_dataset_merging_information(
         # No need to keep module around if we do not have any variables to merge
         if not mod_vars:
             continue
+        data = full_data[idx_vars + mod_vars].dropna(axis="index", subset=mod_vars)
         if "survey_year" in idx_vars:
-            data = full_data.query(f"survey_year in {survey_years}")[
-                idx_vars + mod_vars
-            ]
-        else:
-            data = full_data[idx_vars + mod_vars]
+            data = data.query(f"survey_year in {survey_years}")
         dataset_merging_information[module_name] = {
             "data": data,
             "index_variables": idx_vars,

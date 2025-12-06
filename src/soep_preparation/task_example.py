@@ -36,8 +36,7 @@ def task_create_final_dataset(
     """Example task merging based on variable names to create dataset.
 
     Args:
-        modules: The modules created in the pipeline.
-        metadata_input_path: Path to the variable to module mapping.
+        modules: The modules required to create the final dataset.
         variables: Variable names the dataset should contain.
         survey_years: Survey years the dataset should contain.
         out_path: The output path to save the dataset to.
