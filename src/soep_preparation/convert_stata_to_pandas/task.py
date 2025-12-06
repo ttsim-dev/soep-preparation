@@ -8,11 +8,11 @@ from pandas.io.stata import StataReader
 from pytask import task
 
 from soep_preparation.config import (
-    DATA_CATALOGS,
     DATA_ROOT,
-    MODULE_STRUCTURE,
+    RAW_DATA_FILES,
     SOEP_VERSION,
     SRC,
+    get_raw_data_file_names,
 )
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import (
@@ -35,7 +35,7 @@ def _iteratively_read_one_data_file(
     return pd.concat(processed_chunks)
 
 
-for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
+for data_file_name in get_raw_data_file_names():
 
     @task(id=data_file_name)
     def task_read_one_data_file(
@@ -46,7 +46,7 @@ for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
             Path,
             SRC / "clean_modules" / f"{data_file_name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, DATA_CATALOGS["raw_pandas"][data_file_name]]:
+    ) -> Annotated[pd.DataFrame, RAW_DATA_FILES[data_file_name]]:
         """Saves the raw data file to the data catalog.
 
         Parameters:

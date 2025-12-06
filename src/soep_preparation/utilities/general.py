@@ -19,11 +19,11 @@ def _fail_if_raw_data_files_are_missing(
     if missing_files:
         missing_files_str = "\n".join(str(file) for file in missing_files)
         msg = (
-            f"The following raw data files are missing for SOEP {soep_version}:\n"
-            f"{missing_files_str}\n"
-            f"Please ensure these files are present in the data directory\n"
-            f" {raw_data_dir}"
-            f" For further instructions, please refer to the documentation at https://github.com/ttsim-dev/soep-preparation?tab=readme-ov-file#usage"
+            f"The following raw data files are missing for SOEP {soep_version}:\n\n"
+            f"{missing_files_str}\n\n"
+            "Please ensure these files are present in the data directory\n\n"
+            f"{raw_data_dir}\n\n"
+            f"Also see the documentation at https://github.com/ttsim-dev/soep-preparation?tab=readme-ov-file#usage"
         )
         raise FileNotFoundError(msg)
 
@@ -99,7 +99,7 @@ def get_relevant_column_names(script_path: Path) -> list[str]:
     Returns:
         A list of relevant column names.
     """
-    script = load_script(script_path)
+    script = load_script(script_path, expected_function="clean")
     # Remove the docstring, if existent.
     function_source = re.sub(
         r'""".*?"""|\'\'\'.*?\'\'\'',
@@ -113,17 +113,29 @@ def get_relevant_column_names(script_path: Path) -> list[str]:
     return list(dict.fromkeys(matches))
 
 
-def load_script(script_path: Path) -> ModuleType:
-    """Load script from path.
+def load_script(script_path: Path, expected_function: str) -> ModuleType:
+    """Load script from path and verify it contains the expected function.
 
     Args:
         script_path: The path to the script.
+        expected_function: The expected function name that should exist in the script.
 
     Returns:
         The loaded script.
+
+    Raises:
+        AttributeError: If expected function is missing in script.
     """
     script_name = script_path.stem
     spec = spec_from_file_location(name=script_name, location=script_path)
     script = module_from_spec(spec)
     spec.loader.exec_module(script)
+
+    if not hasattr(script, expected_function):
+        msg = (
+            f"The script at {script_path}"
+            f" does not contain the expected function {expected_function}."
+        )
+        raise AttributeError(msg)
+
     return script
