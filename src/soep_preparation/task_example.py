@@ -28,7 +28,7 @@ SURVEY_YEARS_TO_MERGE = [*range(1984, 2021 + 1)]
 
 
 # @pytask.mark.skip()
-def task_merge_data(
+def task_create_final_dataset(
     modules: Annotated[dict[str, pd.DataFrame], MODULES._entries],
     metadata_input_path: Annotated[
         Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"

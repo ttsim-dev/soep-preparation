@@ -38,7 +38,7 @@ MODULE_STRUCTURE = {
     "combined_modules": get_combine_module_names(directory=SRC / "combine_modules"),
 }
 
-RAW_DATA_CATALOG = DataCatalog(name="raw_pandas")
+RAW_DATA_FILES = DataCatalog(name="raw_pandas")
 MODULES = DataCatalog(name="modules")
 
 __all__ = [
@@ -46,7 +46,7 @@ __all__ = [
     "DATA_ROOT",
     "MODULES",
     "MODULE_STRUCTURE",
-    "RAW_DATA_CATALOG",
+    "RAW_DATA_FILES",
     "ROOT",
     "SOEP_VERSION",
     "SRC",

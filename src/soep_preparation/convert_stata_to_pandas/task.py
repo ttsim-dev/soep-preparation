@@ -10,7 +10,7 @@ from pytask import task
 from soep_preparation.config import (
     DATA_ROOT,
     MODULE_STRUCTURE,
-    RAW_DATA_CATALOG,
+    RAW_DATA_FILES,
     SOEP_VERSION,
     SRC,
 )
@@ -46,7 +46,7 @@ for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
             Path,
             SRC / "clean_modules" / f"{data_file_name}.py",
         ],
-    ) -> Annotated[pd.DataFrame, RAW_DATA_CATALOG[data_file_name]]:
+    ) -> Annotated[pd.DataFrame, RAW_DATA_FILES[data_file_name]]:
         """Saves the raw data file to the data catalog.
 
         Parameters:

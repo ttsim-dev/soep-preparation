@@ -6,18 +6,14 @@ from typing import Annotated
 import pandas as pd
 from pytask import task
 
-from soep_preparation.config import MODULE_STRUCTURE, MODULES, RAW_DATA_CATALOG, SRC
-from soep_preparation.utilities.error_handling import (
-    fail_if_expected_function_missing,
-    fail_if_input_has_invalid_type,
-)
+from soep_preparation.config import MODULE_STRUCTURE, MODULES, RAW_DATA_FILES, SRC
 from soep_preparation.utilities.general import load_script
 
 for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
 
     @task(id=data_file_name)
     def task_clean_one_data_file(
-        raw_data: Annotated[pd.DataFrame, RAW_DATA_CATALOG[data_file_name]],
+        raw_data: Annotated[pd.DataFrame, RAW_DATA_FILES[data_file_name]],
         script_path: Annotated[
             Path,
             SRC / "clean_modules" / f"{data_file_name}.py",
@@ -44,16 +40,5 @@ for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
             AttributeError: If cleaning script does not
             contain expected function.
         """
-        fail_if_input_has_invalid_type(
-            input_=raw_data, expected_dtypes=["pandas.core.frame.DataFrame"]
-        )
-        fail_if_input_has_invalid_type(
-            input_=script_path, expected_dtypes=["pathlib._local.PosixPath"]
-        )
-        fail_if_expected_function_missing(
-            script_path=script_path, expected_function="clean"
-        )
-        script = load_script(script_path)
-        return script.clean(
-            raw_data=raw_data,
-        )
+        script = load_script(script_path, expected_function="clean")
+        return script.clean(raw_data=raw_data)

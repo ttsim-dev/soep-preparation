@@ -1,12 +1,9 @@
 """Error handling utilities for data validation."""
 
 from collections.abc import Iterable
-from pathlib import Path
 from typing import Any
 
 import pandas as pd
-
-from soep_preparation.utilities.general import load_script
 
 
 def _fail_if_series_wrong_dtype(series: pd.Series, expected_dtype: str) -> None:
@@ -28,28 +25,6 @@ def fail_if_empty(input_: dict | list, name: str) -> None:
     if len(input_) == 0:
         msg = f"Expected {name} to be non-empty."
         raise ValueError(msg)
-
-
-def fail_if_expected_function_missing(
-    script_path: Path, expected_function: str
-) -> None:
-    """Fail if expected function is missing in script.
-
-    Args:
-        script_path: The path to the script to check.
-        expected_function: The expected function name.
-
-    Raises:
-        AttributeError: If expected function is missing in script.
-    """
-    script = load_script(script_path)
-
-    if not hasattr(script, expected_function):
-        msg = f"""The cleaning script at {script_path}
-          does not contain the expected function {expected_function}."""
-        raise AttributeError(
-            msg,
-        )
 
 
 def fail_if_input_has_invalid_type(input_: Any, expected_dtypes: Iterable[str]) -> None:  # noqa: ANN401

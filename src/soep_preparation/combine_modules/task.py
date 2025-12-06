@@ -7,13 +7,7 @@ import pandas as pd
 from pytask import task
 
 from soep_preparation.config import MODULE_STRUCTURE, MODULES, SRC
-from soep_preparation.utilities.error_handling import (
-    fail_if_expected_function_missing,
-    fail_if_input_has_invalid_type,
-)
-from soep_preparation.utilities.general import (
-    load_script,
-)
+from soep_preparation.utilities.general import load_script
 
 for script_name in MODULE_STRUCTURE["combined_modules"]:
     modules_to_combine = {module: MODULES[module] for module in script_name.split("_")}
@@ -35,16 +29,11 @@ for script_name in MODULE_STRUCTURE["combined_modules"]:
         Returns:
             The combined variables from the input modules.
         """
-        fail_if_input_has_invalid_type(input_=script_path, expected_dtypes=["path"])
-        fail_if_expected_function_missing(script_path, "combine")
         _fail_if_too_many_or_too_few_dataframes(
             observed_number_of_modules=len(modules_to_combine.keys()),
             expected_number_of_entries=len(script_name.split("_")),
         )
-        fail_if_input_has_invalid_type(
-            input_=modules_to_combine, expected_dtypes=["dict"]
-        )
-        script = load_script(script_path)
+        script = load_script(script_path, expected_function="combine")
         return script.combine(**modules_to_combine)
 
 
