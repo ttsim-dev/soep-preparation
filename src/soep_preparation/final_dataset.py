@@ -1,6 +1,7 @@
 """Helper function to create final dataset."""
 
 from difflib import get_close_matches
+from typing import Literal
 
 import pandas as pd
 
@@ -23,7 +24,6 @@ def create_final_dataset(
 
     Args:
         modules: All modules required to create the final dataset.
-        variable_to_metadata: A mapping of variable names to dataset names.
         variables: A list of variable names for the merged dataset to contain.
         survey_years: Survey years to be included in the dataset.
 
@@ -40,9 +40,6 @@ def create_final_dataset(
     Notes:
         `modules` contains the cleaned and combined modules with the
          variables of interest.
-        `variable_to_metadata` is created automatically by the pipeline,
-        it can be accessed and provided to the function at
-        `src/soep_preparation/create_metadata/variable_to_metadata_mapping.yaml`.
         `variables` contains the variables
         created, renamed, and derived from the raw SOEP data files
         that will be part of the merged dataset.
@@ -54,7 +51,6 @@ def create_final_dataset(
     """
     _error_handling(
         modules=modules,
-        variable_to_metadata=METADATA,
         variables=variables,
         survey_years=survey_years,
     )
@@ -62,7 +58,6 @@ def create_final_dataset(
 
     dataset_merging_information = _get_sorted_dataset_merging_information(
         modules=modules,
-        variable_to_metadata=METADATA,
         variables=harmonized_variables,
         survey_years=survey_years,
     )
@@ -74,19 +69,10 @@ def create_final_dataset(
 
 def _error_handling(
     modules: dict[str, pd.DataFrame],
-    variable_to_metadata: dict[str, dict],
     variables: list[str],
     survey_years: list[int],
 ) -> None:
-    fail_if_input_has_invalid_type(
-        input_=METADATA,
-        expected_dtypes=["dict", "PNode", "PProvisionalNode"],
-    )
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
-    fail_if_input_has_invalid_type(
-        input_=survey_years, expected_dtypes=("list", "None")
-    )
-    fail_if_empty(input_=variable_to_metadata, name="variable_to_metadata")
     fail_if_empty(variables, name="variables")
 
     # TODO (@hmgaudecker): we need at-least one module with the variable  # noqa: TD003
@@ -96,30 +82,26 @@ def _error_handling(
         survey_years=survey_years,
         valid_survey_years=valid_survey_years,
     )
-    _fail_if_invalid_variable(
-        variables=variables, variable_to_metadata=variable_to_metadata
-    )
+    _fail_if_invalid_variable(variables=variables)
 
 
-def _fail_if_invalid_variable(
-    variables: list[str],
-    variable_to_metadata: dict[str, dict],
-) -> None:
+def _fail_if_invalid_variable(variables: list[str]) -> None:
     for variable in variables:
-        if (
-            variable not in variable_to_metadata
-            and variable not in POTENTIAL_INDEX_VARIABLES
-        ):
+        if variable not in METADATA and variable not in POTENTIAL_INDEX_VARIABLES:
             closest_matches = get_close_matches(
                 variable,
-                variable_to_metadata.keys(),
+                METADATA.keys(),
                 n=3,
                 cutoff=0.6,
             )
-            matches = {match: variable_to_metadata[match] for match in closest_matches}
-            msg = f"""variable {variable} not found in any module.
-            The closest matches with the corresponding modules are:
-            {matches}"""
+            matches = "    \n".join(
+                f"{m}: {METADATA[m]['module']}" for m in closest_matches
+            )
+            msg = (
+                "Variable {variable} is not present in the modules you provided.\n"
+                "The closest matches and corresponding modules are:\n\n"
+                f"    {matches}\n"
+            )
             raise ValueError(msg)
 
 
@@ -131,20 +113,6 @@ def _fail_if_survey_years_not_valid(
         msg = f"""Expected survey years to be in {valid_survey_years},
         got {survey_years} instead."""
         raise ValueError(msg)
-
-
-def _get_module_to_variable(
-    variable_to_metadata: dict[str, dict],
-    variables: list[str],
-) -> dict[str, list[str]]:
-    module_to_variable = {}
-    for variable in variables:
-        if variable in variable_to_metadata:
-            module_name = variable_to_metadata[variable]["module"]
-            if module_name not in module_to_variable:
-                module_to_variable[module_name] = []
-            module_to_variable[module_name].append(variable)
-    return module_to_variable
 
 
 def _sort_dataset_merging_information(
@@ -167,41 +135,37 @@ def _harmonize_variables(
 
 def _get_sorted_dataset_merging_information(
     modules: dict[str, pd.DataFrame],
-    variable_to_metadata: dict[str, dict],
-    variables: list,
+    variables: list[str],
     survey_years: list[int],
-) -> dict[str, dict]:
-    module_to_variable = _get_module_to_variable(
-        variable_to_metadata,
-        variables,
-    )
-
+) -> dict[str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]]:
     dataset_merging_information = {}
-    for module_name, module_variables in module_to_variable.items():
-        # TODO (@hmgaudecker): I'm unhappy with `module_data`.  # noqa: TD003
-        # Should we get rid off "module_" prefix in the loop variable names?
-        module_data = modules[module_name]
-        index_variables = [
-            v for v in module_data.columns if v in POTENTIAL_INDEX_VARIABLES
+    for module_name, full_data in modules.items():
+        idx_vars = [v for v in POTENTIAL_INDEX_VARIABLES if v in full_data.columns]
+        mod_vars = [
+            v for v in variables if v in full_data.columns and v not in idx_vars
         ]
-        if "survey_year" in index_variables:
-            data = module_data.query(
-                f"{min(survey_years)} <= survey_year <= {max(survey_years)}",
-            )[index_variables + module_variables]
+        # No need to keep module around if we do not have any variables to merge
+        if not mod_vars:
+            continue
+        if "survey_year" in idx_vars:
+            data = full_data.query(f"survey_year in {survey_years}")[
+                idx_vars + mod_vars
+            ]
         else:
-            data = module_data[index_variables + module_variables]
+            data = full_data[idx_vars + mod_vars]
         dataset_merging_information[module_name] = {
             "data": data,
-            "index_variables": index_variables,
+            "index_variables": idx_vars,
         }
     return _sort_dataset_merging_information(dataset_merging_information)
 
 
 def _merge_data(
-    merging_information: dict[str, dict],
+    merging_information: dict[
+        str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
+    ],
 ) -> pd.DataFrame:
-    modules = [module["data"] for module in merging_information.values()]
-    out = pd.DataFrame()
-    for module in modules:
-        out = module if out.empty else out.merge(module, how="outer")
+    out = None
+    for i, m in enumerate(merging_information.values()):
+        out = m["data"] if i == 0 else out.merge(m["data"], how="outer")
     return out.reset_index(drop=True)

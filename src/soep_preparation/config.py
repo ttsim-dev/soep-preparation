@@ -6,6 +6,7 @@ SURVEY_YEARS = [*range(1984, 2021 + 1)]
 
 import functools
 from pathlib import Path
+from typing import Any, Literal
 
 import pandas as pd
 import yaml
@@ -38,7 +39,12 @@ get_combine_module_names = functools.partial(gcmn, directory=SRC / "combine_modu
 RAW_DATA_FILES = DataCatalog(name="raw_pandas")
 MODULES = DataCatalog(name="modules")
 
-METADATA = yaml.safe_load(
+
+_METADATA_DTYPE = dict[
+    str,
+    dict[Literal["module", "dtype", "survey_years"], dict[str, Any] | list[int] | str],
+]
+METADATA: _METADATA_DTYPE = yaml.safe_load(
     (SRC / "create_metadata" / "variable_to_metadata_mapping.yaml").open(
         "r", encoding="utf-8"
     )

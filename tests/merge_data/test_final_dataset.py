@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 
 from soep_preparation.final_dataset import (
-    _get_module_to_variable,
     _harmonize_variables,
     _merge_data,
 )
@@ -25,56 +24,6 @@ def test_harmonize_variables_assert_variables():
     }
     actual = _harmonize_variables(**user_input_)
     assert actual == expected
-
-
-def test_get_module_to_variable_assert_type():
-    expected = type(
-        {
-            "dataset1": ["column1", "column3"],
-            "dataset2": ["column2"],
-        },
-    )
-    input_ = {
-        "variable_to_metadata": {
-            "column1": {"module": "dataset1"},
-            "column2": {"module": "dataset2"},
-            "column3": {"module": "dataset1"},
-        },
-        "variables": ["column1", "column2"],
-    }
-    actual = type(_get_module_to_variable(**input_))
-    assert actual == expected
-
-
-def test_get_module_to_variable_assert_mapping():
-    expected = {
-        "dataset1": ["column1", "column3"],
-        "dataset2": ["column2"],
-    }
-    input_ = {
-        "variable_to_metadata": {
-            "column1": {"module": "dataset1"},
-            "column2": {"module": "dataset2"},
-            "column3": {"module": "dataset1"},
-        },
-        "variables": ["column1", "column2", "column3"],
-    }
-    actual = _get_module_to_variable(**input_)
-    assert actual == expected
-
-
-def test_get_module_to_variable_assert_modules():
-    expected = ["dataset1", "dataset2"]
-    input_ = {
-        "variable_to_metadata": {
-            "column1": {"module": "dataset1"},
-            "column2": {"module": "dataset2"},
-            "column3": {"module": "dataset1"},
-        },
-        "variables": ["column1", "column2"],
-    }
-    actual = _get_module_to_variable(**input_)
-    assert sorted(actual.keys()) == sorted(expected)
 
 
 def test_merge_data_assert_type():
