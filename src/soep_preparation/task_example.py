@@ -4,10 +4,9 @@ from pathlib import Path
 from typing import Annotated
 
 import pandas as pd
-import yaml
 from pytask import Product, task
 
-from soep_preparation.config import MODULES, ROOT, SRC
+from soep_preparation.config import MODULES, ROOT
 from soep_preparation.final_dataset import create_final_dataset
 
 VARIABLES_TO_MERGE = [
@@ -27,12 +26,9 @@ VARIABLES_TO_MERGE = [
 SURVEY_YEARS_TO_MERGE = [*range(1984, 2021 + 1)]
 
 
-@task(after="task_create_variable_to_metadata_mapping_yaml")
+@task(after="create_metadata")
 def task_create_final_dataset(
     modules: Annotated[dict[str, pd.DataFrame], MODULES._entries],
-    metadata_input_path: Annotated[
-        Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
-    ],
     variables: Annotated[list[str], VARIABLES_TO_MERGE],
     survey_years: Annotated[list[int], SURVEY_YEARS_TO_MERGE],
     out_path: Annotated[Path, Product] = ROOT / "example_merged_dataset.pkl",
@@ -49,11 +45,8 @@ def task_create_final_dataset(
     Returns:
         None
     """
-    with Path.open(metadata_input_path, "r", encoding="utf-8") as file:
-        variable_to_metadata = yaml.safe_load(file)
     final_dataset = create_final_dataset(
         modules=modules,
-        variable_to_metadata=variable_to_metadata,
         variables=variables,
         survey_years=survey_years,
     )

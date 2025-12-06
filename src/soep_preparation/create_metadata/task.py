@@ -5,20 +5,26 @@ from typing import Annotated, Any
 
 import pandas as pd
 import yaml
-from pytask import DataCatalog, Product, task
+from deepdiff import DeepHash
+from pytask import DataCatalog, Product, PythonNode, task
 
-from soep_preparation.config import BLD, MODULES, SRC
+from soep_preparation.config import BLD, METADATA, MODULES, SRC
 
 POTENTIAL_INDEX_VARIABLES = ["p_id", "hh_id", "hh_id_original", "survey_year"]
 
-_METADATA = DataCatalog(name="metadata")
+_METADATA_CATALOG = DataCatalog(name="metadata")
+
+
+def _calculate_hash(x: Any) -> int | str:
+    return DeepHash(x)[x]
+
 
 for module_name in MODULES._entries:  # noqa: SLF001
 
     @task(id=module_name)
     def task_create_metadata_for_one_module(
         module: Annotated[pd.DataFrame, MODULES[module_name]],
-    ) -> Annotated[dict, _METADATA[module_name]]:
+    ) -> Annotated[dict, _METADATA_CATALOG[module_name]]:
         """Create metadata for a single module.
 
         Args:
@@ -38,8 +44,12 @@ for module_name in MODULES._entries:  # noqa: SLF001
         }
 
 
+@task(id="create_metadata")
 def task_create_variable_to_metadata_mapping_yaml(
-    modules_metadata: Annotated[dict[str, dict], _METADATA._entries],
+    modules_metadata: Annotated[dict[str, dict], _METADATA_CATALOG._entries],
+    current_metadata: Annotated[
+        dict[str, Any], PythonNode(value=METADATA, hash=_calculate_hash)
+    ],
     in_path: Annotated[
         Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
     ],
@@ -49,17 +59,18 @@ def task_create_variable_to_metadata_mapping_yaml(
 
     Args:
         modules_metadata: Map of module to metadata information.
+        current_metadata: The current metadata to compare the output against.
         in_path: The path to compare the output against.
         out_path: The path to the YAML file to write.
 
     Raises:
         TypeError: If input data or data name is not of expected type.
     """
-    mapping = _create_variable_metadata(modules_metadata)
+    new_metadata = _create_variable_metadata(modules_metadata)
 
     with out_path.open("w", encoding="utf-8") as file:
         yaml.dump(
-            data=mapping,
+            data=new_metadata,
             stream=file,
             width=60,  # Big differences how Python / yamllint count, leave buffer.
             default_flow_style=False,
@@ -67,11 +78,9 @@ def task_create_variable_to_metadata_mapping_yaml(
             allow_unicode=True,
             explicit_start=True,
         )
-    with in_path.open("r", encoding="utf-8") as file:
-        existing_mapping = yaml.safe_load(file)
-    if mapping != existing_mapping:
+    if new_metadata != current_metadata:
         _fail_if_mapping_changed(
-            new_mapping=mapping, existing_mapping=existing_mapping, in_path=in_path
+            new_mapping=new_metadata, existing_mapping=current_metadata, in_path=in_path
         )
 
 

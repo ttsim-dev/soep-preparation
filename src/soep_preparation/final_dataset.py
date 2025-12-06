@@ -4,6 +4,7 @@ from difflib import get_close_matches
 
 import pandas as pd
 
+from soep_preparation.config import METADATA
 from soep_preparation.utilities.error_handling import (
     fail_if_empty,
     fail_if_input_has_invalid_type,
@@ -14,7 +15,6 @@ ID_VARIABLES = ["hh_id", "hh_id_original", "p_id", "survey_year"]
 
 def create_final_dataset(
     modules: dict[str, pd.DataFrame],
-    variable_to_metadata: dict[str, dict],
     variables: list[str],
     survey_years: list[int],
 ) -> pd.DataFrame:
@@ -56,7 +56,7 @@ def create_final_dataset(
     """
     _error_handling(
         modules=modules,
-        variable_to_metadata=variable_to_metadata,
+        variable_to_metadata=METADATA,
         variables=variables,
         survey_years=survey_years,
     )
@@ -64,7 +64,7 @@ def create_final_dataset(
 
     dataset_merging_information = _get_sorted_dataset_merging_information(
         modules=modules,
-        variable_to_metadata=variable_to_metadata,
+        variable_to_metadata=METADATA,
         variables=harmonized_variables,
         survey_years=survey_years,
     )
@@ -81,7 +81,7 @@ def _error_handling(
     survey_years: list[int],
 ) -> None:
     fail_if_input_has_invalid_type(
-        input_=variable_to_metadata,
+        input_=METADATA,
         expected_dtypes=["dict", "PNode", "PProvisionalNode"],
     )
     fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])

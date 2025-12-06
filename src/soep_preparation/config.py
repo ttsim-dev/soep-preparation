@@ -8,6 +8,7 @@ import functools
 from pathlib import Path
 
 import pandas as pd
+import yaml
 from pytask import DataCatalog
 
 from soep_preparation.utilities.general import get_combine_module_names as gcmn
@@ -33,8 +34,16 @@ get_raw_data_file_names = functools.partial(
 )
 get_combine_module_names = functools.partial(gcmn, directory=SRC / "combine_modules")
 
+
 RAW_DATA_FILES = DataCatalog(name="raw_pandas")
 MODULES = DataCatalog(name="modules")
+
+METADATA = yaml.safe_load(
+    (SRC / "create_metadata" / "variable_to_metadata_mapping.yaml").open(
+        "r", encoding="utf-8"
+    )
+)
+
 
 __all__ = [
     "BLD",
