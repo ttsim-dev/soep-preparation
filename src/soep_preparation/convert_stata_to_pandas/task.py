@@ -9,10 +9,10 @@ from pytask import task
 
 from soep_preparation.config import (
     DATA_ROOT,
-    MODULE_STRUCTURE,
     RAW_DATA_FILES,
     SOEP_VERSION,
     SRC,
+    get_raw_data_file_names,
 )
 from soep_preparation.utilities.error_handling import fail_if_input_has_invalid_type
 from soep_preparation.utilities.general import (
@@ -35,7 +35,7 @@ def _iteratively_read_one_data_file(
     return pd.concat(processed_chunks)
 
 
-for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
+for data_file_name in get_raw_data_file_names():
 
     @task(id=data_file_name)
     def task_read_one_data_file(

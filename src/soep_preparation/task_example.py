@@ -5,7 +5,7 @@ from typing import Annotated
 
 import pandas as pd
 import yaml
-from pytask import Product
+from pytask import Product, task
 
 from soep_preparation.config import MODULES, ROOT, SRC
 from soep_preparation.final_dataset import create_final_dataset
@@ -27,7 +27,7 @@ VARIABLES_TO_MERGE = [
 SURVEY_YEARS_TO_MERGE = [*range(1984, 2021 + 1)]
 
 
-# @pytask.mark.skip()
+@task(after="task_create_variable_to_metadata_mapping_yaml")
 def task_create_final_dataset(
     modules: Annotated[dict[str, pd.DataFrame], MODULES._entries],
     metadata_input_path: Annotated[

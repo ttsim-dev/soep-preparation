@@ -6,10 +6,15 @@ from typing import Annotated
 import pandas as pd
 from pytask import task
 
-from soep_preparation.config import MODULE_STRUCTURE, MODULES, RAW_DATA_FILES, SRC
-from soep_preparation.utilities.general import load_script
+from soep_preparation.config import (
+    MODULES,
+    RAW_DATA_FILES,
+    SRC,
+    get_raw_data_file_names,
+    load_script,
+)
 
-for data_file_name in MODULE_STRUCTURE["cleaned_modules"]:
+for data_file_name in get_raw_data_file_names():
 
     @task(id=data_file_name)
     def task_clean_one_data_file(
