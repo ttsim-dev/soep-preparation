@@ -16,24 +16,22 @@ dataset. The flow of the project can be seen in the mermaid diagram below.
 
 ```mermaid
 flowchart LR
-  subgraph Data Files
-    id1@{ shape: processes, label: "Convert STATA to pandas" }-->id2@{ shape: processes, label: "Clean existing variables" }
+  subgraph SOEP Data Files
+    id1@{ shape: processes, label: "Convert STATA to pandas" }
   end
 
-  subgraph Variables
-    id2-->idDecision1{Are there variables to derive from and add to a single dataset?}
-    idDecision1-->|Yes|id3@{ shape: processes, label: "Create derived variables and add merged to variables datacatalog" }
-    idDecision1-->|No|id4@{ shape: processes, label: "Copy cleaned data to variables datacatlog" }
-    id2-->id5@{ shape: processes, label: "Create combined variables" }
-    id3-->id6@{ shape: processes, label: "Create single metadata" }
-    id4-->id6
-    id5-->id6
+  subgraph Modules
+    id1-->id2@{ shape: processes, label: "Clean variables of one module" }
+    id2-->idDecision1{Does the module contain a variable present in another module?}
+    idDecision1-->|Yes|id3@{ shape: processes, label: "Cominbe the variable(s) from the modules into a new module" }
+    idDecision1-->|No|id4@{ shape: processes, label: "Create module metadata" }
+    id3-->id4
+    id4-->id5["Create <code>variable_to_metadata_mapping.yaml</code>"]
   end
 
-  subgraph Merged Variables
-    id6-->id7["Create merged metadata"]
-    id7-->id8@{ shape: trap-t, label: "Dataset merging \n(Example function in <code>dataset_merging/task_example.py</code>)" }
-    id8-->id9@{ shape: lin-cyl, label: "Dataset \n(Stored in root directory)" }
+  subgraph Final dataset
+    id5-->id6@{ shape: trap-t, label: "Create final dataset (specify variables and survey years of interest)" }
+    id6-->id7@{ shape: lin-cyl, label: "Dataset \n(Stored in root directory)" }
   end
 ```
 
@@ -86,7 +84,9 @@ describing the market value of primary residence (see
 https://paneldata.org/soep-core/datasets/hwealth/p010ha).
 
 After converting the *raw data file* from STATA `.dta` format to a pandas DataFrame, the
-variables inside the module are cleaned.
+variables inside the module are cleaned. This may contain (some or all of) the index
+variables: `p_id`, `hh_id`, `hh_id_original`, and `survey_year` These are helpful to
+align modules to merge into the `final_dataset`.
 
 In another step, variables from multiple modules are combined into a new module, which
 always carries a name of the form `{module_1}_{module_2}` (e.g., `pl_pkal`)
@@ -130,6 +130,11 @@ def task_create_soep_dataset(
     )
 ```
 
+For an example see `sandbox/task_example_final_dataset.py`. Notice that we do not
+specify explicitly the required modules to merge variables from, but rather provide
+`MODULES._entries`, which contains all modules. We let the `create_final_dataset`
+function do the selection of relevant modules.
+
 ### Understanding the SOEP-Core Data
 
 To understand the contents of a variable in the final dataset, the following may help.
@@ -143,8 +148,10 @@ occurrences:
    `src/soep_preparation/clean_modules` directory or in the
    `src/soep_preparation/combine_modules` directory.
 
-The metadata is useful to find out about the data type and the years where it is
-present.
+The metadata is useful to learn about the data type, the corresponding module, and the
+survey years observed. The metadata mapping only contains unique variable to module
+combinations. Since the index variables are shared between modules, they are not
+contained in the metadata mapping.
 
 The definition tells us how the variable is created from the raw SOEP variable(s). In
 this case, the script `src/soep_preparation/clean_modules/pequiv.py` contains the line:
@@ -159,7 +166,7 @@ an integer. We can look up the contents of that variable in the
 `https://paneldata.org/soep-core/datasets/<module>/<variable>`. So in this case, we
 would visit
 [https://paneldata.org/soep-core/datasets/pequiv/ison2](https://paneldata.org/soep-core/datasets/pequiv/ison2)
-and could take it from there. Y especially the "Codebook (PDF)", is helpful. The SOEP
+and could take it from there. Especially the "Codebook (PDF)", is helpful. The SOEP
 documentation URL for a dataset and variable has the general form:
 `https://paneldata.org/soep-core/datasets/{dataset_name}/{variable_name}`
 

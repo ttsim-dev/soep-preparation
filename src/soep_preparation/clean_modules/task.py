@@ -17,7 +17,7 @@ from soep_preparation.config import (
 for data_file_name in get_raw_data_file_names():
 
     @task(id=data_file_name)
-    def task_clean_one_data_file(
+    def task_clean_one_module(
         raw_data: Annotated[pd.DataFrame, RAW_DATA_FILES[data_file_name]],
         script_path: Annotated[
             Path,

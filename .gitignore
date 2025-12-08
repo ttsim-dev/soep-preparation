@@ -42,9 +42,6 @@ data/**
 # ignore notebooks
 *.ipynb
 
-# ignore sandbox
-sandbox/
-
 # ignore pickle files
 *.pickle
 *.pkl

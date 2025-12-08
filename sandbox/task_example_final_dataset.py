@@ -33,7 +33,7 @@ def task_create_final_dataset(
     survey_years: Annotated[list[int], SURVEY_YEARS_TO_MERGE],
     out_path: Annotated[Path, Product] = ROOT / "example_merged_dataset.pkl",
 ) -> None:
-    """Example task merging based on variable names to create dataset.
+    """Example task merging variables to dataset.
 
     Args:
         modules: The modules required to create the final dataset.

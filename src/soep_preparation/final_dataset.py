@@ -8,7 +8,6 @@ import pandas as pd
 from soep_preparation.config import METADATA, POTENTIAL_INDEX_VARIABLES
 from soep_preparation.utilities.error_handling import (
     fail_if_empty,
-    fail_if_input_has_invalid_type,
 )
 
 
@@ -72,17 +71,23 @@ def _error_handling(
     variables: list[str],
     survey_years: list[int],
 ) -> None:
-    fail_if_input_has_invalid_type(input_=variables, expected_dtypes=["list"])
     fail_if_empty(variables, name="variables")
-
-    # TODO (@hmgaudecker): we need at-least one module with the variable  # noqa: TD003
-    # `survey_year` to check for valid survey years
-    valid_survey_years = modules["pl"]["survey_year"].unique().tolist()
-    _fail_if_survey_years_not_valid(
-        survey_years=survey_years,
-        valid_survey_years=valid_survey_years,
-    )
     _fail_if_invalid_variable(variables=variables)
+
+    fail_if_empty(survey_years, name="survey_years")
+    modules_containing_survey_year_information = [
+        module for module, df in modules.items() if "survey_year" in df.columns
+    ]
+    if len(modules_containing_survey_year_information) > 0:
+        valid_survey_years = (
+            modules[modules_containing_survey_year_information[0]]["survey_year"]
+            .unique()
+            .tolist()
+        )
+        _fail_if_survey_years_not_valid(
+            survey_years=survey_years,
+            valid_survey_years=valid_survey_years,
+        )
 
 
 def _fail_if_invalid_variable(variables: list[str]) -> None:
