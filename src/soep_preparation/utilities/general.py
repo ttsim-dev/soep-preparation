@@ -80,13 +80,16 @@ def get_combine_module_names(directory: Path) -> list[str]:
     combine_module_names = []
     script_names = get_script_names(directory)
     for combine_module in script_names:
-        for raw_module in combine_module.split("_"):
-            if raw_module not in get_script_names(
-                directory=directory.parent / "clean_modules"
-            ):
-                break
-        else:
-            combine_module_names.append(combine_module)
+        for orig_module in combine_module.split("_"):
+            clean_module_directory = directory.parent / "clean_modules"
+            if orig_module not in get_script_names(clean_module_directory):
+                msg = (
+                    f"No cleaning script for module {orig_module}"
+                    f" found in clean modules at {clean_module_directory}."
+                    f"Existence is implied by combine script {combine_module}."
+                )
+                raise ValueError(msg)
+        combine_module_names.append(combine_module)
     return combine_module_names
 
 

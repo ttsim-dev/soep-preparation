@@ -54,9 +54,6 @@ def task_create_variable_to_metadata_mapping_yaml(
     current_metadata: Annotated[
         dict[str, Any], PythonNode(value=METADATA, hash=_calculate_hash)
     ],
-    in_path: Annotated[
-        Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
-    ],
     out_path: Annotated[Path, Product] = BLD / "variable_to_metadata_mapping.yaml",
 ) -> None:
     """Create a mapping of variables to metadata and store as YAML file.
@@ -64,7 +61,6 @@ def task_create_variable_to_metadata_mapping_yaml(
     Args:
         modules_metadata: Map of module to metadata information.
         current_metadata: The current metadata to compare the output against.
-        in_path: The path to compare the output against.
         out_path: The path to the YAML file to write.
 
     Raises:
@@ -84,7 +80,9 @@ def task_create_variable_to_metadata_mapping_yaml(
         )
     if new_metadata != current_metadata:
         _fail_if_mapping_changed(
-            new_mapping=new_metadata, existing_mapping=current_metadata, in_path=in_path
+            new_mapping=new_metadata,
+            existing_mapping=current_metadata,
+            new_mapping_path=out_path,
         )
 
 
@@ -210,12 +208,14 @@ def _create_variable_metadata(
 def _fail_if_mapping_changed(
     new_mapping: dict[str, Any],
     existing_mapping: dict[str, Any],
-    in_path: Path,
+    new_mapping_path: Path,
 ) -> None:
-    general_msg = (
-        f"The newly generated variable to metadata mapping differs"
-        f" from the existing mapping at"
-        f" {in_path}."
+    existing_mapping_path = (
+        SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
+    ).resolve()
+    intro = (
+        f"The newly generated mapping of variables to their metadata differs"
+        f"from the existing mapping at:\n{existing_mapping_path}.\n\n"
     )
     for variable, metadata in new_mapping.items():
         specific_msg = ""
@@ -260,10 +260,11 @@ def _fail_if_mapping_changed(
             specific_msg = f"Metadata for variable {variable} changed.{metadata_msg}"
         if len(specific_msg) > 0:
             copy_mapping_msg = (
-                f"If the changes are intentional, please update the mapping file at"
-                f" {in_path} by copying over the newly generated mapping from the BLD"
-                f" directory and run the task again."
+                "\nIf the changes are intentional, please update the mapping file at:\n"
+                f"{existing_mapping_path}\n"
+                "by copying over the newly generated mapping from:"
+                f"{new_mapping_path.resolve()}\n"
+                "and run pytask again.\n\nCommand for copying:\n"
+                f"cp {new_mapping_path.resolve()} {existing_mapping_path}\n"
             )
-            raise ValueError(
-                general_msg + "\n" + specific_msg + "\n" + copy_mapping_msg
-            )
+            raise ValueError(intro + specific_msg + copy_mapping_msg)

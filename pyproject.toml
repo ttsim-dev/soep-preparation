@@ -139,6 +139,7 @@ max-statements = 100
 "tests/*" = ["D", "PD011", "ANN201"]
 "**/task.py" = ["ANN"]
 "src/soep_preparation/config.py" = ["E402"]
+"sandbox/*" = ["INP001"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

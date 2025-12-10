@@ -22,16 +22,14 @@ flowchart LR
 
   subgraph Modules
     id1-->id2@{ shape: processes, label: "Clean variables of one module" }
-    id2-->idDecision1{Does the module contain a variable present in another module?}
-    idDecision1-->|Yes|id3@{ shape: processes, label: "Cominbe the variable(s) from the modules into a new module" }
-    idDecision1-->|No|id4@{ shape: processes, label: "Create module metadata" }
-    id3-->id4
-    id4-->id5["Create <code>variable_to_metadata_mapping.yaml</code>"]
+    id2-->id3@{ shape: processes, label: "Create variables based on information in multiple modules" }
+    id3-->id4@{ shape: processes, label: "Create data catalog: MODULES" }
+    id3-->id5@{ shape: processes, label: "Create dictionary: METADATA" }
   end
 
-  subgraph Final dataset
-    id5-->id6@{ shape: trap-t, label: "Create final dataset (specify variables and survey years of interest)" }
-    id6-->id7@{ shape: lin-cyl, label: "Dataset \n(Stored in root directory)" }
+  subgraph Function for creating final dataset
+    id4-->id6@{ label: "`create_final_dataset`\n Must specify required modules, variables, and survey years" }
+    id5-->id6
   end
 ```
 
@@ -101,19 +99,24 @@ the code below into a script called e.g. `task_create_final_dataset` inside the
 `src/soep_preparation/` directory):
 
 ```python
-from soep_preparation import create_final_dataset, DATA_CATALOG
+from pathlib import Path
+from typing import Annotated
+
+import pandas as pd
+
+from soep_preparation.config import MODULES
+from soep_preparation.final_dataset import create_final_dataset
 
 
 def task_create_soep_dataset(
     variables: Annotated[list[str], ["birth_year", "bmi"]],
     survey_years: Annotated[list[int], [1988, 1990, 1992, 1994]],
-    pbrutto: Annotated[pd.DataFrame, DATA_CATALOG["pbrutto"]],
-    pl_pequiv: Annotated[pd.DataFrame, DATA_CATALOG["pl_pequiv"]],
+    pbrutto: Annotated[pd.DataFrame, MODULES["pbrutto"]],
+    pl_pequiv: Annotated[pd.DataFrame, MODULES["pl_pequiv"]],
 ) -> Annotated[pd.DataFrame, Path.getcwd() / "soep_dataset.pkl"]:
     """Example task merging based on variable names to create dataset.
 
     Args:
-        metadata: The metadata created in the pipeline.
         variables: Variable names the dataset should contain.
         survey_years: Survey years the dataset should contain.
         pbrutto: The pbrutto module created in the pipeline.
