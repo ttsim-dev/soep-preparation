@@ -186,4 +186,5 @@ def _merge_data(
     out = None
     for i, m in enumerate(merging_information.values()):
         out = m["data"] if i == 0 else out.merge(m["data"], how="outer")
-    return out.reset_index(drop=True)
+    idx_vars_in_out = [v for v in POTENTIAL_INDEX_VARIABLES if v in out.columns]
+    return out.sort_values(by=idx_vars_in_out).reset_index(drop=True)

@@ -50,7 +50,7 @@ METADATA: _METADATA_DTYPE = yaml.safe_load(
     )
 )
 
-POTENTIAL_INDEX_VARIABLES = ["p_id", "hh_id", "hh_id_original", "survey_year"]
+POTENTIAL_INDEX_VARIABLES = ["hh_id", "hh_id_original", "p_id", "survey_year"]
 
 
 __all__ = [

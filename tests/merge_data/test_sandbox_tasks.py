@@ -75,15 +75,6 @@ task_files = ["task_*.py", "task.py", "tasks.py"]
     df1 = pd.read_pickle(out_file_1)  # noqa: S301
     df2 = pd.read_pickle(out_file_2)  # noqa: S301
 
-    # Check if the DataFrames are identical (ignore column order)
-    # Sort columns to ensure consistent comparison
-    df1_sorted = df1.sort_values(
-        by=["hh_id", "hh_id_original", "p_id", "survey_year"]
-    ).reset_index(drop=True)
-    df2_sorted = df2.sort_values(
-        by=["hh_id", "hh_id_original", "p_id", "survey_year"]
-    ).reset_index(drop=True)
+    # Check if the DataFrames are identical
     # Use check_like=True to ignore column order, and check_dtype=False for flexibility
-    pd.testing.assert_frame_equal(
-        df1_sorted, df2_sorted, check_names=True, check_like=True
-    )
+    pd.testing.assert_frame_equal(df1, df2, check_names=True, check_like=True)
