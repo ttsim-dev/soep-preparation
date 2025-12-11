@@ -14,7 +14,7 @@ from soep_preparation.utilities.error_handling import (
 def create_final_dataset(
     modules: dict[str, pd.DataFrame],
     variables: list[str],
-    survey_years: list[int],
+    survey_years: list[int] | None = None,
 ) -> pd.DataFrame:
     """Merge variables for specified survey years into final dataset.
 
@@ -69,25 +69,27 @@ def create_final_dataset(
 def _error_handling(
     modules: dict[str, pd.DataFrame],
     variables: list[str],
-    survey_years: list[int],
+    survey_years: list[int] | None,
 ) -> None:
     fail_if_empty(variables, name="variables")
     _fail_if_invalid_variable(variables=variables)
 
-    fail_if_empty(survey_years, name="survey_years")
-    modules_containing_survey_year_information = [
-        module for module, df in modules.items() if "survey_year" in df.columns
-    ]
-    if len(modules_containing_survey_year_information) > 0:
-        valid_survey_years = (
-            modules[modules_containing_survey_year_information[0]]["survey_year"]
-            .unique()
-            .tolist()
-        )
-        _fail_if_survey_years_not_valid(
-            survey_years=survey_years,
-            valid_survey_years=valid_survey_years,
-        )
+    if survey_years is None:
+        _fail_if_variable_varying_by_survey_year_provided(variables=variables)
+    else:
+        modules_containing_survey_year_information = [
+            module for module, df in modules.items() if "survey_year" in df.columns
+        ]
+        if len(modules_containing_survey_year_information) > 0:
+            valid_survey_years = (
+                modules[modules_containing_survey_year_information[0]]["survey_year"]
+                .unique()
+                .tolist()
+            )
+            _fail_if_survey_years_not_valid(
+                survey_years=survey_years,
+                valid_survey_years=valid_survey_years,
+            )
 
 
 def _fail_if_invalid_variable(variables: list[str]) -> None:
@@ -117,6 +119,20 @@ def _fail_if_survey_years_not_valid(
     if not all(year in valid_survey_years for year in survey_years):
         msg = f"""Expected survey years to be in {valid_survey_years},
         got {survey_years} instead."""
+        raise ValueError(msg)
+
+
+def _fail_if_variable_varying_by_survey_year_provided(variables: list[str]) -> None:
+    survey_year_dependent_variables = [
+        var for var in variables if var in METADATA and METADATA[var]["survey_years"]
+    ]
+    if survey_year_dependent_variables:
+        msg = f"""Did not provide any survey years.
+        Hence expected variables to be independent of survey years.
+        Variable(s) {survey_year_dependent_variables} is(/are)
+        dependent on survey year information.
+        Either remove the variable or specify survey years
+        as argument to `create_final_dataset`."""
         raise ValueError(msg)
 
 

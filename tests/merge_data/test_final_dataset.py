@@ -7,16 +7,6 @@ from soep_preparation.final_dataset import (
 )
 
 
-def test_harmonize_variables_assert_type():
-    expected_variables = ["column1", "column2"]
-    expected = type(expected_variables)
-    user_input_ = {
-        "variables": ["column1", "column2"],
-    }
-    actual = type(_harmonize_variables(**user_input_))
-    assert actual == expected
-
-
 def test_harmonize_variables_assert_variables():
     expected = ["column1", "column2"]
     user_input_ = {
