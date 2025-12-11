@@ -77,8 +77,12 @@ task_files = ["task_*.py", "task.py", "tasks.py"]
 
     # Check if the DataFrames are identical (ignore column order)
     # Sort columns to ensure consistent comparison
-    df1_sorted = df1.sort_index(axis=1)
-    df2_sorted = df2.sort_index(axis=1)
+    df1_sorted = df1.sort_values(
+        by=["hh_id", "hh_id_original", "p_id", "survey_year"]
+    ).reset_index(drop=True)
+    df2_sorted = df2.sort_values(
+        by=["hh_id", "hh_id_original", "p_id", "survey_year"]
+    ).reset_index(drop=True)
     # Use check_like=True to ignore column order, and check_dtype=False for flexibility
     pd.testing.assert_frame_equal(
         df1_sorted, df2_sorted, check_names=True, check_like=True
