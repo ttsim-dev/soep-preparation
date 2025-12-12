@@ -168,7 +168,7 @@ def _get_sorted_dataset_merging_information(
         # No need to keep module around if we do not have any variables to merge
         if not mod_vars:
             continue
-        data = full_data[idx_vars + mod_vars].dropna(axis="index", subset=mod_vars)
+        data = full_data[idx_vars + mod_vars]
         if "survey_year" in idx_vars:
             data = data.query(f"survey_year in {survey_years}")
         dataset_merging_information[module_name] = {
@@ -187,4 +187,10 @@ def _merge_data(
     for i, m in enumerate(merging_information.values()):
         out = m["data"] if i == 0 else out.merge(m["data"], how="outer")
     idx_vars_in_out = [v for v in POTENTIAL_INDEX_VARIABLES if v in out.columns]
-    return out.sort_values(by=idx_vars_in_out).reset_index(drop=True)
+    mod_vars_in_out = [v for v in out.columns if v not in idx_vars_in_out]
+    out_no_nan = out.dropna(axis="index", subset=mod_vars_in_out, how="all")
+    if out_no_nan.empty:
+        msg = "The merged dataset contains no observations with non-missing values."
+        raise ValueError(msg)
+    out_sorted = out_no_nan.sort_values(by=idx_vars_in_out)
+    return out_sorted.reset_index(drop=True)
