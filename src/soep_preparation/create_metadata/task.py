@@ -5,43 +5,54 @@ from typing import Annotated, Any
 
 import pandas as pd
 import yaml
-from pytask import Product, task
+from deepdiff import DeepHash
+from pytask import DataCatalog, Product, PythonNode, task
 
-from soep_preparation.config import BLD, DATA_CATALOGS, MODULE_STRUCTURE, SRC
+from soep_preparation.config import (
+    BLD,
+    METADATA,
+    MODULES,
+    POTENTIAL_INDEX_VARIABLES,
+    SRC,
+)
 
-POTENTIAL_INDEX_VARIABLES = ["p_id", "hh_id", "hh_id_original", "survey_year"]
-
-
-for level, module_names in MODULE_STRUCTURE.items():
-    for module_name in module_names:
-
-        @task(id=module_name)
-        def task_create_metadata_for_one_module(
-            module: Annotated[pd.DataFrame, DATA_CATALOGS[level][module_name]],
-        ) -> Annotated[dict, DATA_CATALOGS["metadata"][module_name]]:
-            """Create metadata for a single module.
-
-            Args:
-                module: The data module to create metadata for.
-
-            Returns:
-                Metadata information for index and variables contained in the module.
-
-            Raises:
-                TypeError: If input data is not of expected type.
-            """
-            index_variables_metadata = _get_index_variables_metadata(module)
-            variable_metadata = _get_variable_metadata(module)
-            return {
-                "index_variables": index_variables_metadata,
-                "variable_metadata": variable_metadata,
-            }
+_METADATA_CATALOG = DataCatalog(name="metadata")
 
 
+def _calculate_hash(x: Any) -> int | str:
+    return DeepHash(x)[x]
+
+
+for module_name in MODULES._entries:  # noqa: SLF001
+
+    @task(id=module_name)
+    def task_create_metadata_for_one_module(
+        module: Annotated[pd.DataFrame, MODULES[module_name]],
+    ) -> Annotated[dict, _METADATA_CATALOG[module_name]]:
+        """Create metadata for a single module.
+
+        Args:
+            module: The data module to create metadata for.
+
+        Returns:
+            Metadata information for index and variables contained in the module.
+
+        Raises:
+            TypeError: If input data is not of expected type.
+        """
+        index_variables_metadata = _get_index_variables_metadata(module)
+        variable_metadata = _get_variable_metadata(module)
+        return {
+            "index_variables": index_variables_metadata,
+            "variable_metadata": variable_metadata,
+        }
+
+
+@task(id="create_metadata")
 def task_create_variable_to_metadata_mapping_yaml(
-    modules_metadata: Annotated[dict[str, dict], DATA_CATALOGS["metadata"]._entries],
-    in_path: Annotated[
-        Path, SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
+    modules_metadata: Annotated[dict[str, dict], _METADATA_CATALOG._entries],
+    current_metadata: Annotated[
+        dict[str, Any], PythonNode(value=METADATA, hash=_calculate_hash)
     ],
     out_path: Annotated[Path, Product] = BLD / "variable_to_metadata_mapping.yaml",
 ) -> None:
@@ -49,17 +60,17 @@ def task_create_variable_to_metadata_mapping_yaml(
 
     Args:
         modules_metadata: Map of module to metadata information.
-        in_path: The path to compare the output against.
+        current_metadata: The current metadata to compare the output against.
         out_path: The path to the YAML file to write.
 
     Raises:
         TypeError: If input data or data name is not of expected type.
     """
-    mapping = _create_variable_metadata(modules_metadata)
+    new_metadata = _create_variable_metadata(modules_metadata)
 
     with out_path.open("w", encoding="utf-8") as file:
         yaml.dump(
-            data=mapping,
+            data=new_metadata,
             stream=file,
             width=60,  # Big differences how Python / yamllint count, leave buffer.
             default_flow_style=False,
@@ -67,11 +78,11 @@ def task_create_variable_to_metadata_mapping_yaml(
             allow_unicode=True,
             explicit_start=True,
         )
-    with in_path.open("r", encoding="utf-8") as file:
-        existing_mapping = yaml.safe_load(file)
-    if mapping != existing_mapping:
+    if new_metadata != current_metadata:
         _fail_if_mapping_changed(
-            new_mapping=mapping, existing_mapping=existing_mapping, in_path=in_path
+            new_mapping=new_metadata,
+            existing_mapping=current_metadata,
+            new_mapping_path=out_path,
         )
 
 
@@ -197,12 +208,14 @@ def _create_variable_metadata(
 def _fail_if_mapping_changed(
     new_mapping: dict[str, Any],
     existing_mapping: dict[str, Any],
-    in_path: Path,
+    new_mapping_path: Path,
 ) -> None:
-    general_msg = (
-        f"The newly generated variable to metadata mapping differs"
-        f" from the existing mapping at"
-        f" {in_path}."
+    existing_mapping_path = (
+        SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
+    ).resolve()
+    intro = (
+        f"The newly generated mapping of variables to their metadata differs"
+        f"from the existing mapping at:\n{existing_mapping_path}.\n\n"
     )
     for variable, metadata in new_mapping.items():
         specific_msg = ""
@@ -247,10 +260,11 @@ def _fail_if_mapping_changed(
             specific_msg = f"Metadata for variable {variable} changed.{metadata_msg}"
         if len(specific_msg) > 0:
             copy_mapping_msg = (
-                f"If the changes are intentional, please update the mapping file at"
-                f" {in_path} by copying over the newly generated mapping from the BLD"
-                f" directory and run the task again."
+                "\nIf the changes are intentional, please update the mapping file at:\n"
+                f"{existing_mapping_path}\n"
+                "by copying over the newly generated mapping from:"
+                f"{new_mapping_path.resolve()}\n"
+                "and run pytask again.\n\nCommand for copying:\n"
+                f"cp {new_mapping_path.resolve()} {existing_mapping_path}\n"
             )
-            raise ValueError(
-                general_msg + "\n" + specific_msg + "\n" + copy_mapping_msg
-            )
+            raise ValueError(intro + specific_msg + copy_mapping_msg)

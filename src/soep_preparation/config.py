@@ -1,14 +1,20 @@
 """Configuration of the soep preparation."""
 
+SOEP_VERSION = "V38"
+SURVEY_YEARS = [*range(1984, 2021 + 1)]
+
+
+import functools
 from pathlib import Path
+from typing import Any, Literal
 
 import pandas as pd
+import yaml
 from pytask import DataCatalog
 
-from soep_preparation.utilities.general import (
-    get_combine_module_names,
-    get_raw_data_file_names,
-)
+from soep_preparation.utilities.general import get_combine_module_names as gcmn
+from soep_preparation.utilities.general import get_raw_data_file_names as grdfn
+from soep_preparation.utilities.general import load_script
 
 pd.set_option("mode.copy_on_write", True)  # noqa: FBT003
 pd.set_option("future.infer_string", True)  # noqa: FBT003
@@ -21,40 +27,42 @@ BLD = ROOT.joinpath("bld").resolve()
 DATA_ROOT = ROOT.joinpath("data").resolve()
 TEST_DIR = ROOT.joinpath("tests").resolve()
 
-SOEP_VERSION = "V38"
-
-if SOEP_VERSION == "V38":
-    SURVEY_YEARS = [*range(1984, 2021 + 1)]
-else:
-    SURVEY_YEARS = [*range(1984, 2020 + 1)]
-
-
-MODULE_STRUCTURE = {
-    "cleaned_modules": get_raw_data_file_names(
-        directory=SRC / "clean_modules",
-        data_root=DATA_ROOT,
-        soep_version=SOEP_VERSION,
-    ),
-    "combined_modules": get_combine_module_names(directory=SRC / "combine_modules"),
-}
+get_raw_data_file_names = functools.partial(
+    grdfn,
+    directory=SRC / "clean_modules",
+    data_root=DATA_ROOT,
+    soep_version=SOEP_VERSION,
+)
+get_combine_module_names = functools.partial(gcmn, directory=SRC / "combine_modules")
 
 
-DATA_CATALOGS = {
-    "raw_pandas": DataCatalog(name="raw_pandas"),
-    "cleaned_modules": DataCatalog(name="cleaned_modules"),
-    "combined_modules": DataCatalog(name="combined_modules"),
-    "metadata": DataCatalog(name="metadata"),
-    "merged": DataCatalog(name="merged"),
-}
+RAW_DATA_FILES = DataCatalog(name="raw_pandas")
+MODULES = DataCatalog(name="modules")
+
+
+_METADATA_DTYPE = dict[
+    str,
+    dict[Literal["module", "dtype", "survey_years"], dict[str, Any] | list[int] | str],
+]
+METADATA: _METADATA_DTYPE = yaml.safe_load(
+    (SRC / "create_metadata" / "variable_to_metadata_mapping.yaml").open(
+        "r", encoding="utf-8"
+    )
+)
+
+POTENTIAL_INDEX_VARIABLES = ["hh_id", "hh_id_original", "p_id", "survey_year"]
+
 
 __all__ = [
     "BLD",
-    "DATA_CATALOGS",
     "DATA_ROOT",
-    "MODULE_STRUCTURE",
+    "MODULES",
+    "RAW_DATA_FILES",
     "ROOT",
     "SOEP_VERSION",
     "SRC",
     "SURVEY_YEARS",
-    "TEST_DIR",
+    "get_combine_module_names",
+    "get_raw_data_file_names",
+    "load_script",
 ]

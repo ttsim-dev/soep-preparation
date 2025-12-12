@@ -16,24 +16,20 @@ dataset. The flow of the project can be seen in the mermaid diagram below.
 
 ```mermaid
 flowchart LR
-  subgraph Data Files
-    id1@{ shape: processes, label: "Convert STATA to pandas" }-->id2@{ shape: processes, label: "Clean existing variables" }
+  subgraph SOEP Data Files
+    id1@{ shape: processes, label: "Convert STATA to pandas" }
   end
 
-  subgraph Variables
-    id2-->idDecision1{Are there variables to derive from and add to a single dataset?}
-    idDecision1-->|Yes|id3@{ shape: processes, label: "Create derived variables and add merged to variables datacatalog" }
-    idDecision1-->|No|id4@{ shape: processes, label: "Copy cleaned data to variables datacatlog" }
-    id2-->id5@{ shape: processes, label: "Create combined variables" }
-    id3-->id6@{ shape: processes, label: "Create single metadata" }
-    id4-->id6
+  subgraph Modules
+    id1-->id2@{ shape: processes, label: "Clean variables of one module" }
+    id2-->id3@{ shape: processes, label: "Create variables based on information in multiple modules" }
+    id3-->id4@{ shape: processes, label: "Create data catalog: MODULES" }
+    id3-->id5@{ shape: processes, label: "Create dictionary: METADATA" }
+  end
+
+  subgraph Function for creating final dataset
+    id4-->id6@{ label: "`create_final_dataset`\n Must specify required modules, variables, and survey years" }
     id5-->id6
-  end
-
-  subgraph Merged Variables
-    id6-->id7["Create merged metadata"]
-    id7-->id8@{ shape: trap-t, label: "Dataset merging \n(Example function in <code>dataset_merging/task_example.py</code>)" }
-    id8-->id9@{ shape: lin-cyl, label: "Dataset \n(Stored in root directory)" }
   end
 ```
 
@@ -86,15 +82,61 @@ describing the market value of primary residence (see
 https://paneldata.org/soep-core/datasets/hwealth/p010ha).
 
 After converting the *raw data file* from STATA `.dta` format to a pandas DataFrame, the
-variables inside the module are cleaned.
+variables inside the module are cleaned. This may contain (some or all of) the index
+variables: `p_id`, `hh_id`, `hh_id_original`, and `survey_year` These are helpful to
+align modules to merge into the `final_dataset`.
 
 In another step, variables from multiple modules are combined into a new module, which
 always carries a name of the form `{module_1}_{module_2}` (e.g., `pl_pkal`)
 
-In a final step, to be done by the user, the variables required for a particular project
-are merged into one table, which we call a *dataset*.
+The final step consists of merging the variables into the *final dataset*. This will be
+done by the user; this project provides a helper function to do so.
 
-We try to follow this terminology wherever possible.
+### Creating your own Merged Dataset
+
+Here is an example for creating a SOEP final dataset in a project (for execution place
+the code below into a script called e.g. `task_create_final_dataset` inside the
+`src/soep_preparation/` directory):
+
+```python
+from pathlib import Path
+from typing import Annotated
+
+import pandas as pd
+
+from soep_preparation.config import MODULES
+from soep_preparation.final_dataset import create_final_dataset
+
+
+def task_create_soep_dataset(
+    variables: Annotated[list[str], ["birth_year", "bmi"]],
+    survey_years: Annotated[list[int], [1988, 1990, 1992, 1994]],
+    pbrutto: Annotated[pd.DataFrame, MODULES["pbrutto"]],
+    pl_pequiv: Annotated[pd.DataFrame, MODULES["pl_pequiv"]],
+) -> Annotated[pd.DataFrame, Path.getcwd() / "soep_dataset.pkl"]:
+    """Example task merging based on variable names to create dataset.
+
+    Args:
+        variables: Variable names the dataset should contain.
+        survey_years: Survey years the dataset should contain.
+        pbrutto: The pbrutto module created in the pipeline.
+        pl_pequiv: The pl_pequiv module created in the pipeline.
+
+    Returns:
+        The variables merged into a dataset.
+
+    """
+    return create_final_dataset(
+        variables=variables,
+        survey_years=survey_years,
+        modules={"pbrutto": pbrutto, "pl_pequiv": pl_pequiv},
+    )
+```
+
+For an example see `sandbox/task_example_final_dataset.py`. Notice that we do not
+specify explicitly the required modules to merge variables from, but rather provide
+`MODULES._entries`, which contains all modules. We let the `create_final_dataset`
+function do the selection of relevant modules.
 
 ### Understanding the SOEP-Core Data
 
@@ -109,8 +151,10 @@ occurrences:
    `src/soep_preparation/clean_modules` directory or in the
    `src/soep_preparation/combine_modules` directory.
 
-The metadata is useful to find out about the data type and the years where it is
-present.
+The metadata is useful to learn about the data type, the corresponding module, and the
+survey years observed. The metadata mapping only contains unique variable to module
+combinations. Since the index variables are shared between modules, they are not
+contained in the metadata mapping.
 
 The definition tells us how the variable is created from the raw SOEP variable(s). In
 this case, the script `src/soep_preparation/clean_modules/pequiv.py` contains the line:
@@ -125,27 +169,9 @@ an integer. We can look up the contents of that variable in the
 `https://paneldata.org/soep-core/datasets/<module>/<variable>`. So in this case, we
 would visit
 [https://paneldata.org/soep-core/datasets/pequiv/ison2](https://paneldata.org/soep-core/datasets/pequiv/ison2)
-and could take it from there. Y especially the "Codebook (PDF)", is helpful. The SOEP
+and could take it from there. Especially the "Codebook (PDF)", is helpful. The SOEP
 documentation URL for a dataset and variable has the general form:
 `https://paneldata.org/soep-core/datasets/{dataset_name}/{variable_name}`
-
-### Creating your own Merged Dataset
-
-The directory `src/soep_preparation/dataset_merging` contains two modules. Inside
-`helper.py` you can find the function `create_dataset_from_variables`. The function
-takes most importantly a list of `variables` and survey years you are interested in. The
-survey years can be either passed to the function as a tuple characterizing the min and
-max survey years (e.g. `min_and_max_survey_years=(2020, 2025)`) or all the survey years
-(e.g. `survey_years=[2020, 2021, 2022, 2023, 2024, 2025]`). Further the argument
-`variable_to_file_mapping` is generated by the tasks and contains the meta information
-for the variables of interest and their corresponding prepared data. See the example for
-the correct specification for the function call of `create_dataset_from_variables`.
-
-Further, there is `task_example.py` which contains an example on how to write your own
-task to merge `variables` of interest for a range of `survey_year`'s to a dataset using
-the helper module. Other components of the merging process are handled via the
-implemented helper functions. Do not include any of the ID variables (`survey_year`,
-`hh_id`, `hh_orig_id`, `p_id`) in the columns list, as these are automatically included.
 
 ### Advanced: Additional Variables from an Existing Dataset
 
