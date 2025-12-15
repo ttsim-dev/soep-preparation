@@ -19,7 +19,7 @@ VARIABLES_TO_MERGE = [
     "relationship_to_head_of_hh",
     "hh_strat",
     "number_of_children",
-    "p_id_father",
+    "p_id_father_1",
     "frailty",
 ]
 
