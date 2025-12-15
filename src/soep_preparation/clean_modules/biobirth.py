@@ -23,7 +23,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     wide["hh_id_original"] = float_to_int(raw_data["cid"])
     wide["p_id"] = float_to_int(raw_data["pid"])
 
-    wide["tmp_number_of_children"] = float_to_int(raw_data["sumkids"])
+    wide["tmp_number_of_children"] = object_to_int(raw_data["sumkids"])
     # the personal id of children (kidpnr) only exists for the first 9 children
     wide["tmp_p_id_child_1"] = object_to_int(raw_data["kidpnr01"])
     wide["tmp_birth_year_child_1"] = object_to_int(raw_data["kidgeb01"])

@@ -48,6 +48,8 @@
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 active_work_search_last_four_weeks:
   dtype:
     categorical:
@@ -81,6 +83,8 @@ active_work_search_last_four_weeks:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 age:
   dtype: uint8[pyarrow]
   module: pequiv
@@ -123,8 +127,10 @@ age:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 allgemeine_sozialhilfe_y_hh:
-  dtype: uint16[pyarrow]
+  dtype: uint32[pyarrow]
   module: pequiv
   survey_years:
   - 1984
@@ -165,6 +171,8 @@ allgemeine_sozialhilfe_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 alterssicherung_landwirte_hinterbliebene_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -207,6 +215,8 @@ alterssicherung_landwirte_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 alterssicherung_landwirte_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -249,6 +259,8 @@ alterssicherung_landwirte_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 altersteilzeit:
   dtype:
     categorical:
@@ -348,6 +360,8 @@ andere_rente_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 andere_rente_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -390,6 +404,8 @@ andere_rente_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 arbeitslos_gemeldet:
   dtype: bool[pyarrow]
   module: pgen
@@ -432,6 +448,8 @@ arbeitslos_gemeldet:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 arbeitslosengeld_2_anzahl_monate_hh:
   dtype: uint8[pyarrow]
   module: hl
@@ -452,6 +470,8 @@ arbeitslosengeld_2_anzahl_monate_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 arbeitslosengeld_2_m_hh:
   dtype: float[pyarrow]
   module: pequiv_hl
@@ -494,6 +514,8 @@ arbeitslosengeld_2_m_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 arbeitslosengeld_2_m_hh_hl:
   dtype: float[pyarrow]
   module: hl
@@ -514,6 +536,8 @@ arbeitslosengeld_2_m_hh_hl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 arbeitslosengeld_2_m_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -556,6 +580,8 @@ arbeitslosengeld_2_m_hh_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 arbeitslosengeld_2_y_hh_pequiv:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -598,6 +624,8 @@ arbeitslosengeld_2_y_hh_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 arbeitslosengeld_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -640,6 +668,8 @@ arbeitslosengeld_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 arbeitslosenhilfe_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -682,6 +712,8 @@ arbeitslosenhilfe_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bafög_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -724,6 +756,8 @@ bafög_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 beamtenpension_hinterbliebene_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -766,6 +800,8 @@ beamtenpension_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 beamtenpension_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -808,6 +844,8 @@ beamtenpension_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 beamtenpension_zusätzliche_versorgung_hinterbliebene_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -850,6 +888,8 @@ beamtenpension_zusätzliche_versorgung_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 beamtenpension_zusätzliche_versorgung_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -892,6 +932,8 @@ beamtenpension_zusätzliche_versorgung_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 beamter:
   dtype: bool[pyarrow]
   module: pgen
@@ -934,6 +976,8 @@ beamter:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 beendigung_beschäftigungsverhältnis_betriebsstillegung:
   dtype:
     categorical:
@@ -988,6 +1032,8 @@ beendigung_beschäftigungsverhältnis_grund:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 beendigung_beschäftigungsverhältnis_grund_1999:
   dtype:
     categorical:
@@ -1047,6 +1093,8 @@ betreuungsgeld_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 betriebliche_altersversorgung_hinterbliebene_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -1089,6 +1137,8 @@ betriebliche_altersversorgung_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 betriebliche_altersversorgung_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -1131,6 +1181,8 @@ betriebliche_altersversorgung_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 betriebsgröße:
   dtype:
     categorical:
@@ -1182,6 +1234,8 @@ betriebsgröße:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 betriebsgröße_detailliert_aber_inkonsistente_kategorien:
   dtype:
     categorical:
@@ -1239,6 +1293,8 @@ betriebsgröße_detailliert_aber_inkonsistente_kategorien:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezieht_aktuell_arbeitslosengeld_2_hh:
   dtype:
     categorical:
@@ -1266,6 +1322,8 @@ bezieht_aktuell_arbeitslosengeld_2_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezieht_aktuell_hilfe_zum_lebensunterhalt_hh:
   dtype:
     categorical:
@@ -1303,6 +1361,8 @@ bezieht_aktuell_hilfe_zum_lebensunterhalt_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezieht_aktuell_kindergeld_hh:
   dtype:
     categorical:
@@ -1340,6 +1400,8 @@ bezieht_aktuell_kindergeld_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezieht_aktuell_kinderzuschlag_hh:
   dtype:
     categorical:
@@ -1363,6 +1425,8 @@ bezieht_aktuell_kinderzuschlag_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezieht_aktuell_wohngeld_hh:
   dtype:
     categorical:
@@ -1400,6 +1464,8 @@ bezieht_aktuell_wohngeld_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezog_arbeitslosengeld_im_letzten_monat:
   dtype:
     categorical:
@@ -1436,6 +1502,8 @@ bezog_arbeitslosengeld_im_letzten_monat:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezog_arbeitslosengeld_m3_m5:
   dtype:
     categorical:
@@ -1473,6 +1541,8 @@ bezog_kinderzuschlag_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezog_mutterschaftsgeld:
   dtype:
     categorical:
@@ -1521,6 +1591,8 @@ bezog_mutterschaftsgeld:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezog_mutterschaftsgeld_im_letzten_monat:
   dtype:
     categorical:
@@ -1557,6 +1629,8 @@ bezog_mutterschaftsgeld_im_letzten_monat:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezog_mutterschaftsgeld_pkal:
   dtype:
     categorical:
@@ -1605,6 +1679,8 @@ bezog_mutterschaftsgeld_pkal:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 bezog_mutterschaftsgeld_pl:
   dtype:
     categorical:
@@ -1642,6 +1718,8 @@ bezog_mutterschaftsgeld_pl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 birth_bundesland:
   dtype:
     categorical:
@@ -1704,6 +1782,8 @@ birth_bundesland:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 birth_month:
   dtype:
     categorical:
@@ -1822,6 +1902,8 @@ birth_month_ppathl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 birth_year:
   dtype: uint16[pyarrow]
   module: pbrutto
@@ -1863,6 +1945,8 @@ birth_year:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 birth_year_child:
   dtype: uint16[pyarrow]
   module: biobirth
@@ -1967,8 +2051,11 @@ bmi:
   - 2018
   - 2019
   - 2020
+  - 2021
+  - 2022
+  - 2023
 bmi_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
   survey_years:
   - 2002
@@ -1987,6 +2074,10 @@ bmi_pequiv:
   - 2017
   - 2018
   - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
 bmi_pl:
   dtype: double[pyarrow]
   module: pl
@@ -2001,6 +2092,7 @@ bmi_pl:
   - 2016
   - 2018
   - 2020
+  - 2022
 born_in_germany:
   dtype:
     categorical:
@@ -2049,6 +2141,8 @@ born_in_germany:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 building_year_hh_max:
   dtype: uint16[pyarrow]
   module: hgen
@@ -2091,6 +2185,8 @@ building_year_hh_max:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 building_year_hh_min:
   dtype: uint16[pyarrow]
   module: hgen
@@ -2133,25 +2229,12 @@ building_year_hh_min:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 child_number:
   dtype: int64
   module: biobirth
   survey_years: null
-children_care_facility_costs_m_current:
-  dtype: double[pyarrow]
-  module: kidlong
-  survey_years:
-  - 2002
-  - 2005
-  - 2007
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2015
-  - 2018
-  - 2019
-  - 2021
 confession:
   dtype:
     categorical:
@@ -2171,21 +2254,21 @@ confession:
   - 2019
   - 2020
   - 2021
+  - 2023
 confession_specific:
   dtype:
     categorical:
       categories:
       - Alevitische Rel.gemeinschaft
       - Andere Religionsgemeinschaft
-      - Andere christlische Religionsgemeinschaft
+      - Andere christliche el.gemeinschaft
       - Christlich orthodox
-      - Evangelisch
       - Islamische Religionsgemeinschaft
-      - Katholisch
       - Konfessionslos
       - Mehrfachnennung
       - Schiitische Rel.gemeinschaft
-      - Sunnitische Rel.gemeinschaft
+      - evangelisch
+      - katholisch
       categories_dtype: string
       ordered: false
   module: pl
@@ -2204,6 +2287,7 @@ confession_specific:
   - 2019
   - 2020
   - 2021
+  - 2023
 country_of_birth:
   dtype:
     categorical:
@@ -2215,18 +2299,24 @@ country_of_birth:
       - Angola
       - Argentinien
       - Armenien
+      - Aruba
       - Aserbaidschan
       - Australien
+      - Bahamas
+      - Bahrain
       - Bangladesch
+      - Barbados
       - Belgien
       - Benin
       - Bolivien
       - Bosnien und Herzegowina
       - Botsuana
       - Brasilien
+      - Britische Jungferninseln
       - Britisches Territorium im Indischen Ozean
       - Bulgarien
       - Burkina Faso
+      - Burundi
       - Cabo Verde
       - Chile
       - China
@@ -2242,14 +2332,19 @@ country_of_birth:
       - Estland
       - Finnland
       - Frankreich
+      - Gabun
       - Gambia
       - Georgien
       - Ghana
       - Grenada
       - Griechenland
       - Guatemala
+      - Guernsey
       - Guinea
+      - Guinea-Bissau
+      - Guyana
       - Haiti
+      - Heard und McDonaldinseln
       - Honduras
       - Hongkong
       - Indien
@@ -2270,9 +2365,12 @@ country_of_birth:
       - Katar
       - Kenia
       - Kirgistan
+      - Kleinere Amerikanische Überseeinseln
       - Kolumbien
+      - Komoren
       - Kongo
       - Kongo, Demokratische Republik
+      - Korea, Demokratische Volksrepublik
       - Korea, Republik
       - Kosovo
       - Kroatien
@@ -2286,10 +2384,13 @@ country_of_birth:
       - Libyen
       - Litauen
       - Luxemburg
+      - Macau
       - Madagaskar
+      - Malawi
       - Malaysia
       - Mali
       - Marokko
+      - Mauretanien
       - Mauritius
       - Mexiko
       - Moldau
@@ -2307,6 +2408,7 @@ country_of_birth:
       - Nigeria
       - Nordmazedonien
       - Norwegen
+      - Oman
       - Pakistan
       - Palästina
       - Panama
@@ -2315,9 +2417,11 @@ country_of_birth:
       - Philippinen
       - Polen
       - Portugal
+      - Puerto Rico
       - Ruanda
       - Rumänien
       - Russische Föderation
+      - Salomonen
       - Sambia
       - Samoa
       - Saudi-Arabien
@@ -2338,11 +2442,13 @@ country_of_birth:
       - Suriname
       - Syrien
       - Südafrika
+      - Südsudan
       - Tadschikistan
       - Taiwan
       - Tansania
       - Thailand
       - Togo
+      - Tonga
       - Trinidad und Tobago
       - Tschad
       - Tschechien
@@ -2360,8 +2466,10 @@ country_of_birth:
       - Vereinigtes Königreich
       - Vietnam
       - Weißrussland
+      - Zentralafrikanische Republik
       - Zypern
       - Ägypten
+      - Äquatorialguinea
       - Äthiopien
       - Österreich
       categories_dtype: string
@@ -2406,6 +2514,8 @@ country_of_birth:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 disability_degree:
   dtype: uint8[pyarrow]
   module: pl
@@ -2448,6 +2558,8 @@ disability_degree:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 early_retirement_pension_number_months:
   dtype: uint8[pyarrow]
   module: pkal
@@ -2490,6 +2602,8 @@ early_retirement_pension_number_months:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 education_casmin:
   dtype:
     categorical:
@@ -2546,6 +2660,8 @@ education_casmin:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 education_casmin_cat:
   dtype: int8[pyarrow]
   module: pgen
@@ -2588,6 +2704,8 @@ education_casmin_cat:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 education_isced:
   dtype:
     categorical:
@@ -2617,6 +2735,8 @@ education_isced:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 education_isced_97:
   dtype:
     categorical:
@@ -2674,6 +2794,8 @@ education_isced_cat:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ehegattenunterhalt_erhalten_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -2716,6 +2838,8 @@ ehegattenunterhalt_erhalten_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 eigenheimzulage_y_hh:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -2758,6 +2882,8 @@ eigenheimzulage_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 einkommen_aus_vermietung_verpachtung_y_hh:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -2800,6 +2926,8 @@ einkommen_aus_vermietung_verpachtung_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 einkommen_aus_zinsen_dividenden_y_hh:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -2842,6 +2970,8 @@ einkommen_aus_zinsen_dividenden_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 einkommen_nach_steuern_y_hh:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -2884,6 +3014,8 @@ einkommen_nach_steuern_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 einkommen_vor_steuern_y_hh:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -2926,6 +3058,8 @@ einkommen_vor_steuern_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 einkünfte_aus_arbeit_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -2968,6 +3102,8 @@ einkünfte_aus_arbeit_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 einkünfte_aus_erstem_job_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -3010,6 +3146,8 @@ einkünfte_aus_erstem_job_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 einkünfte_aus_selbstständiger_arbeit_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -3052,6 +3190,8 @@ einkünfte_aus_selbstständiger_arbeit_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 einkünfte_aus_zweitem_job_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -3094,6 +3234,8 @@ einkünfte_aus_zweitem_job_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 employed_in_at_least_one_month:
   dtype: bool[pyarrow]
   module: pkal
@@ -3136,6 +3278,8 @@ employed_in_at_least_one_month:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 employed_y:
   dtype: bool[pyarrow]
   module: pequiv
@@ -3178,6 +3322,8 @@ employed_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 employment_level:
   dtype:
     categorical:
@@ -3227,6 +3373,8 @@ employment_level:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 employment_status:
   dtype:
     categorical:
@@ -3236,8 +3384,8 @@ employment_status:
       - Teilzeitbeschäftigung
       - Unregelmässig, geringfügig erwerbstät.
       - Voll erwerbstätig
-      - Werkstatt für behinderte Menschen (seit 1998)
-      - in Kurzarbeit (seit 2021)
+      - Werkstatt für behinderte Menschen (1998-2020)
+      - in Kurzarbeit (1991-1995; seit 2021)
       categories_dtype: string
       ordered: false
   module: pgen
@@ -3280,6 +3428,8 @@ employment_status:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 erhaltenes_mutterschaftsgeld_im_letzten_monat_m:
   dtype: float[pyarrow]
   module: pl
@@ -3311,6 +3461,8 @@ erhaltenes_mutterschaftsgeld_im_letzten_monat_m:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 erhaltenes_mutterschaftsgeld_m:
   dtype: float[pyarrow]
   module: pl
@@ -3347,6 +3499,8 @@ erhaltenes_mutterschaftsgeld_m:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -3389,6 +3543,8 @@ erwerbstätig:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 federal_state_of_residence:
   dtype:
     categorical:
@@ -3451,6 +3607,8 @@ federal_state_of_residence:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 first_nationality:
   dtype:
     categorical:
@@ -3688,6 +3846,8 @@ frailty:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 frailty_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -3730,6 +3890,8 @@ frailty_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 frailty_pl:
   dtype: float[pyarrow]
   module: pl
@@ -3763,6 +3925,8 @@ frailty_pl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_1:
   dtype:
     categorical:
@@ -3811,6 +3975,8 @@ ft_employed_m_1:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_10:
   dtype:
     categorical:
@@ -3859,6 +4025,8 @@ ft_employed_m_10:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_11:
   dtype:
     categorical:
@@ -3907,6 +4075,8 @@ ft_employed_m_11:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_12:
   dtype:
     categorical:
@@ -3955,6 +4125,8 @@ ft_employed_m_12:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_2:
   dtype:
     categorical:
@@ -4003,6 +4175,8 @@ ft_employed_m_2:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_3:
   dtype:
     categorical:
@@ -4026,6 +4200,7 @@ ft_employed_m_3:
   - 1995
   - 1996
   - 1997
+  - 2023
 ft_employed_m_4:
   dtype:
     categorical:
@@ -4074,6 +4249,8 @@ ft_employed_m_4:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_5:
   dtype:
     categorical:
@@ -4122,6 +4299,8 @@ ft_employed_m_5:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_6:
   dtype:
     categorical:
@@ -4170,6 +4349,8 @@ ft_employed_m_6:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_7:
   dtype:
     categorical:
@@ -4218,6 +4399,8 @@ ft_employed_m_7:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_8:
   dtype:
     categorical:
@@ -4266,6 +4449,8 @@ ft_employed_m_8:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 ft_employed_m_9:
   dtype:
     categorical:
@@ -4314,6 +4499,8 @@ ft_employed_m_9:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 gender:
   dtype:
     categorical:
@@ -4362,6 +4549,8 @@ gender:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 general_trust_high_to_low:
   dtype:
     categorical:
@@ -4378,6 +4567,7 @@ general_trust_high_to_low:
   - 2008
   - 2013
   - 2018
+  - 2023
 german:
   dtype: bool[pyarrow]
   module: pgen
@@ -4461,6 +4651,8 @@ gesetzliche_rente_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 gesetzliche_rente_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -4503,6 +4695,8 @@ gesetzliche_rente_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 gesetzliche_unfallversicherung_rente_hinterbliebene_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -4545,6 +4739,8 @@ gesetzliche_unfallversicherung_rente_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 gesetzliche_unfallversicherung_rente_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -4587,6 +4783,8 @@ gesetzliche_unfallversicherung_rente_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 gewinnbeteiligung_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -4629,6 +4827,8 @@ gewinnbeteiligung_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 gross_labor_income_previous_month_m:
   dtype: float[pyarrow]
   module: pgen
@@ -4671,6 +4871,8 @@ gross_labor_income_previous_month_m:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 grund_beschäftigungsende:
   dtype:
     categorical:
@@ -4739,8 +4941,10 @@ grund_beschäftigungsende:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 grundsicherung_im_alter_m_aktuell_hh:
-  dtype: uint16[pyarrow]
+  dtype: double[pyarrow]
   module: hl
   survey_years:
   - 2005
@@ -4760,6 +4964,8 @@ grundsicherung_im_alter_m_aktuell_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 grundsicherung_im_alter_y_hh:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -4802,6 +5008,8 @@ grundsicherung_im_alter_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 grundsicherung_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -4844,6 +5052,8 @@ grundsicherung_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 heating_costs_m_hh:
   dtype: double[pyarrow]
   module: hgen
@@ -4884,6 +5094,8 @@ heating_costs_m_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 heating_costs_reason_missing:
   dtype:
     categorical:
@@ -4901,6 +5113,8 @@ heating_costs_reason_missing:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hh_financial_assets_value_a:
   dtype: double[pyarrow]
   module: hwealth
@@ -5133,18 +5347,22 @@ hh_soep_sample:
       - 2011 Aufstockung
       - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
       - 2012 Aufstockung
-      - 2013 Migration (1995-2010)
-      - 2015 Migration (2009-2013)
-      - 2016 Flucht (2013-2015)
-      - 2016 Flucht/Familie (2013-2015)
       - 2017 Aufstockung (PIAAC-L)
-      - 2017 Flucht (2013-2016)
       - 2018 Soziale Stadt
       - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
       - 2019 Top-Gesellschafter
-      - 2020 Migration
-      - 2020 Migration-Fachkräfteeinwanderung
-      - 2020 Schutzsuchende
+      - 2022 Aufstockung
+      - IAB-BAMF-SOEP 2016 Flucht (2013-2015)
+      - IAB-BAMF-SOEP 2016 Flucht/Familie (2013-2015)
+      - IAB-BAMF-SOEP 2017 Flucht (2013-2016)
+      - IAB-BAMF-SOEP 2020 Schutzsuchende
+      - IAB-BAMF-SOEP 2023 Schutzsuchende
+      - IAB-SOEP 2013 Migration (1995-2010)
+      - IAB-SOEP 2015 Migration (2009-2013)
+      - IAB-SOEP 2020 Migration
+      - IAB-SOEP 2020 Migration-Fachkräfteeinwanderung
+      - IAB-SOEP 2022 Aufstockung
+      - IAB-SOEP 2023 Aufstockung
       categories_dtype: object
       ordered: false
   module: hpathl_design
@@ -5167,18 +5385,22 @@ hh_soep_sample_design:
       - 2011 Aufstockung
       - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
       - 2012 Aufstockung
-      - 2013 Migration (1995-2010)
-      - 2015 Migration (2009-2013)
-      - 2016 Flucht (2013-2015)
-      - 2016 Flucht/Familie (2013-2015)
       - 2017 Aufstockung (PIAAC-L)
-      - 2017 Flucht (2013-2016)
       - 2018 Aufstockung
       - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
       - 2019 Top-Gesellschafter
-      - 2020 Migration
-      - 2020 Migration-Fachkräfteeinwanderung
-      - 2020 Schutzsuchende
+      - 2022 Aufstockung
+      - IAB-BAMF-SOEP 2016 Flucht (2013-2015)
+      - IAB-BAMF-SOEP 2016 Flucht/Familie (2013-2015)
+      - IAB-BAMF-SOEP 2017 Flucht (2013-2016)
+      - IAB-BAMF-SOEP 2020 Schutzsuchende
+      - IAB-BAMF-SOEP 2023 Schutzsuchende
+      - IAB-SOEP 2013 Migration (1995-2010)
+      - IAB-SOEP 2015 Migration (2009-2013)
+      - IAB-SOEP 2020 Migration
+      - IAB-SOEP 2020 Migration-Fachkräfteeinwanderung
+      - IAB-SOEP 2022 Aufstockung
+      - IAB-SOEP 2023 Aufstockung
       categories_dtype: string
       ordered: false
   module: design
@@ -5201,18 +5423,22 @@ hh_soep_sample_hpathl:
       - 2011 Aufstockung
       - 2011 Familientypen(AlleinErziehend,MehrKindFamilien)
       - 2012 Aufstockung
-      - 2013 Migration (1995-2010)
-      - 2015 Migration (2009-2013)
-      - 2016 Flucht (2013-2015)
-      - 2016 Flucht/Familie (2013-2015)
       - 2017 Aufstockung (PIAAC-L)
-      - 2017 Flucht (2013-2016)
       - 2018 Soziale Stadt
       - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
       - 2019 Top-Gesellschafter
-      - 2020 Migration
-      - 2020 Migration-Fachkräfteeinwanderung
-      - 2020 Schutzsuchende
+      - 2022 Aufstockung
+      - IAB-BAMF-SOEP 2016 Flucht (2013-2015)
+      - IAB-BAMF-SOEP 2016 Flucht/Familie (2013-2015)
+      - IAB-BAMF-SOEP 2017 Flucht (2013-2016)
+      - IAB-BAMF-SOEP 2020 Schutzsuchende
+      - IAB-BAMF-SOEP 2023 Schutzsuchende
+      - IAB-SOEP 2013 Migration (1995-2010)
+      - IAB-SOEP 2015 Migration (2009-2013)
+      - IAB-SOEP 2020 Migration
+      - IAB-SOEP 2020 Migration-Fachkräfteeinwanderung
+      - IAB-SOEP 2022 Aufstockung
+      - IAB-SOEP 2023 Aufstockung
       categories_dtype: string
       ordered: false
   module: hpathl
@@ -5255,6 +5481,8 @@ hh_soep_sample_hpathl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hh_staying_probability:
   dtype: float[pyarrow]
   module: hpathl
@@ -5297,6 +5525,8 @@ hh_staying_probability:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hh_strat:
   dtype: int16[pyarrow]
   module: design
@@ -5355,6 +5585,8 @@ hh_typ_one_digit:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hh_typ_two_digits:
   dtype:
     categorical:
@@ -5424,6 +5656,8 @@ hh_typ_two_digits:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hh_vehicles_value_a:
   dtype: float[pyarrow]
   module: hwealth
@@ -5491,6 +5725,8 @@ hh_weighting_factor:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hh_weighting_factor_new_only:
   dtype: double[pyarrow]
   module: hpathl
@@ -5533,6 +5769,8 @@ hh_weighting_factor_new_only:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hh_weighting_factor_without_new:
   dtype: double[pyarrow]
   module: hpathl
@@ -5575,6 +5813,8 @@ hh_weighting_factor_without_new:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 highest_education:
   dtype:
     categorical:
@@ -5624,6 +5864,8 @@ highest_education:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hourly_wage_current:
   dtype: float[pyarrow]
   module: pl
@@ -5633,6 +5875,8 @@ hourly_wage_current:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hours_care_sat:
   dtype: float[pyarrow]
   module: pl
@@ -5690,6 +5934,8 @@ hours_care_workday:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hours_childcare_sat:
   dtype: float[pyarrow]
   module: pl
@@ -5779,6 +6025,8 @@ hours_childcare_workday:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hours_errands_sat:
   dtype: float[pyarrow]
   module: pl
@@ -5858,6 +6106,7 @@ hours_errands_workday:
   - 2019
   - 2020
   - 2021
+  - 2022
 hours_hobbies_sat:
   dtype: float[pyarrow]
   module: pl
@@ -5949,6 +6198,7 @@ hours_hobbies_workday:
   - 2019
   - 2020
   - 2021
+  - 2022
 hours_housework_sat:
   dtype: float[pyarrow]
   module: pl
@@ -6040,6 +6290,8 @@ hours_housework_workday:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hours_repairs_sat:
   dtype: float[pyarrow]
   module: pl
@@ -6123,6 +6375,7 @@ hours_repairs_workday:
   - 2019
   - 2020
   - 2021
+  - 2022
 hours_sleep_weekend:
   dtype: float[pyarrow]
   module: pl
@@ -6138,6 +6391,7 @@ hours_sleep_weekend:
   - 2019
   - 2020
   - 2021
+  - 2022
 hours_sleep_workday:
   dtype: float[pyarrow]
   module: pl
@@ -6153,6 +6407,7 @@ hours_sleep_workday:
   - 2019
   - 2020
   - 2021
+  - 2022
 hours_work_sat:
   dtype: float[pyarrow]
   module: pl
@@ -6244,6 +6499,8 @@ hours_work_workday:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 hours_worked_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -6286,6 +6543,8 @@ hours_worked_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 im_öffentlichen_dienst:
   dtype:
     categorical:
@@ -6334,6 +6593,8 @@ im_öffentlichen_dienst:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 importance_faith_high_to_low:
   dtype:
     categorical:
@@ -6351,6 +6612,7 @@ importance_faith_high_to_low:
   - 2018
   - 2019
   - 2021
+  - 2023
 importance_faith_v2_high_to_low:
   dtype:
     categorical:
@@ -6418,6 +6680,8 @@ in_education:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 in_private_rente_eingezahlt:
   dtype:
     categorical:
@@ -6478,6 +6742,8 @@ in_teilzeit_erwerbstätig:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 individual_staying_probability:
   dtype: float[pyarrow]
   module: ppathl
@@ -6520,6 +6786,8 @@ individual_staying_probability:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 individual_weighting_factor:
   dtype: double[pyarrow]
   module: ppathl
@@ -6562,6 +6830,8 @@ individual_weighting_factor:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 individual_weighting_factor_new_only:
   dtype: double[pyarrow]
   module: ppathl
@@ -6604,6 +6874,8 @@ individual_weighting_factor_new_only:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 individual_weighting_factor_without_new:
   dtype: double[pyarrow]
   module: ppathl
@@ -6646,41 +6918,8 @@ individual_weighting_factor_without_new:
   - 2019
   - 2020
   - 2021
-interview_result_old:
-  dtype:
-    categorical:
-      categories:
-      - Adr.-problem, Haushalt in Adr.-erm. ueber Feldende hinaus
-      - Adr.-problem, neue Adresse ermittelt, jedoch nach Feldende
-      - Derz. nicht bereit, keine Zeit
-      - Derz. nicht bereit, sonstige/unklare Faelle
-      - Derz. nicht berereit trotz tel Zusage
-      - Endgueltig nicht mehr i.d.L. teilzunehmen (z.B. Pflegefall)
-      - Endgueltige Verweigerung
-      - 'Endgueltiger Ausf.: 2mal hintereinander temporarrer Ausfall'
-      - Haushalt endgueltig nicht auffindbar
-      - Nicht reaLaengere Zeit im Heimatland
-      - Nicht realisiert, 2mal temp. Ausfaelle
-      - Nicht realisiert, Krankheit/Krankenhaus ueber Feldende
-        hinaus
-      - Nicht realisiert, waehrend gesamter Feldphase nicht erreichb.
-      - Nicht realisiert. in Schlussphase nicht mehr erreichbar
-      - Realisiert ohne Hinweise auf Folgewelle
-      - Realisiert, aber Pers. m. Befstat = 7 (harte Verweig.)
-        im HH
-      - Realisiert, naechst. Welle nicht mehr bereit
-      - Realisiert, naechst. Welle unter keinen Umst. mehr bereit
-      - Sprachprobleme
-      - Teilw. realisiert ohne weitere Hinweise
-      - Teilw. realisiert, naechst. Welle nicht mehr bereit
-      - Teilw. realisiert, naechst. Welle u. keinen Umst. mehr
-        bereit
-      - qna
-      categories_dtype: string
-      ordered: false
-  module: pbrutto
-  survey_years:
-  - 2017
+  - 2022
+  - 2023
 interview_result_one_digit:
   dtype:
     categorical:
@@ -6736,6 +6975,7 @@ interview_result_one_digit:
   - 2019
   - 2020
   - 2021
+  - 2022
 interview_result_two_digits:
   dtype:
     categorical:
@@ -6809,6 +7049,8 @@ interview_result_two_digits:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 interview_status:
   dtype:
     categorical:
@@ -6819,6 +7061,7 @@ interview_status:
       - Erstmals zu befragende neue Person
       - Erwachsenes Haushaltsmitglied, aber keine Befragungsperson
       - Jugendliche Befragungsperson
+      - 'Nicht zu befragen, da finaler Ausfall seit Vorwelle '
       - Nicht zu befragen, da harter Verweigerer in Vorwelle/n
       - Noch nicht zu befragende alte Person
       - Noch nicht zu befragende neue Person
@@ -6864,6 +7107,8 @@ interview_status:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kindergeld_m_aktuell_hh:
   dtype: uint16[pyarrow]
   module: hl
@@ -6906,6 +7151,8 @@ kindergeld_m_aktuell_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kindergeld_m_hh:
   dtype: float[pyarrow]
   module: pequiv_hl
@@ -6948,6 +7195,8 @@ kindergeld_m_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kindergeld_m_hh_hl:
   dtype: uint16[pyarrow]
   module: hl
@@ -6989,6 +7238,8 @@ kindergeld_m_hh_hl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kindergeld_m_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -7031,6 +7282,8 @@ kindergeld_m_hh_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kindergeld_y_hh_pequiv:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -7073,6 +7326,8 @@ kindergeld_y_hh_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kinderzuschlag_m_aktuell_hh:
   dtype: uint16[pyarrow]
   module: hl
@@ -7090,6 +7345,8 @@ kinderzuschlag_m_aktuell_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kinderzuschlag_m_hh:
   dtype: float[pyarrow]
   module: pequiv_hl
@@ -7132,6 +7389,8 @@ kinderzuschlag_m_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kinderzuschlag_m_hh_hl:
   dtype: uint16[pyarrow]
   module: hl
@@ -7149,6 +7408,8 @@ kinderzuschlag_m_hh_hl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kinderzuschlag_m_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -7191,6 +7452,8 @@ kinderzuschlag_m_hh_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kinderzuschlag_y_hh_pequiv:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -7233,6 +7496,8 @@ kinderzuschlag_y_hh_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kindesunterhalt_erhalten_m:
   dtype: double[pyarrow]
   module: pequiv_pl
@@ -7275,6 +7540,8 @@ kindesunterhalt_erhalten_m:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kindesunterhalt_erhalten_m_pequiv:
   dtype: double[pyarrow]
   module: pequiv
@@ -7317,6 +7584,8 @@ kindesunterhalt_erhalten_m_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kindesunterhalt_erhalten_m_pl:
   dtype: uint16[pyarrow]
   module: pl
@@ -7369,6 +7638,8 @@ kindesunterhalt_erhalten_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 knappschaftliche_rente_hinterbliebene_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -7411,6 +7682,8 @@ knappschaftliche_rente_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 knappschaftliche_rente_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -7453,6 +7726,8 @@ knappschaftliche_rente_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kriegsopferversorgung_rente_hinterbliebene_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -7495,6 +7770,8 @@ kriegsopferversorgung_rente_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 kriegsopferversorgung_rente_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -7537,6 +7814,8 @@ kriegsopferversorgung_rente_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 labor_force_status:
   dtype:
     categorical:
@@ -7597,6 +7876,8 @@ labor_force_status:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 life_satisfaction_low_to_high:
   dtype:
     categorical:
@@ -7654,8 +7935,10 @@ life_satisfaction_low_to_high:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 living_space_hh:
-  dtype: uint16[pyarrow]
+  dtype: double[pyarrow]
   module: hgen
   survey_years:
   - 1984
@@ -7696,6 +7979,8 @@ living_space_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 marital_status:
   dtype:
     categorical:
@@ -7753,11 +8038,12 @@ marital_status:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_asthma_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -7770,6 +8056,7 @@ med_asthma_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_bluthochdruck:
   dtype:
     categorical:
@@ -7787,6 +8074,7 @@ med_bluthochdruck:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_bluthochdruck_pequiv:
   dtype:
     categorical:
@@ -7804,11 +8092,11 @@ med_bluthochdruck_pequiv:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_bluthochdruck_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -7821,11 +8109,11 @@ med_bluthochdruck_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_demenz_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -7838,11 +8126,11 @@ med_demenz_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_depressiv_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -7855,6 +8143,7 @@ med_depressiv_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_diabetes:
   dtype:
     categorical:
@@ -7872,6 +8161,7 @@ med_diabetes:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_diabetes_pequiv:
   dtype:
     categorical:
@@ -7889,11 +8179,11 @@ med_diabetes_pequiv:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_diabetes_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -7906,6 +8196,7 @@ med_diabetes_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_gelenk:
   dtype:
     categorical:
@@ -7922,6 +8213,7 @@ med_gelenk:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_gelenk_pequiv:
   dtype:
     categorical:
@@ -7938,11 +8230,11 @@ med_gelenk_pequiv:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_gelenk_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: false
@@ -7954,8 +8246,9 @@ med_gelenk_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_gewicht:
-  dtype: uint8[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv_pl
   survey_years:
   - 2002
@@ -7976,8 +8269,10 @@ med_gewicht:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_gewicht_pequiv:
-  dtype: uint8[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
   survey_years:
   - 2002
@@ -7998,8 +8293,10 @@ med_gewicht_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_gewicht_pl:
-  dtype: uint8[pyarrow]
+  dtype: double[pyarrow]
   module: pl
   survey_years:
   - 2002
@@ -8012,8 +8309,9 @@ med_gewicht_pl:
   - 2016
   - 2018
   - 2020
+  - 2022
 med_größe:
-  dtype: uint8[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv_pl
   survey_years:
   - 2002
@@ -8033,8 +8331,11 @@ med_größe:
   - 2018
   - 2019
   - 2020
+  - 2021
+  - 2022
+  - 2023
 med_größe_pequiv:
-  dtype: uint8[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
   survey_years:
   - 2002
@@ -8053,8 +8354,12 @@ med_größe_pequiv:
   - 2017
   - 2018
   - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
 med_größe_pl:
-  dtype: uint8[pyarrow]
+  dtype: double[pyarrow]
   module: pl
   survey_years:
   - 2002
@@ -8067,6 +8372,7 @@ med_größe_pl:
   - 2016
   - 2018
   - 2020
+  - 2022
 med_herzkrankheit:
   dtype:
     categorical:
@@ -8084,6 +8390,7 @@ med_herzkrankheit:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_herzkrankheit_pequiv:
   dtype:
     categorical:
@@ -8101,11 +8408,11 @@ med_herzkrankheit_pequiv:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_herzkrankheit_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -8118,6 +8425,7 @@ med_herzkrankheit_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_krankenhaus_pequiv:
   dtype:
     categorical:
@@ -8164,6 +8472,8 @@ med_krankenhaus_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_krebs:
   dtype:
     categorical:
@@ -8181,6 +8491,7 @@ med_krebs:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_krebs_pequiv:
   dtype:
     categorical:
@@ -8198,11 +8509,11 @@ med_krebs_pequiv:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_krebs_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -8215,11 +8526,11 @@ med_krebs_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_migräne_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -8232,6 +8543,7 @@ med_migräne_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_psych_pequiv:
   dtype:
     categorical:
@@ -8249,6 +8561,7 @@ med_psych_pequiv:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_raucher_pl:
   dtype:
     categorical:
@@ -8270,11 +8583,11 @@ med_raucher_pl:
   - 2018
   - 2020
   - 2021
+  - 2022
 med_rücken_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: false
@@ -8286,11 +8599,11 @@ med_rücken_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_schlaf_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -8302,6 +8615,7 @@ med_schlaf_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_schlaganfall:
   dtype:
     categorical:
@@ -8319,6 +8633,7 @@ med_schlaganfall:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_schlaganfall_pequiv:
   dtype:
     categorical:
@@ -8336,11 +8651,11 @@ med_schlaganfall_pequiv:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_schlaganfall_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -8353,6 +8668,7 @@ med_schlaganfall_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_schwierigkeit_taten_pl:
   dtype:
     categorical:
@@ -8377,6 +8693,8 @@ med_schwierigkeit_taten_pl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_schwierigkeit_treppen_dummy_pl:
   dtype: bool[pyarrow]
   module: pl
@@ -8394,6 +8712,8 @@ med_schwierigkeit_treppen_dummy_pl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_schwierigkeit_treppen_pl:
   dtype:
     categorical:
@@ -8418,6 +8738,8 @@ med_schwierigkeit_treppen_pl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_schwierigkeiten_anziehen_pequiv:
   dtype:
     categorical:
@@ -8459,6 +8781,8 @@ med_schwierigkeiten_anziehen_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_schwierigkeiten_bett:
   dtype:
     categorical:
@@ -8506,6 +8830,8 @@ med_schwierigkeiten_bett:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_schwierigkeiten_einkauf:
   dtype:
     categorical:
@@ -8553,6 +8879,8 @@ med_schwierigkeiten_einkauf:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_schwierigkeiten_hausarb:
   dtype:
     categorical:
@@ -8600,6 +8928,8 @@ med_schwierigkeiten_hausarb:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_schwierigkeiten_treppen:
   dtype:
     categorical:
@@ -8624,6 +8954,8 @@ med_schwierigkeiten_treppen:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_schwierigkeiten_treppen_pequiv:
   dtype:
     categorical:
@@ -8647,11 +8979,12 @@ med_schwierigkeiten_treppen_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_sonst_pl:
   dtype:
     categorical:
       categories:
-      - false
       - true
       categories_dtype: bool[pyarrow]
       ordered: true
@@ -8664,6 +8997,7 @@ med_sonst_pl:
   - 2017
   - 2019
   - 2021
+  - 2023
 med_subjective_status:
   dtype:
     categorical:
@@ -8706,6 +9040,8 @@ med_subjective_status:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_subjective_status_dummy:
   dtype: bool[pyarrow]
   module: pequiv_pl
@@ -8739,6 +9075,8 @@ med_subjective_status_dummy:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_subjective_status_dummy_pequiv:
   dtype: bool[pyarrow]
   module: pequiv
@@ -8772,6 +9110,8 @@ med_subjective_status_dummy_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_subjective_status_dummy_pl:
   dtype: bool[pyarrow]
   module: pl
@@ -8805,6 +9145,8 @@ med_subjective_status_dummy_pl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_subjective_status_pequiv:
   dtype:
     categorical:
@@ -8847,6 +9189,8 @@ med_subjective_status_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_subjective_status_pl:
   dtype:
     categorical:
@@ -8889,6 +9233,8 @@ med_subjective_status_pl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 med_zufrieden_pequiv:
   dtype:
     categorical:
@@ -8946,6 +9292,8 @@ med_zufrieden_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 migration_background:
   dtype:
     categorical:
@@ -8995,6 +9343,8 @@ migration_background:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 military:
   dtype: bool[pyarrow]
   module: pgen
@@ -9037,6 +9387,8 @@ military:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 minijob_employed_m_1:
   dtype:
     categorical:
@@ -9045,24 +9397,7 @@ minijob_employed_m_1:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_10:
   dtype:
     categorical:
@@ -9071,24 +9406,7 @@ minijob_employed_m_10:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_11:
   dtype:
     categorical:
@@ -9097,24 +9415,7 @@ minijob_employed_m_11:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_12:
   dtype:
     categorical:
@@ -9123,24 +9424,7 @@ minijob_employed_m_12:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_2:
   dtype:
     categorical:
@@ -9149,24 +9433,7 @@ minijob_employed_m_2:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_3:
   dtype:
     categorical:
@@ -9175,24 +9442,7 @@ minijob_employed_m_3:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_4:
   dtype:
     categorical:
@@ -9201,24 +9451,7 @@ minijob_employed_m_4:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_5:
   dtype:
     categorical:
@@ -9227,24 +9460,7 @@ minijob_employed_m_5:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_6:
   dtype:
     categorical:
@@ -9253,24 +9469,7 @@ minijob_employed_m_6:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_7:
   dtype:
     categorical:
@@ -9279,24 +9478,7 @@ minijob_employed_m_7:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_8:
   dtype:
     categorical:
@@ -9305,24 +9487,7 @@ minijob_employed_m_8:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 minijob_employed_m_9:
   dtype:
     categorical:
@@ -9331,24 +9496,7 @@ minijob_employed_m_9:
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years:
-  - 2005
-  - 2006
-  - 2007
-  - 2008
-  - 2009
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2014
-  - 2015
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
+  survey_years: []
 month_interview:
   dtype:
     categorical:
@@ -9407,6 +9555,8 @@ month_interview:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 months_worked_last_job:
   dtype: float[pyarrow]
   module: pl
@@ -9448,6 +9598,8 @@ months_worked_last_job:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 motor_disability:
   dtype: bool[pyarrow]
   module: pl
@@ -9490,6 +9642,8 @@ motor_disability:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 mutterschaftsgeld_anzahl_monate:
   dtype: double[pyarrow]
   module: pkal
@@ -9532,6 +9686,8 @@ mutterschaftsgeld_anzahl_monate:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 mutterschaftsgeld_erhalten_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -9574,6 +9730,8 @@ mutterschaftsgeld_erhalten_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 mutterschutz_elternzeit:
   dtype: bool[pyarrow]
   module: pgen
@@ -9616,8 +9774,10 @@ mutterschutz_elternzeit:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 net_labor_income_m_average:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
   survey_years:
   - 1990
@@ -9652,6 +9812,8 @@ net_labor_income_m_average:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 net_labor_income_previous_month_m:
   dtype: float[pyarrow]
   module: pgen
@@ -9694,6 +9856,8 @@ net_labor_income_previous_month_m:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 nicht_erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -9736,6 +9900,8 @@ nicht_erwerbstätig:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 norm_career_mothers_same_warmth_high_to_low:
   dtype:
     categorical:
@@ -9950,6 +10116,8 @@ number_of_children_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 number_of_months_employed:
   dtype: uint8[pyarrow]
   module: pkal
@@ -9992,6 +10160,8 @@ number_of_months_employed:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 number_of_persons_hh:
   dtype: uint8[pyarrow]
   module: pequiv
@@ -10034,6 +10204,8 @@ number_of_persons_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 obese:
   dtype: bool[pyarrow]
   module: pequiv_pl
@@ -10055,6 +10227,9 @@ obese:
   - 2018
   - 2019
   - 2020
+  - 2021
+  - 2022
+  - 2023
 obese_pequiv:
   dtype: bool[pyarrow]
   module: pequiv
@@ -10075,6 +10250,10 @@ obese_pequiv:
   - 2017
   - 2018
   - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
 obese_pl:
   dtype: bool[pyarrow]
   module: pl
@@ -10089,6 +10268,7 @@ obese_pl:
   - 2016
   - 2018
   - 2020
+  - 2022
 occupation_status:
   dtype:
     categorical:
@@ -10100,16 +10280,20 @@ occupation_status:
       - Angestellte, einfache Tätigkeit ohne Ausbildungsabschluss
         (ab 1991)
       - Angestellte, hochqualifizierte Tätigkeit oder Leitungsfunktion
+      - Angestellte, keine weiteren Angaben
       - Angestellte, qualifizierte Tätigkeit
       - Angestellte, umfassende Führungsaufgaben
       - Arbeiter in der Landwirtschaft (1990 Ost)
+      - Arbeiter, keine weiteren Angaben
       - Aspiranten (1990 Ost)
       - Auszubildende (1984-1999), Lehrlinge (1990 Ost)
+      - Auszubildende / Lehrlinge, keine weiteren Angaben
       - Auszubildende, gewerblich-technisch (ab 2000)
       - Auszubildende, kaufmännisch (ab 2000)
       - Beamte, einfacher Dienst
       - Beamte, gehobener Dienst
       - Beamte, höherer Dienst
+      - Beamte, keine weiteren Angaben
       - Beamte, mittlerer Dienst
       - Brigadier, Meister in der Landwirtschaft (1990 Ost)
       - Facharbeiter in der Landwirtschaft (1990 Ost)
@@ -10125,6 +10309,7 @@ occupation_status:
       - 'NE: arbeitslos gemeldet'
       - 'NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung,
         Lehre'
+      - Selbstständige, keine weiteren Angaben
       - Volontäre, Praktikanten
       - Vorarbeiter, Kolonnenführer
       - angelernter Arbeiter
@@ -10183,6 +10368,8 @@ occupation_status:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 operation_maintenance_costs_y_hh:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -10225,15 +10412,25 @@ operation_maintenance_costs_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 p_id_child:
   dtype: uint32[pyarrow]
   module: biobirth
   survey_years: null
-p_id_father:
+p_id_father_1:
   dtype: uint32[pyarrow]
   module: bioparen
   survey_years: null
-p_id_mother:
+p_id_father_2:
+  dtype: uint32[pyarrow]
+  module: bioparen
+  survey_years: null
+p_id_mother_1:
+  dtype: uint32[pyarrow]
+  module: bioparen
+  survey_years: null
+p_id_mother_2:
   dtype: uint32[pyarrow]
   module: bioparen
   survey_years: null
@@ -10289,6 +10486,8 @@ partnership_status:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 party_affiliation:
   dtype:
     categorical:
@@ -10364,6 +10563,8 @@ party_affiliation:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 party_affiliation_dummy:
   dtype: bool[pyarrow]
   module: pl
@@ -10406,6 +10607,8 @@ party_affiliation_dummy:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 party_affiliation_intensity_high_to_low:
   dtype:
     categorical:
@@ -10457,6 +10660,8 @@ party_affiliation_intensity_high_to_low:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 person_number_surveyed:
   dtype: uint8[pyarrow]
   module: pl
@@ -10499,7 +10704,7 @@ person_number_surveyed:
   - 2019
   - 2020
 pflegegeld_y_hh:
-  dtype: uint16[pyarrow]
+  dtype: uint32[pyarrow]
   module: pequiv
   survey_years:
   - 1984
@@ -10540,6 +10745,8 @@ pflegegeld_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 place_of_residence_current:
   dtype:
     categorical:
@@ -10588,6 +10795,8 @@ place_of_residence_current:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pointer_mother:
   dtype: uint32[pyarrow]
   module: kidlong
@@ -10630,6 +10839,8 @@ pointer_mother:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pointer_partner:
   dtype: uint32[pyarrow]
   module: ppathl
@@ -10672,6 +10883,8 @@ pointer_partner:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 policital_interest_high_to_low:
   dtype:
     categorical:
@@ -10721,6 +10934,8 @@ policital_interest_high_to_low:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 political_spectrum_left_to_right:
   dtype:
     categorical:
@@ -10786,6 +11001,8 @@ private_altersvorsorge_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 private_altersvorsorge_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -10828,6 +11045,8 @@ private_altersvorsorge_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 private_rente_beitrag_m:
   dtype: float[pyarrow]
   module: pl
@@ -10870,6 +11089,8 @@ private_rente_beitrag_m:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 private_rente_beitrag_m_2013:
   dtype: double[pyarrow]
   module: pl
@@ -10912,6 +11133,8 @@ private_rente_beitrag_m_2013:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 private_rente_beitrag_m_2018:
   dtype: double[pyarrow]
   module: pl
@@ -10954,6 +11177,8 @@ private_rente_beitrag_m_2018:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 private_transfers_erhalten_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -10996,6 +11221,8 @@ private_transfers_erhalten_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_1:
   dtype:
     categorical:
@@ -11044,6 +11271,8 @@ pt_employed_m_1:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_10:
   dtype:
     categorical:
@@ -11092,6 +11321,8 @@ pt_employed_m_10:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_11:
   dtype:
     categorical:
@@ -11140,6 +11371,8 @@ pt_employed_m_11:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_12:
   dtype:
     categorical:
@@ -11188,6 +11421,8 @@ pt_employed_m_12:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_2:
   dtype:
     categorical:
@@ -11236,6 +11471,8 @@ pt_employed_m_2:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_3:
   dtype:
     categorical:
@@ -11294,6 +11531,8 @@ pt_employed_m_4:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_5:
   dtype:
     categorical:
@@ -11342,6 +11581,8 @@ pt_employed_m_5:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_6:
   dtype:
     categorical:
@@ -11390,6 +11631,8 @@ pt_employed_m_6:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_7:
   dtype:
     categorical:
@@ -11438,6 +11681,8 @@ pt_employed_m_7:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_8:
   dtype:
     categorical:
@@ -11486,6 +11731,8 @@ pt_employed_m_8:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 pt_employed_m_9:
   dtype:
     categorical:
@@ -11534,6 +11781,8 @@ pt_employed_m_9:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 refugee_status:
   dtype:
     categorical:
@@ -11602,6 +11851,8 @@ relationship_to_head_of_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 relationship_to_hh:
   dtype:
     categorical:
@@ -11622,6 +11873,7 @@ relationship_to_hh:
       - Lebt in diesem Haushalt schon laenger
       - Lebt jetzt in diesem Haushalt
       - Lebt noch im Haushalt
+      - Sonstiges
       - Verstorben
       - Verzogen, jedoch keine Weiterverfolgung
       - 'Voruebergehend abwesend: Ausbildung/Studium'
@@ -11754,6 +12006,8 @@ religion_father:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 religion_mother:
   dtype:
     categorical:
@@ -11787,6 +12041,8 @@ religion_mother:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 rent_minus_heating_costs_m_hh:
   dtype: float[pyarrow]
   module: hgen
@@ -11829,6 +12085,8 @@ rent_minus_heating_costs_m_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 rented_or_owned:
   dtype:
     categorical:
@@ -11880,6 +12138,8 @@ rented_or_owned:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 residence_childhood:
   dtype:
     categorical:
@@ -11930,6 +12190,8 @@ residence_childhood:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 retired:
   dtype: bool[pyarrow]
   module: pgen
@@ -11972,6 +12234,8 @@ retired:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 riester_rente_hinterbliebene_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -12014,6 +12278,8 @@ riester_rente_hinterbliebene_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 riester_rente_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -12056,21 +12322,8 @@ riester_rente_y:
   - 2019
   - 2020
   - 2021
-school_costs_m_current:
-  dtype: double[pyarrow]
-  module: kidlong
-  survey_years:
-  - 1987
-  - 1996
-  - 2010
-  - 2011
-  - 2012
-  - 2013
-  - 2015
-  - 2017
-  - 2018
-  - 2019
-  - 2021
+  - 2022
+  - 2023
 self_employed:
   dtype: bool[pyarrow]
   module: pgen
@@ -12113,6 +12366,8 @@ self_employed:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 sexual_orientation:
   dtype:
     categorical:
@@ -12162,6 +12417,8 @@ sexual_orientation:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 sonstige_boni_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -12204,6 +12461,8 @@ sonstige_boni_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 sonstige_sozialhilfe_y_hh:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -12246,29 +12505,27 @@ sonstige_sozialhilfe_y_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 survey_status_current:
   dtype:
     categorical:
       categories:
       - Befragungsperson mit real. Interview (_P)
       - Erstbefr, Personenfragebogen, 17 Jahre
-      - Erstbefragung, Jugendfragebogen, 17 Jahre
-      - Hinweise zu Verstorbenen (Exit)
+      - Hinweise zu Verstorbenen
       - Hinweise zu Verstorbenen (_VP)
-      - Jugendliche (17 Jahre) in nicht-real. HHen
-      - Jugendliche 16-17 Jahre (Refug)
-      - Kinder (0-16 Jahre) in nicht-real. HHen
-      - Kinder (nur) in BioAgeL
+      - Kinder (0-17 Jahre) in nicht-real. HHen
+      - Kinder (nur) in CHILDL
       - Kinder in Kidlong
       - Kinder in realisierten Haushalten (_KIND)
-      - Kinder ohne Kinderangabe
       - Nacherhebung (_LUECKE) in nicht-real. HHen
       - Nacherhobene Luecke bei Ausfall
       - Nacherhobene Luecke ohne HH-Bezug
       - Person ohne aktuelle Angabe ohne Austritt
       - Personen in nicht-real. Brutto-HHen
       - Personen in real. Brutto-HHen ohne P.Interview
-      - Personenausfaelle (PBR_EXIT)
+      - Personenausfaelle
       - Personenausfall mit weiteren Hinweisen
       - Personenfrabo ohne Haushaltsinterview
       - Personenfragebogen und Experimente, Test
@@ -12277,7 +12534,6 @@ survey_status_current:
       - Realisierte Tests und Experimente
       - Realisierter Biografiefragebogen
       - Realisierter Biografiefragebogen in nicht-real. HHen
-      - Realisierter Jugendfragebogen
       - Rueckkehrer - (zuvor Ausfaelle [90])
       - Teilrealisiert ohne Haushaltsinterview
       - Test und Experimente in nicht-real. HHen
@@ -12285,7 +12541,6 @@ survey_status_current:
       - Vormals Befragte(ERSTBEF) ohne akt.Angabe
       - Wegzug ins Ausland
       - Wegzug ins Ausland (Abroad)
-      - Wegzug ins Ausland (Exit)
       categories_dtype: string
       ordered: false
   module: ppathl
@@ -12328,6 +12583,8 @@ survey_status_current:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 tatsächliche_arbeitszeit_w:
   dtype: float[pyarrow]
   module: pgen
@@ -12370,6 +12627,8 @@ tatsächliche_arbeitszeit_w:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 tenure:
   dtype: float[pyarrow]
   module: pgen
@@ -12412,6 +12671,8 @@ tenure:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 total_full_time_working_experience:
   dtype: float[pyarrow]
   module: pgen
@@ -12454,6 +12715,8 @@ total_full_time_working_experience:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 total_part_time_working_experience:
   dtype: float[pyarrow]
   module: pgen
@@ -12496,6 +12759,8 @@ total_part_time_working_experience:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 total_unemployment_experience:
   dtype: float[pyarrow]
   module: pgen
@@ -12538,6 +12803,8 @@ total_unemployment_experience:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 trust_government_low_to_high:
   dtype:
     categorical:
@@ -12578,7 +12845,7 @@ trust_public_admin_low_to_high:
   module: pl
   survey_years:
   - 2018
-type_of_health_insurance:
+type_of_health_insurance_1999_to_2020:
   dtype:
     categorical:
       categories:
@@ -12611,6 +12878,17 @@ type_of_health_insurance:
   - 2018
   - 2019
   - 2020
+type_of_health_insurance_2022:
+  dtype:
+    categorical:
+      categories:
+      - Ausschließlich privat versichert
+      - In einer gesetzlichen Krankenversicherung
+      categories_dtype: string
+      ordered: false
+  module: pl
+  survey_years:
+  - 2022
 unemployed_anzahl_monate:
   dtype: uint8[pyarrow]
   module: pkal
@@ -12653,6 +12931,8 @@ unemployed_anzahl_monate:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 unemployment_benefits_number_months:
   dtype: uint8[pyarrow]
   module: pkal
@@ -12695,6 +12975,8 @@ unemployment_benefits_number_months:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 unregelmäßig_oder_geringfügig_erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -12737,6 +13019,8 @@ unregelmäßig_oder_geringfügig_erwerbstätig:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 unterhalt_erhalten_y:
   dtype: uint32[pyarrow]
   module: pequiv
@@ -12779,8 +13063,10 @@ unterhalt_erhalten_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 unterhaltsvorschuss_erhalten_y:
-  dtype: uint16[pyarrow]
+  dtype: uint32[pyarrow]
   module: pequiv
   survey_years:
   - 1984
@@ -12821,6 +13107,8 @@ unterhaltsvorschuss_erhalten_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 urlaubsgeld_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -12863,6 +13151,8 @@ urlaubsgeld_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 vertragliche_arbeitszeit_w:
   dtype: float[pyarrow]
   module: pgen
@@ -12905,6 +13195,8 @@ vertragliche_arbeitszeit_w:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 voll_erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -12947,6 +13239,8 @@ voll_erwerbstätig:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 vorruhestandgeld_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -12989,6 +13283,8 @@ vorruhestandgeld_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 weihnachtsgeld_y:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -13031,6 +13327,8 @@ weihnachtsgeld_y:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 werkstatt_für_behinderte_menschen:
   dtype: bool[pyarrow]
   module: pgen
@@ -13073,6 +13371,8 @@ werkstatt_für_behinderte_menschen:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 willingness_to_participate:
   dtype:
     categorical:
@@ -13132,6 +13432,8 @@ wohngeld_m_hh:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 wohngeld_m_hh_hl:
   dtype: uint16[pyarrow]
   module: hl
@@ -13174,6 +13476,8 @@ wohngeld_m_hh_hl:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 wohngeld_m_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -13216,6 +13520,8 @@ wohngeld_m_hh_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 wohngeld_y_hh_pequiv:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -13258,6 +13564,8 @@ wohngeld_y_hh_pequiv:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 year_moved_in:
   dtype: uint16[pyarrow]
   module: hgen
@@ -13300,6 +13608,8 @@ year_moved_in:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 year_of_immigration:
   dtype: uint16[pyarrow]
   module: ppathl
@@ -13342,6 +13652,8 @@ year_of_immigration:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
 years_worked_last_job:
   dtype: uint8[pyarrow]
   module: pl
@@ -13383,3 +13695,5 @@ years_worked_last_job:
   - 2019
   - 2020
   - 2021
+  - 2022
+  - 2023
