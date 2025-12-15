@@ -1,7 +1,7 @@
 """Configuration of the soep preparation."""
 
-SOEP_VERSION = "V38"
-SURVEY_YEARS = [*range(1984, 2021 + 1)]
+SOEP_VERSION = "V40"
+SURVEY_YEARS = [*range(1984, 2023 + 1)]
 
 
 import functools
