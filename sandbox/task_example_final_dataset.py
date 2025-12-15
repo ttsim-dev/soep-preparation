@@ -23,7 +23,7 @@ VARIABLES_TO_MERGE = [
     "frailty",
 ]
 
-SURVEY_YEARS_TO_MERGE = [*range(1984, 2021 + 1)]
+SURVEY_YEARS_TO_MERGE = [*range(1984, 2023 + 1)]
 
 
 @task(after="create_metadata")

@@ -42,7 +42,7 @@ the same individuals over time. See the
 
 The top-level directory is structured as follows:
 
-- `data`: raw data in `.dta` format with directories for each version (e.g. `V38`)
+- `data`: raw data in `.dta` format with directories for each version (e.g. `V40`)
 - `src`: source code with tasks for preparing the raw data
 - `tests`: tests of the source code
 - other files include the processed output dataset (will be created automatically), the
@@ -54,7 +54,7 @@ The top-level directory is structured as follows:
 To get started, install [pixi](https://prefix.dev/docs/pixi/overview#installation) if
 you do not have it on your machine already.
 
-**_Inside the directory `soep_preparation/data` fill the folder `V38` containing the raw
+**_Inside the directory `soep_preparation/data` fill the folder `V40` containing the raw
 `.dta` data files downloaded from the SOEP website._**
 
 To build the project, type
@@ -223,7 +223,7 @@ To add a new SOEP-Core module to the project, follow these steps:
 1. Add the raw data file to the data directory
 
    Each raw data file should be placed in the appropriate data directory (e.g., inside
-   `soep_preparation/data/V38`). As an example, say you want to add the module
+   `soep_preparation/data/V40`). As an example, say you want to add the module
    `pequiv.dta` (this is already present in the pipeline).
 
 1. Create a corresponding python script
@@ -252,7 +252,7 @@ To add a new SOEP-Core module to the project, follow these steps:
 
 ## Further Structure Description
 
-**_Inside `data` place the folder `V38` containing all `.dta` files to be cleaned and
+**_Inside `data` place the folder `V40` containing all `.dta` files to be cleaned and
 processed._**
 
 The `src/soep_preparation` directory contains the subdirectories
