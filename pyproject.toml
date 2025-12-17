@@ -138,7 +138,7 @@ extend-ignore = [
 max-statements = 100
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "PD011", "ANN201"]
+"tests/*" = ["D", "ANN201", "INP001", "PD011"]
 "**/task.py" = ["ANN"]
 "src/soep_preparation/config.py" = ["E402"]
 "sandbox/*" = ["INP001"]
@@ -171,4 +171,3 @@ markers = [
     "integration: Flag for integration tests which may comprise of multiple unit tests.",
     "end_to_end: Flag for tests that cover the whole program.",
 ]
-norecursedirs = ["docs"]

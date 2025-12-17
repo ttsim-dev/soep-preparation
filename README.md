@@ -252,8 +252,8 @@ To add a new SOEP-Core module to the project, follow these steps:
 
 ## Further Structure Description
 
-**_Inside `data` place the folder `V40` containing all `.dta` files to be cleaned and
-processed._**
+**_Inside the directory `soep_preparation/data` fill the folder `V40` containing the raw
+`.dta` data files downloaded from the SOEP website._**
 
 The `src/soep_preparation` directory contains the subdirectories
 `convert_stata_to_pandas`, `clean_modules`, `combine_modules`, `create_metadata`,

@@ -23,19 +23,19 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["p_id_father_1"] = float_to_int(
         series=raw_data["fnr1"],
-        drop_missing=True,
+        code_negative_values_as_na=True,
     )
     out["p_id_father_2"] = float_to_int(
         series=raw_data["fnr2"],
-        drop_missing=True,
+        code_negative_values_as_na=True,
     )
 
     out["p_id_mother_1"] = float_to_int(
         series=raw_data["mnr1"],
-        drop_missing=True,
+        code_negative_values_as_na=True,
     )
     out["p_id_mother_2"] = float_to_int(
         series=raw_data["mnr2"],
-        drop_missing=True,
+        code_negative_values_as_na=True,
     )
     return out
