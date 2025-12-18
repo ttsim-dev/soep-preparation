@@ -23,5 +23,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["pointer_mother"] = object_to_int(raw_data["k_pmum"])
+    out["children_care_facility_costs_m_current"] = object_to_int(raw_data["kc_caco"])
+    out["school_costs_m_current"] = object_to_int(raw_data["ks_cot"])
 
     return out
