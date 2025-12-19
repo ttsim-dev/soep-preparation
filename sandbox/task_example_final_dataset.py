@@ -19,11 +19,11 @@ VARIABLES_TO_MERGE = [
     "relationship_to_head_of_hh",
     "hh_strat",
     "number_of_children",
-    "p_id_father",
+    "p_id_father_1",
     "frailty",
 ]
 
-SURVEY_YEARS_TO_MERGE = [*range(1984, 2021 + 1)]
+SURVEY_YEARS_TO_MERGE = [*range(1984, 2023 + 1)]
 
 
 @task(after="create_metadata")

@@ -22,7 +22,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
     out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
-    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["hh_id"] = object_to_int(raw_data["hid"])
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["birth_year"] = object_to_int(raw_data["geburt_v2"])
@@ -75,7 +75,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # categories [29] and [39] have identical missing data labels
     # they are reduced to one
     out["interview_result_two_digits"] = object_to_str_categorical(raw_data["pergz"])
-    out["interview_result_old"] = object_to_str_categorical(raw_data["hergs"])
     # categories [19] and [39] have identical missing data labels
     # they are reduced to one
     out["willingness_to_participate"] = object_to_str_categorical(

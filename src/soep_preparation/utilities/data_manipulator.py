@@ -195,19 +195,18 @@ def create_dummy(
 
 def float_to_int(
     series: pd.Series,
-    drop_missing: bool = False,  # noqa: FBT002
+    code_negative_values_as_na: bool,
 ) -> pd.Series:
     """Transform a float Series to an integer Series.
 
     Parameters:
         series: The input series to be transformed.
-        drop_missing: Whether to drop missing values.
-          Defaults to False.
+        code_negative_values_as_na: Code negative values as NA if True.
 
     Returns:
         The series with cleaned entries.
     """
-    if drop_missing:
+    if code_negative_values_as_na:
         sr_int = series.astype("int")
         sr_no_missing = sr_int.where(sr_int >= 0, -1).replace({-1: pd.NA})
         return apply_smallest_int_dtype(sr_no_missing)

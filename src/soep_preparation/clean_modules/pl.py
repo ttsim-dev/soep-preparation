@@ -153,12 +153,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
 
     # health and medical characteristics
-    out["type_of_health_insurance"] = object_to_str_categorical(raw_data["ple0097"])
+    out["type_of_health_insurance_1999_to_2020"] = object_to_str_categorical(
+        raw_data["ple0097_v1"]
+    )
+    # there is no information on the type of health insurance in 2021
+    out["type_of_health_insurance_2022"] = object_to_str_categorical(
+        raw_data["ple0097_v2"]
+    )
     out["motor_disability"] = create_dummy(
         series=raw_data["plj0582"],
         value_for_comparison=1,
     )
-    out["disability_degree"] = object_to_int(raw_data["ple0041"]).fillna(0)
+    out["disability_degree"] = object_to_int(raw_data["ple0041_h"]).fillna(0)
     out["med_schwierigkeit_treppen_pl"] = object_to_int_categorical(
         raw_data["ple0004"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
@@ -195,66 +201,66 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         out["med_subjective_status_pl"], 3, "geq"
     )
     out["med_schlaf_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0011"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0011_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_diabetes_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0012"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0012_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_asthma_pl"] = object_to_bool_categorical(
-        raw_data["ple0013"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        raw_data["ple0013_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_herzkrankheit_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0014"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0014_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_krebs_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0015"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0015_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_schlaganfall_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0016"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0016_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_migräne_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0017"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0017_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_bluthochdruck_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0018"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0018_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_depressiv_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0019"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0019_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_demenz_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0020"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0020_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_gelenk_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0021"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0021_v1"],
+        renaming={"[1] mentioned": True},
     )
     out["med_rücken_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0022"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0022_v1"],
+        renaming={"[1] mentioned": True},
     )
     out["med_sonst_pl"] = object_to_bool_categorical(
-        series=raw_data["ple0023"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        series=raw_data["ple0023_v1"],
+        renaming={"[1] mentioned": True},
         ordered=True,
     )
     out["med_raucher_pl"] = object_to_bool_categorical(
@@ -514,34 +520,34 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["trust_public_admin_low_to_high"] = object_to_int_categorical(
         series=raw_data["plm0672"],
         renaming={
-            "[0] UEberhaupt kein Vertrauen": 0,
-            "[1] Skala von0-10": 1,
-            "[2] Skala von0-10": 2,
-            "[3] Skala von0-10": 3,
-            "[4] Skala von0-10": 4,
-            "[5] Skala von0-10": 5,
-            "[6] Skala von0-10": 6,
-            "[7] Skala von0-10": 7,
-            "[8] Skala von0-10": 8,
-            "[9] Skala von0-10": 9,
-            "[10] Volles Vertrauen": 10,
+            "[0] Skala von 0-10: Überhaupt kein Vertrauen": 0,
+            "[1] Skala von 0-10": 1,
+            "[2] Skala von 0-10": 2,
+            "[3] Skala von 0-10": 3,
+            "[4] Skala von 0-10": 4,
+            "[5] Skala von 0-10": 5,
+            "[6] Skala von 0-10": 6,
+            "[7] Skala von 0-10": 7,
+            "[8] Skala von 0-10": 8,
+            "[9] Skala von 0-10": 9,
+            "[10] Skala von 0-10: Volles Vertrauen": 10,
         },
         ordered=True,
     )
     out["trust_government_low_to_high"] = object_to_int_categorical(
         series=raw_data["plm0673"],
         renaming={
-            "[0] UEberhaupt kein Vertrauen": 0,
-            "[1] Skala von0-10": 1,
-            "[2] Skala von0-10": 2,
-            "[3] Skala von0-10": 3,
-            "[4] Skala von0-10": 4,
-            "[5] Skala von0-10": 5,
-            "[6] Skala von0-10": 6,
-            "[7] Skala von0-10": 7,
-            "[8] Skala von0-10": 8,
-            "[9] Skala von0-10": 9,
-            "[10] Volles Vertrauen": 10,
+            "[0] Skala von 0-10: Überhaupt kein Vertrauen": 0,
+            "[1] Skala von 0-10": 1,
+            "[2] Skala von 0-10": 2,
+            "[3] Skala von 0-10": 3,
+            "[4] Skala von 0-10": 4,
+            "[5] Skala von 0-10": 5,
+            "[6] Skala von 0-10": 6,
+            "[7] Skala von 0-10": 7,
+            "[8] Skala von 0-10": 8,
+            "[9] Skala von 0-10": 9,
+            "[10] Skala von 0-10: Volles Vertrauen": 10,
         },
         ordered=True,
     )

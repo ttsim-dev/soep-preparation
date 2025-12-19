@@ -6,7 +6,12 @@
 name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
 requires-python = ">=3.13"
-dependencies = ["gettsim>=1.0a1", "pytask>=0.5.5,<0.6"]
+dependencies = [
+    "pandas>=2.3.1,<3",
+    "pyarrow>=21.0.0",
+    "pytask-parallel>=0.5.1,<0.6",
+    "pytask>=0.5.5,<0.6"
+]
 dynamic = ["version"]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -74,12 +79,9 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 [tool.pixi.dependencies]
 deepdiff = "*"
 jupyterlab = "*"
-pandas = ">=2.3.1,<3"
 pre-commit = "*"
-pyarrow = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
-pytask-parallel = ">=0.5.1,<0.6"
 python = ">=3.13,<3.14"
 
 [tool.pixi.pypi-dependencies]
@@ -136,7 +138,7 @@ extend-ignore = [
 max-statements = 100
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "PD011", "ANN201"]
+"tests/*" = ["D", "ANN201", "INP001", "PD011"]
 "**/task.py" = ["ANN"]
 "src/soep_preparation/config.py" = ["E402"]
 "sandbox/*" = ["INP001"]
@@ -169,4 +171,3 @@ markers = [
     "integration: Flag for integration tests which may comprise of multiple unit tests.",
     "end_to_end: Flag for tests that cover the whole program.",
 ]
-norecursedirs = ["docs"]

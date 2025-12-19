@@ -107,7 +107,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["month_interview"] = object_to_int_categorical(
-        series=raw_data["pgmonth"],
+        series=raw_data["imonth"],
         renaming=month_mapping.de,
         ordered=True,
     )
