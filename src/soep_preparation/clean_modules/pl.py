@@ -156,6 +156,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["type_of_health_insurance_1999_to_2020"] = object_to_str_categorical(
         raw_data["ple0097_v1"]
     )
+    # there is no information on the type of health insurance in 2021
     out["type_of_health_insurance_2022"] = object_to_str_categorical(
         raw_data["ple0097_v2"]
     )

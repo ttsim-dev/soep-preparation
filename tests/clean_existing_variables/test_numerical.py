@@ -43,14 +43,14 @@ def test_apply_smallest_int_dtype_assert_dtype_uint16():
 
 
 def test_float_to_int_assert_dtype():
-    expected = pd.Series([0, 1], dtype="uint8[pyarrow]").dtype
-    sr = pd.Series([0.0, 1.0])
+    expected = pd.Series([0, 1, -1], dtype="int8[pyarrow]").dtype
+    sr = pd.Series([0.0, 1.0, -1.0])
     actual = float_to_int(series=sr, code_negative_values_as_na=False).dtype
     assert actual == expected
 
 
 def test_float_to_int_assert_code_negative_values_as_na():
     expected = pd.Series([0, 1, pd.NA], dtype="uint8[pyarrow]")
-    sr = pd.Series([0.0, 1.0, -1], dtype="float[pyarrow]")
+    sr = pd.Series([0.0, 1.0, -1.0], dtype="float[pyarrow]")
     actual = float_to_int(series=sr, code_negative_values_as_na=True)
     pd.testing.assert_series_equal(actual, expected)
