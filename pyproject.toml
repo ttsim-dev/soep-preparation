@@ -91,8 +91,8 @@ kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
 
 
-[tool.pixi.feature.mypy.pypi-dependencies]
-mypy = ">=1.17"
+[tool.pixi.feature.ty.pypi-dependencies]
+ty = "*"
 types-PyYAML = "*"
 types-pytz = "*"
 
@@ -105,14 +105,14 @@ tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 [tool.pixi.feature.test.pypi-dependencies]
 pytest-cov = "*"
 
-[tool.pixi.feature.mypy.tasks]
-mypy = "mypy --ignore-missing-imports"
+[tool.pixi.feature.ty.tasks]
+ty = "ty check"
 
 # Environments
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.environments]
-mypy = ["mypy"]
+ty = ["ty"]
 test = ["test"]
 
 # ======================================================================================
@@ -145,6 +145,30 @@ max-statements = 100
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+
+# ======================================================================================
+# ty configuration
+# ======================================================================================
+
+[tool.ty.rules]
+invalid-return-type = "error"
+ambiguous-protocol-member = "error"
+deprecated = "error"
+division-by-zero = "error"
+ignore-comment-unknown-rule = "error"
+invalid-argument-type = "error"
+invalid-ignore-comment = "error"
+possibly-missing-attribute = "error"
+possibly-missing-implicit-call = "error"
+possibly-missing-import = "error"
+possibly-unresolved-reference = "error"
+redundant-cast = "error"
+undefined-reveal = "error"
+unresolved-global = "error"
+unsupported-base = "error"
+unused-ignore-comment = "error"
+useless-overload-body = "error"
 
 
 # ======================================================================================

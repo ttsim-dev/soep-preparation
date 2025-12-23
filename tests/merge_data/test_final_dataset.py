@@ -1,10 +1,38 @@
+from typing import Literal
+
 import numpy as np
 import pandas as pd
+import pytest
 
 from soep_preparation.final_dataset import (
     _harmonize_variables,
     _merge_data,
 )
+
+
+@pytest.fixture
+def merging_information() -> dict[
+    str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
+]:
+    return {
+        "dataset1": {
+            "data": pd.DataFrame(
+                {"id1": [0, 1], "column1": [1, 2], "column2": [3, 4]},
+            ),
+            "index_variables": ["id1"],
+        },
+        "dataset2": {
+            "data": pd.DataFrame(
+                {
+                    "id1": [0, 1, 2],
+                    "id2": [2, 3, 4],
+                    "column3": [5, 6, 7],
+                    "column4": [8, 9, 10],
+                },
+            ),
+            "index_variables": ["id1", "id2"],
+        },
+    }
 
 
 def test_harmonize_variables_assert_variables():
@@ -16,7 +44,11 @@ def test_harmonize_variables_assert_variables():
     assert actual == expected
 
 
-def test_merge_data_assert_type():
+def test_merge_data_assert_type(
+    merging_information: dict[
+        str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
+    ],
+):
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
@@ -28,32 +60,15 @@ def test_merge_data_assert_type():
         },
     )
     expected = type(data)
-    input_ = {
-        "merging_information": {
-            "dataset1": {
-                "data": pd.DataFrame(
-                    {"id1": [0, 1], "column1": [1, 2], "column2": [3, 4]},
-                ),
-                "index_columns": ["id1"],
-            },
-            "dataset2": {
-                "data": pd.DataFrame(
-                    {
-                        "id1": [0, 1, 2],
-                        "id2": [2, 3, 4],
-                        "column3": [5, 6, 7],
-                        "column4": [8, 9, 10],
-                    },
-                ),
-                "index_columns": ["id1", "id2"],
-            },
-        },
-    }
-    actual = type(_merge_data(**input_))
+    actual = type(_merge_data(merging_information=merging_information))
     assert actual == expected
 
 
-def test_merge_data_assert_data():
+def test_merge_data_assert_data(
+    merging_information: dict[
+        str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
+    ],
+):
     data = pd.DataFrame(
         {
             "id1": [0, 1, 2],
@@ -65,26 +80,7 @@ def test_merge_data_assert_data():
         },
     )
     expected = data
-    input_ = {
-        "merging_information": {
-            "dataset1": {
-                "data": pd.DataFrame(
-                    {"id1": [0, 1], "column1": [1, 2], "column2": [3, 4]},
-                ),
-                "index_columns": ["id1"],
-            },
-            "dataset2": {
-                "data": pd.DataFrame(
-                    {
-                        "id1": [0, 1, 2],
-                        "id2": [2, 3, 4],
-                        "column3": [5, 6, 7],
-                        "column4": [8, 9, 10],
-                    },
-                ),
-                "index_columns": ["id1", "id2"],
-            },
-        },
-    }
-    actual = _merge_data(**input_)
+    actual = _merge_data(
+        merging_information=merging_information,
+    )
     pd.testing.assert_frame_equal(actual, expected)
