@@ -1,19 +1,16 @@
-from typing import Literal
-
 import numpy as np
 import pandas as pd
 import pytest
 
 from soep_preparation.final_dataset import (
+    DatasetMergingInfo,
     _harmonize_variables,
     _merge_data,
 )
 
 
 @pytest.fixture
-def merging_information() -> dict[
-    str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
-]:
+def merging_information() -> dict[str, DatasetMergingInfo]:
     return {
         "dataset1": {
             "data": pd.DataFrame(
@@ -45,9 +42,7 @@ def test_harmonize_variables_assert_variables():
 
 
 def test_merge_data_assert_type(
-    merging_information: dict[
-        str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
-    ],
+    merging_information: dict[str, DatasetMergingInfo],
 ):
     data = pd.DataFrame(
         {
@@ -65,9 +60,7 @@ def test_merge_data_assert_type(
 
 
 def test_merge_data_assert_data(
-    merging_information: dict[
-        str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
-    ],
+    merging_information: dict[str, DatasetMergingInfo],
 ):
     data = pd.DataFrame(
         {
