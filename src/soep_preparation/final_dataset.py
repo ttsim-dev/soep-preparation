@@ -198,10 +198,10 @@ def _merge_data(
         if i == 0:  # noqa: SIM108
             out = m["data"]
         else:
-            out = out.merge(m["data"], how="outer")  # ty: ignore[possibly-unresolved-reference]
+            out = out.merge(m["data"], how="outer")  # ty: ignore[unresolved-reference]
     idx_vars_in_out = [v for v in POTENTIAL_INDEX_VARIABLES if v in out.columns]  # ty: ignore[possibly-unresolved-reference]
-    mod_vars_in_out = [v for v in out.columns if v not in idx_vars_in_out]
-    out_no_nan = out.dropna(axis="index", subset=mod_vars_in_out, how="all")
+    mod_vars_in_out = [v for v in out.columns if v not in idx_vars_in_out]  # ty: ignore[possibly-unresolved-reference]
+    out_no_nan = out.dropna(axis="index", subset=mod_vars_in_out, how="all")  # ty: ignore[possibly-unresolved-reference]
     if out_no_nan.empty:
         msg = "The merged dataset contains no observations with non-missing values."
         raise ValueError(msg)
