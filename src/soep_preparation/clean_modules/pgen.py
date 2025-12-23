@@ -79,7 +79,11 @@ def _self_employed_occupations(
     """Occupation names that indicate self employment."""
     occupation_names = list(occupation.dropna().unique())
     occupations_of_interest = re.compile("^.*Freiberufler.*$|^.*selb(st)?stä.*$")
-    return list(filter(occupations_of_interest.match, occupation_names))
+    return [
+        name
+        for name in occupation_names
+        if occupations_of_interest.match(name) is not None
+    ]
 
 
 def _weekly_working_hours_fill_non_working(

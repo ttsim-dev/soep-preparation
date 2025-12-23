@@ -1,7 +1,7 @@
 """Helper function to create final dataset."""
 
 from difflib import get_close_matches
-from typing import Literal
+from typing import Literal, cast
 
 import pandas as pd
 
@@ -157,7 +157,7 @@ def _harmonize_variables(
 def _get_sorted_dataset_merging_information(
     modules: dict[str, pd.DataFrame],
     variables: list[str],
-    survey_years: list[int],
+    survey_years: list[int] | None,
 ) -> dict[str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]]:
     dataset_merging_information = {}
     for module_name, full_data in modules.items():
@@ -169,7 +169,7 @@ def _get_sorted_dataset_merging_information(
         if not mod_vars:
             continue
         data = full_data[idx_vars + mod_vars]
-        if "survey_year" in idx_vars:
+        if "survey_year" in idx_vars and survey_years is not None:
             data = data.query(f"survey_year in {survey_years}")
         dataset_merging_information[module_name] = {
             "data": data,
@@ -183,9 +183,11 @@ def _merge_data(
         str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
     ],
 ) -> pd.DataFrame:
-    out = None
     for i, m in enumerate(merging_information.values()):
-        out = m["data"] if i == 0 else out.merge(m["data"], how="outer")
+        if i == 0:
+            out = cast("pd.DataFrame", m["data"])
+        else:
+            out = out.merge(cast("pd.DataFrame", m["data"]), how="outer")
     idx_vars_in_out = [v for v in POTENTIAL_INDEX_VARIABLES if v in out.columns]
     mod_vars_in_out = [v for v in out.columns if v not in idx_vars_in_out]
     out_no_nan = out.dropna(axis="index", subset=mod_vars_in_out, how="all")
