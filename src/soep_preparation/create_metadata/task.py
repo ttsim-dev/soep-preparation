@@ -205,95 +205,76 @@ def _create_variable_metadata(
     return mapping
 
 
-def _fail_if_mapping_changed(  # noqa: C901, PLR0912
+def _fail_if_mapping_changed(  # noqa: C901
     new_mapping: dict[str, Any],
     existing_mapping: dict[str, Any],
     new_mapping_path: Path,
 ) -> None:
-    variables_to_warn_about = {
-        "new_variables": {},
-        "changed_dtypes": {},
-        "changed_survey_years": {},
-    }
+    # Collect error messages for all variables with issues
+    variables_with_errors: dict[str, dict[str, Any]] = {}
 
     for variable, metadata in new_mapping.items():
         module_name = metadata["module"]
-        if "_" in module_name:
-            corresponding_script_path = SRC / "combine_modules" / f"{module_name}.py"
-        else:
-            corresponding_script_path = SRC / "clean_modules" / f"{module_name}.py"
-        if variable not in existing_mapping:
-            variables_to_warn_about["new_variables"][variable] = {
-                "metadata": metadata,
-                "module_name": module_name,
-                "script_path": corresponding_script_path,
-            }
-        elif metadata != existing_mapping[variable]:
-            if metadata["dtype"] != existing_mapping[variable]["dtype"]:
-                variables_to_warn_about["changed_dtypes"][variable] = {
-                    "metadata": metadata,
-                    "module_name": module_name,
-                    "script_path": corresponding_script_path,
-                }
-            if metadata["survey_years"] != existing_mapping[variable]["survey_years"]:
-                variables_to_warn_about["changed_survey_years"][variable] = {
-                    "metadata": metadata,
-                    "module_name": module_name,
-                    "script_path": corresponding_script_path,
-                }
+        script_dir = "combine_modules" if "_" in module_name else "clean_modules"
 
-    # if any changes, raise error with specific message
-    if any(variables_to_warn_about.values()):
+        error_messages = []
+        is_new_variable = variable not in existing_mapping
+
+        if is_new_variable:
+            error_messages.append(
+                "  - added: present in new mapping, but not in existing mapping"
+            )
+        elif metadata != existing_mapping[variable]:
+            existing_metadata = existing_mapping[variable]
+
+            if metadata["dtype"] != existing_metadata["dtype"]:
+                error_messages.append(
+                    f"  - dtype changed from {existing_metadata['dtype']} "
+                    f"to {metadata['dtype']}"
+                )
+
+            if metadata["survey_years"] != existing_metadata["survey_years"]:
+                old_years = set(existing_metadata["survey_years"] or [])
+                new_years = set(metadata["survey_years"] or [])
+                added_years = sorted(new_years - old_years)
+                removed_years = sorted(old_years - new_years)
+                if added_years:
+                    error_messages.append(f"  - new survey years: {added_years}")
+                if removed_years:
+                    error_messages.append(f"  - removed survey years: {removed_years}")
+
+        if error_messages:
+            variables_with_errors[variable] = {
+                "script_path": SRC / script_dir / f"{module_name}.py",
+                "error_messages": error_messages,
+            }
+
+    for variable, existing_metadata in existing_mapping.items():
+        if variable not in new_mapping:
+            module_name = existing_metadata["module"]
+            script_dir = "combine_modules" if "_" in module_name else "clean_modules"
+            variables_with_errors[variable] = {
+                "script_path": SRC / script_dir / f"{module_name}.py",
+                "error_messages": [
+                    "  - removed: present in existing mapping, but not in new mapping"
+                ],
+            }
+
+    if variables_with_errors:
         existing_mapping_path = (
             SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
         ).resolve()
         intro = (
-            f"The newly generated mapping of variables to their metadata differs"
-            f" from the existing mapping at:\n{existing_mapping_path}.\n\n"
+            "The newly generated mapping of variables to their metadata differs"
+            " from the existing mapping. Differences:\n\n"
         )
-        new_variable_msg = ""
-        dtype_change_msg = ""
-        survey_years_change_msg = ""
 
-        if variables_to_warn_about["new_variables"]:
-            for variable, info in variables_to_warn_about["new_variables"].items():
-                if len(new_variable_msg) == 0:
-                    new_variable_msg += "New variables were added:\n"
-                new_variable_msg += (
-                    f"{variable} with metadata {info['metadata']} was added."
-                    f" If adding the variable was not intended,"
-                    f" remove the variable from the script creating module"
-                    f" {info['module_name']} at {info['script_path']}.\n\n"
-                )
+        variable_messages = []
+        for variable, info in variables_with_errors.items():
+            msg_lines = [f"{variable}: {info['script_path']}"] + info["error_messages"]
+            variable_messages.append("\n".join(msg_lines))
 
-        if variables_to_warn_about["changed_dtypes"]:
-            for variable, info in variables_to_warn_about["changed_dtypes"].items():
-                if len(dtype_change_msg) == 0:
-                    dtype_change_msg += "Variables dtypes changed in the metadata:\n"
-                dtype_change_msg += (
-                    f"Dtype for variable {variable} changed from\n"
-                    f"{existing_mapping[variable]['dtype']} to\n"
-                    f"{info['metadata']['dtype']}.\n"
-                    f"If the change was not intended, inspect changes to the script"
-                    f" creating module {info['module_name']} at"
-                    f" {info['script_path']}, to ensure dtype consistency.\n\n"
-                )
-        if variables_to_warn_about["changed_survey_years"]:
-            for variable, info in variables_to_warn_about[
-                "changed_survey_years"
-            ].items():
-                if len(survey_years_change_msg) == 0:
-                    survey_years_change_msg += (
-                        "Variables observed survey years changed in the metadata:\n"
-                    )
-                survey_years_change_msg += (
-                    f"The survey years observed changed for variable {variable} from\n"
-                    f"{existing_mapping[variable]['survey_years']} to\n"
-                    f"{info['metadata']['survey_years']}.\n"
-                    f"If the change was not intended, inspect changes to the script"
-                    f" creating module {info['module_name']} at"
-                    f" {info['script_path']}, to ensure survey years consistency.\n\n"
-                )
+        variables_msg = "\n\n".join(variable_messages) + "\n\n"
 
         copy_mapping_msg = (
             f"If the changes are intentional, please update the mapping file at:\n"
@@ -304,10 +285,4 @@ def _fail_if_mapping_changed(  # noqa: C901, PLR0912
             f"To copy the mapping file, please run the following command:\n"
             f"cp {new_mapping_path.resolve()} {existing_mapping_path}\n"
         )
-        raise ValueError(
-            intro
-            + new_variable_msg
-            + dtype_change_msg
-            + survey_years_change_msg
-            + copy_mapping_msg
-        )
+        raise ValueError(intro + variables_msg + copy_mapping_msg)
