@@ -112,8 +112,8 @@ ty = "ty check"
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.environments]
-ty = ["ty"]
 test = ["test"]
+ty = ["ty"]
 
 # ======================================================================================
 # Ruff configuration
@@ -126,22 +126,22 @@ fix = true
 [tool.ruff.lint]
 select = ["ALL"]
 extend-ignore = [
-    "S101", # Use of `assert` detected.
     "COM812", # Avoid conflict with ruff-format
-    "ISC001", # Avoid conflict with ruff-format
-    "PD015", # pd.merge fine because of inherent symmetry
     "FBT001", # Boolean-typed positional argument in function definition
     "FIX002", # rely on TODO-spotting from TD area.
+    "ISC001", # Avoid conflict with ruff-format
+    "PD015", # pd.merge fine because of inherent symmetry
+    "S101", # Use of `assert` detected.
 ]
 
 [tool.ruff.lint.pylint]
 max-statements = 100
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["D", "ANN201", "INP001", "PD011"]
 "**/task.py" = ["ANN"]
-"src/soep_preparation/config.py" = ["E402"]
 "sandbox/*" = ["INP001"]
+"src/soep_preparation/config.py" = ["E402"]
+"tests/*" = ["D", "ANN201", "INP001", "PD011"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -152,13 +152,13 @@ convention = "google"
 # ======================================================================================
 
 [tool.ty.rules]
-invalid-return-type = "error"
 ambiguous-protocol-member = "error"
 deprecated = "error"
 division-by-zero = "error"
 ignore-comment-unknown-rule = "error"
 invalid-argument-type = "error"
 invalid-ignore-comment = "error"
+invalid-return-type = "error"
 possibly-missing-attribute = "error"
 possibly-missing-implicit-call = "error"
 possibly-missing-import = "error"
@@ -176,9 +176,9 @@ useless-overload-body = "error"
 # ======================================================================================
 
 [tool.pytask.ini_options]
+editor_url_scheme = "vscode"
 paths = ["./src/soep_preparation"]
 pdbcls = "pdbp:Pdb"
-editor_url_scheme = "vscode"
 task_files = ["task_*.py", "task.py", "tasks.py"]
 
 
