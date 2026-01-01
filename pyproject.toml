@@ -139,6 +139,7 @@ max-statements = 100
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "ANN201", "INP001", "PD011"]
+"tests/metadata/test_mapping_changed.py" = ["S108"]
 "**/task.py" = ["ANN"]
 "src/soep_preparation/config.py" = ["E402"]
 "sandbox/*" = ["INP001"]

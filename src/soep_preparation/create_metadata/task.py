@@ -205,66 +205,84 @@ def _create_variable_metadata(
     return mapping
 
 
-def _fail_if_mapping_changed(
+def _fail_if_mapping_changed(  # noqa: C901
     new_mapping: dict[str, Any],
     existing_mapping: dict[str, Any],
     new_mapping_path: Path,
 ) -> None:
-    existing_mapping_path = (
-        SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
-    ).resolve()
-    intro = (
-        f"The newly generated mapping of variables to their metadata differs"
-        f"from the existing mapping at:\n{existing_mapping_path}.\n\n"
-    )
+    # Collect error messages for all variables with issues
+    variables_with_errors: dict[str, dict[str, Any]] = {}
+
     for variable, metadata in new_mapping.items():
-        specific_msg = ""
-        dtype_change_msg = ""
-        survey_years_change_msg = ""
         module_name = metadata["module"]
-        if "_" in module_name:
-            corresponding_script_path = SRC / "combine_modules" / f"{module_name}.py"
-        else:
-            corresponding_script_path = SRC / "clean_modules" / f"{module_name}.py"
-        if variable not in existing_mapping:
-            specific_msg = (
-                f"New variable added: {variable} with metadata {metadata}"
-                f" If adding the variable was not intended, remove the variable from"
-                f" the script creating module {module_name} at"
-                f" {corresponding_script_path}."
+        script_dir = "combine_modules" if "_" in module_name else "clean_modules"
+
+        error_messages = []
+        is_new_variable = variable not in existing_mapping
+
+        if is_new_variable:
+            error_messages.append(
+                "  - added: present in new mapping, but not in existing mapping"
             )
         elif metadata != existing_mapping[variable]:
-            if metadata["dtype"] != existing_mapping[variable]["dtype"]:
-                dtype_change_msg = (
-                    f"The dtype changed from\n"
-                    f" {existing_mapping[variable]['dtype']} to\n"
-                    f" {metadata['dtype']}.\n"
-                    f" If the change was not intended, inspect changes to the script"
-                    f" creating module {module_name} at {corresponding_script_path},"
-                    f" to ensure dtype consistency."
+            existing_metadata = existing_mapping[variable]
+
+            if metadata["dtype"] != existing_metadata["dtype"]:
+                error_messages.append(
+                    f"  - dtype changed from {existing_metadata['dtype']} "
+                    f"to {metadata['dtype']}"
                 )
-            if metadata["survey_years"] != existing_mapping[variable]["survey_years"]:
-                survey_years_change_msg = (
-                    f"The survey years observed changed from"
-                    f" {existing_mapping[variable]['survey_years']} to"
-                    f" {metadata['survey_years']}."
-                    f" If the change was not intended, inspect changes to the script"
-                    f" creating module {module_name} at {corresponding_script_path},"
-                    f" to ensure survey years consistency."
-                )
-            metadata_msg = (
-                dtype_change_msg
-                if len(dtype_change_msg) > 0
-                else survey_years_change_msg
-            )
-            specific_msg = f"Metadata for variable {variable} changed.{metadata_msg}"
-        if len(specific_msg) > 0:
-            copy_mapping_msg = (
-                "\nIf the changes are intentional, please update the mapping file at:\n"
-                f"{existing_mapping_path}\n"
-                "by copying over the newly generated mapping from:"
-                f"{new_mapping_path.resolve()}\n"
-                "and run pytask again.\n\nCommand for copying:\n"
-                f"cp {new_mapping_path.resolve()} {existing_mapping_path}\n"
-            )
-            raise ValueError(intro + specific_msg + copy_mapping_msg)
+
+            if metadata["survey_years"] != existing_metadata["survey_years"]:
+                old_years = set(existing_metadata["survey_years"] or [])
+                new_years = set(metadata["survey_years"] or [])
+                added_years = sorted(new_years - old_years)
+                removed_years = sorted(old_years - new_years)
+                if added_years:
+                    error_messages.append(f"  - new survey years: {added_years}")
+                if removed_years:
+                    error_messages.append(f"  - removed survey years: {removed_years}")
+
+        if error_messages:
+            variables_with_errors[variable] = {
+                "script_path": SRC / script_dir / f"{module_name}.py",
+                "error_messages": error_messages,
+            }
+
+    for variable, existing_metadata in existing_mapping.items():
+        if variable not in new_mapping:
+            module_name = existing_metadata["module"]
+            script_dir = "combine_modules" if "_" in module_name else "clean_modules"
+            variables_with_errors[variable] = {
+                "script_path": SRC / script_dir / f"{module_name}.py",
+                "error_messages": [
+                    "  - removed: present in existing mapping, but not in new mapping"
+                ],
+            }
+
+    if variables_with_errors:
+        existing_mapping_path = (
+            SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
+        ).resolve()
+        intro = (
+            "The newly generated mapping of variables to their metadata differs"
+            " from the existing mapping. Differences:\n\n"
+        )
+
+        variable_messages = []
+        for variable, info in variables_with_errors.items():
+            msg_lines = [f"{variable}: {info['script_path']}"] + info["error_messages"]
+            variable_messages.append("\n".join(msg_lines))
+
+        variables_msg = "\n\n".join(variable_messages) + "\n\n"
+
+        copy_mapping_msg = (
+            f"If the changes are intentional, please update the mapping file at:\n"
+            f"{existing_mapping_path}\n"
+            f"by copying over the newly generated mapping from:\n"
+            f"{new_mapping_path.resolve()}\n"
+            f"and run pytask again.\n\n"
+            f"To copy the mapping file, please run the following command:\n"
+            f"cp {new_mapping_path.resolve()} {existing_mapping_path}\n"
+        )
+        raise ValueError(intro + variables_msg + copy_mapping_msg)
