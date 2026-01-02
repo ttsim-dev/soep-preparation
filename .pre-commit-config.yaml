@@ -9,7 +9,8 @@ repos:
     rev: v6.0.0
     hooks:
       - id: check-added-large-files
-        args: [--maxkb=25]
+        args:
+          - --maxkb=10000
       - id: check-case-conflict
       - id: check-merge-conflict
       - id: check-vcs-permalinks
@@ -18,49 +19,56 @@ repos:
       - id: debug-statements
       - id: end-of-file-fixer
       - id: fix-byte-order-marker
-        types: [text]
+        types:
+          - text
       - id: forbid-submodules
       - id: mixed-line-ending
-        args: [--fix=lf]
+        args:
+          - --fix=lf
         description: Forces to replace line ending by the UNIX 'lf' character.
       - id: name-tests-test
         args: [--pytest-test-first]
+      - id: no-commit-to-branch
+        args:
+          - --branch
+          - main
       - id: trailing-whitespace
       - id: check-ast
       - id: check-docstring-first
-      - id: no-commit-to-branch
-        args: [--branch, main]
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.37.1
     hooks:
       - id: yamllint
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.8
+    rev: v0.14.9
     hooks:
-          # Run the linter.
-      - id: ruff
-        types_or: [python, pyi, jupyter]
+      - id: ruff-check
+        types_or:
+          - python
+          - jupyter
         args:
           - --fix
-      # Run the formatter.
       - id: ruff-format
-        types_or: [python, pyi, jupyter]
+        types_or:
+          - python
+          - jupyter
   - repo: https://github.com/kynan/nbstripout
     rev: 0.8.2
     hooks:
       - id: nbstripout
         args:
           - --extra-keys
-          - "metadata.kernelspec metadata.language_info.version metadata.vscode"
+          - metadata.kernelspec metadata.language_info.version metadata.vscode
   - repo: https://github.com/executablebooks/mdformat
     rev: 1.0.0
     hooks:
       - id: mdformat
         additional_dependencies:
           - mdformat-gfm
-          - mdformat-gfm-alerts
           - mdformat-ruff
-        args: [--wrap, '88']
+        args:
+          - --wrap
+          - '88'
         files: (README\.md)
   - repo: https://github.com/executablebooks/mdformat
     rev: 1.0.0

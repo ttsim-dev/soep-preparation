@@ -1,7 +1,7 @@
 """Helper function to create final dataset."""
 
 from difflib import get_close_matches
-from typing import Literal
+from typing import TypedDict
 
 import pandas as pd
 
@@ -9,6 +9,19 @@ from soep_preparation.config import METADATA, POTENTIAL_INDEX_VARIABLES
 from soep_preparation.utilities.error_handling import (
     fail_if_empty,
 )
+
+
+class DatasetMergingInfo(TypedDict):
+    """Type-safe dictionary protocol for dataset merging information.
+
+    This TypedDict ensures type safety by requiring:
+    - "data" maps to pd.DataFrame
+    - "index_variables" maps to list[str]
+
+    """
+
+    data: pd.DataFrame
+    index_variables: list[str]
 
 
 def create_final_dataset(
@@ -137,8 +150,8 @@ def _fail_if_variable_varying_by_survey_year_provided(variables: list[str]) -> N
 
 
 def _sort_dataset_merging_information(
-    dataset_merging_information: dict[str, dict],
-) -> dict[str, dict]:
+    dataset_merging_information: dict[str, DatasetMergingInfo],
+) -> dict[str, DatasetMergingInfo]:
     return dict(
         sorted(
             dataset_merging_information.items(),
@@ -157,8 +170,8 @@ def _harmonize_variables(
 def _get_sorted_dataset_merging_information(
     modules: dict[str, pd.DataFrame],
     variables: list[str],
-    survey_years: list[int],
-) -> dict[str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]]:
+    survey_years: list[int] | None,
+) -> dict[str, DatasetMergingInfo]:
     dataset_merging_information = {}
     for module_name, full_data in modules.items():
         idx_vars = [v for v in POTENTIAL_INDEX_VARIABLES if v in full_data.columns]
@@ -169,7 +182,7 @@ def _get_sorted_dataset_merging_information(
         if not mod_vars:
             continue
         data = full_data[idx_vars + mod_vars]
-        if "survey_year" in idx_vars:
+        if "survey_year" in idx_vars and survey_years is not None:
             data = data.query(f"survey_year in {survey_years}")
         dataset_merging_information[module_name] = {
             "data": data,
@@ -179,16 +192,16 @@ def _get_sorted_dataset_merging_information(
 
 
 def _merge_data(
-    merging_information: dict[
-        str, dict[Literal["data", "index_variables"], pd.DataFrame | list[str]]
-    ],
+    merging_information: dict[str, DatasetMergingInfo],
 ) -> pd.DataFrame:
-    out = None
     for i, m in enumerate(merging_information.values()):
-        out = m["data"] if i == 0 else out.merge(m["data"], how="outer")
-    idx_vars_in_out = [v for v in POTENTIAL_INDEX_VARIABLES if v in out.columns]
-    mod_vars_in_out = [v for v in out.columns if v not in idx_vars_in_out]
-    out_no_nan = out.dropna(axis="index", subset=mod_vars_in_out, how="all")
+        if i == 0:  # noqa: SIM108
+            out = m["data"]
+        else:
+            out = out.merge(m["data"], how="outer")  # ty: ignore[unresolved-reference]
+    idx_vars_in_out = [v for v in POTENTIAL_INDEX_VARIABLES if v in out.columns]  # ty: ignore[possibly-unresolved-reference]
+    mod_vars_in_out = [v for v in out.columns if v not in idx_vars_in_out]  # ty: ignore[possibly-unresolved-reference]
+    out_no_nan = out.dropna(axis="index", subset=mod_vars_in_out, how="all")  # ty: ignore[possibly-unresolved-reference]
     if out_no_nan.empty:
         msg = "The merged dataset contains no observations with non-missing values."
         raise ValueError(msg)
