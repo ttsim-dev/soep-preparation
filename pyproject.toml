@@ -142,6 +142,7 @@ max-statements = 100
 "sandbox/*" = ["INP001"]
 "src/soep_preparation/config.py" = ["E402"]
 "tests/*" = ["D", "ANN201", "INP001", "PD011"]
+"tests/metadata/test_mapping_changed.py" = ["S108"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
