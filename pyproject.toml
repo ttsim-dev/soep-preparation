@@ -82,7 +82,6 @@ jupyterlab = "*"
 pre-commit = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
-python = ">=3.13,<3.14"
 
 [tool.pixi.pypi-dependencies]
 soep_preparation = {path = ".", editable = true}
@@ -91,12 +90,16 @@ kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
 
 
+[tool.pixi.feature.py313.dependencies]
+python = "~=3.13.0"
+
+[tool.pixi.feature.py314.dependencies]
+python = "~=3.14.0"
+
 [tool.pixi.feature.ty.pypi-dependencies]
-ty = "*"
+ty = ">=0.0.9"
 types-PyYAML = "*"
 types-pytz = "*"
-
-
 
 [tool.pixi.feature.test.tasks]
 tests = "pytest"
@@ -112,6 +115,8 @@ ty = "ty check"
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.environments]
+py313 = ["test", "py313"]
+py314 = ["test", "py314"]
 test = ["test"]
 ty = ["ty"]
 
