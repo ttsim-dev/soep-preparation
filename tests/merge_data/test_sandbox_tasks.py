@@ -45,11 +45,14 @@ task_files = ["task_*.py", "task.py", "tasks.py"]
         # Pytask will find the pyproject.toml in sandbox and use it
         os.chdir(sandbox_dir)
         # Force execution even if outputs exist (to ensure files are created)
+        # Clear all PIXI_ env vars so pixi uses the local project's configuration
+        env = {k: v for k, v in os.environ.items() if not k.startswith("PIXI_")}
         result = subprocess.run(
             ["pixi", "run", "pytask", "build", "--force"],  # noqa: S607
             capture_output=True,
             text=True,
             check=False,
+            env=env,
         )
         # Print output for debugging (suppressed in test output unless test fails)
         if result.returncode != 0:

@@ -54,7 +54,6 @@ def task_create_final_dataset_catch_all(
     final_dataset.to_pickle(out_path)
 
 
-@task
 def task_create_final_dataset_explicit(
     modules: Annotated[
         dict[str, pd.DataFrame],
