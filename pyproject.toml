@@ -82,7 +82,6 @@ jupyterlab = "*"
 pre-commit = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
-python = ">=3.13,<3.14"
 
 [tool.pixi.pypi-dependencies]
 soep_preparation = {path = ".", editable = true}
@@ -91,12 +90,16 @@ kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
 
 
-[tool.pixi.feature.mypy.pypi-dependencies]
-mypy = ">=1.17"
+[tool.pixi.feature.py313.dependencies]
+python = "~=3.13.0"
+
+[tool.pixi.feature.py314.dependencies]
+python = "~=3.14.0"
+
+[tool.pixi.feature.ty.pypi-dependencies]
+ty = ">=0.0.11"
 types-PyYAML = "*"
 types-pytz = "*"
-
-
 
 [tool.pixi.feature.test.tasks]
 tests = "pytest"
@@ -105,15 +108,17 @@ tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 [tool.pixi.feature.test.pypi-dependencies]
 pytest-cov = "*"
 
-[tool.pixi.feature.mypy.tasks]
-mypy = "mypy --ignore-missing-imports"
+[tool.pixi.feature.ty.tasks]
+ty = "ty check"
 
 # Environments
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.environments]
-mypy = ["mypy"]
+py313 = ["test", "py313"]
+py314 = ["test", "py314"]
 test = ["test"]
+ty = ["ty"]
 
 # ======================================================================================
 # Ruff configuration
@@ -126,26 +131,50 @@ fix = true
 [tool.ruff.lint]
 select = ["ALL"]
 extend-ignore = [
-    "S101", # Use of `assert` detected.
     "COM812", # Avoid conflict with ruff-format
-    "ISC001", # Avoid conflict with ruff-format
-    "PD015", # pd.merge fine because of inherent symmetry
     "FBT001", # Boolean-typed positional argument in function definition
     "FIX002", # rely on TODO-spotting from TD area.
+    "ISC001", # Avoid conflict with ruff-format
+    "PD015", # pd.merge fine because of inherent symmetry
+    "S101", # Use of `assert` detected.
 ]
 
 [tool.ruff.lint.pylint]
 max-statements = 100
 
 [tool.ruff.lint.per-file-ignores]
+"**/task.py" = ["ANN"]
+"sandbox/*" = ["INP001"]
+"src/soep_preparation/config.py" = ["E402"]
 "tests/*" = ["D", "ANN201", "INP001", "PD011"]
 "tests/metadata/test_mapping_changed.py" = ["S108"]
-"**/task.py" = ["ANN"]
-"src/soep_preparation/config.py" = ["E402"]
-"sandbox/*" = ["INP001"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+
+# ======================================================================================
+# ty configuration
+# ======================================================================================
+
+[tool.ty.rules]
+ambiguous-protocol-member = "error"
+deprecated = "error"
+division-by-zero = "error"
+ignore-comment-unknown-rule = "error"
+invalid-argument-type = "error"
+invalid-ignore-comment = "error"
+invalid-return-type = "error"
+possibly-missing-attribute = "error"
+possibly-missing-implicit-call = "error"
+possibly-missing-import = "error"
+possibly-unresolved-reference = "error"
+redundant-cast = "error"
+undefined-reveal = "error"
+unresolved-global = "error"
+unsupported-base = "error"
+unused-ignore-comment = "error"
+useless-overload-body = "error"
 
 
 # ======================================================================================
@@ -153,9 +182,9 @@ convention = "google"
 # ======================================================================================
 
 [tool.pytask.ini_options]
+editor_url_scheme = "vscode"
 paths = ["./src/soep_preparation"]
 pdbcls = "pdbp:Pdb"
-editor_url_scheme = "vscode"
 task_files = ["task_*.py", "task.py", "tasks.py"]
 
 

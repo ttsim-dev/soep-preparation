@@ -5,6 +5,11 @@ import re
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
+from typing import TYPE_CHECKING, cast
+
+if TYPE_CHECKING:
+    from importlib.abc import Loader
+    from importlib.machinery import ModuleSpec
 
 
 def _fail_if_raw_data_files_are_missing(
@@ -131,8 +136,10 @@ def load_script(script_path: Path, expected_function: str) -> ModuleType:
     """
     script_name = script_path.stem
     spec = spec_from_file_location(name=script_name, location=script_path)
+    spec = cast("ModuleSpec", spec)
     script = module_from_spec(spec)
-    spec.loader.exec_module(script)
+    loader = cast("Loader", spec.loader)
+    loader.exec_module(script)
 
     if not hasattr(script, expected_function):
         msg = (
