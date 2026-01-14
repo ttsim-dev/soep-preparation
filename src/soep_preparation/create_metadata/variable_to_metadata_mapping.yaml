@@ -4518,8 +4518,8 @@ gender:
   dtype:
     categorical:
       categories:
-      - male
-      - female
+      - Male
+      - Female
       categories_dtype: string
       ordered: false
   module: pequiv
@@ -4564,16 +4564,16 @@ gender:
   - 2021
   - 2022
   - 2023
-general_trust_high_to_low:
+general_trust:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Lehne eher ab
+      - Lehne voll ab
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2003
@@ -6608,16 +6608,16 @@ im_öffentlichen_dienst:
   - 2021
   - 2022
   - 2023
-importance_faith_high_to_low:
+importance_faith:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Sehr wichtig
+      - Wichtig
+      - Weniger wichtig
+      - Ganz unwichtig
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2013
@@ -6626,16 +6626,16 @@ importance_faith_high_to_low:
   - 2019
   - 2021
   - 2023
-importance_faith_v2_high_to_low:
+importance_faith_v2:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Sehr wichtig
+      - Wichtig
+      - Weniger wichtig
+      - Ganz unwichtig
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2016
@@ -7907,7 +7907,7 @@ life_satisfaction_low_to_high:
       - 9
       - 10
       categories_dtype: uint8[pyarrow]
-      ordered: false
+      ordered: true
   module: pl
   survey_years:
   - 1984
@@ -8682,77 +8682,6 @@ med_schlaganfall_pl:
   - 2019
   - 2021
   - 2023
-med_schwierigkeit_taten_pl:
-  dtype:
-    categorical:
-      categories:
-      - 0
-      - 1
-      - 2
-      categories_dtype: uint8[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-  - 2002
-  - 2004
-  - 2006
-  - 2008
-  - 2010
-  - 2012
-  - 2014
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
-  - 2022
-  - 2023
-med_schwierigkeit_treppen_dummy_pl:
-  dtype: bool[pyarrow]
-  module: pl
-  survey_years:
-  - 2002
-  - 2004
-  - 2006
-  - 2008
-  - 2010
-  - 2012
-  - 2014
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
-  - 2022
-  - 2023
-med_schwierigkeit_treppen_pl:
-  dtype:
-    categorical:
-      categories:
-      - 0
-      - 1
-      - 2
-      categories_dtype: uint8[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-  - 2002
-  - 2004
-  - 2006
-  - 2008
-  - 2010
-  - 2012
-  - 2014
-  - 2016
-  - 2017
-  - 2018
-  - 2019
-  - 2020
-  - 2021
-  - 2022
-  - 2023
 med_schwierigkeiten_anziehen_pequiv:
   dtype:
     categorical:
@@ -8943,16 +8872,79 @@ med_schwierigkeiten_hausarb:
   - 2021
   - 2022
   - 2023
+med_schwierigkeiten_taten_dummy_pl:
+  dtype: bool[pyarrow]
+  module: pl
+  survey_years:
+  - 2002
+  - 2004
+  - 2006
+  - 2008
+  - 2010
+  - 2012
+  - 2014
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+med_schwierigkeiten_taten_pl:
+  dtype:
+    categorical:
+      categories:
+      - Gar nicht
+      - Ein wenig
+      - Stark
+      categories_dtype: string
+      ordered: true
+  module: pl
+  survey_years:
+  - 2002
+  - 2004
+  - 2006
+  - 2008
+  - 2010
+  - 2012
+  - 2014
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
 med_schwierigkeiten_treppen:
   dtype:
     categorical:
       categories:
       - false
       - true
-      - 2
-      categories_dtype: object
+      categories_dtype: bool
       ordered: true
   module: pequiv_pl
+  survey_years:
+  - 2002
+  - 2004
+  - 2006
+  - 2008
+  - 2010
+  - 2012
+  - 2014
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+med_schwierigkeiten_treppen_dummy_pl:
+  dtype: bool[pyarrow]
+  module: pl
   survey_years:
   - 2002
   - 2004
@@ -8994,6 +8986,32 @@ med_schwierigkeiten_treppen_pequiv:
   - 2021
   - 2022
   - 2023
+med_schwierigkeiten_treppen_pl:
+  dtype:
+    categorical:
+      categories:
+      - Gar nicht
+      - Ein wenig
+      - Stark
+      categories_dtype: string
+      ordered: true
+  module: pl
+  survey_years:
+  - 2002
+  - 2004
+  - 2006
+  - 2008
+  - 2010
+  - 2012
+  - 2014
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
 med_sonst_pl:
   dtype:
     categorical:
@@ -9015,12 +9033,12 @@ med_subjective_status:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      categories_dtype: uint8[pyarrow]
+      - Sehr gut
+      - Gut
+      - Zufriedenstellend
+      - Weniger gut
+      - Schlecht
+      categories_dtype: string
       ordered: true
   module: pequiv_pl
   survey_years:
@@ -9164,12 +9182,12 @@ med_subjective_status_pequiv:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      categories_dtype: uint8[pyarrow]
+      - Sehr gut
+      - Gut
+      - Zufriedenstellend
+      - Weniger gut
+      - Schlecht
+      categories_dtype: string
       ordered: true
   module: pequiv
   survey_years:
@@ -9208,12 +9226,12 @@ med_subjective_status_pl:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      categories_dtype: uint8[pyarrow]
+      - Sehr gut
+      - Gut
+      - Zufriedenstellend
+      - Weniger gut
+      - Schlecht
+      categories_dtype: string
       ordered: true
   module: pl
   survey_years:
@@ -9915,42 +9933,42 @@ nicht_erwerbstätig:
   - 2021
   - 2022
   - 2023
-norm_career_mothers_same_warmth_high_to_low:
+norm_career_mothers_same_warmth:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Stimme eher nicht zu
+      - Stimme überhaupt nicht zu
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2012
-norm_child_suffers_father_career_high_to_low:
+norm_child_suffers_father_career:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Stimme eher nicht zu
+      - Stimme überhaupt nicht zu
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2012
-norm_child_suffers_under_3_high_to_low:
+norm_child_suffers_under_3:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Stimme eher nicht zu
+      - Stimme überhaupt nicht zu
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2012
@@ -9970,16 +9988,16 @@ norm_child_suffers_under_3_low_to_high_2018:
   module: pl
   survey_years:
   - 2018
-norm_child_suffers_under_6_high_to_low:
+norm_child_suffers_under_6:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Stimme eher nicht zu
+      - Stimme überhaupt nicht zu
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2012
@@ -9995,20 +10013,20 @@ norm_child_suffers_under_6_low_to_high_2018:
       - 6
       - 7
       categories_dtype: uint8[pyarrow]
-      ordered: false
+      ordered: true
   module: pl
   survey_years:
   - 2018
-norm_genders_similar_high_to_low:
+norm_genders_similar:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Stimme eher nicht zu
+      - Stimme überhaupt nicht zu
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2012
@@ -10028,16 +10046,16 @@ norm_genders_similar_low_to_high_2018:
   module: pl
   survey_years:
   - 2018
-norm_marry_when_together_high_to_low:
+norm_marry_when_together:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Stimme eher nicht zu
+      - Stimme überhaupt nicht zu
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2012
@@ -10057,29 +10075,29 @@ norm_marry_when_together_low_to_high_2018:
   module: pl
   survey_years:
   - 2018
-norm_men_chores_high_to_low:
+norm_men_chores:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Stimme eher nicht zu
+      - Stimme überhaupt nicht zu
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2012
-norm_women_family_priority_high_to_low:
+norm_women_family_priority:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Stimme voll zu
+      - Stimme eher zu
+      - Stimme eher nicht zu
+      - Stimme überhaupt nicht zu
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 2012
@@ -10622,17 +10640,17 @@ party_affiliation_dummy:
   - 2021
   - 2022
   - 2023
-party_affiliation_intensity_high_to_low:
+party_affiliation_intensity:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      - 5
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Sehr stark
+      - Ziemlich stark
+      - Mäßig
+      - Ziemlich schwach
+      - Sehr schwach
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 1984
@@ -10898,16 +10916,16 @@ pointer_partner:
   - 2021
   - 2022
   - 2023
-policital_interest_high_to_low:
+political_interest:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Sehr stark
+      - Stark
+      - Nicht so stark
+      - Überhaupt nicht
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 1985
@@ -10965,7 +10983,7 @@ political_spectrum_left_to_right:
       - 9
       - 10
       categories_dtype: uint8[pyarrow]
-      ordered: false
+      ordered: true
   module: pl
   survey_years:
   - 2005
@@ -11944,16 +11962,16 @@ relationship_to_hh:
   - 2016
   - 2017
   - 2018
-relevance_career_high_to_low:
+relevance_career:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Sehr wichtig
+      - Wichtig
+      - Weniger wichtig
+      - Ganz unwichtig
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 1990
@@ -11965,16 +11983,16 @@ relevance_career_high_to_low:
   - 2012
   - 2016
   - 2021
-relevance_children_high_to_low:
+relevance_children:
   dtype:
     categorical:
       categories:
-      - 1
-      - 2
-      - 3
-      - 4
-      categories_dtype: uint8[pyarrow]
-      ordered: false
+      - Sehr wichtig
+      - Wichtig
+      - Weniger wichtig
+      - Ganz unwichtig
+      categories_dtype: string
+      ordered: true
   module: pl
   survey_years:
   - 1990

@@ -46,7 +46,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["gender"] = object_to_str_categorical(
         series=raw_data["d11102ll"],
         ordered=False,
-        renaming={"[1] Male": "male", "[2] Female": "female"},
+        renaming={"[1] Male": "Male", "[2] Female": "Female"},
     )
     out["age"] = object_to_int(raw_data["d11101"])
     out["federal_state_of_residence"] = object_to_str_categorical(
