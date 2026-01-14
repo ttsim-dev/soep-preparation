@@ -32,7 +32,7 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
 
     out["med_schwierigkeiten_treppen"] = combine_first_and_make_categorical(
         series_1=merged["med_schwierigkeiten_treppen_pequiv"],
-        series_2=merged["med_schwierigkeit_treppen_pl"],
+        series_2=merged["med_schwierigkeiten_treppen_dummy_pl"],
         ordered=True,
     )
     out["med_bluthochdruck"] = combine_first_and_make_categorical(
