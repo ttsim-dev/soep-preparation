@@ -88,6 +88,7 @@ soep_preparation = {path = ".", editable = true}
 # gettsim = {git = "https://github.com/ttsim-dev/gettsim", branch = "main"}
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
+ty = ">=0.0.9"
 
 
 [tool.pixi.feature.py313.dependencies]
@@ -102,14 +103,12 @@ types-PyYAML = "*"
 types-pytz = "*"
 
 [tool.pixi.feature.test.tasks]
-tests = "pytest"
-tests-with-cov = "pytest tests --cov-report=xml --cov=./"
+test = "pytest"
+test-cov = "pytest tests --cov-report=xml --cov=./"
+ty = "ty check"
 
 [tool.pixi.feature.test.pypi-dependencies]
 pytest-cov = "*"
-
-[tool.pixi.feature.ty.tasks]
-ty = "ty check"
 
 # Environments
 # --------------------------------------------------------------------------------------
@@ -118,7 +117,6 @@ ty = "ty check"
 py313 = ["test", "py313"]
 py314 = ["test", "py314"]
 test = ["test"]
-ty = ["ty"]
 
 # ======================================================================================
 # Ruff configuration
@@ -137,6 +135,8 @@ extend-ignore = [
     "ISC001", # Avoid conflict with ruff-format
     "PD015", # pd.merge fine because of inherent symmetry
     "S101", # Use of `assert` detected.
+    "TC002", # Move third-party import into a type-checking block
+    "TC003", # Move standard library import into a type-checking block
 ]
 
 [tool.ruff.lint.pylint]
@@ -195,9 +195,3 @@ task_files = ["task_*.py", "task.py", "tasks.py"]
 [tool.pytest.ini_options]
 addopts = "--pdbcls=pdbp:Pdb"
 filterwarnings = []
-markers = [
-    "wip: Tests that are work-in-progress.",
-    "unit: Flag for unit tests which target mainly a single function.",
-    "integration: Flag for integration tests which may comprise of multiple unit tests.",
-    "end_to_end: Flag for tests that cover the whole program.",
-]

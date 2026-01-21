@@ -1,19 +1,10 @@
-# python
-*.egg-info
-*_version.py
-*.pyc
-*__pycache__
-.mypy_cache
-
-# pytask
-.pytask.sqlite3
-.pytask
-
 # bld
 bld/
 
-# pixi
-.pixi/
+# data directory (ignore except for .gitkeep files)
+data/**
+!data/**/
+!data/**/.gitkeep
 
 # latex
 *.aux
@@ -28,20 +19,29 @@ bld/
 *.run.xml
 *.synctex.gz
 
-#MacOS
+# macOS
 .DS_Store
 
-#VSCode
-.vscode/
-
-# ignore data directory, except for .gitkeep files
-data/**
-!data/**/
-!data/**/.gitkeep
-
-# ignore notebooks
+# notebooks
 *.ipynb
 
-# ignore pickle files
+# pickle files
 *.pickle
 *.pkl
+
+# pixi
+.pixi/
+
+# python
+*.egg-info
+*.pyc
+*__pycache__
+*_version.py
+.mypy_cache
+
+# pytask
+.pytask
+.pytask.sqlite3
+
+# VSCode
+.vscode/
