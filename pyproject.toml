@@ -97,21 +97,21 @@ python = "~=3.13.0"
 [tool.pixi.feature.py314.dependencies]
 python = "~=3.14.0"
 
-[tool.pixi.feature.test.tasks]
-test = "pytest"
-test-cov = "pytest tests --cov-report=xml --cov=./"
+[tool.pixi.feature.tests.tasks]
+tests = "pytest"
+tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 ty = "ty check"
 
-[tool.pixi.feature.test.pypi-dependencies]
+[tool.pixi.feature.tests.pypi-dependencies]
 pytest-cov = "*"
 
 # Environments
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.environments]
-py313 = ["test", "py313"]
-py314 = ["test", "py314"]
-test = ["test"]
+py313 = ["tests", "py313"]
+py314 = ["tests", "py314"]
+tests = ["tests"]
 
 # ======================================================================================
 # Ruff configuration
