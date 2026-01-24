@@ -4902,7 +4902,9 @@ grund_beschäftigungsende:
         - Einvernehmliche Auflösung, Auflösungsvertrag (1985-1990, seit 1999)
         - Kündigung durch Arbeitgeber
         - Sonst. inkl. Stilllegung, Rente/Pension, beurlaubt, freigestellt (1987-1990)
-        - Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig. (1985-1986)
+        - >- 
+          Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig.
+          (1985-1986)
         - Sonst. inkl. einvernehm. Auflösung/Auflösungsvertrag (1991-1998)
         - Versetzung durch Betrieb (1985-1998)
         - Versetzung eigener Wunsch (1985-1998)
@@ -7998,8 +8000,9 @@ marital_status:
         - Ledig
         - Verheiratet, dauernd getrennt lebend
         - Verheiratet, mit Ehepartner zusammenlebend
-        - Verwitwet / Lebenspartner/-in aus eingetragener gleichgeschlechtlicher Partnerschaft
-          verstorben
+        - >-
+          Verwitwet / Lebenspartner/-in aus eingetragener gleichgeschlechtlicher
+          Partnerschaft verstorben
       categories_dtype: string
       ordered: false
   module: pgen
@@ -10303,8 +10306,9 @@ occupation_status:
         - Freiberufler, Akademiker ohne Mitarbeiter (ab 2000)
         - Freiberufler, Akademiker, 1-9 Mitarbeiter (ab 2000)
         - Freiberufler, Akademiker, 10+ Mitarbeiter (ab 2000)
-        - Geschäftsführender Gesellschafter und vergl. Angestellte im eigenen Betrieb (ab
-          2019)
+        - >-
+          Geschäftsführender Gesellschafter und vergl. Angestellte im eigenen Betrieb
+          (ab 2019)
         - Meister, Polier
         - 'NE: Rentner/Rentnerin'
         - 'NE: Wehr- und Zivildienst'
@@ -11790,8 +11794,9 @@ refugee_status:
       categories:
         - Duldung
         - Im Verfahren
-        - Schutzstatus zuerkannt (Asyl, Fluechtlingseigenschaft, Niederlassungserlaubnis,
-          human. Aufnahme, sonst. human. Aufnahme)
+        - >-
+          Schutzstatus zuerkannt (Asyl, Fluechtlingseigenschaft,
+          Niederlassungserlaubnis, human. Aufnahme, sonst. human. Aufnahme)
         - Sonstiges
       categories_dtype: string
       ordered: false
