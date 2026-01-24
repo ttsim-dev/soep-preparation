@@ -47,7 +47,7 @@ Tracker = "https://github.com/OpenSourceEconomics/soep-preparation/issues"
 # ======================================================================================
 
 [build-system]
-requires = ["hatchling", "hatch_vcs"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.hooks.vcs]
@@ -88,8 +88,10 @@ soep_preparation = {path = ".", editable = true}
 # gettsim = {git = "https://github.com/ttsim-dev/gettsim", branch = "main"}
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
-ty = ">=0.0.9"
 
+[tool.pixi.feature.tests.pypi-dependencies]
+pytest-cov = "*"
+ty = ">=0.0.9"
 
 [tool.pixi.feature.py313.dependencies]
 python = "~=3.13.0"
@@ -101,9 +103,6 @@ python = "~=3.14.0"
 tests = "pytest"
 tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 ty = "ty check"
-
-[tool.pixi.feature.tests.pypi-dependencies]
-pytest-cov = "*"
 
 # Environments
 # --------------------------------------------------------------------------------------
@@ -118,7 +117,7 @@ tests = ["tests"]
 # ======================================================================================
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py314"
 fix = true
 
 [tool.ruff.lint]
@@ -190,3 +189,13 @@ task_files = ["task_*.py", "task.py", "tasks.py"]
 [tool.pytest.ini_options]
 addopts = "--pdbcls=pdbp:Pdb"
 filterwarnings = []
+
+
+# ======================================================================================
+# yamlfix configuration
+# ======================================================================================
+
+[tool.yamlfix]
+line_length = 88
+sequence_style = "block_style"
+none_representation = "null"
