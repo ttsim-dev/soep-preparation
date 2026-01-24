@@ -90,8 +90,8 @@ kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
 
 [tool.pixi.feature.tests.pypi-dependencies]
-pytest-cov = "*"
 ty = ">=0.0.9"
+pytest-cov = "*"
 
 [tool.pixi.feature.py313.dependencies]
 python = "~=3.13.0"
