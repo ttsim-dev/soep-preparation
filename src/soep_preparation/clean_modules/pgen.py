@@ -16,9 +16,9 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _education(
-    casmin: "pd.Series[pd.Categorical]",
-    isced: "pd.Series[pd.Categorical]",
-) -> "pd.Series[pd.Categorical]":
+    casmin: pd.Series[pd.Categorical],
+    isced: pd.Series[pd.Categorical],
+) -> pd.Series[pd.Categorical]:
     """Transform education variable to three levels."""
     out = casmin.combine_first(isced).map(
         {
@@ -52,9 +52,9 @@ def _education(
 
 
 def _in_education(
-    employment: "pd.Series[pd.Categorical]",
-    occupation: "pd.Series[pd.Categorical]",
-) -> "pd.Series[pd.Categorical]":
+    employment: pd.Series[pd.Categorical],
+    occupation: pd.Series[pd.Categorical],
+) -> pd.Series[pd.Categorical]:
     in_education = [
         "Aspiranten (1990 Ost)",
         "Auszubildende (1984-1999), Lehrlinge (1990 Ost)",
@@ -74,7 +74,7 @@ def _in_education(
 
 
 def _self_employed_occupations(
-    occupation: "pd.Series[pd.Categorical]",
+    occupation: pd.Series[pd.Categorical],
 ) -> list:
     """Occupation names that indicate self employment."""
     occupation_names = list(occupation.dropna().unique())
