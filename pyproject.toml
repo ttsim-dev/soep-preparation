@@ -7,26 +7,26 @@ name = "soep_preparation"
 description = "Prepare the SOEP data for analysis."
 requires-python = ">=3.13"
 dependencies = [
-    "pandas>=2.3.1,<3",
-    "pyarrow>=21.0.0",
-    "pytask-parallel>=0.5.1,<0.6",
-    "pytask>=0.5.5,<0.6"
+  "pandas>=2.3.1,<3",
+  "pyarrow>=21.0.0",
+  "pytask-parallel>=0.5.1,<0.6",
+  "pytask>=0.5.5,<0.6",
 ]
-dynamic = ["version"]
+dynamic = [ "version" ]
 classifiers = [
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: MacOS :: MacOS X",
-    "Operating System :: Microsoft :: Windows",
-    "Operating System :: POSIX",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS :: MacOS X",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
 ]
 authors = [
-    { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
+  { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
 ]
 maintainers = [
-    { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
+  { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
 ]
 
 [project.readme]
@@ -41,25 +41,24 @@ Repository = "https://github.com/OpenSourceEconomics/soep-preparation"
 Github = "https://github.com/OpenSourceEconomics/soep-preparation"
 Tracker = "https://github.com/OpenSourceEconomics/soep-preparation/issues"
 
-
 # ======================================================================================
 # Build system configuration
 # ======================================================================================
 
 [build-system]
 build-backend = "hatchling.build"
-requires = ["hatchling", "hatch-vcs"]
+requires = [ "hatchling", "hatch-vcs" ]
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/soep_preparation/_version.py"
 
 [tool.hatch.build.targets.sdist]
-exclude = ["tests"]
+exclude = [ "tests" ]
 only-packages = true
 
 [tool.hatch.build.targets.wheel]
-only-include = ["src"]
-sources = ["src"]
+only-include = [ "src" ]
+sources = [ "src" ]
 
 [tool.hatch.version]
 source = "vcs"
@@ -67,14 +66,13 @@ source = "vcs"
 [tool.hatch.metadata]
 allow-direct-references = true
 
-
 # ======================================================================================
 # Pixi configuration
 # ======================================================================================
 
 [tool.pixi.workspace]
-channels = ["conda-forge"]
-platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+channels = [ "conda-forge" ]
+platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
 
 [tool.pixi.dependencies]
 deepdiff = "*"
@@ -84,7 +82,7 @@ pygments = ">=2.19.2"
 pygraphviz = "*"
 
 [tool.pixi.pypi-dependencies]
-soep_preparation = {path = ".", editable = true}
+soep_preparation = { path = ".", editable = true }
 # gettsim = {git = "https://github.com/ttsim-dev/gettsim", branch = "main"}
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
@@ -108,9 +106,9 @@ ty = "ty check"
 # --------------------------------------------------------------------------------------
 
 [tool.pixi.environments]
-py313 = ["tests", "py313"]
-py314 = ["tests", "py314"]
-tests = ["tests"]
+py313 = [ "tests", "py313" ]
+py314 = [ "tests", "py314" ]
+tests = [ "tests" ]
 
 # ======================================================================================
 # Ruff configuration
@@ -122,32 +120,31 @@ target-version = "py313"
 unsafe-fixes = false
 
 [tool.ruff.lint]
-select = ["ALL"]
+select = [ "ALL" ]
 extend-ignore = [
-    "COM812", # Avoid conflict with ruff-format
-    "FBT001", # Boolean-typed positional argument in function definition
-    "FIX002", # rely on TODO-spotting from TD area.
-    "ISC001", # Avoid conflict with ruff-format
-    "PD015", # pd.merge fine because of inherent symmetry
-    "S101", # Use of `assert` detected.
-    "TC001", # Move application import into a type-checking block
-    "TC002", # Move third-party import into a type-checking block
-    "TC003", # Move standard library import into a type-checking block
+  "COM812", # Avoid conflict with ruff-format
+  "FBT001", # Boolean-typed positional argument in function definition
+  "FIX002", # rely on TODO-spotting from TD area.
+  "ISC001", # Avoid conflict with ruff-format
+  "PD015",  # pd.merge fine because of inherent symmetry
+  "S101",   # Use of `assert` detected.
+  "TC001",  # Move application import into a type-checking block
+  "TC002",  # Move third-party import into a type-checking block
+  "TC003",  # Move standard library import into a type-checking block
 ]
 
 [tool.ruff.lint.pylint]
 max-statements = 100
 
 [tool.ruff.lint.per-file-ignores]
-"**/task.py" = ["ANN"]
-"sandbox/*" = ["INP001"]
-"src/soep_preparation/config.py" = ["E402"]
-"tests/*" = ["D", "ANN201", "INP001", "PD011"]
-"tests/metadata/test_mapping_changed.py" = ["S108"]
+"**/task.py" = [ "ANN" ]
+"sandbox/*" = [ "INP001" ]
+"src/soep_preparation/config.py" = [ "E402" ]
+"tests/*" = [ "D", "ANN201", "INP001", "PD011" ]
+"tests/metadata/test_mapping_changed.py" = [ "S108" ]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
 
 # ======================================================================================
 # ty configuration
@@ -172,17 +169,15 @@ unsupported-base = "error"
 unused-ignore-comment = "error"
 useless-overload-body = "error"
 
-
 # ======================================================================================
 # pytask configuration
 # ======================================================================================
 
 [tool.pytask.ini_options]
 editor_url_scheme = "vscode"
-paths = ["./src/soep_preparation"]
+paths = [ "./src/soep_preparation" ]
 pdbcls = "pdbp:Pdb"
-task_files = ["task_*.py", "task.py", "tasks.py"]
-
+task_files = [ "task_*.py", "task.py", "tasks.py" ]
 
 # ======================================================================================
 # pytest configuration
@@ -190,8 +185,7 @@ task_files = ["task_*.py", "task.py", "tasks.py"]
 
 [tool.pytest.ini_options]
 addopts = "--pdbcls=pdbp:Pdb"
-filterwarnings = []
-
+filterwarnings = [  ]
 
 # ======================================================================================
 # yamlfix configuration
