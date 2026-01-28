@@ -5,6 +5,14 @@ repos:
       - id: check-useless-excludes
       # - id: check-hooks-apply  # Leave mdformat and nbstripout in here.
       # - id: identity  # Prints all files passed to pre-commits. Debugging.
+  - repo: https://github.com/tox-dev/tox-toml-fmt
+    rev: v1.2.2
+    hooks:
+      - id: tox-toml-fmt
+  - repo: https://github.com/lyz-code/yamlfix
+    rev: 1.19.1
+    hooks:
+      - id: yamlfix
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -27,7 +35,8 @@ repos:
           - --fix=lf
         description: Forces to replace line ending by the UNIX 'lf' character.
       - id: name-tests-test
-        args: [--pytest-test-first]
+        args:
+          - --pytest-test-first
       - id: no-commit-to-branch
         args:
           - --branch
@@ -40,20 +49,22 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.11
+    rev: v0.14.14
     hooks:
       - id: ruff-check
         types_or:
-          - python
           - jupyter
+          - pyi
+          - python
         args:
           - --fix
       - id: ruff-format
         types_or:
-          - python
           - jupyter
+          - pyi
+          - python
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.8.2
+    rev: 0.9.0
     hooks:
       - id: nbstripout
         args:
@@ -65,22 +76,29 @@ repos:
       - id: mdformat
         additional_dependencies:
           - mdformat-gfm
+          - mdformat-gfm-alerts
           - mdformat-ruff
         args:
           - --wrap
           - '88'
-        files: (README\.md)
+        files: (CLAUDE\.md|README\.md)
   - repo: https://github.com/executablebooks/mdformat
     rev: 1.0.0
     hooks:
       - id: mdformat
-        additional_dependencies: [mdformat-myst, mdformat-ruff]
-        args: [--wrap, '88']
+        additional_dependencies:
+          - mdformat-myst
+          - mdformat-ruff
+        args:
+          - --wrap
+          - '88'
         files: (docs/.)
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.1
     hooks:
       - id: codespell
-        args: [--skip="**.ipynb", --ignore-words=.codespell-wordlist.txt]
+        args:
+          - --skip="**.ipynb"
+          - --ignore-words=.codespell-wordlist.txt
 ci:
   autoupdate_schedule: monthly

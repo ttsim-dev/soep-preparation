@@ -1,21 +1,38 @@
-# python
+# Claude Code
+.claude/
+
+# Data (ignore except for .gitkeep files)
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Distribution / packaging
+*.egg
 *.egg-info
-*_version.py
-*.pyc
-*__pycache__
-.mypy_cache
-
-# pytask
-.pytask.sqlite3
-.pytask
-
-# bld
+*.manifest
+*.so
+*.spec
+*$py.class
+_version.py
+.eggs/
+.installed.cfg
 bld/
+build/
+dist/
+MANIFEST
+sdist/
+wheels/
 
-# pixi
-.pixi/
+# IDE
+.cursor/
+.idea/
+.vscode/
 
-# latex
+# Jupyter
+*.ipynb
+.ipynb_checkpoints/
+
+# LaTeX
 *.aux
 *.bbl
 *.bcf
@@ -28,20 +45,32 @@ bld/
 *.run.xml
 *.synctex.gz
 
-#MacOS
+# macOS
 .DS_Store
+Thumbs.db
 
-#VSCode
-.vscode/
-
-# ignore data directory, except for .gitkeep files
-data/**
-!data/**/
-!data/**/.gitkeep
-
-# ignore notebooks
-*.ipynb
-
-# ignore pickle files
+# Pickle
 *.pickle
 *.pkl
+
+# pixi
+.pixi/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# pytask
+.pytask
+.pytask.sqlite3
+
+# Ruff
+.ruff_cache/
+
+# Testing
+.cache/
+.coverage
+.coverage.*
+.pytest_cache/
+coverage.xml
+htmlcov/

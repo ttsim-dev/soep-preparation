@@ -11,9 +11,9 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _kindergeld_m_hh(
-    betrag: "pd.Series[pd.Categorical]",
-    bezug: "pd.Series[pd.Categorical]",
-) -> "pd.Series[int]":
+    betrag: pd.Series[pd.Categorical],
+    bezug: pd.Series[pd.Categorical],
+) -> pd.Series[int]:
     out = object_to_int(betrag)
     return out.where(
         ~(betrag.isna()) & (bezug.astype("bool[pyarrow]")),
