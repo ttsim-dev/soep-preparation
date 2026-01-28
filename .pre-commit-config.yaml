@@ -6,7 +6,7 @@ repos:
       # - id: check-hooks-apply  # Leave mdformat and nbstripout in here.
       # - id: identity  # Prints all files passed to pre-commits. Debugging.
   - repo: https://github.com/lyz-code/yamlfix
-    rev: 1.18.0
+    rev: 1.19.1
     hooks:
       - id: yamlfix
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -45,20 +45,22 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.11
+    rev: v0.14.14
     hooks:
       - id: ruff-check
         types_or:
-          - python
           - jupyter
+          - pyi
+          - python
         args:
           - --fix
       - id: ruff-format
         types_or:
-          - python
           - jupyter
+          - pyi
+          - python
   - repo: https://github.com/kynan/nbstripout
-    rev: 0.8.2
+    rev: 0.9.0
     hooks:
       - id: nbstripout
         args:
@@ -70,11 +72,12 @@ repos:
       - id: mdformat
         additional_dependencies:
           - mdformat-gfm
+          - mdformat-gfm-alerts
           - mdformat-ruff
         args:
           - --wrap
           - '88'
-        files: (README\.md)
+        files: (CLAUDE\.md|README\.md)
   - repo: https://github.com/executablebooks/mdformat
     rev: 1.0.0
     hooks:

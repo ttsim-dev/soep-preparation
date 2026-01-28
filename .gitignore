@@ -1,12 +1,38 @@
-# bld
-bld/
+# Claude Code
+.claude/
 
-# data directory (ignore except for .gitkeep files)
+# Data (ignore except for .gitkeep files)
 data/**
 !data/**/
 !data/**/.gitkeep
 
-# latex
+# Distribution / packaging
+*.egg
+*.egg-info
+*.manifest
+*.so
+*.spec
+*$py.class
+_version.py
+.eggs/
+.installed.cfg
+bld/
+build/
+dist/
+MANIFEST
+sdist/
+wheels/
+
+# IDE
+.cursor/
+.idea/
+.vscode/
+
+# Jupyter
+*.ipynb
+.ipynb_checkpoints/
+
+# LaTeX
 *.aux
 *.bbl
 *.bcf
@@ -21,27 +47,30 @@ data/**
 
 # macOS
 .DS_Store
+Thumbs.db
 
-# notebooks
-*.ipynb
-
-# pickle files
+# Pickle
 *.pickle
 *.pkl
 
 # pixi
 .pixi/
 
-# python
-*.egg-info
-*.pyc
-*__pycache__
-*_version.py
-.mypy_cache
+# Python
+__pycache__/
+*.py[cod]
 
 # pytask
 .pytask
 .pytask.sqlite3
 
-# VSCode
-.vscode/
+# Ruff
+.ruff_cache/
+
+# Testing
+.cache/
+.coverage
+.coverage.*
+.pytest_cache/
+coverage.xml
+htmlcov/
