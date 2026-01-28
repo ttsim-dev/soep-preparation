@@ -5,6 +5,10 @@ repos:
       - id: check-useless-excludes
       # - id: check-hooks-apply  # Leave mdformat and nbstripout in here.
       # - id: identity  # Prints all files passed to pre-commits. Debugging.
+  - repo: https://github.com/tox-dev/tox-toml-fmt
+    rev: v1.2.2
+    hooks:
+      - id: tox-toml-fmt
   - repo: https://github.com/lyz-code/yamlfix
     rev: 1.19.1
     hooks:
