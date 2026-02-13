@@ -126,10 +126,10 @@ tests = [ "tests" ]
 [tool.pixi.feature.py314]
 dependencies.python = "~=3.14.0"
 [tool.pixi.feature.tests.pypi-dependencies]
-pypi-dependencies.pytest = "*"
-pypi-dependencies.pytest-cov = "*"
-pypi-dependencies.pytest-xdist = "*"
-pypi-dependencies.ty = ">=0.0.9"
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+ty = ">=0.0.9"
 [tool.pixi.feature.tests.tasks]
 tests = "pytest"
 tests-with-cov = "pytest tests --cov-report=xml --cov=./"
