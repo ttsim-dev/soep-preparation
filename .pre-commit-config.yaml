@@ -9,9 +9,6 @@ repos:
     rev: v2.15.3
     hooks:
       - id: pyproject-fmt
-        args:
-          - --expand-tables
-          - tool.pixi.workspace,tool.pixi.dependencies,tool.pixi.pypi-dependencies,tool.pixi.feature.tests.pypi-dependencies,tool.pixi.feature.py313.dependencies,tool.pixi.feature.py314.dependencies,tool.pixi.feature.tests.tasks,tool.pixi.environments,tool.pytask.ini_options,tool.pytest.ini_options
   - repo: https://github.com/lyz-code/yamlfix
     rev: 1.19.1
     hooks:

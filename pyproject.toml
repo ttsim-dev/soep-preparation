@@ -1,14 +1,6 @@
-# ======================================================================================
-# Build system configuration
-# ======================================================================================
-
 [build-system]
 build-backend = "hatchling.build"
 requires = [ "hatch-vcs", "hatchling" ]
-
-# ======================================================================================
-# Project metadata
-# ======================================================================================
 
 [project]
 name = "soep-preparation"
@@ -16,13 +8,7 @@ description = "Prepare the SOEP data for analysis."
 readme = { file = "README.md", content-type = "text/markdown" }
 keywords = []
 license = { file = "LICENSE" }
-maintainers = [
-  { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
-]
-authors = [
-  { name = "Felix Schmitz", email = "s87fschm@uni-bonn.de" },
-]
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 classifiers = [
   "Intended Audience :: Science/Research",
   "License :: OSI Approved :: MIT License",
@@ -30,14 +16,28 @@ classifiers = [
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
 ]
 dynamic = [ "version" ]
-dependencies = [ "pandas>=2.3.1,<3", "pyarrow>=21", "pytask>=0.5.5,<0.6", "pytask-parallel>=0.5.1,<0.6" ]
-urls.Github = "https://github.com/OpenSourceEconomics/soep-preparation"
-urls.Repository = "https://github.com/OpenSourceEconomics/soep-preparation"
-urls.Tracker = "https://github.com/OpenSourceEconomics/soep-preparation/issues"
+dependencies = [
+  "pandas>=2.3.1,<3",
+  "pyarrow>=21",
+  "pytask>=0.5.5,<0.6",
+  "pytask-parallel>=0.5.1,<0.6",
+]
+[[project.authors]]
+name = "Felix Schmitz"
+email = "s87fschm@uni-bonn.de"
+[[project.authors]]
+name = "Hans-Martin von Gaudecker"
+email = "hmgaudecker@uni-bonn.de"
+[[project.maintainers]]
+name = "Hans-Martin von Gaudecker"
+email = "hmgaudecker@uni-bonn.de"
+[project.urls]
+Github = "https://github.com/OpenSourceEconomics/soep-preparation"
+Repository = "https://github.com/OpenSourceEconomics/soep-preparation"
+Tracker = "https://github.com/OpenSourceEconomics/soep-preparation/issues"
 
 [tool.hatch]
 build.hooks.vcs.version-file = "src/soep_preparation/_version.py"
@@ -48,16 +48,13 @@ build.targets.wheel.sources = [ "src" ]
 metadata.allow-direct-references = true
 version.source = "vcs"
 
-# ======================================================================================
-# Ruff configuration
-# ======================================================================================
-
 [tool.ruff]
 target-version = "py314"
 fix = true
 unsafe-fixes = false
-lint.select = [ "ALL" ]
-lint.extend-ignore = [
+[tool.ruff.lint]
+select = [ "ALL" ]
+extend-ignore = [
   "COM812", # Avoid conflict with ruff-format
   "EM101",  # Exception must not use a string literal
   "EM102",  # Exception must not use an f-string literal
@@ -71,104 +68,83 @@ lint.extend-ignore = [
   "TC003",  # Move standard library import into a type-checking block
   "TRY003", # Avoid specifying long messages outside the exception class
 ]
-lint.per-file-ignores."**/task.py" = [ "ANN" ]
-lint.per-file-ignores."sandbox/*" = [ "INP001" ]
-lint.per-file-ignores."src/soep_preparation/config.py" = [ "E402" ]
-lint.per-file-ignores."tests/*" = [ "ANN201", "D", "INP001", "PD011" ]
-lint.per-file-ignores."tests/metadata/test_mapping_changed.py" = [ "S108" ]
-lint.pydocstyle.convention = "google"
-lint.pylint.max-statements = 100
+per-file-ignores."**/task.py" = [ "ANN" ]
+per-file-ignores."sandbox/*" = [ "INP001" ]
+per-file-ignores."src/soep_preparation/config.py" = [ "E402" ]
+per-file-ignores."tests/*" = [ "ANN201", "D", "INP001", "PD011" ]
+per-file-ignores."tests/metadata/test_mapping_changed.py" = [ "S108" ]
+pydocstyle.convention = "google"
+pylint.max-statements = 100
 
-# ======================================================================================
-# pytest configuration
-# ======================================================================================
+[tool.pyproject-fmt]
+column_width = 88
+max_supported_python = "3.14"
+table_format = "long"
+collapse_tables = [ "tool.hatch" ]
 
+[tool.pytest]
 [tool.pytest.ini_options]
 addopts = [ "--pdbcls=pdbp:Pdb" ]
 filterwarnings = []
 norecursedirs = [ "docs" ]
 
-# ======================================================================================
-# ty configuration
-# ======================================================================================
-
 [tool.ty]
-rules.ambiguous-protocol-member = "error"
-rules.deprecated = "error"
-rules.division-by-zero = "error"
-rules.ignore-comment-unknown-rule = "error"
-rules.invalid-argument-type = "error"
-rules.invalid-ignore-comment = "error"
-rules.invalid-return-type = "error"
-rules.possibly-missing-attribute = "error"
-rules.possibly-missing-implicit-call = "error"
-rules.possibly-missing-import = "error"
-rules.possibly-unresolved-reference = "error"
-rules.redundant-cast = "error"
-rules.undefined-reveal = "error"
-rules.unresolved-global = "error"
-rules.unsupported-base = "error"
-rules.unused-ignore-comment = "error"
-rules.useless-overload-body = "error"
+[tool.ty.rules]
+ambiguous-protocol-member = "error"
+deprecated = "error"
+division-by-zero = "error"
+ignore-comment-unknown-rule = "error"
+invalid-argument-type = "error"
+invalid-ignore-comment = "error"
+invalid-return-type = "error"
+possibly-missing-attribute = "error"
+possibly-missing-implicit-call = "error"
+possibly-missing-import = "error"
+possibly-unresolved-reference = "error"
+redundant-cast = "error"
+undefined-reveal = "error"
+unresolved-global = "error"
+unsupported-base = "error"
+unused-ignore-comment = "error"
+useless-overload-body = "error"
 
-# ======================================================================================
-# Pixi configuration
-# ======================================================================================
+[tool.yamlfix]
+line_length = 88
+sequence_style = "block_style"
+none_representation = "null"
 
+[tool.pixi]
 [tool.pixi.dependencies]
 deepdiff = "*"
 jupyterlab = "*"
 prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
-
 [tool.pixi.environments]
-py313 = [ "tests", "py313" ]
 py314 = [ "tests", "py314" ]
 tests = [ "tests" ]
-
-[tool.pixi.feature.py313.dependencies]
-python = "~=3.13.0"
-
-[tool.pixi.feature.py314.dependencies]
-python = "~=3.14.0"
-
+[tool.pixi.feature.py314]
+dependencies.python = "~=3.14.0"
 [tool.pixi.feature.tests.pypi-dependencies]
-pytest = "*"
-pytest-cov = "*"
-pytest-xdist = "*"
-ty = ">=0.0.9"
-
+pypi-dependencies.pytest = "*"
+pypi-dependencies.pytest-cov = "*"
+pypi-dependencies.pytest-xdist = "*"
+pypi-dependencies.ty = ">=0.0.9"
 [tool.pixi.feature.tests.tasks]
 tests = "pytest"
 tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 ty = "ty check"
-
 [tool.pixi.pypi-dependencies]
 soep_preparation = { path = ".", editable = true }
-# gettsim = {git = "https://github.com/ttsim-dev/gettsim", branch = "main"}
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
-
 [tool.pixi.workspace]
 channels = [ "conda-forge" ]
 platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
 
-# ======================================================================================
-# pytask configuration
-# ======================================================================================
-
+[tool.pytask]
 [tool.pytask.ini_options]
 editor_url_scheme = "vscode"
 paths = [ "./src/soep_preparation" ]
 pdbcls = "pdbp:Pdb"
 task_files = [ "task_*.py", "task.py", "tasks.py" ]
-
-# ======================================================================================
-# yamlfix configuration
-# ======================================================================================
-
-[tool.yamlfix]
-line_length = 88
-sequence_style = "block_style"
-none_representation = "null"
