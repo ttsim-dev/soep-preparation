@@ -5,6 +5,7 @@ import pandas as pd
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    convert_to_categorical,
     create_dummy,
     object_to_bool_categorical,
     object_to_float,
@@ -48,7 +49,22 @@ def _private_rente_beitrag_m(private_rente_data: pd.DataFrame) -> pd.Series:
 
 
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
-    return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
+    out = pd.DataFrame()
+    dummy_columns = [
+        col
+        for col in frailty_inputs.columns
+        if frailty_inputs[col].cat.categories.is_boolean()
+    ]
+    out[dummy_columns] = frailty_inputs[dummy_columns].copy()
+    out["med_schwierigkeiten_taten_dummy"] = convert_to_categorical(
+        series=create_dummy(
+            series=frailty_inputs["med_schwierigkeiten_taten"],
+            value_for_comparison=["Ein wenig", "Stark"],
+            comparison_type="isin",
+        ),
+        ordered=True,
+    )
+    return apply_smallest_float_dtype(out.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
@@ -165,7 +181,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         value_for_comparison=1,
     )
     out["disability_degree"] = object_to_int(raw_data["ple0041_h"]).fillna(0)
-    out["med_schwierigkeiten_treppen_pl"] = object_to_str_categorical(
+    out["med_schwierigkeiten_treppen_intensity"] = object_to_str_categorical(
         raw_data["ple0004"],
         renaming={
             "[3] Gar nicht": "Gar nicht",
@@ -174,12 +190,15 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["med_schwierigkeiten_treppen_dummy_pl"] = create_dummy(
-        series=out["med_schwierigkeiten_treppen_pl"],
-        value_for_comparison=["Ein wenig", "Stark"],
-        comparison_type="isin",
+    out["med_schwierigkeiten_treppen_pl"] = convert_to_categorical(
+        series=create_dummy(
+            series=out["med_schwierigkeiten_treppen_intensity"],
+            value_for_comparison=["Ein wenig", "Stark"],
+            comparison_type="isin",
+        ),
+        ordered=True,
     )
-    out["med_schwierigkeiten_taten_pl"] = object_to_str_categorical(
+    out["med_schwierigkeiten_taten"] = object_to_str_categorical(
         series=raw_data["ple0005"],
         renaming={
             "[3] Gar nicht": "Gar nicht",
@@ -188,18 +207,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["med_schwierigkeiten_taten_dummy_pl"] = create_dummy(
-        series=out["med_schwierigkeiten_taten_pl"],
-        value_for_comparison=["Ein wenig", "Stark"],
-        comparison_type="isin",
-    )
     out["med_größe_pl"] = object_to_int(raw_data["ple0006"])
     out["med_gewicht_pl"] = object_to_int(raw_data["ple0007"])
     out["bmi_pl"] = out["med_gewicht_pl"] / ((out["med_größe_pl"] / 100) ** 2)
     out["obese_pl"] = create_dummy(
         series=out["bmi_pl"], value_for_comparison=30, comparison_type="geq"
     )
-    out["med_subjective_status_pl"] = object_to_str_categorical(
+    out["med_subjective_status_intensity"] = object_to_str_categorical(
         series=raw_data["ple0008"],
         renaming={
             "[1] Sehr gut": "Sehr gut",
@@ -210,10 +224,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["med_subjective_status_dummy_pl"] = create_dummy(
-        out["med_subjective_status_pl"],
-        value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
-        comparison_type="isin",
+    out["med_subjective_status_pl"] = convert_to_categorical(
+        series=create_dummy(
+            series=out["med_subjective_status_intensity"],
+            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+            comparison_type="isin",
+        ),
+        ordered=True,
     )
     out["med_schlaf_pl"] = object_to_bool_categorical(
         series=raw_data["ple0011_v1"],
@@ -226,7 +243,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         ordered=True,
     )
     out["med_asthma_pl"] = object_to_bool_categorical(
-        raw_data["ple0013_v1"],
+        series=raw_data["ple0013_v1"],
         renaming={"[1] mentioned": True},
         ordered=True,
     )
@@ -286,8 +303,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["frailty_pl"] = _calculate_frailty(
         out[
             [
-                "med_schwierigkeiten_treppen_dummy_pl",
-                "med_schwierigkeiten_taten_dummy_pl",
+                "med_subjective_status_pl",
+                "med_schwierigkeiten_treppen_pl",
+                "med_schwierigkeiten_taten",
                 "med_schlaf_pl",
                 "med_diabetes_pl",
                 "med_asthma_pl",
@@ -302,7 +320,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
                 "med_rücken_pl",
                 "med_sonst_pl",
                 "med_raucher_pl",
-                "med_subjective_status_dummy_pl",
             ]
         ],
     )

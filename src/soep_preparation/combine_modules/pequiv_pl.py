@@ -32,7 +32,7 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
 
     out["med_schwierigkeiten_treppen"] = combine_first_and_make_categorical(
         series_1=merged["med_schwierigkeiten_treppen_pequiv"],
-        series_2=merged["med_schwierigkeiten_treppen_dummy_pl"],
+        series_2=merged["med_schwierigkeiten_treppen_pl"],
         ordered=True,
     )
     out["med_bluthochdruck"] = combine_first_and_make_categorical(
@@ -74,9 +74,6 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
     out["med_subjective_status"] = merged["med_subjective_status_pequiv"].combine_first(
         merged["med_subjective_status_pl"]
     )
-    out["med_subjective_status_dummy"] = merged[
-        "med_subjective_status_dummy_pequiv"
-    ].combine_first(merged["med_subjective_status_dummy_pl"])
     out["frailty"] = merged["frailty_pequiv"].combine_first(merged["frailty_pl"])
 
     out["kindesunterhalt_erhalten_m"] = merged[
