@@ -36,17 +36,15 @@ def _iteratively_read_one_data_file(
 
 
 for data_file_name in get_raw_data_file_names():
+    _stata_path = DATA_ROOT / SOEP_VERSION / f"{data_file_name}.dta"
+    _script_path = SRC / "clean_modules" / f"{data_file_name}.py"
+    _catalog_entry = RAW_DATA_FILES[data_file_name]
 
     @task(id=data_file_name)
     def task_read_one_data_file(
-        stata_data_file: Annotated[
-            Path, DATA_ROOT / f"{SOEP_VERSION}" / f"{data_file_name}.dta"
-        ],
-        cleaning_script: Annotated[
-            Path,
-            SRC / "clean_modules" / f"{data_file_name}.py",
-        ],
-    ) -> Annotated[pd.DataFrame, RAW_DATA_FILES[data_file_name]]:
+        stata_data_file: Annotated[Path, _stata_path],
+        cleaning_script: Annotated[Path, _script_path],
+    ) -> Annotated[pd.DataFrame, _catalog_entry]:
         """Saves the raw data file to the data catalog.
 
         Parameters:

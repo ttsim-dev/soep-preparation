@@ -24,11 +24,13 @@ def _calculate_hash(x: Any) -> int | str:
 
 
 for module_name in MODULES._entries:  # noqa: SLF001
+    _module_entry = MODULES[module_name]
+    _metadata_entry = _METADATA_CATALOG[module_name]
 
     @task(id=module_name)
     def task_create_metadata_for_one_module(
-        module: Annotated[pd.DataFrame, MODULES[module_name]],
-    ) -> Annotated[dict, _METADATA_CATALOG[module_name]]:
+        module: Annotated[pd.DataFrame, _module_entry],
+    ) -> Annotated[dict, _metadata_entry]:
         """Create metadata for a single module.
 
         Args:

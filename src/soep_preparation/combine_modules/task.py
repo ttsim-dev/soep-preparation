@@ -10,13 +10,15 @@ from soep_preparation.config import MODULES, SRC, get_combine_module_names
 from soep_preparation.utilities.general import load_script
 
 for script_name in get_combine_module_names():
-    modules_to_combine = {module: MODULES[module] for module in script_name.split("_")}
+    _modules_to_combine = {module: MODULES[module] for module in script_name.split("_")}
+    _script_path = SRC / "combine_modules" / f"{script_name}.py"
+    _catalog_entry = MODULES[script_name]
 
     @task(id=script_name)
     def task_combine_modules(
-        modules_to_combine: Annotated[dict[str, pd.DataFrame], modules_to_combine],
-        script_path: Annotated[Path, SRC / "combine_modules" / f"{script_name}.py"],
-    ) -> Annotated[pd.DataFrame, MODULES[script_name]]:
+        modules_to_combine: Annotated[dict[str, pd.DataFrame], _modules_to_combine],
+        script_path: Annotated[Path, _script_path],
+    ) -> Annotated[pd.DataFrame, _catalog_entry]:
         """Combine variables from multiple modules into one module.
 
         Args:

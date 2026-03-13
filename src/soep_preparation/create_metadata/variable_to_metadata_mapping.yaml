@@ -3946,7 +3946,7 @@ ft_employed_m_1:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -3996,7 +3996,7 @@ ft_employed_m_10:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4046,7 +4046,7 @@ ft_employed_m_11:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4096,7 +4096,7 @@ ft_employed_m_12:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4146,7 +4146,7 @@ ft_employed_m_2:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4195,7 +4195,7 @@ ft_employed_m_3:
     categorical:
       categories:
         - Vollzeit erwerbstätig
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4220,7 +4220,7 @@ ft_employed_m_4:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4270,7 +4270,7 @@ ft_employed_m_5:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4320,7 +4320,7 @@ ft_employed_m_6:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4370,7 +4370,7 @@ ft_employed_m_7:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4420,7 +4420,7 @@ ft_employed_m_8:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4470,7 +4470,7 @@ ft_employed_m_9:
       categories:
         - Vollzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -4902,9 +4902,7 @@ grund_beschäftigungsende:
         - Einvernehmliche Auflösung, Auflösungsvertrag (1985-1990, seit 1999)
         - Kündigung durch Arbeitgeber
         - Sonst. inkl. Stilllegung, Rente/Pension, beurlaubt, freigestellt (1987-1990)
-        - >-
-          Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig.
-          (1985-1986)
+        - Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig. (1985-1986)
         - Sonst. inkl. einvernehm. Auflösung/Auflösungsvertrag (1991-1998)
         - Versetzung durch Betrieb (1985-1998)
         - Versetzung eigener Wunsch (1985-1998)
@@ -5373,7 +5371,7 @@ hh_soep_sample:
         - IAB-SOEP 2020 Migration-Fachkräfteeinwanderung
         - IAB-SOEP 2022 Aufstockung
         - IAB-SOEP 2023 Aufstockung
-      categories_dtype: object
+      categories_dtype: str
       ordered: false
   module: hpathl_design
   survey_years: null
@@ -8000,9 +7998,8 @@ marital_status:
         - Ledig
         - Verheiratet, dauernd getrennt lebend
         - Verheiratet, mit Ehepartner zusammenlebend
-        - >-
-          Verwitwet / Lebenspartner/-in aus eingetragener gleichgeschlechtlicher
-          Partnerschaft verstorben
+        - Verwitwet / Lebenspartner/-in aus eingetragener gleichgeschlechtlicher Partnerschaft
+          verstorben
       categories_dtype: string
       ordered: false
   module: pgen
@@ -9652,7 +9649,7 @@ motor_disability:
     - 2022
     - 2023
 mutterschaftsgeld_anzahl_monate:
-  dtype: double[pyarrow]
+  dtype: uint8[pyarrow]
   module: pkal
   survey_years:
     - 1984
@@ -10306,9 +10303,8 @@ occupation_status:
         - Freiberufler, Akademiker ohne Mitarbeiter (ab 2000)
         - Freiberufler, Akademiker, 1-9 Mitarbeiter (ab 2000)
         - Freiberufler, Akademiker, 10+ Mitarbeiter (ab 2000)
-        - >-
-          Geschäftsführender Gesellschafter und vergl. Angestellte im eigenen Betrieb
-          (ab 2019)
+        - Geschäftsführender Gesellschafter und vergl. Angestellte im eigenen Betrieb (ab
+          2019)
         - Meister, Polier
         - 'NE: Rentner/Rentnerin'
         - 'NE: Wehr- und Zivildienst'
@@ -11794,9 +11790,8 @@ refugee_status:
       categories:
         - Duldung
         - Im Verfahren
-        - >-
-          Schutzstatus zuerkannt (Asyl, Fluechtlingseigenschaft,
-          Niederlassungserlaubnis, human. Aufnahme, sonst. human. Aufnahme)
+        - Schutzstatus zuerkannt (Asyl, Fluechtlingseigenschaft, Niederlassungserlaubnis,
+          human. Aufnahme, sonst. human. Aufnahme)
         - Sonstiges
       categories_dtype: string
       ordered: false
