@@ -140,8 +140,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["private_altersvorsorge_y"] = object_to_int(raw_data["iprv1"])
     out["private_altersvorsorge_hinterbliebene_y"] = object_to_int(raw_data["iprv2"])
     # berufsständische rente available since 2018
-    out["berufsständische_rente_y"] = object_to_int(raw_data["ilib1"])
-    out["berufsständische_rente_hinterbliebene_y"] = object_to_int(raw_data["ilib2"])
+    out["berufsständische_altersvorsorge_y"] = object_to_int(raw_data["ilib1"])
+    out["berufsständische_altersvorsorge_hinterbliebene_y"] = object_to_int(
+        raw_data["ilib2"]
+    )
     # riester rente available since 2015
     out["riester_rente_y"] = object_to_int(raw_data["irie1"])
     out["riester_rente_hinterbliebene_y"] = object_to_int(raw_data["irie2"])
