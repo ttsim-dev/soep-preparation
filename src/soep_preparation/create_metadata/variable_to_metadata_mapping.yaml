@@ -1051,6 +1051,94 @@ beendigung_beschäftigungsverhältnis_grund_1999:
   survey_years:
     - 1999
     - 2000
+berufsständische_altersvorsorge_hinterbliebene_y:
+  dtype: uint16[pyarrow]
+  module: pequiv
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+berufsständische_altersvorsorge_y:
+  dtype: uint32[pyarrow]
+  module: pequiv
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
 betreuungsgeld_y_hh:
   dtype: uint16[pyarrow]
   module: pequiv
@@ -3622,6 +3710,46 @@ federal_state_of_residence:
     - 2021
     - 2022
     - 2023
+financial_assets_value_a:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+financial_assets_value_b:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+financial_assets_value_c:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+financial_assets_value_d:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+financial_assets_value_e:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
 first_nationality:
   dtype:
     categorical:
@@ -4886,6 +5014,71 @@ gross_labor_income_previous_month_m:
     - 2021
     - 2022
     - 2023
+gross_overall_wealth_a:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+gross_overall_wealth_b:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+gross_overall_wealth_c:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+gross_overall_wealth_d:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+gross_overall_wealth_e:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+gross_overall_wealth_including_vehicles_a:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+gross_overall_wealth_including_vehicles_b:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+gross_overall_wealth_including_vehicles_c:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+gross_overall_wealth_including_vehicles_d:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+gross_overall_wealth_including_vehicles_e:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
 grund_beschäftigungsende:
   dtype:
     categorical:
@@ -6644,6 +6837,18 @@ imputation_flag_hh_net_overall_wealth_including_vehicles_and_student_loans:
       categories_dtype: string
       ordered: true
   module: hwealth
+  survey_years:
+    - 2017
+imputation_flag_net_overall_wealth_including_vehicles_and_student_loans:
+  dtype:
+    categorical:
+      categories:
+        - No imputation
+        - Edited
+        - Imputed
+      categories_dtype: string
+      ordered: true
+  module: pwealth
   survey_years:
     - 2017
 in_education:
@@ -9862,6 +10067,71 @@ net_labor_income_previous_month_m:
     - 2021
     - 2022
     - 2023
+net_overall_wealth_a:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_overall_wealth_b:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_overall_wealth_c:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_overall_wealth_d:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_overall_wealth_e:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_overall_wealth_including_vehicles_and_student_loans_a:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+net_overall_wealth_including_vehicles_and_student_loans_b:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+net_overall_wealth_including_vehicles_and_student_loans_c:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+net_overall_wealth_including_vehicles_and_student_loans_d:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+net_overall_wealth_including_vehicles_and_student_loans_e:
+  dtype: double[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
 nicht_erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -11224,6 +11494,46 @@ private_transfers_erhalten_y:
     - 2021
     - 2022
     - 2023
+property_value_primary_residence_a:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+property_value_primary_residence_b:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+property_value_primary_residence_c:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+property_value_primary_residence_d:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+property_value_primary_residence_e:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
 pt_employed_m_1:
   dtype:
     categorical:
@@ -13162,6 +13472,31 @@ urlaubsgeld_y:
     - 2021
     - 2022
     - 2023
+vehicles_value_a:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+vehicles_value_b:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+vehicles_value_c:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+vehicles_value_d:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
+vehicles_value_e:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2017
 vertragliche_arbeitszeit_w:
   dtype: float[pyarrow]
   module: pgen
