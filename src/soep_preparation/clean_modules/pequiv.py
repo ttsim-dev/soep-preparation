@@ -3,6 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
+    _replace_not_applicable_with,
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
     create_dummy,
@@ -37,10 +38,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])
     out["number_of_children_hh"] = apply_smallest_int_dtype(raw_data["d11107"])
     # hh income
-    out["einkommen_vor_steuern_y_hh"] = object_to_int(raw_data["i11101"])
-    out["einkommen_nach_steuern_y_hh"] = object_to_int(raw_data["i11102"])
-    out["einkommen_aus_vermietung_verpachtung_y_hh"] = object_to_int(raw_data["renty"])
-    out["einkommen_aus_zinsen_dividenden_y_hh"] = object_to_int(raw_data["divdy"])
+    out["einkommen_vor_steuern_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["i11101"], value=0)
+    )
+    out["einkommen_nach_steuern_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["i11102"], value=0)
+    )
+    out["einkommen_aus_vermietung_verpachtung_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["renty"], value=0)
+    )
+    out["einkommen_aus_zinsen_dividenden_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["divdy"], value=0)
+    )
 
     # individual characteristics
     out["gender"] = object_to_str_categorical(
@@ -54,109 +63,189 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # hh social benefits
-    out["kindergeld_y_hh_pequiv"] = object_to_int(raw_data["chspt"])
+    out["kindergeld_y_hh_pequiv"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["chspt"], value=0)
+    )
     out["kindergeld_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["kindergeld_y_hh_pequiv"] / 12
     )
-    out["mutterschaftsgeld_erhalten_y"] = object_to_int(raw_data["imaty"])
+    out["mutterschaftsgeld_erhalten_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["imaty"], value=0)
+    )
     # betreuungsgeld only available 2014 through 2016
-    out["betreuungsgeld_y_hh"] = object_to_int(raw_data["chsub"])
+    out["betreuungsgeld_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["chsub"], value=0)
+    )
 
-    out["kinderzuschlag_y_hh_pequiv"] = object_to_int(raw_data["adchb"])
+    out["kinderzuschlag_y_hh_pequiv"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["adchb"], value=0)
+    )
     out["kinderzuschlag_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["kinderzuschlag_y_hh_pequiv"] / 12
     )
-    out["wohngeld_y_hh_pequiv"] = object_to_int(raw_data["house"])
+    out["wohngeld_y_hh_pequiv"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["house"], value=0)
+    )
     out["wohngeld_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["wohngeld_y_hh_pequiv"] / 12
     )
 
     # individual social benefits
-    out["arbeitslosengeld_y"] = object_to_int(raw_data["iunby"])
+    out["arbeitslosengeld_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iunby"], value=0)
+    )
     # arbeitslosenhilfe available 1984 through 2005
-    out["arbeitslosenhilfe_y"] = object_to_int(raw_data["iunay"])
-    out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_int(raw_data["alg2"])
+    out["arbeitslosenhilfe_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iunay"], value=0)
+    )
+    out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["alg2"], value=0)
+    )
     out["arbeitslosengeld_2_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["arbeitslosengeld_2_y_hh_pequiv"] / 12
     )
 
-    out["allgemeine_sozialhilfe_y_hh"] = object_to_int(raw_data["subst"])
+    out["allgemeine_sozialhilfe_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["subst"], value=0)
+    )
     # sonstige sozialhilfe available in 1984 through 1991 and 2001 through 2009
-    out["sonstige_sozialhilfe_y_hh"] = object_to_int(raw_data["sphlp"])
+    out["sonstige_sozialhilfe_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["sphlp"], value=0)
+    )
     # grundsicherung only available 1984 through 2014
-    out["grundsicherung_y"] = object_to_int(raw_data["isuby"])
-    out["grundsicherung_im_alter_y_hh"] = object_to_int(raw_data["ssold"])
-    out["pflegegeld_y_hh"] = object_to_int(raw_data["nursh"])
+    out["grundsicherung_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["isuby"], value=0)
+    )
+    out["grundsicherung_im_alter_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ssold"], value=0)
+    )
+    out["pflegegeld_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["nursh"], value=0)
+    )
 
     # eigenheimzulage only available 1996 through 2014
-    out["eigenheimzulage_y_hh"] = object_to_int(raw_data["hsup"])
+    out["eigenheimzulage_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["hsup"], value=0)
+    )
     # private transfers contains
     # alimony in 1984 through 2000
     # divorce and caregiver alimonies in 1984 through 2014
     # unterhaltsvorschuss in 1984 through 2009
-    out["private_transfers_erhalten_y"] = object_to_int(raw_data["ielse"])
+    out["private_transfers_erhalten_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ielse"], value=0)
+    )
     # alimony received only available 2001 through 2014
-    out["unterhalt_erhalten_y"] = object_to_int(raw_data["ialim"])
+    out["unterhalt_erhalten_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ialim"], value=0)
+    )
     # caregiver alimony received available since 2015
-    out["kindesunterhalt_erhalten_y"] = object_to_int(raw_data["ichsu"])
+    out["kindesunterhalt_erhalten_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ichsu"], value=0)
+    )
     out["kindesunterhalt_erhalten_m_pequiv"] = out["kindesunterhalt_erhalten_y"] / 12
     # divorce alimony only available in 2015
-    out["ehegattenunterhalt_erhalten_y"] = object_to_int(raw_data["ispou"])
+    out["ehegattenunterhalt_erhalten_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ispou"], value=0)
+    )
     # unterhaltsvorschuss available since 2010
-    out["unterhaltsvorschuss_erhalten_y"] = object_to_int(raw_data["iachm"])
-    out["bafög_y"] = object_to_int(raw_data["istuy"])
+    out["unterhaltsvorschuss_erhalten_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iachm"], value=0)
+    )
+    out["bafög_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["istuy"], value=0)
+    )
 
     # gesetzliche rente available since 1986
     # contains knappschaftliche rente and alterssicherung landwirte since 2002
-    out["gesetzliche_rente_y"] = object_to_int(raw_data["igrv1"])
-    out["gesetzliche_rente_hinterbliebene_y"] = object_to_int(raw_data["igrv2"])
+    out["gesetzliche_rente_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["igrv1"], value=0)
+    )
+    out["gesetzliche_rente_hinterbliebene_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["igrv2"], value=0)
+    )
     # knappschaftliche rente available 1986 through 2001
-    out["knappschaftliche_rente_y"] = object_to_int(raw_data["ismp1"])
-    out["knappschaftliche_rente_hinterbliebene_y"] = object_to_int(raw_data["ismp2"])
+    out["knappschaftliche_rente_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ismp1"], value=0)
+    )
+    out["knappschaftliche_rente_hinterbliebene_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ismp2"], value=0)
+    )
     # alterssicherung landwirte available 1986 through 2001
-    out["alterssicherung_landwirte_y"] = object_to_int(raw_data["iagr1"])
-    out["alterssicherung_landwirte_hinterbliebene_y"] = object_to_int(raw_data["iagr2"])
+    out["alterssicherung_landwirte_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iagr1"], value=0)
+    )
+    out["alterssicherung_landwirte_hinterbliebene_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iagr2"], value=0)
+    )
     # war victim pension available 1986 through 2001 and 2003 through 2016
-    out["kriegsopferversorgung_rente_y"] = object_to_int(raw_data["iwar1"])
+    out["kriegsopferversorgung_rente_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iwar1"], value=0)
+    )
     out["kriegsopferversorgung_rente_hinterbliebene_y"] = object_to_int(
-        raw_data["iwar2"]
+        _replace_not_applicable_with(series=raw_data["iwar2"], value=0)
     )
     # beamtenpension available since 1986
-    out["beamtenpension_y"] = object_to_int(raw_data["iciv1"])
-    out["beamtenpension_hinterbliebene_y"] = object_to_int(raw_data["iciv2"])
+    out["beamtenpension_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iciv1"], value=0)
+    )
+    out["beamtenpension_hinterbliebene_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iciv2"], value=0)
+    )
     # beamten pension zusätzliche versorgung available since 1986
-    out["beamtenpension_zusätzliche_versorgung_y"] = object_to_int(raw_data["ivbl1"])
+    out["beamtenpension_zusätzliche_versorgung_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ivbl1"], value=0)
+    )
     out["beamtenpension_zusätzliche_versorgung_hinterbliebene_y"] = object_to_int(
-        raw_data["ivbl2"]
+        _replace_not_applicable_with(series=raw_data["ivbl2"], value=0)
     )
     # vorruhestandsgeld only available 1996 through 2001
-    out["vorruhestandgeld_y"] = object_to_int(raw_data["ieret"])
+    out["vorruhestandgeld_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ieret"], value=0)
+    )
     # betriebliche altersversorgung available since 1986
-    out["betriebliche_altersversorgung_y"] = object_to_int(raw_data["icom1"])
+    out["betriebliche_altersversorgung_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["icom1"], value=0)
+    )
     out["betriebliche_altersversorgung_hinterbliebene_y"] = object_to_int(
-        raw_data["icom2"]
+        _replace_not_applicable_with(series=raw_data["icom2"], value=0)
     )
     # private altersvorsorge available since 2003
-    out["private_altersvorsorge_y"] = object_to_int(raw_data["iprv1"])
-    out["private_altersvorsorge_hinterbliebene_y"] = object_to_int(raw_data["iprv2"])
+    out["private_altersvorsorge_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iprv1"], value=0)
+    )
+    out["private_altersvorsorge_hinterbliebene_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iprv2"], value=0)
+    )
     # berufsständische rente available since 2018
-    out["berufsständische_altersvorsorge_y"] = object_to_int(raw_data["ilib1"])
+    out["berufsständische_altersvorsorge_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ilib1"], value=0)
+    )
     out["berufsständische_altersvorsorge_hinterbliebene_y"] = object_to_int(
-        raw_data["ilib2"]
+        _replace_not_applicable_with(series=raw_data["ilib2"], value=0)
     )
     # riester rente available since 2015
-    out["riester_rente_y"] = object_to_int(raw_data["irie1"])
-    out["riester_rente_hinterbliebene_y"] = object_to_int(raw_data["irie2"])
+    out["riester_rente_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["irie1"], value=0)
+    )
+    out["riester_rente_hinterbliebene_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["irie2"], value=0)
+    )
     # gesetzliche unfallversicherung available since 1986
-    out["gesetzliche_unfallversicherung_rente_y"] = object_to_int(raw_data["iguv1"])
+    out["gesetzliche_unfallversicherung_rente_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iguv1"], value=0)
+    )
     out["gesetzliche_unfallversicherung_rente_hinterbliebene_y"] = object_to_int(
-        raw_data["iguv2"]
+        _replace_not_applicable_with(series=raw_data["iguv2"], value=0)
     )
     # andere rente available since 1986;
     # changes its content because different kinds of private pensions
     # are asked for explicitly in different years.
-    out["andere_rente_y"] = object_to_int(raw_data["ison1"])
-    out["andere_rente_hinterbliebene_y"] = object_to_int(raw_data["ison2"])
+    out["andere_rente_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ison1"], value=0)
+    )
+    out["andere_rente_hinterbliebene_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ison2"], value=0)
+    )
 
     # individual income
     out["employed_y"] = create_dummy(
@@ -169,19 +258,35 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=False,
     )
     out["hours_worked_y"] = object_to_int(raw_data["e11101"])
-    out["einkünfte_aus_arbeit_y"] = object_to_int(raw_data["i11110"])
-    out["einkünfte_aus_erstem_job_y"] = object_to_int(raw_data["ijob1"])
-    out["einkünfte_aus_zweitem_job_y"] = object_to_int(raw_data["ijob2"])
+    out["einkünfte_aus_arbeit_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["i11110"], value=0)
+    )
+    out["einkünfte_aus_erstem_job_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ijob1"], value=0)
+    )
+    out["einkünfte_aus_zweitem_job_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ijob2"], value=0)
+    )
     out["einkünfte_aus_selbstständiger_arbeit_y"] = object_to_int(
-        raw_data["iself"]
-    ).fillna(0)
-    out["weihnachtsgeld_y"] = object_to_int(raw_data["ixmas"])
-    out["urlaubsgeld_y"] = object_to_int(raw_data["iholy"])
-    out["gewinnbeteiligung_y"] = object_to_int(raw_data["igray"])
-    out["sonstige_boni_y"] = object_to_int(raw_data["iothy"])
+        _replace_not_applicable_with(series=raw_data["iself"], value=0)
+    )
+    out["weihnachtsgeld_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ixmas"], value=0)
+    )
+    out["urlaubsgeld_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iholy"], value=0)
+    )
+    out["gewinnbeteiligung_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["igray"], value=0)
+    )
+    out["sonstige_boni_y"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["iothy"], value=0)
+    )
 
     # hh costs
-    out["operation_maintenance_costs_y_hh"] = object_to_int(raw_data["opery"])
+    out["operation_maintenance_costs_y_hh"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["opery"], value=0)
+    )
 
     # individual medical characteristics
     out["med_krankenhaus_pequiv"] = object_to_bool_categorical(

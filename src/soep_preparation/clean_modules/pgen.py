@@ -6,6 +6,7 @@ import pandas as pd
 
 from soep_preparation.utilities import month_mapping
 from soep_preparation.utilities.data_manipulator import (
+    _replace_not_applicable_with,
     apply_smallest_int_dtype,
     create_dummy,
     object_to_bool_categorical,
@@ -218,11 +219,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # individual work information
     out["gross_labor_income_previous_month_m"] = object_to_float(
-        raw_data["pglabgro"]
-    ).fillna(0)
+        _replace_not_applicable_with(series=raw_data["pglabgro"], value=0)
+    )
     out["net_labor_income_previous_month_m"] = object_to_float(
-        raw_data["pglabnet"]
-    ).fillna(0)
+        _replace_not_applicable_with(series=raw_data["pglabnet"], value=0)
+    )
     out["tatsächliche_arbeitszeit_w"] = _weekly_working_hours_fill_non_working(
         working_hours=raw_data["pgtatzeit"],
         employment_status=out["employment_status"],

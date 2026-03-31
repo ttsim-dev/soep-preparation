@@ -3,6 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
+    _replace_not_applicable_with,
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
     create_dummy,
@@ -96,7 +97,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         ordered=True,
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
-    out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
+    out["net_labor_income_m_average"] = object_to_float(
+        _replace_not_applicable_with(series=raw_data["plb0471_h"], value=0)
+    )
     out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
         series=raw_data["plc0126_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
@@ -117,10 +120,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[1] Ja": True},
     )
     out["erhaltenes_mutterschaftsgeld_im_letzten_monat_m"] = object_to_float(
-        raw_data["plc0153_h"]
+        _replace_not_applicable_with(series=raw_data["plc0153_h"], value=0)
     )
-    out["erhaltenes_mutterschaftsgeld_m"] = object_to_float(raw_data["plc0155_h"])
-    out["kindesunterhalt_erhalten_m_pl"] = object_to_int(raw_data["plc0178"])
+    out["erhaltenes_mutterschaftsgeld_m"] = object_to_float(
+        _replace_not_applicable_with(series=raw_data["plc0155_h"], value=0)
+    )
+    out["kindesunterhalt_erhalten_m_pl"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["plc0178"], value=0)
+    )
 
     # private pension plan
     out["in_private_rente_eingezahlt"] = object_to_bool_categorical(
@@ -164,7 +171,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         series=raw_data["plj0582"],
         value_for_comparison=1,
     )
-    out["disability_degree"] = object_to_int(raw_data["ple0041_h"]).fillna(0)
+    out["disability_degree"] = object_to_int(
+        _replace_not_applicable_with(series=raw_data["ple0041_h"], value=0)
+    )
     out["med_schwierigkeit_treppen_pl"] = object_to_int_categorical(
         raw_data["ple0004"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
