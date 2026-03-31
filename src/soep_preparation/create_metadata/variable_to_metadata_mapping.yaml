@@ -10113,7 +10113,7 @@ net_overall_wealth_including_vehicles_and_student_loans_a:
   survey_years:
     - 2017
 net_overall_wealth_including_vehicles_and_student_loans_b:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
   survey_years:
     - 2017
