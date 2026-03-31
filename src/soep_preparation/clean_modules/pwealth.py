@@ -24,19 +24,19 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
 
     out["property_value_primary_residence_a"] = apply_smallest_float_dtype(
-        raw_data["p0010a"]
+        raw_data["p0100a"]
     )
     out["property_value_primary_residence_b"] = apply_smallest_float_dtype(
-        raw_data["p0010b"]
+        raw_data["p0100b"]
     )
     out["property_value_primary_residence_c"] = apply_smallest_float_dtype(
-        raw_data["p0010c"]
+        raw_data["p0100c"]
     )
     out["property_value_primary_residence_d"] = apply_smallest_float_dtype(
-        raw_data["p0010d"]
+        raw_data["p0100d"]
     )
     out["property_value_primary_residence_e"] = apply_smallest_float_dtype(
-        raw_data["p0010e"]
+        raw_data["p0100e"]
     )
 
     # due to non-response and to achieve comparable market values,
@@ -55,11 +55,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["gross_overall_wealth_d"] = apply_smallest_float_dtype(raw_data["w0101d"])
     out["gross_overall_wealth_e"] = apply_smallest_float_dtype(raw_data["w0101e"])
 
-    out["net_overall_wealth_a"] = apply_smallest_float_dtype(raw_data["w0011a"])
-    out["net_overall_wealth_b"] = apply_smallest_float_dtype(raw_data["w0011b"])
-    out["net_overall_wealth_c"] = apply_smallest_float_dtype(raw_data["w0011c"])
-    out["net_overall_wealth_d"] = apply_smallest_float_dtype(raw_data["w0011d"])
-    out["net_overall_wealth_e"] = apply_smallest_float_dtype(raw_data["w0011e"])
+    out["net_overall_wealth_a"] = apply_smallest_float_dtype(raw_data["w0111a"])
+    out["net_overall_wealth_b"] = apply_smallest_float_dtype(raw_data["w0111b"])
+    out["net_overall_wealth_c"] = apply_smallest_float_dtype(raw_data["w0111c"])
+    out["net_overall_wealth_d"] = apply_smallest_float_dtype(raw_data["w0111d"])
+    out["net_overall_wealth_e"] = apply_smallest_float_dtype(raw_data["w0111e"])
 
     out["vehicles_value_a"] = apply_smallest_float_dtype(
         raw_data["v0100a"].replace({-8: pd.NA})
@@ -93,24 +93,24 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["n0101e"].replace({-8: pd.NA})
     )
     out["net_overall_wealth_including_vehicles_and_student_loans_a"] = (
-        apply_smallest_float_dtype(raw_data["n0011a"].replace({-8: pd.NA}))
+        apply_smallest_float_dtype(raw_data["n0111a"].replace({-8: pd.NA}))
     )
     out["net_overall_wealth_including_vehicles_and_student_loans_b"] = (
-        apply_smallest_float_dtype(raw_data["n0011b"].replace({-8: pd.NA}))
+        apply_smallest_float_dtype(raw_data["n0111b"].replace({-8: pd.NA}))
     )
     out["net_overall_wealth_including_vehicles_and_student_loans_c"] = (
-        apply_smallest_float_dtype(raw_data["n0011c"].replace({-8: pd.NA}))
+        apply_smallest_float_dtype(raw_data["n0111c"].replace({-8: pd.NA}))
     )
     out["net_overall_wealth_including_vehicles_and_student_loans_d"] = (
-        apply_smallest_float_dtype(raw_data["n0011d"].replace({-8: pd.NA}))
+        apply_smallest_float_dtype(raw_data["n0111d"].replace({-8: pd.NA}))
     )
     out["net_overall_wealth_including_vehicles_and_student_loans_e"] = (
-        apply_smallest_float_dtype(raw_data["n0011e"].replace({-8: pd.NA}))
+        apply_smallest_float_dtype(raw_data["n0111e"].replace({-8: pd.NA}))
     )
 
     out["imputation_flag_net_overall_wealth_including_vehicles_and_student_loans"] = (
         object_to_str_categorical(
-            series=raw_data["n00220"],
+            series=raw_data["n02220"],
             renaming={
                 "[0] No imputation": "No imputation",
                 "[1] Edited": "Edited",
