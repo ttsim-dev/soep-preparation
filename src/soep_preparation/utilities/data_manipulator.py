@@ -51,7 +51,7 @@ def _get_na_values_to_remove(series: pd.Series) -> list:
     return str_values_to_remove + num_values_to_remove
 
 
-def _replace_not_applicable_with(series: pd.Series, value: float) -> pd.Series:
+def replace_not_applicable_answer(series: pd.Series, value: float) -> pd.Series:
     """Replace "does not apply" (-2) SOEP codes with a concrete value.
 
     Code -2 ("trifft nicht zu") indicates that the question was not applicable

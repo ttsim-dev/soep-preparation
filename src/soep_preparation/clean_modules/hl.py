@@ -3,11 +3,11 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    _replace_not_applicable_with,
     apply_smallest_int_dtype,
     object_to_bool_categorical,
     object_to_float,
     object_to_int,
+    replace_not_applicable_answer,
 )
 
 
@@ -45,7 +45,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         bezug=out["bezieht_aktuell_kindergeld_hh"],
     )
     out["kindergeld_m_hh_hl"] = object_to_int(
-        _replace_not_applicable_with(series=raw_data["hlc0042_h"], value=0)
+        replace_not_applicable_answer(series=raw_data["hlc0042_h"], value=0)
     )
 
     out["bezieht_aktuell_kinderzuschlag_hh"] = object_to_bool_categorical(
@@ -54,7 +54,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["kinderzuschlag_m_aktuell_hh"] = object_to_int(
-        _replace_not_applicable_with(series=raw_data["hlc0047_h"], value=0)
+        replace_not_applicable_answer(series=raw_data["hlc0047_h"], value=0)
     )
     out["bezog_kinderzuschlag_hh"] = object_to_bool_categorical(
         raw_data["hlc0049_h"],
@@ -62,7 +62,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["kinderzuschlag_m_hh_hl"] = object_to_int(
-        _replace_not_applicable_with(series=raw_data["hlc0051_h"], value=0)
+        replace_not_applicable_answer(series=raw_data["hlc0051_h"], value=0)
     )
 
     out["bezieht_aktuell_wohngeld_hh"] = object_to_bool_categorical(
@@ -71,7 +71,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
     out["wohngeld_m_hh_hl"] = object_to_int(
-        _replace_not_applicable_with(series=raw_data["hlc0082_h"], value=0)
+        replace_not_applicable_answer(series=raw_data["hlc0082_h"], value=0)
     )
 
     # Variables contain Arbeitslosengeld II Bedarf, Sozialgeld, Kosten der Unterkunft
@@ -82,7 +82,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["arbeitslosengeld_2_anzahl_monate_hh"] = object_to_int(raw_data["hlc0053"])
     out["arbeitslosengeld_2_m_hh_hl"] = object_to_float(
-        _replace_not_applicable_with(series=raw_data["hlc0054"], value=0)
+        replace_not_applicable_answer(series=raw_data["hlc0054"], value=0)
     )
 
     out["bezieht_aktuell_hilfe_zum_lebensunterhalt_hh"] = object_to_bool_categorical(
@@ -92,6 +92,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     out["grundsicherung_im_alter_m_aktuell_hh"] = object_to_int(
-        _replace_not_applicable_with(series=raw_data["hlc0071"], value=0)
+        replace_not_applicable_answer(series=raw_data["hlc0071"], value=0)
     )
     return out

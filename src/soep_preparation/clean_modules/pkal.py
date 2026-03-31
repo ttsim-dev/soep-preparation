@@ -4,12 +4,12 @@ import numpy as np
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    _replace_not_applicable_with,
     apply_smallest_int_dtype,
     combine_first_and_make_categorical,
     object_to_bool_categorical,
     object_to_int,
     object_to_str_categorical,
+    replace_not_applicable_answer,
 )
 
 
@@ -108,10 +108,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # individual status previous calendar year
     out["unemployed_anzahl_monate"] = object_to_int(
-        _replace_not_applicable_with(series=raw_data["kal1d02"], value=0)
+        replace_not_applicable_answer(series=raw_data["kal1d02"], value=0)
     )
-    out["early_retirement_pension_number_months"] = object_to_int(raw_data["kal1e02"])
-    out["unemployment_benefits_number_months"] = object_to_int(raw_data["kal2f02"])
+    out["early_retirement_pension_number_months"] = object_to_int(
+        replace_not_applicable_answer(series=raw_data["kal1e02"], value=0)
+    )
+    out["unemployment_benefits_number_months"] = object_to_int(
+        replace_not_applicable_answer(series=raw_data["kal2f02"], value=0)
+    )
     out["bezog_mutterschaftsgeld_pkal"] = object_to_bool_categorical(
         series=raw_data["kal2j01_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},

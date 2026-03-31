@@ -3,12 +3,12 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    _replace_not_applicable_with,
     apply_smallest_int_dtype,
     float_to_int,
     object_to_float,
     object_to_int,
     object_to_str_categorical,
+    replace_not_applicable_answer,
 )
 
 
@@ -40,7 +40,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["building_year_hh_max"] = object_to_int(raw_data["hgcnstyrmax"])
     out["building_year_hh_min"] = object_to_int(raw_data["hgcnstyrmin"])
     out["heating_costs_m_hh"] = object_to_int(
-        _replace_not_applicable_with(series=raw_data["hgheat"], value=0)
+        replace_not_applicable_answer(series=raw_data["hgheat"], value=0)
     )
     out["year_moved_in"] = object_to_int(raw_data["hgmoveyr"])
     out["rented_or_owned"] = object_to_str_categorical(
