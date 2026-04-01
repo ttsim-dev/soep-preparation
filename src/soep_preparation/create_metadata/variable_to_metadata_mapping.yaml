@@ -10345,7 +10345,7 @@ number_of_children:
   dtype: uint8[pyarrow]
   module: biobirth
   survey_years: null
-number_of_children_hh:
+number_of_children_living_in_hh:
   dtype: uint8[pyarrow]
   module: pequiv
   survey_years:

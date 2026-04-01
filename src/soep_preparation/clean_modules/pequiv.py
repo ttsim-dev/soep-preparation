@@ -36,7 +36,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # hh characteristics
     out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])
-    out["number_of_children_hh"] = apply_smallest_int_dtype(raw_data["d11107"])
+    out["number_of_children_living_in_hh"] = apply_smallest_int_dtype(
+        raw_data["d11107"]
+    )
     # hh income
     out["einkommen_vor_steuern_y_hh"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["i11101"], value=0)
