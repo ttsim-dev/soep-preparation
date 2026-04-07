@@ -5483,6 +5483,46 @@ hh_net_overall_wealth_including_vehicles_and_student_loans_e:
   module: hwealth
   survey_years:
     - 2017
+hh_net_property_value_primary_residence_a:
+  dtype: double[pyarrow]
+  module: hwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+hh_net_property_value_primary_residence_b:
+  dtype: double[pyarrow]
+  module: hwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+hh_net_property_value_primary_residence_c:
+  dtype: double[pyarrow]
+  module: hwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+hh_net_property_value_primary_residence_d:
+  dtype: double[pyarrow]
+  module: hwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+hh_net_property_value_primary_residence_e:
+  dtype: double[pyarrow]
+  module: hwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
 hh_property_value_primary_residence_a:
   dtype: double[pyarrow]
   module: hwealth
