@@ -10144,46 +10144,6 @@ net_overall_wealth_e:
     - 2007
     - 2012
     - 2017
-net_property_value_primary_residence_a:
-  dtype: double[pyarrow]
-  module: pwealth
-  survey_years:
-    - 2002
-    - 2007
-    - 2012
-    - 2017
-net_property_value_primary_residence_b:
-  dtype: double[pyarrow]
-  module: pwealth
-  survey_years:
-    - 2002
-    - 2007
-    - 2012
-    - 2017
-net_property_value_primary_residence_c:
-  dtype: double[pyarrow]
-  module: pwealth
-  survey_years:
-    - 2002
-    - 2007
-    - 2012
-    - 2017
-net_property_value_primary_residence_d:
-  dtype: double[pyarrow]
-  module: pwealth
-  survey_years:
-    - 2002
-    - 2007
-    - 2012
-    - 2017
-net_property_value_primary_residence_e:
-  dtype: double[pyarrow]
-  module: pwealth
-  survey_years:
-    - 2002
-    - 2007
-    - 2012
-    - 2017
 net_overall_wealth_including_vehicles_and_student_loans_a:
   dtype: double[pyarrow]
   module: pwealth
@@ -10208,6 +10168,46 @@ net_overall_wealth_including_vehicles_and_student_loans_e:
   dtype: double[pyarrow]
   module: pwealth
   survey_years:
+    - 2017
+net_property_value_primary_residence_a:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_property_value_primary_residence_b:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_property_value_primary_residence_c:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_property_value_primary_residence_d:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+net_property_value_primary_residence_e:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years:
+    - 2002
+    - 2007
+    - 2012
     - 2017
 nicht_erwerbstätig:
   dtype: bool[pyarrow]
