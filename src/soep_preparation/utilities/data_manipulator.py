@@ -119,8 +119,6 @@ def apply_smallest_int_dtype(
     Returns:
         The series with the smallest integer dtype applied.
     """
-    if not (series < 0).any():
-        return pd.to_numeric(series, downcast="unsigned", dtype_backend="pyarrow")
     return pd.to_numeric(series, downcast="integer", dtype_backend="pyarrow")
 
 

@@ -7,6 +7,7 @@ from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     create_dummy,
     object_to_bool_categorical,
+    object_to_float,
     object_to_int,
     object_to_int_categorical,
     object_to_str_categorical,
@@ -40,16 +41,16 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["d11107"]
     )
     # hh income
-    out["einkommen_vor_steuern_y_hh"] = object_to_int(
+    out["einkommen_vor_steuern_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["i11101"], value=0)
     )
-    out["einkommen_nach_steuern_y_hh"] = object_to_int(
+    out["einkommen_nach_steuern_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["i11102"], value=0)
     )
-    out["einkommen_aus_vermietung_verpachtung_y_hh"] = object_to_int(
+    out["einkommen_aus_vermietung_verpachtung_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["renty"], value=0)
     )
-    out["einkommen_aus_zinsen_dividenden_y_hh"] = object_to_int(
+    out["einkommen_aus_zinsen_dividenden_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["divdy"], value=0)
     )
 
@@ -65,27 +66,27 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # hh social benefits
-    out["kindergeld_y_hh_pequiv"] = object_to_int(
+    out["kindergeld_y_hh_pequiv"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["chspt"], value=0)
     )
     out["kindergeld_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["kindergeld_y_hh_pequiv"] / 12
     )
-    out["mutterschaftsgeld_erhalten_y"] = object_to_int(
+    out["mutterschaftsgeld_erhalten_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["imaty"], value=0)
     )
     # betreuungsgeld only available 2014 through 2016
-    out["betreuungsgeld_y_hh"] = object_to_int(
+    out["betreuungsgeld_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["chsub"], value=0)
     )
 
-    out["kinderzuschlag_y_hh_pequiv"] = object_to_int(
+    out["kinderzuschlag_y_hh_pequiv"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["adchb"], value=0)
     )
     out["kinderzuschlag_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["kinderzuschlag_y_hh_pequiv"] / 12
     )
-    out["wohngeld_y_hh_pequiv"] = object_to_int(
+    out["wohngeld_y_hh_pequiv"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["house"], value=0)
     )
     out["wohngeld_m_hh_pequiv"] = apply_smallest_float_dtype(
@@ -93,159 +94,159 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # individual social benefits
-    out["arbeitslosengeld_y"] = object_to_int(
+    out["arbeitslosengeld_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iunby"], value=0)
     )
     # arbeitslosenhilfe available 1984 through 2005
-    out["arbeitslosenhilfe_y"] = object_to_int(
+    out["arbeitslosenhilfe_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iunay"], value=0)
     )
-    out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_int(
+    out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["alg2"], value=0)
     )
     out["arbeitslosengeld_2_m_hh_pequiv"] = apply_smallest_float_dtype(
         out["arbeitslosengeld_2_y_hh_pequiv"] / 12
     )
 
-    out["allgemeine_sozialhilfe_y_hh"] = object_to_int(
+    out["allgemeine_sozialhilfe_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["subst"], value=0)
     )
     # sonstige sozialhilfe available in 1984 through 1991 and 2001 through 2009
-    out["sonstige_sozialhilfe_y_hh"] = object_to_int(
+    out["sonstige_sozialhilfe_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["sphlp"], value=0)
     )
     # grundsicherung only available 1984 through 2014
-    out["grundsicherung_y"] = object_to_int(
+    out["grundsicherung_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["isuby"], value=0)
     )
-    out["grundsicherung_im_alter_y_hh"] = object_to_int(
+    out["grundsicherung_im_alter_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ssold"], value=0)
     )
-    out["pflegegeld_y_hh"] = object_to_int(
+    out["pflegegeld_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["nursh"], value=0)
     )
 
     # eigenheimzulage only available 1996 through 2014
-    out["eigenheimzulage_y_hh"] = object_to_int(
+    out["eigenheimzulage_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["hsup"], value=0)
     )
     # private transfers contains
     # alimony in 1984 through 2000
     # divorce and caregiver alimonies in 1984 through 2014
     # unterhaltsvorschuss in 1984 through 2009
-    out["private_transfers_erhalten_y"] = object_to_int(
+    out["private_transfers_erhalten_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ielse"], value=0)
     )
     # alimony received only available 2001 through 2014
-    out["unterhalt_erhalten_y"] = object_to_int(
+    out["unterhalt_erhalten_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ialim"], value=0)
     )
     # caregiver alimony received available since 2015
-    out["kindesunterhalt_erhalten_y"] = object_to_int(
+    out["kindesunterhalt_erhalten_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ichsu"], value=0)
     )
     out["kindesunterhalt_erhalten_m_pequiv"] = out["kindesunterhalt_erhalten_y"] / 12
     # divorce alimony only available in 2015
-    out["ehegattenunterhalt_erhalten_y"] = object_to_int(
+    out["ehegattenunterhalt_erhalten_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ispou"], value=0)
     )
     # unterhaltsvorschuss available since 2010
-    out["unterhaltsvorschuss_erhalten_y"] = object_to_int(
+    out["unterhaltsvorschuss_erhalten_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iachm"], value=0)
     )
-    out["bafög_y"] = object_to_int(
+    out["bafög_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["istuy"], value=0)
     )
 
     # gesetzliche rente available since 1986
     # contains knappschaftliche rente and alterssicherung landwirte since 2002
-    out["gesetzliche_rente_y"] = object_to_int(
+    out["gesetzliche_rente_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["igrv1"], value=0)
     )
-    out["gesetzliche_rente_hinterbliebene_y"] = object_to_int(
+    out["gesetzliche_rente_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["igrv2"], value=0)
     )
     # knappschaftliche rente available 1986 through 2001
-    out["knappschaftliche_rente_y"] = object_to_int(
+    out["knappschaftliche_rente_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ismp1"], value=0)
     )
-    out["knappschaftliche_rente_hinterbliebene_y"] = object_to_int(
+    out["knappschaftliche_rente_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ismp2"], value=0)
     )
     # alterssicherung landwirte available 1986 through 2001
-    out["alterssicherung_landwirte_y"] = object_to_int(
+    out["alterssicherung_landwirte_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iagr1"], value=0)
     )
-    out["alterssicherung_landwirte_hinterbliebene_y"] = object_to_int(
+    out["alterssicherung_landwirte_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iagr2"], value=0)
     )
     # war victim pension available 1986 through 2001 and 2003 through 2016
-    out["kriegsopferversorgung_rente_y"] = object_to_int(
+    out["kriegsopferversorgung_rente_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iwar1"], value=0)
     )
-    out["kriegsopferversorgung_rente_hinterbliebene_y"] = object_to_int(
+    out["kriegsopferversorgung_rente_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iwar2"], value=0)
     )
     # beamtenpension available since 1986
-    out["beamtenpension_y"] = object_to_int(
+    out["beamtenpension_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iciv1"], value=0)
     )
-    out["beamtenpension_hinterbliebene_y"] = object_to_int(
+    out["beamtenpension_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iciv2"], value=0)
     )
     # beamten pension zusätzliche versorgung available since 1986
-    out["beamtenpension_zusätzliche_versorgung_y"] = object_to_int(
+    out["beamtenpension_zusätzliche_versorgung_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ivbl1"], value=0)
     )
-    out["beamtenpension_zusätzliche_versorgung_hinterbliebene_y"] = object_to_int(
+    out["beamtenpension_zusätzliche_versorgung_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ivbl2"], value=0)
     )
     # vorruhestandsgeld only available 1996 through 2001
-    out["vorruhestandgeld_y"] = object_to_int(
+    out["vorruhestandgeld_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ieret"], value=0)
     )
     # betriebliche altersversorgung available since 1986
-    out["betriebliche_altersversorgung_y"] = object_to_int(
+    out["betriebliche_altersversorgung_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["icom1"], value=0)
     )
-    out["betriebliche_altersversorgung_hinterbliebene_y"] = object_to_int(
+    out["betriebliche_altersversorgung_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["icom2"], value=0)
     )
     # private altersvorsorge available since 2003
-    out["private_altersvorsorge_y"] = object_to_int(
+    out["private_altersvorsorge_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iprv1"], value=0)
     )
-    out["private_altersvorsorge_hinterbliebene_y"] = object_to_int(
+    out["private_altersvorsorge_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iprv2"], value=0)
     )
     # berufsständische rente available since 2018
-    out["berufsständische_altersvorsorge_y"] = object_to_int(
+    out["berufsständische_altersvorsorge_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ilib1"], value=0)
     )
-    out["berufsständische_altersvorsorge_hinterbliebene_y"] = object_to_int(
+    out["berufsständische_altersvorsorge_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ilib2"], value=0)
     )
     # riester rente available since 2015
-    out["riester_rente_y"] = object_to_int(
+    out["riester_rente_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["irie1"], value=0)
     )
-    out["riester_rente_hinterbliebene_y"] = object_to_int(
+    out["riester_rente_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["irie2"], value=0)
     )
     # gesetzliche unfallversicherung available since 1986
-    out["gesetzliche_unfallversicherung_rente_y"] = object_to_int(
+    out["gesetzliche_unfallversicherung_rente_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iguv1"], value=0)
     )
-    out["gesetzliche_unfallversicherung_rente_hinterbliebene_y"] = object_to_int(
+    out["gesetzliche_unfallversicherung_rente_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iguv2"], value=0)
     )
     # andere rente available since 1986;
     # changes its content because different kinds of private pensions
     # are asked for explicitly in different years.
-    out["andere_rente_y"] = object_to_int(
+    out["andere_rente_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ison1"], value=0)
     )
-    out["andere_rente_hinterbliebene_y"] = object_to_int(
+    out["andere_rente_hinterbliebene_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ison2"], value=0)
     )
 
@@ -259,34 +260,34 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["e11103"],
         ordered=False,
     )
-    out["hours_worked_y"] = object_to_int(raw_data["e11101"])
-    out["einkünfte_aus_arbeit_y"] = object_to_int(
+    out["hours_worked_y"] = object_to_float(raw_data["e11101"])
+    out["einkünfte_aus_arbeit_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["i11110"], value=0)
     )
-    out["einkünfte_aus_erstem_job_y"] = object_to_int(
+    out["einkünfte_aus_erstem_job_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ijob1"], value=0)
     )
-    out["einkünfte_aus_zweitem_job_y"] = object_to_int(
+    out["einkünfte_aus_zweitem_job_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ijob2"], value=0)
     )
-    out["einkünfte_aus_selbstständiger_arbeit_y"] = object_to_int(
+    out["einkünfte_aus_selbstständiger_arbeit_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iself"], value=0)
     )
-    out["weihnachtsgeld_y"] = object_to_int(
+    out["weihnachtsgeld_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ixmas"], value=0)
     )
-    out["urlaubsgeld_y"] = object_to_int(
+    out["urlaubsgeld_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iholy"], value=0)
     )
-    out["gewinnbeteiligung_y"] = object_to_int(
+    out["gewinnbeteiligung_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["igray"], value=0)
     )
-    out["sonstige_boni_y"] = object_to_int(
+    out["sonstige_boni_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iothy"], value=0)
     )
 
     # hh costs
-    out["operation_maintenance_costs_y_hh"] = object_to_int(
+    out["operation_maintenance_costs_y_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["opery"], value=0)
     )
 
@@ -358,7 +359,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     out["med_größe_pequiv"] = object_to_int(raw_data["m11122"])
-    out["med_gewicht_pequiv"] = object_to_int(raw_data["m11123"])
+    out["med_gewicht_pequiv"] = object_to_float(raw_data["m11123"])
 
     out["bmi_pequiv"] = apply_smallest_float_dtype(
         out["med_gewicht_pequiv"] / ((out["med_größe_pequiv"] / 100) ** 2),

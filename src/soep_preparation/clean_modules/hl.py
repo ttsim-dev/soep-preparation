@@ -14,8 +14,8 @@ from soep_preparation.utilities.data_manipulator import (
 def _kindergeld_m_hh(
     betrag: pd.Series[pd.Categorical],
     bezug: pd.Series[pd.Categorical],
-) -> pd.Series[int]:
-    out = object_to_int(betrag)
+) -> pd.Series[float]:
+    out = object_to_float(betrag)
     return out.where(
         ~(betrag.isna()) & (bezug.astype("bool[pyarrow]")),
         0,
@@ -44,7 +44,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         betrag=raw_data["hlc0045_h"],
         bezug=out["bezieht_aktuell_kindergeld_hh"],
     )
-    out["kindergeld_m_hh_hl"] = object_to_int(
+    out["kindergeld_m_hh_hl"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["hlc0042_h"], value=0)
     )
 
@@ -53,7 +53,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["kinderzuschlag_m_aktuell_hh"] = object_to_int(
+    out["kinderzuschlag_m_aktuell_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["hlc0047_h"], value=0)
     )
     out["bezog_kinderzuschlag_hh"] = object_to_bool_categorical(
@@ -61,7 +61,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["kinderzuschlag_m_hh_hl"] = object_to_int(
+    out["kinderzuschlag_m_hh_hl"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["hlc0051_h"], value=0)
     )
 
@@ -70,7 +70,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["wohngeld_m_hh_hl"] = object_to_int(
+    out["wohngeld_m_hh_hl"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["hlc0082_h"], value=0)
     )
 
@@ -91,7 +91,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
 
-    out["grundsicherung_im_alter_m_aktuell_hh"] = object_to_int(
+    out["grundsicherung_im_alter_m_aktuell_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["hlc0071"], value=0)
     )
     return out

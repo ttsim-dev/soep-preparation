@@ -67,7 +67,7 @@ def test_object_to_str_categorical_assert_renaming_2_identifier():
 
 
 def test_object_to_int_categorical_assert_dtype():
-    expected_categories = pd.array([0, 10], dtype="uint8[pyarrow]")
+    expected_categories = pd.array([0, 10], dtype="int8[pyarrow]")
     expected = pd.Series(pd.Categorical(expected_categories)).dtype
     sr = pd.Series([0, 10], dtype=object)
     actual = object_to_int_categorical(sr).dtype
@@ -75,7 +75,7 @@ def test_object_to_int_categorical_assert_dtype():
 
 
 def test_object_to_int_categorical_assert_ordering():
-    expected_categories = pd.array([0, 10], dtype="uint8[pyarrow]")
+    expected_categories = pd.array([0, 10], dtype="int8[pyarrow]")
     expected = pd.Series(pd.Categorical(expected_categories, ordered=True))
     sr = pd.Series([0, 10], dtype=object)
     actual = object_to_int_categorical(sr, ordered=True)
