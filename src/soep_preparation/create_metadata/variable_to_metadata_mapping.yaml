@@ -1908,7 +1908,7 @@ birth_month_bioedu:
         - 10
         - 11
         - 12
-      categories_dtype: uint8[pyarrow]
+      categories_dtype: int8[pyarrow]
       ordered: true
   module: bioedu
   survey_years: null
@@ -1928,7 +1928,7 @@ birth_month_child:
         - 10
         - 11
         - 12
-      categories_dtype: uint8[pyarrow]
+      categories_dtype: int8[pyarrow]
       ordered: true
   module: biobirth
   survey_years: null
@@ -1948,7 +1948,7 @@ birth_month_ppathl:
         - 10
         - 11
         - 12
-      categories_dtype: uint8[pyarrow]
+      categories_dtype: int8[pyarrow]
       ordered: true
   module: ppathl
   survey_years:
@@ -1993,7 +1993,7 @@ birth_month_ppathl:
     - 2022
     - 2023
 birth_year:
-  dtype: uint16[pyarrow]
+  dtype: int16[pyarrow]
   module: pbrutto
   survey_years:
     - 1985
@@ -2036,7 +2036,7 @@ birth_year:
     - 2022
     - 2023
 birth_year_child:
-  dtype: uint16[pyarrow]
+  dtype: int16[pyarrow]
   module: biobirth
   survey_years: null
 birthplace:
@@ -2659,7 +2659,7 @@ disability_degree:
     - 2022
     - 2023
 early_retirement_pension_number_months:
-  dtype: uint8[pyarrow]
+  dtype: int8[pyarrow]
   module: pkal
   survey_years:
     - 1984
@@ -5564,7 +5564,7 @@ hh_property_value_primary_residence_e:
     - 2012
     - 2017
 hh_random_group:
-  dtype: uint8[pyarrow]
+  dtype: int8[pyarrow]
   module: design
   survey_years: null
 hh_soep_sample:
@@ -9759,7 +9759,7 @@ month_interview:
         - 10
         - 11
         - 12
-      categories_dtype: uint8[pyarrow]
+      categories_dtype: int8[pyarrow]
       ordered: true
   module: pgen
   survey_years:
@@ -9891,7 +9891,7 @@ motor_disability:
     - 2022
     - 2023
 mutterschaftsgeld_anzahl_monate:
-  dtype: uint8[pyarrow]
+  dtype: int8[pyarrow]
   module: pkal
   survey_years:
     - 1984
@@ -10422,7 +10422,7 @@ norm_women_family_priority_high_to_low:
   survey_years:
     - 2012
 number_of_children:
-  dtype: uint8[pyarrow]
+  dtype: int8[pyarrow]
   module: biobirth
   survey_years: null
 number_of_children_living_in_hh:
@@ -10470,7 +10470,7 @@ number_of_children_living_in_hh:
     - 2022
     - 2023
 number_of_months_employed:
-  dtype: uint8[pyarrow]
+  dtype: int8[pyarrow]
   module: pkal
   survey_years:
     - 1984
@@ -10763,23 +10763,23 @@ operation_maintenance_costs_y_hh:
     - 2022
     - 2023
 p_id_child:
-  dtype: uint32[pyarrow]
+  dtype: int32[pyarrow]
   module: biobirth
   survey_years: null
 p_id_father_1:
-  dtype: uint32[pyarrow]
+  dtype: int32[pyarrow]
   module: bioparen
   survey_years: null
 p_id_father_2:
-  dtype: uint32[pyarrow]
+  dtype: int32[pyarrow]
   module: bioparen
   survey_years: null
 p_id_mother_1:
-  dtype: uint32[pyarrow]
+  dtype: int32[pyarrow]
   module: bioparen
   survey_years: null
 p_id_mother_2:
-  dtype: uint32[pyarrow]
+  dtype: int32[pyarrow]
   module: bioparen
   survey_years: null
 partnership_status:
@@ -11190,7 +11190,7 @@ pointer_mother:
     - 2022
     - 2023
 pointer_partner:
-  dtype: uint32[pyarrow]
+  dtype: int32[pyarrow]
   module: ppathl
   survey_years:
     - 1984
@@ -13286,7 +13286,7 @@ type_of_health_insurance_2022:
   survey_years:
     - 2022
 unemployed_anzahl_monate:
-  dtype: uint8[pyarrow]
+  dtype: int8[pyarrow]
   module: pkal
   survey_years:
     - 1984
@@ -13330,7 +13330,7 @@ unemployed_anzahl_monate:
     - 2022
     - 2023
 unemployment_benefits_number_months:
-  dtype: uint8[pyarrow]
+  dtype: int8[pyarrow]
   module: pkal
   survey_years:
     - 1984
@@ -14032,7 +14032,7 @@ year_moved_in:
     - 2022
     - 2023
 year_of_immigration:
-  dtype: uint16[pyarrow]
+  dtype: int16[pyarrow]
   module: ppathl
   survey_years:
     - 1984
