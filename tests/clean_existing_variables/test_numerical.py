@@ -28,16 +28,16 @@ def test_apply_smallest_int_dtype_assert_dtype_int16():
     assert actual == expected
 
 
-def test_apply_smallest_int_dtype_assert_dtype_non_negative_up_to_255():
-    expected = pd.Series([0, 255], dtype="int16[pyarrow]").dtype
-    sr = pd.Series([0, 255])
+def test_apply_smallest_int_dtype_assert_dtype_up_to_255():
+    expected = pd.Series([-255, 0, 255], dtype="int16[pyarrow]").dtype
+    sr = pd.Series([-255, 0, 255])
     actual = apply_smallest_int_dtype(sr).dtype
     assert actual == expected
 
 
-def test_apply_smallest_int_dtype_assert_dtype_non_negative_up_to_65535():
-    expected = pd.Series([0, 65535], dtype="int32[pyarrow]").dtype
-    sr = pd.Series([0, 65535])
+def test_apply_smallest_int_dtype_assert_dtype_up_to_65535():
+    expected = pd.Series([-65535, 0, 65535], dtype="int32[pyarrow]").dtype
+    sr = pd.Series([-65535, 0, 65535])
     actual = apply_smallest_int_dtype(sr).dtype
     assert actual == expected
 
