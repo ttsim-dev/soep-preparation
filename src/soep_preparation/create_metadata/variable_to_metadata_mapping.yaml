@@ -2119,7 +2119,7 @@ birthplace_germany_mother:
     - 2017
     - 2018
 bmi:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: pequiv_pl
   survey_years:
     - 2002
@@ -2143,7 +2143,7 @@ bmi:
     - 2022
     - 2023
 bmi_pequiv:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: pequiv
   survey_years:
     - 2002
@@ -2167,7 +2167,7 @@ bmi_pequiv:
     - 2022
     - 2023
 bmi_pl:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: pl
   survey_years:
     - 2002
@@ -8557,7 +8557,7 @@ med_gewicht_pl:
     - 2020
     - 2022
 med_größe:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: pequiv_pl
   survey_years:
     - 2002
@@ -8581,7 +8581,7 @@ med_größe:
     - 2022
     - 2023
 med_größe_pequiv:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: pequiv
   survey_years:
     - 2002
@@ -8605,7 +8605,7 @@ med_größe_pequiv:
     - 2022
     - 2023
 med_größe_pl:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: pl
   survey_years:
     - 2002

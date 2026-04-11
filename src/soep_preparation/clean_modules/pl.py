@@ -189,7 +189,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
     )
-    out["med_größe_pl"] = object_to_int(raw_data["ple0006"])
+    out["med_größe_pl"] = object_to_float(raw_data["ple0006"])
     out["med_gewicht_pl"] = object_to_float(raw_data["ple0007"])
     out["bmi_pl"] = out["med_gewicht_pl"] / ((out["med_größe_pl"] / 100) ** 2)
     out["obese_pl"] = create_dummy(

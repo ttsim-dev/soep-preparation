@@ -358,7 +358,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         ordered=True,
     )
 
-    out["med_größe_pequiv"] = object_to_int(raw_data["m11122"])
+    out["med_größe_pequiv"] = object_to_float(raw_data["m11122"])
     out["med_gewicht_pequiv"] = object_to_float(raw_data["m11123"])
 
     out["bmi_pequiv"] = apply_smallest_float_dtype(
