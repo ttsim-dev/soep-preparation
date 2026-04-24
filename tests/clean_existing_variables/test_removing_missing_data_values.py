@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import pyarrow as pa
 
@@ -14,7 +13,7 @@ def test_remove_missing_data_values_assert_dtype():
     )
     expected = pd.Series(expected_categories).dtype
     sr = pd.Series(
-        ["[0] Cat 0", "[10] Cat 10", np.nan],
+        ["[0] Cat 0", "[10] Cat 10", pd.NA],
         dtype=pd.ArrowDtype(pa.string()),
     )
     actual = _remove_missing_data_values(sr).dtype

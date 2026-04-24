@@ -15,15 +15,15 @@ from soep_preparation.config import (
 )
 
 for data_file_name in get_raw_data_file_names():
+    _raw_data_entry = RAW_DATA_FILES[data_file_name]
+    _script_path = SRC / "clean_modules" / f"{data_file_name}.py"
+    _module_entry = MODULES[data_file_name]
 
     @task(id=data_file_name)
     def task_clean_one_module(
-        raw_data: Annotated[pd.DataFrame, RAW_DATA_FILES[data_file_name]],
-        script_path: Annotated[
-            Path,
-            SRC / "clean_modules" / f"{data_file_name}.py",
-        ],
-    ) -> Annotated[pd.DataFrame, MODULES[data_file_name]]:
+        raw_data: Annotated[pd.DataFrame, _raw_data_entry],
+        script_path: Annotated[Path, _script_path],
+    ) -> Annotated[pd.DataFrame, _module_entry]:
         """Cleans variables of a module using the corresponding cleaning script.
 
         Cleaning scripts contain function `clean` taking the raw pandas DataFrame

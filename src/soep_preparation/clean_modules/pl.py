@@ -15,11 +15,11 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _private_rente_beitrag_m_ein_umfragejahr(
-    private_rente_beitrag_jahr: "pd.Series[int]",
-    eingezahlte_monate: "pd.Series[int]",
-    eingezahlt: "pd.Series[pd.Categorical]",
+    private_rente_beitrag_jahr: pd.Series[int],
+    eingezahlte_monate: pd.Series[int],
+    eingezahlt: pd.Series[pd.Categorical],
     survey_year: int,
-) -> "pd.Series[int]":
+) -> pd.Series[int]:
     # For 2013 it was recorded in Euros, for 2018 in cents.
     # Converting 2018 values to Euros.
     relevant_suvery_year = 2018

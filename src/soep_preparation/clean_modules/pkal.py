@@ -13,9 +13,9 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _mutterschaftsgeld_anzahl_monate(
-    monate: "pd.Series[pd.Categorical]",
-    bezug: "pd.Series[pd.Categorical]",
-) -> "pd.Series[int]":
+    monate: pd.Series[pd.Categorical],
+    bezug: pd.Series[pd.Categorical],
+) -> pd.Series[int]:
     sr = pd.Series(
         np.maximum(
             (object_to_int(monate) - 3),

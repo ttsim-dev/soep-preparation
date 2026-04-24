@@ -194,14 +194,13 @@ def _get_sorted_dataset_merging_information(
 def _merge_data(
     merging_information: dict[str, DatasetMergingInfo],
 ) -> pd.DataFrame:
-    for i, m in enumerate(merging_information.values()):
-        if i == 0:  # noqa: SIM108
-            out = m["data"]
-        else:
-            out = out.merge(m["data"], how="outer")  # ty: ignore[unresolved-reference]
-    idx_vars_in_out = [v for v in POTENTIAL_INDEX_VARIABLES if v in out.columns]  # ty: ignore[possibly-unresolved-reference]
-    mod_vars_in_out = [v for v in out.columns if v not in idx_vars_in_out]  # ty: ignore[possibly-unresolved-reference]
-    out_no_nan = out.dropna(axis="index", subset=mod_vars_in_out, how="all")  # ty: ignore[possibly-unresolved-reference]
+    items = iter(merging_information.values())
+    out = next(items)["data"]
+    for m in items:
+        out = out.merge(m["data"], how="outer")
+    idx_vars_in_out = [v for v in POTENTIAL_INDEX_VARIABLES if v in out.columns]
+    mod_vars_in_out = [v for v in out.columns if v not in idx_vars_in_out]
+    out_no_nan = out.dropna(axis="index", subset=mod_vars_in_out, how="all")
     if out_no_nan.empty:
         msg = "The merged dataset contains no observations with non-missing values."
         raise ValueError(msg)

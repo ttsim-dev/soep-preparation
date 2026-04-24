@@ -2,85 +2,85 @@
 repos:
   - repo: meta
     hooks:
+      - id: check-hooks-apply
       - id: check-useless-excludes
-      # - id: check-hooks-apply  # Leave mdformat and nbstripout in here.
       # - id: identity  # Prints all files passed to pre-commits. Debugging.
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: v2.21.1
+    hooks:
+      - id: pyproject-fmt
+  - repo: https://github.com/lyz-code/yamlfix
+    rev: 1.19.1
+    hooks:
+      - id: yamlfix
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
       - id: check-added-large-files
         args:
           - --maxkb=10000
+      - id: check-ast
       - id: check-case-conflict
+      - id: check-docstring-first
       - id: check-merge-conflict
+      - id: check-toml
       - id: check-vcs-permalinks
       - id: check-yaml
-      - id: check-toml
       - id: debug-statements
       - id: end-of-file-fixer
       - id: fix-byte-order-marker
         types:
           - text
-      - id: forbid-submodules
       - id: mixed-line-ending
         args:
           - --fix=lf
         description: Forces to replace line ending by the UNIX 'lf' character.
       - id: name-tests-test
-        args: [--pytest-test-first]
+        args:
+          - --pytest-test-first
       - id: no-commit-to-branch
         args:
           - --branch
           - main
       - id: trailing-whitespace
-      - id: check-ast
-      - id: check-docstring-first
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.38.0
     hooks:
       - id: yamllint
+        exclude: variable_to_metadata_mapping\.yaml
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.11
+    rev: v0.15.11
     hooks:
       - id: ruff-check
         types_or:
-          - python
           - jupyter
+          - pyi
+          - python
         args:
           - --fix
       - id: ruff-format
         types_or:
-          - python
           - jupyter
-  - repo: https://github.com/kynan/nbstripout
-    rev: 0.8.2
-    hooks:
-      - id: nbstripout
-        args:
-          - --extra-keys
-          - metadata.kernelspec metadata.language_info.version metadata.vscode
+          - pyi
+          - python
   - repo: https://github.com/executablebooks/mdformat
     rev: 1.0.0
     hooks:
       - id: mdformat
         additional_dependencies:
           - mdformat-gfm
+          - mdformat-gfm-alerts
           - mdformat-ruff
         args:
           - --wrap
           - '88'
-        files: (README\.md)
-  - repo: https://github.com/executablebooks/mdformat
-    rev: 1.0.0
-    hooks:
-      - id: mdformat
-        additional_dependencies: [mdformat-myst, mdformat-ruff]
-        args: [--wrap, '88']
-        files: (docs/.)
+        files: (AGENTS\.md|CLAUDE\.md|README\.md|modules/.*\.md|profiles/.*\.md)
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
+    rev: v2.4.2
     hooks:
       - id: codespell
-        args: [--skip="**.ipynb", --ignore-words=.codespell-wordlist.txt]
+        args:
+          - --skip="**.ipynb"
+          - --ignore-words=.codespell-wordlist.txt
 ci:
   autoupdate_schedule: monthly
