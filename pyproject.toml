@@ -48,6 +48,34 @@ build.targets.wheel.sources = [ "src" ]
 metadata.allow-direct-references = true
 version.source = "vcs"
 
+[tool.pixi]
+[tool.pixi.dependencies]
+deepdiff = "*"
+jupyterlab = "*"
+prek = "*"
+pygments = ">=2.19.2"
+pygraphviz = "*"
+[tool.pixi.environments]
+py314 = [ "py314", "tests" ]
+[tool.pixi.feature.py314]
+dependencies.python = "~=3.14.0"
+[tool.pixi.feature.tests.pypi-dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+ty = "*"
+[tool.pixi.feature.tests.tasks]
+tests = "pytest"
+tests-with-cov = "pytest tests --cov-report=xml --cov=./"
+ty = "ty check"
+[tool.pixi.pypi-dependencies]
+soep_preparation = { path = ".", editable = true }
+kaleido = ">=1.0.0"
+pdbp = ">=1.8.1"
+[tool.pixi.workspace]
+channels = [ "conda-forge" ]
+platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
+
 [tool.ruff]
 fix = true
 unsafe-fixes = false
@@ -90,11 +118,6 @@ expand_tables = [
   "tool.pixi.workspace",
 ]
 
-[tool.pytest]
-ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
-ini_options.filterwarnings = []
-ini_options.norecursedirs = [ "docs" ]
-
 [tool.ty]
 rules.ambiguous-protocol-member = "error"
 rules.deprecated = "error"
@@ -109,38 +132,15 @@ rules.redundant-cast = "error"
 rules.unused-awaitable = "error"
 rules.unused-ignore-comment = "error"
 
+[tool.pytest]
+ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
+ini_options.filterwarnings = []
+ini_options.norecursedirs = [ "docs" ]
+
 [tool.yamlfix]
 line_length = 88
 sequence_style = "block_style"
 none_representation = "null"
-
-[tool.pixi]
-[tool.pixi.dependencies]
-deepdiff = "*"
-jupyterlab = "*"
-prek = "*"
-pygments = ">=2.19.2"
-pygraphviz = "*"
-[tool.pixi.environments]
-py314 = [ "py314", "tests" ]
-[tool.pixi.feature.py314]
-dependencies.python = "~=3.14.0"
-[tool.pixi.feature.tests.pypi-dependencies]
-pytest = "*"
-pytest-cov = "*"
-pytest-xdist = "*"
-ty = "*"
-[tool.pixi.feature.tests.tasks]
-tests = "pytest"
-tests-with-cov = "pytest tests --cov-report=xml --cov=./"
-ty = "ty check"
-[tool.pixi.pypi-dependencies]
-soep_preparation = { path = ".", editable = true }
-kaleido = ">=1.0.0"
-pdbp = ">=1.8.1"
-[tool.pixi.workspace]
-channels = [ "conda-forge" ]
-platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
 
 [tool.pytask]
 ini_options.editor_url_scheme = "vscode"
