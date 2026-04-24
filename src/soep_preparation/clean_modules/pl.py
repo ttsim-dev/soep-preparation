@@ -11,6 +11,7 @@ from soep_preparation.utilities.data_manipulator import (
     object_to_int,
     object_to_int_categorical,
     object_to_str_categorical,
+    replace_not_applicable_answer,
 )
 
 
@@ -24,7 +25,7 @@ def _private_rente_beitrag_m_ein_umfragejahr(
     # Converting 2018 values to Euros.
     relevant_suvery_year = 2018
     if survey_year == relevant_suvery_year:
-        out = object_to_int(private_rente_beitrag_jahr)
+        out = object_to_float(private_rente_beitrag_jahr)
         out /= 100
     else:
         out = object_to_float(private_rente_beitrag_jahr)
@@ -96,7 +97,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         ordered=True,
     )
     out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
-    out["net_labor_income_m_average"] = object_to_float(raw_data["plb0471_h"])
+    out["net_labor_income_m_average"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["plb0471_h"], value=0)
+    )
     out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
         series=raw_data["plc0126_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
@@ -117,10 +120,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[1] Ja": True},
     )
     out["erhaltenes_mutterschaftsgeld_im_letzten_monat_m"] = object_to_float(
-        raw_data["plc0153_h"]
+        replace_not_applicable_answer(series=raw_data["plc0153_h"], value=0)
     )
-    out["erhaltenes_mutterschaftsgeld_m"] = object_to_float(raw_data["plc0155_h"])
-    out["kindesunterhalt_erhalten_m_pl"] = object_to_int(raw_data["plc0178"])
+    out["erhaltenes_mutterschaftsgeld_m"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["plc0155_h"], value=0)
+    )
+    out["kindesunterhalt_erhalten_m_pl"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["plc0178"], value=0)
+    )
 
     # private pension plan
     out["in_private_rente_eingezahlt"] = object_to_bool_categorical(
@@ -164,7 +171,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         series=raw_data["plj0582"],
         value_for_comparison=1,
     )
-    out["disability_degree"] = object_to_int(raw_data["ple0041_h"]).fillna(0)
+    out["disability_degree"] = object_to_int(
+        replace_not_applicable_answer(series=raw_data["ple0041_h"], value=0)
+    )
     out["med_schwierigkeit_treppen_pl"] = object_to_int_categorical(
         raw_data["ple0004"],
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
@@ -180,8 +189,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[3] Gar nicht": 0, "[2] Ein wenig": 1, "[1] Stark": 2},
         ordered=True,
     )
-    out["med_größe_pl"] = object_to_int(raw_data["ple0006"])
-    out["med_gewicht_pl"] = object_to_int(raw_data["ple0007"])
+    out["med_größe_pl"] = object_to_float(raw_data["ple0006"])
+    out["med_gewicht_pl"] = object_to_float(raw_data["ple0007"])
     out["bmi_pl"] = out["med_gewicht_pl"] / ((out["med_größe_pl"] / 100) ** 2)
     out["obese_pl"] = create_dummy(
         series=out["bmi_pl"], value_for_comparison=30, comparison_type="geq"
@@ -566,7 +575,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     # errands
     out["hours_errands_workday"] = object_to_float(raw_data["pli0040"])
     out["hours_errands_sat"] = object_to_float(raw_data["pli0054"])
-    out["hours_errands_sun"] = object_to_int(raw_data["pli0011"])
+    out["hours_errands_sun"] = object_to_float(raw_data["pli0011"])
 
     # housework
     out["hours_housework_workday"] = object_to_float(raw_data["pli0043_h"])

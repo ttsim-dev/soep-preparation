@@ -23,7 +23,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """
     out = pd.DataFrame()
 
-    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
+    out["hh_id"] = apply_smallest_int_dtype(
+        raw_data["hid"].replace({-2: pd.NA, -3: pd.NA})
+    )
     out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 

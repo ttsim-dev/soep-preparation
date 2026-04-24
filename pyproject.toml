@@ -48,7 +48,6 @@ build.targets.wheel.sources = [ "src" ]
 metadata.allow-direct-references = true
 version.source = "vcs"
 
-[tool.pixi]
 [tool.pixi.dependencies]
 deepdiff = "*"
 jupyterlab = "*"

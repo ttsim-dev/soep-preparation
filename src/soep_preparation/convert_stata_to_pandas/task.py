@@ -73,5 +73,10 @@ for data_file_name in get_raw_data_file_names():
 def _error_handling_task(data: Any, script_path: Any) -> None:
     fail_if_input_has_invalid_type(input_=data, expected_dtypes=["pathlib.PosixPath"])
     fail_if_input_has_invalid_type(
-        input_=script_path, expected_dtypes=["pathlib.PosixPath"]
+        input_=data,
+        expected_dtypes=["pathlib.PosixPath", "pathlib.WindowsPath"],
+    )
+    fail_if_input_has_invalid_type(
+        input_=script_path,
+        expected_dtypes=["pathlib.PosixPath", "pathlib.WindowsPath"],
     )
