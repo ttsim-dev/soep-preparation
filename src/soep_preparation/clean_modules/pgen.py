@@ -12,6 +12,7 @@ from soep_preparation.utilities.data_manipulator import (
     object_to_float,
     object_to_int_categorical,
     object_to_str_categorical,
+    replace_not_applicable_answer,
 )
 
 
@@ -218,11 +219,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # individual work information
     out["gross_labor_income_previous_month_m"] = object_to_float(
-        raw_data["pglabgro"]
-    ).fillna(0)
+        replace_not_applicable_answer(series=raw_data["pglabgro"], value=0)
+    )
     out["net_labor_income_previous_month_m"] = object_to_float(
-        raw_data["pglabnet"]
-    ).fillna(0)
+        replace_not_applicable_answer(series=raw_data["pglabnet"], value=0)
+    )
     out["tatsächliche_arbeitszeit_w"] = _weekly_working_hours_fill_non_working(
         working_hours=raw_data["pgtatzeit"],
         employment_status=out["employment_status"],

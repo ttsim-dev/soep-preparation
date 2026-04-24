@@ -39,6 +39,22 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         raw_data["p0100e"]
     )
 
+    out["net_property_value_primary_residence_a"] = apply_smallest_float_dtype(
+        raw_data["p0110a"]
+    )
+    out["net_property_value_primary_residence_b"] = apply_smallest_float_dtype(
+        raw_data["p0110b"]
+    )
+    out["net_property_value_primary_residence_c"] = apply_smallest_float_dtype(
+        raw_data["p0110c"]
+    )
+    out["net_property_value_primary_residence_d"] = apply_smallest_float_dtype(
+        raw_data["p0110d"]
+    )
+    out["net_property_value_primary_residence_e"] = apply_smallest_float_dtype(
+        raw_data["p0110e"]
+    )
+
     # due to non-response and to achieve comparable market values,
     # a maximum-likelihood Heckman selection regression model is used
     # the imputation is repeated leading to postfixes a-e

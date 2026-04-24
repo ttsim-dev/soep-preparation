@@ -51,6 +51,37 @@ def _get_na_values_to_remove(series: pd.Series) -> list:
     return str_values_to_remove + num_values_to_remove
 
 
+def replace_not_applicable_answer(series: pd.Series, value: float) -> pd.Series:
+    """Replace "does not apply" (-2) SOEP codes with a concrete value.
+
+    Code -2 ("trifft nicht zu") indicates that the question was not applicable
+    to the respondent.  For income variables this means "no income from this
+    source", so the appropriate replacement is 0.
+
+    All other negative codes (-1, -3 … -9) represent genuinely missing data
+    and are left unchanged for ``_remove_missing_data_values`` to convert to
+    NA.
+
+    Parameters:
+        series: The input series.
+        value: The replacement value for "does not apply".
+
+    Returns:
+        A new series with -2 codes replaced.
+    """
+    unique_values = series.unique()
+    not_applicable_str = re.compile(r"\[-2\]\s.+")
+    replacements: dict = {
+        v: value
+        for v in unique_values
+        if (isinstance(v, (int | float)) and v == -2)  # noqa: PLR2004
+        or (isinstance(v, str) and not_applicable_str.match(v))
+    }
+    if not replacements:
+        return series
+    return series.replace(replacements)
+
+
 def _remove_missing_data_values(series: pd.Series) -> pd.Series:
     """Remove values representing missing data or no response to the questionnaire.
 
@@ -88,8 +119,6 @@ def apply_smallest_int_dtype(
     Returns:
         The series with the smallest integer dtype applied.
     """
-    if not (series < 0).any():
-        return pd.to_numeric(series, downcast="unsigned", dtype_backend="pyarrow")
     return pd.to_numeric(series, downcast="integer", dtype_backend="pyarrow")
 
 
