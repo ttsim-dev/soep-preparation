@@ -50,6 +50,7 @@
     - 2021
     - 2022
     - 2023
+    - 2024
 active_work_search_last_four_weeks:
   dtype:
     categorical:
@@ -85,6 +86,7 @@ active_work_search_last_four_weeks:
     - 2021
     - 2022
     - 2023
+    - 2024
 age:
   dtype: int8[pyarrow]
   module: pequiv
@@ -129,6 +131,7 @@ age:
     - 2021
     - 2022
     - 2023
+    - 2024
 allgemeine_sozialhilfe_y_hh:
   dtype: float[pyarrow]
   module: pequiv
@@ -173,6 +176,7 @@ allgemeine_sozialhilfe_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 alterssicherung_landwirte_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -217,6 +221,7 @@ alterssicherung_landwirte_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 alterssicherung_landwirte_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -261,6 +266,7 @@ alterssicherung_landwirte_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 altersteilzeit:
   dtype:
     categorical:
@@ -362,6 +368,7 @@ andere_rente_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 andere_rente_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -406,6 +413,7 @@ andere_rente_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 arbeitslos_gemeldet:
   dtype: bool[pyarrow]
   module: pgen
@@ -450,6 +458,7 @@ arbeitslos_gemeldet:
     - 2021
     - 2022
     - 2023
+    - 2024
 arbeitslosengeld_2_anzahl_monate_hh:
   dtype: int8[pyarrow]
   module: hl
@@ -472,6 +481,7 @@ arbeitslosengeld_2_anzahl_monate_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 arbeitslosengeld_2_m_hh:
   dtype: float[pyarrow]
   module: pequiv_hl
@@ -516,6 +526,7 @@ arbeitslosengeld_2_m_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 arbeitslosengeld_2_m_hh_hl:
   dtype: float[pyarrow]
   module: hl
@@ -538,6 +549,7 @@ arbeitslosengeld_2_m_hh_hl:
     - 2021
     - 2022
     - 2023
+    - 2024
 arbeitslosengeld_2_m_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -582,6 +594,7 @@ arbeitslosengeld_2_m_hh_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 arbeitslosengeld_2_y_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -626,6 +639,7 @@ arbeitslosengeld_2_y_hh_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 arbeitslosengeld_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -670,6 +684,7 @@ arbeitslosengeld_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 arbeitslosenhilfe_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -714,6 +729,7 @@ arbeitslosenhilfe_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 bafög_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -758,6 +774,7 @@ bafög_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 beamtenpension_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -802,6 +819,7 @@ beamtenpension_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 beamtenpension_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -846,6 +864,7 @@ beamtenpension_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 beamtenpension_zusätzliche_versorgung_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -890,6 +909,7 @@ beamtenpension_zusätzliche_versorgung_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 beamtenpension_zusätzliche_versorgung_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -934,6 +954,7 @@ beamtenpension_zusätzliche_versorgung_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 beamter:
   dtype: bool[pyarrow]
   module: pgen
@@ -978,6 +999,7 @@ beamter:
     - 2021
     - 2022
     - 2023
+    - 2024
 beendigung_beschäftigungsverhältnis_betriebsstillegung:
   dtype:
     categorical:
@@ -1034,6 +1056,7 @@ beendigung_beschäftigungsverhältnis_grund:
     - 2021
     - 2022
     - 2023
+    - 2024
 beendigung_beschäftigungsverhältnis_grund_1999:
   dtype:
     categorical:
@@ -1095,6 +1118,7 @@ berufsständische_altersvorsorge_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 berufsständische_altersvorsorge_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -1139,6 +1163,7 @@ berufsständische_altersvorsorge_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 betreuungsgeld_y_hh:
   dtype: float[pyarrow]
   module: pequiv
@@ -1183,6 +1208,7 @@ betreuungsgeld_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 betriebliche_altersversorgung_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -1227,6 +1253,7 @@ betriebliche_altersversorgung_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 betriebliche_altersversorgung_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -1271,6 +1298,7 @@ betriebliche_altersversorgung_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 betriebsgröße:
   dtype:
     categorical:
@@ -1324,6 +1352,7 @@ betriebsgröße:
     - 2021
     - 2022
     - 2023
+    - 2024
 betriebsgröße_detailliert_aber_inkonsistente_kategorien:
   dtype:
     categorical:
@@ -1383,6 +1412,7 @@ betriebsgröße_detailliert_aber_inkonsistente_kategorien:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezieht_aktuell_arbeitslosengeld_2_hh:
   dtype:
     categorical:
@@ -1412,6 +1442,7 @@ bezieht_aktuell_arbeitslosengeld_2_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezieht_aktuell_hilfe_zum_lebensunterhalt_hh:
   dtype:
     categorical:
@@ -1451,6 +1482,7 @@ bezieht_aktuell_hilfe_zum_lebensunterhalt_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezieht_aktuell_kindergeld_hh:
   dtype:
     categorical:
@@ -1490,6 +1522,7 @@ bezieht_aktuell_kindergeld_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezieht_aktuell_kinderzuschlag_hh:
   dtype:
     categorical:
@@ -1515,6 +1548,7 @@ bezieht_aktuell_kinderzuschlag_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezieht_aktuell_wohngeld_hh:
   dtype:
     categorical:
@@ -1554,6 +1588,7 @@ bezieht_aktuell_wohngeld_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezog_arbeitslosengeld_im_letzten_monat:
   dtype:
     categorical:
@@ -1592,18 +1627,17 @@ bezog_arbeitslosengeld_im_letzten_monat:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezog_arbeitslosengeld_m3_m5:
   dtype:
     categorical:
       categories:
-        - false
         - true
+        - false
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
   survey_years:
-    - 2017
-    - 2018
     - 2019
     - 2020
 bezog_kinderzuschlag_hh:
@@ -1631,6 +1665,7 @@ bezog_kinderzuschlag_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezog_mutterschaftsgeld:
   dtype:
     categorical:
@@ -1681,6 +1716,7 @@ bezog_mutterschaftsgeld:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezog_mutterschaftsgeld_im_letzten_monat:
   dtype:
     categorical:
@@ -1719,6 +1755,7 @@ bezog_mutterschaftsgeld_im_letzten_monat:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezog_mutterschaftsgeld_pkal:
   dtype:
     categorical:
@@ -1769,6 +1806,7 @@ bezog_mutterschaftsgeld_pkal:
     - 2021
     - 2022
     - 2023
+    - 2024
 bezog_mutterschaftsgeld_pl:
   dtype:
     categorical:
@@ -1808,6 +1846,7 @@ bezog_mutterschaftsgeld_pl:
     - 2021
     - 2022
     - 2023
+    - 2024
 birth_bundesland:
   dtype:
     categorical:
@@ -1872,6 +1911,7 @@ birth_bundesland:
     - 2021
     - 2022
     - 2023
+    - 2024
 birth_month:
   dtype:
     categorical:
@@ -1992,6 +2032,7 @@ birth_month_ppathl:
     - 2021
     - 2022
     - 2023
+    - 2024
 birth_year:
   dtype: int16[pyarrow]
   module: pbrutto
@@ -2035,6 +2076,7 @@ birth_year:
     - 2021
     - 2022
     - 2023
+    - 2024
 birth_year_child:
   dtype: int16[pyarrow]
   module: biobirth
@@ -2142,6 +2184,7 @@ bmi:
     - 2021
     - 2022
     - 2023
+    - 2024
 bmi_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -2166,6 +2209,7 @@ bmi_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 bmi_pl:
   dtype: float[pyarrow]
   module: pl
@@ -2181,6 +2225,7 @@ bmi_pl:
     - 2018
     - 2020
     - 2022
+    - 2024
 born_in_germany:
   dtype:
     categorical:
@@ -2231,6 +2276,7 @@ born_in_germany:
     - 2021
     - 2022
     - 2023
+    - 2024
 building_year_hh_max:
   dtype: int16[pyarrow]
   module: hgen
@@ -2275,6 +2321,7 @@ building_year_hh_max:
     - 2021
     - 2022
     - 2023
+    - 2024
 building_year_hh_min:
   dtype: int16[pyarrow]
   module: hgen
@@ -2319,6 +2366,7 @@ building_year_hh_min:
     - 2021
     - 2022
     - 2023
+    - 2024
 child_number:
   dtype: int64
   module: biobirth
@@ -2398,6 +2446,7 @@ country_of_birth:
         - Algerien
         - Amerikanisch-Samoa
         - Angola
+        - Antarktis
         - Argentinien
         - Armenien
         - Aruba
@@ -2424,6 +2473,7 @@ country_of_birth:
         - Costa Rica
         - Côte d’Ivoire
         - Deutschland
+        - Dominica
         - Dominikanische Republik
         - Dschibuti
         - Dänemark
@@ -2431,6 +2481,7 @@ country_of_birth:
         - El Salvador
         - Eritrea
         - Estland
+        - Fidschi
         - Finnland
         - Frankreich
         - Gabun
@@ -2453,6 +2504,7 @@ country_of_birth:
         - Irak
         - Iran
         - Irland
+        - Island
         - Israel
         - Italien
         - Jamaika
@@ -2489,7 +2541,9 @@ country_of_birth:
         - Madagaskar
         - Malawi
         - Malaysia
+        - Malediven
         - Mali
+        - Malta
         - Marokko
         - Mauretanien
         - Mauritius
@@ -2513,6 +2567,7 @@ country_of_birth:
         - Pakistan
         - Palästina
         - Panama
+        - Papua-Neuguinea
         - Paraguay
         - Peru
         - Philippinen
@@ -2617,6 +2672,7 @@ country_of_birth:
     - 2021
     - 2022
     - 2023
+    - 2024
 disability_degree:
   dtype: int8[pyarrow]
   module: pl
@@ -2658,6 +2714,7 @@ disability_degree:
     - 2021
     - 2022
     - 2023
+    - 2024
 early_retirement_pension_number_months:
   dtype: int8[pyarrow]
   module: pkal
@@ -2702,6 +2759,7 @@ early_retirement_pension_number_months:
     - 2021
     - 2022
     - 2023
+    - 2024
 education_casmin:
   dtype:
     categorical:
@@ -2760,6 +2818,7 @@ education_casmin:
     - 2021
     - 2022
     - 2023
+    - 2024
 education_casmin_cat:
   dtype: int8[pyarrow]
   module: pgen
@@ -2804,6 +2863,7 @@ education_casmin_cat:
     - 2021
     - 2022
     - 2023
+    - 2024
 education_isced:
   dtype:
     categorical:
@@ -2835,6 +2895,7 @@ education_isced:
     - 2021
     - 2022
     - 2023
+    - 2024
 education_isced_97:
   dtype:
     categorical:
@@ -2894,6 +2955,7 @@ education_isced_cat:
     - 2021
     - 2022
     - 2023
+    - 2024
 ehegattenunterhalt_erhalten_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -2938,6 +3000,7 @@ ehegattenunterhalt_erhalten_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 eigenheimzulage_y_hh:
   dtype: float[pyarrow]
   module: pequiv
@@ -2982,6 +3045,7 @@ eigenheimzulage_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 einkommen_aus_vermietung_verpachtung_y_hh:
   dtype: float[pyarrow]
   module: pequiv
@@ -3026,8 +3090,9 @@ einkommen_aus_vermietung_verpachtung_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 einkommen_aus_zinsen_dividenden_y_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
   survey_years:
     - 1984
@@ -3070,6 +3135,7 @@ einkommen_aus_zinsen_dividenden_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 einkommen_nach_steuern_y_hh:
   dtype: float[pyarrow]
   module: pequiv
@@ -3114,6 +3180,7 @@ einkommen_nach_steuern_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 einkommen_vor_steuern_y_hh:
   dtype: double[pyarrow]
   module: pequiv
@@ -3158,6 +3225,7 @@ einkommen_vor_steuern_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 einkünfte_aus_arbeit_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -3202,6 +3270,7 @@ einkünfte_aus_arbeit_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 einkünfte_aus_erstem_job_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -3246,6 +3315,7 @@ einkünfte_aus_erstem_job_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 einkünfte_aus_selbstständiger_arbeit_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -3290,6 +3360,7 @@ einkünfte_aus_selbstständiger_arbeit_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 einkünfte_aus_zweitem_job_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -3334,6 +3405,7 @@ einkünfte_aus_zweitem_job_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 employed_in_at_least_one_month:
   dtype: bool[pyarrow]
   module: pkal
@@ -3378,6 +3450,7 @@ employed_in_at_least_one_month:
     - 2021
     - 2022
     - 2023
+    - 2024
 employed_y:
   dtype: bool[pyarrow]
   module: pequiv
@@ -3422,6 +3495,7 @@ employed_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 employment_level:
   dtype:
     categorical:
@@ -3473,6 +3547,7 @@ employment_level:
     - 2021
     - 2022
     - 2023
+    - 2024
 employment_status:
   dtype:
     categorical:
@@ -3483,7 +3558,7 @@ employment_status:
         - Unregelmässig, geringfügig erwerbstät.
         - Voll erwerbstätig
         - Werkstatt für behinderte Menschen (1998-2020)
-        - in Kurzarbeit (1991-1995; seit 2021)
+        - in Kurzarbeit (2021-2023)
       categories_dtype: string
       ordered: false
   module: pgen
@@ -3528,6 +3603,7 @@ employment_status:
     - 2021
     - 2022
     - 2023
+    - 2024
 erhaltenes_mutterschaftsgeld_im_letzten_monat_m:
   dtype: float[pyarrow]
   module: pl
@@ -3561,6 +3637,7 @@ erhaltenes_mutterschaftsgeld_im_letzten_monat_m:
     - 2021
     - 2022
     - 2023
+    - 2024
 erhaltenes_mutterschaftsgeld_m:
   dtype: float[pyarrow]
   module: pl
@@ -3599,6 +3676,7 @@ erhaltenes_mutterschaftsgeld_m:
     - 2021
     - 2022
     - 2023
+    - 2024
 erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -3643,6 +3721,7 @@ erwerbstätig:
     - 2021
     - 2022
     - 2023
+    - 2024
 federal_state_of_residence:
   dtype:
     categorical:
@@ -3707,6 +3786,7 @@ federal_state_of_residence:
     - 2021
     - 2022
     - 2023
+    - 2024
 financial_assets_value_a:
   dtype: float[pyarrow]
   module: pwealth
@@ -3986,6 +4066,7 @@ frailty:
     - 2021
     - 2022
     - 2023
+    - 2024
 frailty_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -4030,6 +4111,7 @@ frailty_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 frailty_pl:
   dtype: float[pyarrow]
   module: pl
@@ -4065,6 +4147,7 @@ frailty_pl:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_1:
   dtype:
     categorical:
@@ -4115,6 +4198,7 @@ ft_employed_m_1:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_10:
   dtype:
     categorical:
@@ -4165,6 +4249,7 @@ ft_employed_m_10:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_11:
   dtype:
     categorical:
@@ -4215,6 +4300,7 @@ ft_employed_m_11:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_12:
   dtype:
     categorical:
@@ -4265,6 +4351,7 @@ ft_employed_m_12:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_2:
   dtype:
     categorical:
@@ -4315,6 +4402,7 @@ ft_employed_m_2:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_3:
   dtype:
     categorical:
@@ -4339,6 +4427,7 @@ ft_employed_m_3:
     - 1996
     - 1997
     - 2023
+    - 2024
 ft_employed_m_4:
   dtype:
     categorical:
@@ -4389,6 +4478,7 @@ ft_employed_m_4:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_5:
   dtype:
     categorical:
@@ -4439,6 +4529,7 @@ ft_employed_m_5:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_6:
   dtype:
     categorical:
@@ -4489,6 +4580,7 @@ ft_employed_m_6:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_7:
   dtype:
     categorical:
@@ -4539,6 +4631,7 @@ ft_employed_m_7:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_8:
   dtype:
     categorical:
@@ -4589,6 +4682,7 @@ ft_employed_m_8:
     - 2021
     - 2022
     - 2023
+    - 2024
 ft_employed_m_9:
   dtype:
     categorical:
@@ -4639,6 +4733,7 @@ ft_employed_m_9:
     - 2021
     - 2022
     - 2023
+    - 2024
 gender:
   dtype:
     categorical:
@@ -4689,6 +4784,7 @@ gender:
     - 2021
     - 2022
     - 2023
+    - 2024
 general_trust_high_to_low:
   dtype:
     categorical:
@@ -4791,6 +4887,7 @@ gesetzliche_rente_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 gesetzliche_rente_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -4835,6 +4932,7 @@ gesetzliche_rente_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 gesetzliche_unfallversicherung_rente_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -4879,6 +4977,7 @@ gesetzliche_unfallversicherung_rente_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 gesetzliche_unfallversicherung_rente_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -4923,6 +5022,7 @@ gesetzliche_unfallversicherung_rente_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 gewinnbeteiligung_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -4967,6 +5067,7 @@ gewinnbeteiligung_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 gross_labor_income_previous_month_m:
   dtype: float[pyarrow]
   module: pgen
@@ -5011,6 +5112,7 @@ gross_labor_income_previous_month_m:
     - 2021
     - 2022
     - 2023
+    - 2024
 gross_overall_wealth_a:
   dtype: double[pyarrow]
   module: pwealth
@@ -5141,6 +5243,7 @@ grund_beschäftigungsende:
     - 2021
     - 2022
     - 2023
+    - 2024
 grundsicherung_im_alter_m_aktuell_hh:
   dtype: float[pyarrow]
   module: hl
@@ -5164,6 +5267,7 @@ grundsicherung_im_alter_m_aktuell_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 grundsicherung_im_alter_y_hh:
   dtype: float[pyarrow]
   module: pequiv
@@ -5208,6 +5312,7 @@ grundsicherung_im_alter_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 grundsicherung_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -5252,6 +5357,7 @@ grundsicherung_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 heating_costs_m_hh:
   dtype: float[pyarrow]
   module: hgen
@@ -5294,6 +5400,7 @@ heating_costs_m_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 heating_costs_reason_missing:
   dtype:
     categorical:
@@ -5313,6 +5420,7 @@ heating_costs_reason_missing:
     - 2021
     - 2022
     - 2023
+    - 2024
 hh_financial_assets_value_a:
   dtype: double[pyarrow]
   module: hwealth
@@ -5590,6 +5698,7 @@ hh_soep_sample:
         - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
         - 2019 Top-Gesellschafter
         - 2022 Aufstockung
+        - 2024 Aufstockung
         - IAB-BAMF-SOEP 2016 Flucht (2013-2015)
         - IAB-BAMF-SOEP 2016 Flucht/Familie (2013-2015)
         - IAB-BAMF-SOEP 2017 Flucht (2013-2016)
@@ -5601,6 +5710,7 @@ hh_soep_sample:
         - IAB-SOEP 2020 Migration-Fachkräfteeinwanderung
         - IAB-SOEP 2022 Aufstockung
         - IAB-SOEP 2023 Aufstockung
+        - IAB-SOEP 2024 Aufstockung
       categories_dtype: str
       ordered: false
   module: hpathl_design
@@ -5628,6 +5738,7 @@ hh_soep_sample_design:
         - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
         - 2019 Top-Gesellschafter
         - 2022 Aufstockung
+        - 2024 Aufstockung
         - IAB-BAMF-SOEP 2016 Flucht (2013-2015)
         - IAB-BAMF-SOEP 2016 Flucht/Familie (2013-2015)
         - IAB-BAMF-SOEP 2017 Flucht (2013-2016)
@@ -5639,6 +5750,7 @@ hh_soep_sample_design:
         - IAB-SOEP 2020 Migration-Fachkräfteeinwanderung
         - IAB-SOEP 2022 Aufstockung
         - IAB-SOEP 2023 Aufstockung
+        - IAB-SOEP 2024 Aufstockung
       categories_dtype: string
       ordered: false
   module: design
@@ -5666,6 +5778,7 @@ hh_soep_sample_hpathl:
         - 2019 Lesbische-Schwule-Bisexuelle (LGB) Personen
         - 2019 Top-Gesellschafter
         - 2022 Aufstockung
+        - 2024 Aufstockung
         - IAB-BAMF-SOEP 2016 Flucht (2013-2015)
         - IAB-BAMF-SOEP 2016 Flucht/Familie (2013-2015)
         - IAB-BAMF-SOEP 2017 Flucht (2013-2016)
@@ -5677,6 +5790,7 @@ hh_soep_sample_hpathl:
         - IAB-SOEP 2020 Migration-Fachkräfteeinwanderung
         - IAB-SOEP 2022 Aufstockung
         - IAB-SOEP 2023 Aufstockung
+        - IAB-SOEP 2024 Aufstockung
       categories_dtype: string
       ordered: false
   module: hpathl
@@ -5721,6 +5835,7 @@ hh_soep_sample_hpathl:
     - 2021
     - 2022
     - 2023
+    - 2024
 hh_staying_probability:
   dtype: float[pyarrow]
   module: hpathl
@@ -5765,6 +5880,7 @@ hh_staying_probability:
     - 2021
     - 2022
     - 2023
+    - 2024
 hh_strat:
   dtype: int16[pyarrow]
   module: design
@@ -5825,6 +5941,7 @@ hh_typ_one_digit:
     - 2021
     - 2022
     - 2023
+    - 2024
 hh_typ_two_digits:
   dtype:
     categorical:
@@ -5896,6 +6013,7 @@ hh_typ_two_digits:
     - 2021
     - 2022
     - 2023
+    - 2024
 hh_vehicles_value_a:
   dtype: float[pyarrow]
   module: hwealth
@@ -5922,7 +6040,7 @@ hh_vehicles_value_e:
   survey_years:
     - 2017
 hh_weighting_factor:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: hpathl
   survey_years:
     - 1984
@@ -5965,8 +6083,9 @@ hh_weighting_factor:
     - 2021
     - 2022
     - 2023
+    - 2024
 hh_weighting_factor_new_only:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: hpathl
   survey_years:
     - 1984
@@ -6009,8 +6128,9 @@ hh_weighting_factor_new_only:
     - 2021
     - 2022
     - 2023
+    - 2024
 hh_weighting_factor_without_new:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: hpathl
   survey_years:
     - 1984
@@ -6053,6 +6173,7 @@ hh_weighting_factor_without_new:
     - 2021
     - 2022
     - 2023
+    - 2024
 highest_education:
   dtype:
     categorical:
@@ -6104,6 +6225,7 @@ highest_education:
     - 2021
     - 2022
     - 2023
+    - 2024
 hourly_wage_current:
   dtype: float[pyarrow]
   module: pl
@@ -6174,6 +6296,7 @@ hours_care_workday:
     - 2021
     - 2022
     - 2023
+    - 2024
 hours_childcare_sat:
   dtype: float[pyarrow]
   module: pl
@@ -6265,6 +6388,7 @@ hours_childcare_workday:
     - 2021
     - 2022
     - 2023
+    - 2024
 hours_errands_sat:
   dtype: float[pyarrow]
   module: pl
@@ -6530,6 +6654,7 @@ hours_housework_workday:
     - 2021
     - 2022
     - 2023
+    - 2024
 hours_repairs_sat:
   dtype: float[pyarrow]
   module: pl
@@ -6783,6 +6908,7 @@ hours_worked_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 im_öffentlichen_dienst:
   dtype:
     categorical:
@@ -6833,6 +6959,7 @@ im_öffentlichen_dienst:
     - 2021
     - 2022
     - 2023
+    - 2024
 importance_faith_high_to_low:
   dtype:
     categorical:
@@ -6932,6 +7059,7 @@ in_education:
     - 2021
     - 2022
     - 2023
+    - 2024
 in_private_rente_eingezahlt:
   dtype:
     categorical:
@@ -6994,6 +7122,7 @@ in_teilzeit_erwerbstätig:
     - 2021
     - 2022
     - 2023
+    - 2024
 individual_staying_probability:
   dtype: float[pyarrow]
   module: ppathl
@@ -7038,8 +7167,9 @@ individual_staying_probability:
     - 2021
     - 2022
     - 2023
+    - 2024
 individual_weighting_factor:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: ppathl
   survey_years:
     - 1984
@@ -7082,8 +7212,9 @@ individual_weighting_factor:
     - 2021
     - 2022
     - 2023
+    - 2024
 individual_weighting_factor_new_only:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: ppathl
   survey_years:
     - 1984
@@ -7126,8 +7257,9 @@ individual_weighting_factor_new_only:
     - 2021
     - 2022
     - 2023
+    - 2024
 individual_weighting_factor_without_new:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: ppathl
   survey_years:
     - 1984
@@ -7170,6 +7302,7 @@ individual_weighting_factor_without_new:
     - 2021
     - 2022
     - 2023
+    - 2024
 interview_result_one_digit:
   dtype:
     categorical:
@@ -7231,11 +7364,13 @@ interview_result_two_digits:
     categorical:
       categories:
         - Alt und krank
-        - Ausl.l.Zt in Heima
-        - Derz.n.durchfuehrbar
-        - Derz.n.teiln.bereit
-        - Ende Feldarb.n.err
-        - Endguelt.Verweig.
+        - 'Ausländer: Längere Zeit im Heimatland'
+        - Derzeit nicht bereit
+        - Derzeit nicht durchführbar
+        - Ende Feldarbeit nicht erreicht
+        - Endgültig .nicht verwertbar
+        - Endgültig nicht auffindbar
+        - Endgültige Verweigerung
         - HHwechsel
         - Haushalt aufgelöst (in anderen Panel-Haushalt verzogen)
         - Ins Ausland verzogen
@@ -7244,20 +7379,19 @@ interview_result_two_digits:
         - Kein Fragebogen
         - Keine Zeit-Lust
         - Krank bis Feldende
-        - Luecke Vj. nacherh.
-        - Luecke Vj. nicht nacherh.
         - Nicht auswertbar
         - Nicht erreichbar
-        - Pers.interview, kein HH.interview
+        - Personeninterview, jedoch kein Haushaltsinterview
         - Real. auch in Vorwelle
         - Realisiert
         - Realisiert nach Feldende
-        - Sonst.unkl.Faelle
+        - Sonstige
+        - Sonstige unklare Fälle
         - Sprachprobleme
+        - Teilgenommen mit Befragungslücke, Lückedaten nacherhoben
+        - Teilgenommen mit Befragungslücke, ohne Lückedaten
         - Verstorben
-        - endguelt.nicht verwertbar
-        - endgueltig n.auffindbar
-        - in Feldz.n.auffindbar
+        - Während der Feldzeit nicht auffindbar
       categories_dtype: string
       ordered: false
   module: pbrutto
@@ -7301,6 +7435,7 @@ interview_result_two_digits:
     - 2021
     - 2022
     - 2023
+    - 2024
 interview_status:
   dtype:
     categorical:
@@ -7359,6 +7494,7 @@ interview_status:
     - 2021
     - 2022
     - 2023
+    - 2024
 kindergeld_m_aktuell_hh:
   dtype: float[pyarrow]
   module: hl
@@ -7403,6 +7539,7 @@ kindergeld_m_aktuell_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 kindergeld_m_hh:
   dtype: float[pyarrow]
   module: pequiv_hl
@@ -7447,6 +7584,7 @@ kindergeld_m_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 kindergeld_m_hh_hl:
   dtype: float[pyarrow]
   module: hl
@@ -7490,6 +7628,7 @@ kindergeld_m_hh_hl:
     - 2021
     - 2022
     - 2023
+    - 2024
 kindergeld_m_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -7534,6 +7673,7 @@ kindergeld_m_hh_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 kindergeld_y_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -7578,6 +7718,7 @@ kindergeld_y_hh_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 kinderzuschlag_m_aktuell_hh:
   dtype: float[pyarrow]
   module: hl
@@ -7597,6 +7738,7 @@ kinderzuschlag_m_aktuell_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 kinderzuschlag_m_hh:
   dtype: float[pyarrow]
   module: pequiv_hl
@@ -7641,6 +7783,7 @@ kinderzuschlag_m_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 kinderzuschlag_m_hh_hl:
   dtype: float[pyarrow]
   module: hl
@@ -7660,6 +7803,7 @@ kinderzuschlag_m_hh_hl:
     - 2021
     - 2022
     - 2023
+    - 2024
 kinderzuschlag_m_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -7704,6 +7848,7 @@ kinderzuschlag_m_hh_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 kinderzuschlag_y_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -7748,6 +7893,7 @@ kinderzuschlag_y_hh_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 kindesunterhalt_erhalten_m:
   dtype: float[pyarrow]
   module: pequiv_pl
@@ -7792,6 +7938,7 @@ kindesunterhalt_erhalten_m:
     - 2021
     - 2022
     - 2023
+    - 2024
 kindesunterhalt_erhalten_m_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -7836,6 +7983,7 @@ kindesunterhalt_erhalten_m_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 kindesunterhalt_erhalten_m_pl:
   dtype: float[pyarrow]
   module: pl
@@ -7890,6 +8038,7 @@ kindesunterhalt_erhalten_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 knappschaftliche_rente_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -7934,6 +8083,7 @@ knappschaftliche_rente_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 knappschaftliche_rente_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -7978,6 +8128,7 @@ knappschaftliche_rente_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 kriegsopferversorgung_rente_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -8022,6 +8173,7 @@ kriegsopferversorgung_rente_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 kriegsopferversorgung_rente_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -8066,6 +8218,7 @@ kriegsopferversorgung_rente_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 labor_force_status:
   dtype:
     categorical:
@@ -8073,6 +8226,7 @@ labor_force_status:
         - Erwerbstätig
         - Erwerbstätig, aber inaktiv in den letzten 7 Tagen (seit 2000)
         - 'NE: 65 Jahre und älter'
+        - 'NE: Altersteilzeit mit Arbeitszeit Null'
         - 'NE: Mutterschutz/Elternzeit (seit 1991)'
         - 'NE: aber bezahlte Arbeit in den letzten 7 Tagen (seit 1999)'
         - 'NE: aber bezahlte Nebentätigkeit (seit 2017)'
@@ -8126,6 +8280,7 @@ labor_force_status:
     - 2021
     - 2022
     - 2023
+    - 2024
 life_satisfaction_low_to_high:
   dtype:
     categorical:
@@ -8185,6 +8340,7 @@ life_satisfaction_low_to_high:
     - 2021
     - 2022
     - 2023
+    - 2024
 living_space_hh:
   dtype: float[pyarrow]
   module: hgen
@@ -8229,6 +8385,7 @@ living_space_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 marital_status:
   dtype:
     categorical:
@@ -8286,6 +8443,7 @@ marital_status:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_asthma_pl:
   dtype:
     categorical:
@@ -8517,6 +8675,7 @@ med_gewicht:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_gewicht_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -8541,6 +8700,7 @@ med_gewicht_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_gewicht_pl:
   dtype: float[pyarrow]
   module: pl
@@ -8556,6 +8716,7 @@ med_gewicht_pl:
     - 2018
     - 2020
     - 2022
+    - 2024
 med_größe:
   dtype: float[pyarrow]
   module: pequiv_pl
@@ -8580,6 +8741,7 @@ med_größe:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_größe_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -8604,6 +8766,7 @@ med_größe_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_größe_pl:
   dtype: float[pyarrow]
   module: pl
@@ -8619,6 +8782,7 @@ med_größe_pl:
     - 2018
     - 2020
     - 2022
+    - 2024
 med_herzkrankheit:
   dtype:
     categorical:
@@ -8720,6 +8884,7 @@ med_krankenhaus_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_krebs:
   dtype:
     categorical:
@@ -8941,6 +9106,7 @@ med_schwierigkeit_taten_pl:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_schwierigkeit_treppen_dummy_pl:
   dtype: bool[pyarrow]
   module: pl
@@ -8960,6 +9126,7 @@ med_schwierigkeit_treppen_dummy_pl:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_schwierigkeit_treppen_pl:
   dtype:
     categorical:
@@ -8986,6 +9153,7 @@ med_schwierigkeit_treppen_pl:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_schwierigkeiten_anziehen_pequiv:
   dtype:
     categorical:
@@ -9029,6 +9197,7 @@ med_schwierigkeiten_anziehen_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_schwierigkeiten_bett:
   dtype:
     categorical:
@@ -9078,6 +9247,7 @@ med_schwierigkeiten_bett:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_schwierigkeiten_einkauf:
   dtype:
     categorical:
@@ -9127,6 +9297,7 @@ med_schwierigkeiten_einkauf:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_schwierigkeiten_hausarb:
   dtype:
     categorical:
@@ -9176,6 +9347,7 @@ med_schwierigkeiten_hausarb:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_schwierigkeiten_treppen:
   dtype:
     categorical:
@@ -9202,6 +9374,7 @@ med_schwierigkeiten_treppen:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_schwierigkeiten_treppen_pequiv:
   dtype:
     categorical:
@@ -9227,6 +9400,7 @@ med_schwierigkeiten_treppen_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_sonst_pl:
   dtype:
     categorical:
@@ -9288,6 +9462,7 @@ med_subjective_status:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_subjective_status_dummy:
   dtype: bool[pyarrow]
   module: pequiv_pl
@@ -9323,6 +9498,7 @@ med_subjective_status_dummy:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_subjective_status_dummy_pequiv:
   dtype: bool[pyarrow]
   module: pequiv
@@ -9358,6 +9534,7 @@ med_subjective_status_dummy_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_subjective_status_dummy_pl:
   dtype: bool[pyarrow]
   module: pl
@@ -9393,6 +9570,7 @@ med_subjective_status_dummy_pl:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_subjective_status_pequiv:
   dtype:
     categorical:
@@ -9437,6 +9615,7 @@ med_subjective_status_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_subjective_status_pl:
   dtype:
     categorical:
@@ -9481,6 +9660,7 @@ med_subjective_status_pl:
     - 2021
     - 2022
     - 2023
+    - 2024
 med_zufrieden_pequiv:
   dtype:
     categorical:
@@ -9540,6 +9720,7 @@ med_zufrieden_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 migration_background:
   dtype:
     categorical:
@@ -9591,6 +9772,7 @@ migration_background:
     - 2021
     - 2022
     - 2023
+    - 2024
 military:
   dtype: bool[pyarrow]
   module: pgen
@@ -9635,114 +9817,367 @@ military:
     - 2021
     - 2022
     - 2023
+    - 2024
 minijob_employed_m_1:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_10:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_11:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_12:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_2:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_3:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_4:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_5:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_6:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_7:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_8:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 minijob_employed_m_9:
   dtype:
     categorical:
       categories:
         - Minijob erwerbstätig
+        - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 month_interview:
   dtype:
     categorical:
@@ -9803,6 +10238,7 @@ month_interview:
     - 2021
     - 2022
     - 2023
+    - 2024
 months_worked_last_job:
   dtype: float[pyarrow]
   module: pl
@@ -9846,6 +10282,7 @@ months_worked_last_job:
     - 2021
     - 2022
     - 2023
+    - 2024
 motor_disability:
   dtype: bool[pyarrow]
   module: pl
@@ -9890,6 +10327,7 @@ motor_disability:
     - 2021
     - 2022
     - 2023
+    - 2024
 mutterschaftsgeld_anzahl_monate:
   dtype: int8[pyarrow]
   module: pkal
@@ -9934,6 +10372,7 @@ mutterschaftsgeld_anzahl_monate:
     - 2021
     - 2022
     - 2023
+    - 2024
 mutterschaftsgeld_erhalten_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -9978,6 +10417,7 @@ mutterschaftsgeld_erhalten_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 mutterschutz_elternzeit:
   dtype: bool[pyarrow]
   module: pgen
@@ -10022,6 +10462,7 @@ mutterschutz_elternzeit:
     - 2021
     - 2022
     - 2023
+    - 2024
 net_labor_income_m_average:
   dtype: double[pyarrow]
   module: pl
@@ -10060,6 +10501,7 @@ net_labor_income_m_average:
     - 2021
     - 2022
     - 2023
+    - 2024
 net_labor_income_previous_month_m:
   dtype: float[pyarrow]
   module: pgen
@@ -10104,6 +10546,7 @@ net_labor_income_previous_month_m:
     - 2021
     - 2022
     - 2023
+    - 2024
 net_overall_wealth_a:
   dtype: double[pyarrow]
   module: pwealth
@@ -10253,6 +10696,7 @@ nicht_erwerbstätig:
     - 2021
     - 2022
     - 2023
+    - 2024
 norm_career_mothers_same_warmth_high_to_low:
   dtype:
     categorical:
@@ -10469,6 +10913,7 @@ number_of_children_living_in_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 number_of_months_employed:
   dtype: int8[pyarrow]
   module: pkal
@@ -10513,6 +10958,7 @@ number_of_months_employed:
     - 2021
     - 2022
     - 2023
+    - 2024
 number_of_persons_hh:
   dtype: int8[pyarrow]
   module: pequiv
@@ -10557,6 +11003,7 @@ number_of_persons_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 obese:
   dtype: bool[pyarrow]
   module: pequiv_pl
@@ -10581,6 +11028,7 @@ obese:
     - 2021
     - 2022
     - 2023
+    - 2024
 obese_pequiv:
   dtype: bool[pyarrow]
   module: pequiv
@@ -10605,6 +11053,7 @@ obese_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 obese_pl:
   dtype: bool[pyarrow]
   module: pl
@@ -10620,11 +11069,13 @@ obese_pl:
     - 2018
     - 2020
     - 2022
+    - 2024
 occupation_status:
   dtype:
     categorical:
       categories:
-        - Angestellte, Industrie- und Werkmeister
+        - Angelernte Arbeiter*innen
+        - Angestellte, Industrie- und Werkmeister*innen
         - Angestellte, einfache Tätigkeit (bis 1990)
         - Angestellte, einfache Tätigkeit mit Ausbildungsabschluss (ab 1991)
         - Angestellte, einfache Tätigkeit ohne Ausbildungsabschluss (ab 1991)
@@ -10632,48 +11083,47 @@ occupation_status:
         - Angestellte, keine weiteren Angaben
         - Angestellte, qualifizierte Tätigkeit
         - Angestellte, umfassende Führungsaufgaben
-        - Arbeiter in der Landwirtschaft (1990 Ost)
-        - Arbeiter, keine weiteren Angaben
-        - Aspiranten (1990 Ost)
+        - Arbeiter*innen in der Landwirtschaft (1990 Ost)
+        - Arbeiter*innen, keine weitere Angaben
         - Auszubildende (1984-1999), Lehrlinge (1990 Ost)
         - Auszubildende / Lehrlinge, keine weiteren Angaben
         - Auszubildende, gewerblich-technisch (ab 2000)
         - Auszubildende, kaufmännisch (ab 2000)
-        - Beamte, einfacher Dienst
-        - Beamte, gehobener Dienst
-        - Beamte, höherer Dienst
-        - Beamte, keine weiteren Angaben
-        - Beamte, mittlerer Dienst
-        - Brigadier, Meister in der Landwirtschaft (1990 Ost)
-        - Facharbeiter in der Landwirtschaft (1990 Ost)
-        - Freiberufler, Akademiker
-        - Freiberufler, Akademiker ohne Mitarbeiter (ab 2000)
-        - Freiberufler, Akademiker, 1-9 Mitarbeiter (ab 2000)
-        - Freiberufler, Akademiker, 10+ Mitarbeiter (ab 2000)
-        - Geschäftsführender Gesellschafter und vergl. Angestellte im eigenen Betrieb (ab
-          2019)
-        - Meister, Polier
-        - 'NE: Rentner/Rentnerin'
+        - Beamt*innen, einfacher Dienst
+        - Beamt*innen, gehobener Dienst
+        - Beamt*innen, höherer Dienst
+        - Beamt*innen, keine weiteren Angaben
+        - Beamt*innen, mittlerer Dienst
+        - Brigadier*innen, Meister*innen in der Landwirtschaft (1990 Ost)
+        - Facharbeiter*innen in der Landwirtschaft (1990 Ost)
+        - Freiberuflich Tätige mit Hochschulabschluss
+        - Freiberuflich Tätige mit Hochschulabschluss ohne Mitarbeitende (ab 2000)
+        - Freiberuflich Tätige mit Hochschulabschluss, 1-9 Mitarbeitende (ab 2000)
+        - Freiberuflich Tätige mit Hochschulabschluss, 10+ Mitarbeitende (ab 2000)
+        - Gelernte und Facharbeiter*innen
+        - Geschäftsführende Gesellschafter*innen und vergl. angestellte Personen im eigenen
+          Betrieb (ab 2019)
+        - Höhere Leitungsfunktion in der Landwirtschaft (1990 Ost)
+        - Meister*innen, Polier*innen
+        - 'NE: Altersteilzeit mit Arbeitszeit Null'
         - 'NE: Wehr- und Zivildienst'
         - 'NE: arbeitslos gemeldet'
         - 'NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre'
-        - Selbstständige, keine weiteren Angaben
-        - Volontäre, Praktikanten
-        - Vorarbeiter, Kolonnenführer
-        - angelernter Arbeiter
-        - gelernte und Facharbeiter
-        - höhere Leitungsfunktion in der Landwirtschaft (1990 Ost)
+        - 'NE: in Rentenbezug'
+        - 'Nicht erwerbstätig (NE): keine weitere Angaben'
+        - Selbstständige Landwirt*innen
+        - Selbstständige Landwirt*innen ohne Mitarbeitende (ab 2000)
+        - Selbstständige Landwirt*innen, 1-9 Mitarbeitende (ab 2000)
+        - Selbstständige Landwirt*innen, 10+ Mitarbeitende (ab 2000)
+        - Selbstständige, keine weitere Angaben
+        - Sonstige Selbstständige
+        - Sonstige Selbstständige ohne Mitarbeiter (ab 1997)
+        - Sonstige Selbstständige, 1-9 Mitarbeiter (ab 1997)
+        - Sonstige Selbstständige, 10+ Mitarbeiter
+        - Ungelernte Arbeiter*innen
+        - Volontär*innen, Praktikant*innen
+        - Vorarbeiter*innen, Kolonnenführer*innen
         - mithelfende Familienangehörige
-        - 'nicht erwerbstätig (NE): keine weitere Angaben'
-        - selbständiger Landwirt
-        - selbständiger Landwirt 1-9 Mitarbeiter (ab 2000)
-        - selbständiger Landwirt 10+ Mitarbeiter (ab 2000)
-        - selbständiger Landwirt ohne Mitarbeiter (ab 2000)
-        - sonstige selbständiger
-        - sonstige selbständiger, 1-9 Mitarbeiter (ab 1997)
-        - sonstige selbständiger, 10+ Mitarbeiter
-        - sonstige selbständiger, ohne Mitarbeiter (ab 1997)
-        - ungelernter Arbeiter
       categories_dtype: string
       ordered: false
   module: pgen
@@ -10718,8 +11168,9 @@ occupation_status:
     - 2021
     - 2022
     - 2023
+    - 2024
 operation_maintenance_costs_y_hh:
-  dtype: double[pyarrow]
+  dtype: float[pyarrow]
   module: pequiv
   survey_years:
     - 1984
@@ -10762,6 +11213,7 @@ operation_maintenance_costs_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 p_id_child:
   dtype: int32[pyarrow]
   module: biobirth
@@ -10836,6 +11288,7 @@ partnership_status:
     - 2021
     - 2022
     - 2023
+    - 2024
 party_affiliation:
   dtype:
     categorical:
@@ -10858,6 +11311,7 @@ party_affiliation:
         - FDP
         - FDP/Die Linke
         - FDP/NPD
+        - Freie Wähler
         - Gruene/DVU(Rep/NPD)
         - Gruene/FDP
         - NPD/Republikaner/Die Rechte
@@ -10913,6 +11367,7 @@ party_affiliation:
     - 2021
     - 2022
     - 2023
+    - 2024
 party_affiliation_dummy:
   dtype: bool[pyarrow]
   module: pl
@@ -10957,6 +11412,7 @@ party_affiliation_dummy:
     - 2021
     - 2022
     - 2023
+    - 2024
 party_affiliation_intensity_high_to_low:
   dtype:
     categorical:
@@ -11010,6 +11466,7 @@ party_affiliation_intensity_high_to_low:
     - 2021
     - 2022
     - 2023
+    - 2024
 person_number_surveyed:
   dtype: int8[pyarrow]
   module: pl
@@ -11095,6 +11552,7 @@ pflegegeld_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 place_of_residence_current:
   dtype:
     categorical:
@@ -11145,6 +11603,7 @@ place_of_residence_current:
     - 2021
     - 2022
     - 2023
+    - 2024
 pointer_mother:
   dtype: int32[pyarrow]
   module: kidlong
@@ -11189,6 +11648,7 @@ pointer_mother:
     - 2021
     - 2022
     - 2023
+    - 2024
 pointer_partner:
   dtype: int32[pyarrow]
   module: ppathl
@@ -11233,6 +11693,7 @@ pointer_partner:
     - 2021
     - 2022
     - 2023
+    - 2024
 policital_interest_high_to_low:
   dtype:
     categorical:
@@ -11284,6 +11745,7 @@ policital_interest_high_to_low:
     - 2021
     - 2022
     - 2023
+    - 2024
 political_spectrum_left_to_right:
   dtype:
     categorical:
@@ -11307,6 +11769,7 @@ political_spectrum_left_to_right:
     - 2009
     - 2014
     - 2019
+    - 2024
 private_altersvorsorge_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -11351,6 +11814,7 @@ private_altersvorsorge_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 private_altersvorsorge_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -11395,6 +11859,7 @@ private_altersvorsorge_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 private_rente_beitrag_m:
   dtype: float[pyarrow]
   module: pl
@@ -11439,6 +11904,7 @@ private_rente_beitrag_m:
     - 2021
     - 2022
     - 2023
+    - 2024
 private_rente_beitrag_m_2013:
   dtype: double[pyarrow]
   module: pl
@@ -11483,6 +11949,7 @@ private_rente_beitrag_m_2013:
     - 2021
     - 2022
     - 2023
+    - 2024
 private_rente_beitrag_m_2018:
   dtype: double[pyarrow]
   module: pl
@@ -11527,6 +11994,7 @@ private_rente_beitrag_m_2018:
     - 2021
     - 2022
     - 2023
+    - 2024
 private_transfers_erhalten_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -11571,6 +12039,7 @@ private_transfers_erhalten_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 property_value_primary_residence_a:
   dtype: float[pyarrow]
   module: pwealth
@@ -11617,7 +12086,7 @@ pt_employed_m_1:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -11661,30 +12130,17 @@ pt_employed_m_1:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_10:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
     - 1998
     - 1999
     - 2000
@@ -11708,16 +12164,13 @@ pt_employed_m_10:
     - 2018
     - 2019
     - 2020
-    - 2021
-    - 2022
-    - 2023
 pt_employed_m_11:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -11761,13 +12214,14 @@ pt_employed_m_11:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_12:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -11811,13 +12265,14 @@ pt_employed_m_12:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_2:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -11861,23 +12316,65 @@ pt_employed_m_2:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_3:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
-  survey_years: []
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 pt_employed_m_4:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -11921,13 +12418,14 @@ pt_employed_m_4:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_5:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -11971,13 +12469,14 @@ pt_employed_m_5:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_6:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -12021,13 +12520,14 @@ pt_employed_m_6:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_7:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -12071,13 +12571,14 @@ pt_employed_m_7:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_8:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -12121,13 +12622,14 @@ pt_employed_m_8:
     - 2021
     - 2022
     - 2023
+    - 2024
 pt_employed_m_9:
   dtype:
     categorical:
       categories:
         - Teilzeit erwerbstätig
         - Werkstatt für behinderte Menschen
-      categories_dtype: string
+      categories_dtype: str
       ordered: false
   module: pkal
   survey_years:
@@ -12171,6 +12673,7 @@ pt_employed_m_9:
     - 2021
     - 2022
     - 2023
+    - 2024
 refugee_status:
   dtype:
     categorical:
@@ -12240,6 +12743,7 @@ relationship_to_head_of_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 relationship_to_hh:
   dtype:
     categorical:
@@ -12363,7 +12867,7 @@ religion_father:
     categorical:
       categories:
         - Andere Religionsgemeinschaft
-        - Andere christl. Rel.gemeinschaft
+        - Andere christliche Religionsgemeinschaft
         - Islamische Religionsgemeinschaft
         - Konfessionslos
         - evangelisch
@@ -12393,12 +12897,13 @@ religion_father:
     - 2021
     - 2022
     - 2023
+    - 2024
 religion_mother:
   dtype:
     categorical:
       categories:
         - Andere Religionsgemeinschaft
-        - Andere christl. Rel.gemeinschaft
+        - Andere christliche Religionsgemeinschaft
         - Islamische Religionsgemeinschaft
         - Konfessionslos
         - evangelisch
@@ -12428,6 +12933,7 @@ religion_mother:
     - 2021
     - 2022
     - 2023
+    - 2024
 rent_minus_heating_costs_m_hh:
   dtype: float[pyarrow]
   module: hgen
@@ -12472,6 +12978,7 @@ rent_minus_heating_costs_m_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 rented_or_owned:
   dtype:
     categorical:
@@ -12525,6 +13032,7 @@ rented_or_owned:
     - 2021
     - 2022
     - 2023
+    - 2024
 residence_childhood:
   dtype:
     categorical:
@@ -12577,6 +13085,7 @@ residence_childhood:
     - 2021
     - 2022
     - 2023
+    - 2024
 retired:
   dtype: bool[pyarrow]
   module: pgen
@@ -12621,6 +13130,7 @@ retired:
     - 2021
     - 2022
     - 2023
+    - 2024
 riester_rente_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -12665,6 +13175,7 @@ riester_rente_hinterbliebene_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 riester_rente_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -12709,6 +13220,7 @@ riester_rente_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 school_costs_m_current:
   dtype: float[pyarrow]
   module: kidlong
@@ -12764,6 +13276,7 @@ self_employed:
     - 2021
     - 2022
     - 2023
+    - 2024
 sexual_orientation:
   dtype:
     categorical:
@@ -12815,6 +13328,7 @@ sexual_orientation:
     - 2021
     - 2022
     - 2023
+    - 2024
 sonstige_boni_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -12859,6 +13373,7 @@ sonstige_boni_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 sonstige_sozialhilfe_y_hh:
   dtype: float[pyarrow]
   module: pequiv
@@ -12903,6 +13418,7 @@ sonstige_sozialhilfe_y_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 survey_status_current:
   dtype:
     categorical:
@@ -12981,6 +13497,7 @@ survey_status_current:
     - 2021
     - 2022
     - 2023
+    - 2024
 tatsächliche_arbeitszeit_w:
   dtype: float[pyarrow]
   module: pgen
@@ -13025,6 +13542,7 @@ tatsächliche_arbeitszeit_w:
     - 2021
     - 2022
     - 2023
+    - 2024
 tenure:
   dtype: float[pyarrow]
   module: pgen
@@ -13069,6 +13587,7 @@ tenure:
     - 2021
     - 2022
     - 2023
+    - 2024
 total_full_time_working_experience:
   dtype: float[pyarrow]
   module: pgen
@@ -13113,6 +13632,7 @@ total_full_time_working_experience:
     - 2021
     - 2022
     - 2023
+    - 2024
 total_part_time_working_experience:
   dtype: float[pyarrow]
   module: pgen
@@ -13157,6 +13677,7 @@ total_part_time_working_experience:
     - 2021
     - 2022
     - 2023
+    - 2024
 total_unemployment_experience:
   dtype: float[pyarrow]
   module: pgen
@@ -13201,6 +13722,7 @@ total_unemployment_experience:
     - 2021
     - 2022
     - 2023
+    - 2024
 trust_government_low_to_high:
   dtype:
     categorical:
@@ -13285,6 +13807,7 @@ type_of_health_insurance_2022:
   module: pl
   survey_years:
     - 2022
+    - 2024
 unemployed_anzahl_monate:
   dtype: int8[pyarrow]
   module: pkal
@@ -13329,8 +13852,9 @@ unemployed_anzahl_monate:
     - 2021
     - 2022
     - 2023
+    - 2024
 unemployment_benefits_number_months:
-  dtype: int8[pyarrow]
+  dtype: double[pyarrow]
   module: pkal
   survey_years:
     - 1984
@@ -13373,6 +13897,7 @@ unemployment_benefits_number_months:
     - 2021
     - 2022
     - 2023
+    - 2024
 unregelmäßig_oder_geringfügig_erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -13417,6 +13942,7 @@ unregelmäßig_oder_geringfügig_erwerbstätig:
     - 2021
     - 2022
     - 2023
+    - 2024
 unterhalt_erhalten_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -13461,6 +13987,7 @@ unterhalt_erhalten_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 unterhaltsvorschuss_erhalten_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -13505,6 +14032,7 @@ unterhaltsvorschuss_erhalten_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 urlaubsgeld_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -13549,6 +14077,7 @@ urlaubsgeld_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 vehicles_value_a:
   dtype: float[pyarrow]
   module: pwealth
@@ -13618,6 +14147,7 @@ vertragliche_arbeitszeit_w:
     - 2021
     - 2022
     - 2023
+    - 2024
 voll_erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -13662,6 +14192,7 @@ voll_erwerbstätig:
     - 2021
     - 2022
     - 2023
+    - 2024
 vorruhestandgeld_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -13706,6 +14237,7 @@ vorruhestandgeld_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 weihnachtsgeld_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -13750,6 +14282,7 @@ weihnachtsgeld_y:
     - 2021
     - 2022
     - 2023
+    - 2024
 werkstatt_für_behinderte_menschen:
   dtype: bool[pyarrow]
   module: pgen
@@ -13794,6 +14327,7 @@ werkstatt_für_behinderte_menschen:
     - 2021
     - 2022
     - 2023
+    - 2024
 willingness_to_participate:
   dtype:
     categorical:
@@ -13855,6 +14389,7 @@ wohngeld_m_hh:
     - 2021
     - 2022
     - 2023
+    - 2024
 wohngeld_m_hh_hl:
   dtype: float[pyarrow]
   module: hl
@@ -13899,6 +14434,7 @@ wohngeld_m_hh_hl:
     - 2021
     - 2022
     - 2023
+    - 2024
 wohngeld_m_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -13943,6 +14479,7 @@ wohngeld_m_hh_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 wohngeld_y_hh_pequiv:
   dtype: float[pyarrow]
   module: pequiv
@@ -13987,6 +14524,7 @@ wohngeld_y_hh_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
 year_moved_in:
   dtype: int16[pyarrow]
   module: hgen
@@ -14031,6 +14569,7 @@ year_moved_in:
     - 2021
     - 2022
     - 2023
+    - 2024
 year_of_immigration:
   dtype: int16[pyarrow]
   module: ppathl
@@ -14075,6 +14614,7 @@ year_of_immigration:
     - 2021
     - 2022
     - 2023
+    - 2024
 years_worked_last_job:
   dtype: int8[pyarrow]
   module: pl
@@ -14118,3 +14658,4 @@ years_worked_last_job:
     - 2021
     - 2022
     - 2023
+    - 2024
