@@ -31,7 +31,7 @@ def _get_na_values_to_remove(series: pd.Series) -> list:
     """
     unique_values = series.unique()
 
-    # negative single digit values (-1 through -8) represent missing data
+    # negative single digit values (-1 through -9) represent missing data
 
     # strings representing missing data have the following pattern:
     # e.g. "[-1] Potentially some missing name"
@@ -45,7 +45,7 @@ def _get_na_values_to_remove(series: pd.Series) -> list:
     num_values_to_remove = [
         value
         for value in unique_values
-        if isinstance(value, (int | float)) and -9 < value < 0  # noqa: PLR2004
+        if isinstance(value, (int | float)) and -10 < value < 0  # noqa: PLR2004
     ]
 
     return str_values_to_remove + num_values_to_remove

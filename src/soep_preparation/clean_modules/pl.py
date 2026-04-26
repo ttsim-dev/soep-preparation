@@ -110,8 +110,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         ordered=True,
     )
     # bezog arbeitslosengeld m3-m5 available 2017 through 2020
-    # V41 dropped the "[2] Nein" label from plc0130_v2 but the underlying data
-    # still contains raw int 2 values; map them to False explicitly.
     out["bezog_arbeitslosengeld_m3_m5"] = object_to_bool_categorical(
         series=raw_data["plc0130_v2"],
         renaming={"[1] Ja": True, 2: False},

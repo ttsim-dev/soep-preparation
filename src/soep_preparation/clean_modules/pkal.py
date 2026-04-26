@@ -116,8 +116,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["unemployment_benefits_number_months"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["kal2f02"], value=0)
     )
-    # V41 removed kal2j01_h from distribution; use plain kal2j01.
-    # Positive label changed from "[1] Ja" to "[1] genannt".
     out["bezog_mutterschaftsgeld_pkal"] = object_to_bool_categorical(
         series=raw_data["kal2j01"],
         renaming={"[2] Nein": False, "[1] genannt": True},
@@ -184,15 +182,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-
-    # Month 3 - Mrz
     out["ft_employed_m_3"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a003_v1"],
         renaming_v1={"[1] Ja": "Vollzeit erwerbstätig"},
         data_v2=raw_data["kal1a003_v2"],
         renaming_v2={
-            "[1] Mrz Vollzeit erwerbst.": "Vollzeit erwerbstätig",
-            "[8] Mrz Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
+            "[1] Mar Vollzeit erwerbst.": "Vollzeit erwerbstätig",
+            "[8] Mar Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
     out["pt_employed_m_3"] = _combine_versions_employed_m(
