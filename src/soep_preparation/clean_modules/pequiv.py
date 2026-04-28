@@ -15,8 +15,8 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
-def _calculate_frailty(frailty_input: pd.DataFrame) -> pd.Series:
-    return apply_smallest_float_dtype(frailty_input.mean(axis=1))
+def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
+    return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -58,7 +58,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["gender"] = object_to_str_categorical(
         series=raw_data["d11102ll"],
         ordered=False,
-        renaming={"[1] Male": "male", "[2] Female": "female"},
+        renaming={"[1] Male": "Male", "[2] Female": "Female"},
     )
     out["age"] = object_to_int(raw_data["d11101"])
     out["federal_state_of_residence"] = object_to_str_categorical(
@@ -385,41 +385,40 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
 
-    out["med_subjective_status_pequiv"] = object_to_int_categorical(
+    out["med_subjective_status_pequiv"] = object_to_str_categorical(
         series=raw_data["m11126"],
         renaming={
-            "[1] Very good": 1,
-            "[2] Good": 2,
-            "[3] Satisfactory": 3,
-            "[4] Poor": 4,
-            "[5] Bad": 5,
+            "[1] Very good": "Sehr gut",
+            "[2] Good": "Gut",
+            "[3] Satisfactory": "Zufriedenstellend",
+            "[4] Poor": "Weniger gut",
+            "[5] Bad": "Schlecht",
         },
         ordered=True,
     )
-    out["med_subjective_status_dummy_pequiv"] = create_dummy(
-        series=out["med_subjective_status_pequiv"],
-        value_for_comparison=5,
-        comparison_type="leq",
-    )
-    out["frailty_pequiv"] = _calculate_frailty(
-        out[
-            [
-                "med_schwierigkeiten_anziehen_pequiv",
-                "med_schwierigkeiten_bett",
-                "med_schwierigkeiten_einkauf",
-                "med_schwierigkeiten_hausarb",
-                "med_schwierigkeiten_treppen_pequiv",
-                "med_krankenhaus_pequiv",
-                "med_bluthochdruck_pequiv",
-                "med_diabetes_pequiv",
-                "med_krebs_pequiv",
-                "med_herzkrankheit_pequiv",
-                "med_schlaganfall_pequiv",
-                "med_gelenk_pequiv",
-                "med_psych_pequiv",
-                "med_subjective_status_dummy_pequiv",
-                "obese_pequiv",
-            ]
+    frailty_inputs = out[
+        [
+            "med_schwierigkeiten_anziehen_pequiv",
+            "med_schwierigkeiten_bett",
+            "med_schwierigkeiten_einkauf",
+            "med_schwierigkeiten_hausarb",
+            "med_schwierigkeiten_treppen_pequiv",
+            "med_krankenhaus_pequiv",
+            "med_bluthochdruck_pequiv",
+            "med_diabetes_pequiv",
+            "med_krebs_pequiv",
+            "med_herzkrankheit_pequiv",
+            "med_schlaganfall_pequiv",
+            "med_gelenk_pequiv",
+            "med_psych_pequiv",
+            "obese_pequiv",
         ]
+    ].assign(
+        med_subjective_status_dummy=create_dummy(
+            series=out["med_subjective_status_pequiv"],
+            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+            comparison_type="isin",
+        ),
     )
+    out["frailty_pequiv"] = _calculate_frailty(frailty_inputs=frailty_inputs)
     return out
