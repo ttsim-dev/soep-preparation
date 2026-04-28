@@ -19,16 +19,7 @@ _BAD_SUBJECTIVE_STATUS = ["Zufriedenstellend", "Weniger gut", "Schlecht"]
 
 
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
-    out = frailty_inputs.drop(columns=["med_subjective_status_pequiv"]).copy()
-    out["med_subjective_status_dummy"] = convert_to_categorical(
-        series=create_dummy(
-            series=frailty_inputs["med_subjective_status_pequiv"],
-            value_for_comparison=_BAD_SUBJECTIVE_STATUS,
-            comparison_type="isin",
-        ),
-        ordered=True,
-    )
-    return apply_smallest_float_dtype(out.mean(axis=1))
+    return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -424,9 +415,17 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
                 "med_schlaganfall_pequiv",
                 "med_gelenk_pequiv",
                 "med_psych_pequiv",
-                "med_subjective_status_pequiv",
                 "obese_pequiv",
             ]
-        ]
+        ].assign(
+            med_subjective_status_dummy=convert_to_categorical(
+                series=create_dummy(
+                    series=out["med_subjective_status_pequiv"],
+                    value_for_comparison=_BAD_SUBJECTIVE_STATUS,
+                    comparison_type="isin",
+                ),
+                ordered=True,
+            ),
+        ),
     )
     return out

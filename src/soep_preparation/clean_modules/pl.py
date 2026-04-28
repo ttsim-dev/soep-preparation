@@ -54,22 +54,7 @@ _BAD_SUBJECTIVE_STATUS = ["Zufriedenstellend", "Weniger gut", "Schlecht"]
 
 
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
-    ordinal_inputs = {
-        "med_schwierigkeiten_treppen_pl": _ANY_DIFFICULTY,
-        "med_schwierigkeiten_taten_pl": _ANY_DIFFICULTY,
-        "med_subjective_status_pl": _BAD_SUBJECTIVE_STATUS,
-    }
-    out = frailty_inputs.drop(columns=list(ordinal_inputs)).copy()
-    for col, bad_values in ordinal_inputs.items():
-        out[f"{col}_dummy"] = convert_to_categorical(
-            series=create_dummy(
-                series=frailty_inputs[col],
-                value_for_comparison=bad_values,
-                comparison_type="isin",
-            ),
-            ordered=True,
-        )
-    return apply_smallest_float_dtype(out.mean(axis=1))
+    return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
@@ -300,9 +285,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["frailty_pl"] = _calculate_frailty(
         out[
             [
-                "med_subjective_status_pl",
-                "med_schwierigkeiten_treppen_pl",
-                "med_schwierigkeiten_taten_pl",
                 "med_schlaf_pl",
                 "med_diabetes_pl",
                 "med_asthma_pl",
@@ -318,7 +300,32 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
                 "med_sonst_pl",
                 "med_raucher_pl",
             ]
-        ],
+        ].assign(
+            med_schwierigkeiten_treppen_dummy=convert_to_categorical(
+                series=create_dummy(
+                    series=out["med_schwierigkeiten_treppen_pl"],
+                    value_for_comparison=_ANY_DIFFICULTY,
+                    comparison_type="isin",
+                ),
+                ordered=True,
+            ),
+            med_schwierigkeiten_taten_dummy=convert_to_categorical(
+                series=create_dummy(
+                    series=out["med_schwierigkeiten_taten_pl"],
+                    value_for_comparison=_ANY_DIFFICULTY,
+                    comparison_type="isin",
+                ),
+                ordered=True,
+            ),
+            med_subjective_status_dummy=convert_to_categorical(
+                series=create_dummy(
+                    series=out["med_subjective_status_pl"],
+                    value_for_comparison=_BAD_SUBJECTIVE_STATUS,
+                    comparison_type="isin",
+                ),
+                ordered=True,
+            ),
+        ),
     )
 
     # personal positions, norms, and political variables
