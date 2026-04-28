@@ -48,10 +48,6 @@ def _private_rente_beitrag_m(private_rente_data: pd.DataFrame) -> pd.Series:
     return apply_smallest_float_dtype(out)
 
 
-_ANY_DIFFICULTY = ["Ein wenig", "Stark"]
-_BAD_SUBJECTIVE_STATUS = ["Zufriedenstellend", "Weniger gut", "Schlecht"]
-
-
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
 
@@ -302,17 +298,17 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         ].assign(
             med_schwierigkeiten_treppen_dummy=create_dummy(
                 series=out["med_schwierigkeiten_treppen_pl"],
-                value_for_comparison=_ANY_DIFFICULTY,
+                value_for_comparison=["Ein wenig", "Stark"],
                 comparison_type="isin",
             ),
             med_schwierigkeiten_taten_dummy=create_dummy(
                 series=out["med_schwierigkeiten_taten_pl"],
-                value_for_comparison=_ANY_DIFFICULTY,
+                value_for_comparison=["Ein wenig", "Stark"],
                 comparison_type="isin",
             ),
             med_subjective_status_dummy=create_dummy(
                 series=out["med_subjective_status_pl"],
-                value_for_comparison=_BAD_SUBJECTIVE_STATUS,
+                value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
                 comparison_type="isin",
             ),
         ),

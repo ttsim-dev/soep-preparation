@@ -5,7 +5,6 @@ import pandas as pd
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
-    convert_to_categorical,
     create_dummy,
     object_to_bool_categorical,
     object_to_float,
@@ -397,12 +396,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
         ordered=True,
     )
-    out["med_subjective_status_dummy_pequiv"] = convert_to_categorical(
-        series=create_dummy(
-            series=out["med_subjective_status_pequiv"],
-            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
-            comparison_type="isin",
-        ),
+    out["med_subjective_status_dummy"] = create_dummy(
+        series=out["med_subjective_status_pequiv"],
+        value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+        comparison_type="isin",
     )
     out["frailty_pequiv"] = _calculate_frailty(
         out[
@@ -412,6 +409,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
                 "med_schwierigkeiten_einkauf",
                 "med_schwierigkeiten_hausarb",
                 "med_schwierigkeiten_treppen_pequiv",
+                "med_subjective_status_dummy",
                 "med_krankenhaus_pequiv",
                 "med_bluthochdruck_pequiv",
                 "med_diabetes_pequiv",
@@ -422,12 +420,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
                 "med_psych_pequiv",
                 "obese_pequiv",
             ]
-        ].assign(
-            med_subjective_status_dummy=create_dummy(
-                series=out["med_subjective_status_pequiv"],
-                value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
-                comparison_type="isin",
-            ),
-        ),
+        ]
     )
     return out
