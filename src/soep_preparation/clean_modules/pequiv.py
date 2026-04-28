@@ -15,8 +15,6 @@ from soep_preparation.utilities.data_manipulator import (
     replace_not_applicable_answer,
 )
 
-_BAD_SUBJECTIVE_STATUS = ["Zufriedenstellend", "Weniger gut", "Schlecht"]
-
 
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
@@ -399,6 +397,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
         ordered=True,
     )
+    out["med_subjective_status_dummy_pequiv"] = convert_to_categorical(
+        series=create_dummy(
+            series=out["med_subjective_status_pequiv"],
+            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+            comparison_type="isin",
+        ),
+    )
     out["frailty_pequiv"] = _calculate_frailty(
         out[
             [
@@ -418,13 +423,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
                 "obese_pequiv",
             ]
         ].assign(
-            med_subjective_status_dummy=convert_to_categorical(
-                series=create_dummy(
-                    series=out["med_subjective_status_pequiv"],
-                    value_for_comparison=_BAD_SUBJECTIVE_STATUS,
-                    comparison_type="isin",
-                ),
-                ordered=True,
+            med_subjective_status_dummy=create_dummy(
+                series=out["med_subjective_status_pequiv"],
+                value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+                comparison_type="isin",
             ),
         ),
     )

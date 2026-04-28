@@ -5,7 +5,6 @@ import pandas as pd
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
-    convert_to_categorical,
     create_dummy,
     object_to_bool_categorical,
     object_to_float,
@@ -301,29 +300,20 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
                 "med_raucher_pl",
             ]
         ].assign(
-            med_schwierigkeiten_treppen_dummy=convert_to_categorical(
-                series=create_dummy(
-                    series=out["med_schwierigkeiten_treppen_pl"],
-                    value_for_comparison=_ANY_DIFFICULTY,
-                    comparison_type="isin",
-                ),
-                ordered=True,
+            med_schwierigkeiten_treppen_dummy=create_dummy(
+                series=out["med_schwierigkeiten_treppen_pl"],
+                value_for_comparison=_ANY_DIFFICULTY,
+                comparison_type="isin",
             ),
-            med_schwierigkeiten_taten_dummy=convert_to_categorical(
-                series=create_dummy(
-                    series=out["med_schwierigkeiten_taten_pl"],
-                    value_for_comparison=_ANY_DIFFICULTY,
-                    comparison_type="isin",
-                ),
-                ordered=True,
+            med_schwierigkeiten_taten_dummy=create_dummy(
+                series=out["med_schwierigkeiten_taten_pl"],
+                value_for_comparison=_ANY_DIFFICULTY,
+                comparison_type="isin",
             ),
-            med_subjective_status_dummy=convert_to_categorical(
-                series=create_dummy(
-                    series=out["med_subjective_status_pl"],
-                    value_for_comparison=_BAD_SUBJECTIVE_STATUS,
-                    comparison_type="isin",
-                ),
-                ordered=True,
+            med_subjective_status_dummy=create_dummy(
+                series=out["med_subjective_status_pl"],
+                value_for_comparison=_BAD_SUBJECTIVE_STATUS,
+                comparison_type="isin",
             ),
         ),
     )
