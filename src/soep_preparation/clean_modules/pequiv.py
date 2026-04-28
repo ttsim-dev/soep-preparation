@@ -396,30 +396,29 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
         ordered=True,
     )
-    out["med_subjective_status_dummy"] = create_dummy(
-        series=out["med_subjective_status_pequiv"],
-        value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
-        comparison_type="isin",
-    )
-    out["frailty_pequiv"] = _calculate_frailty(
-        out[
-            [
-                "med_schwierigkeiten_anziehen_pequiv",
-                "med_schwierigkeiten_bett",
-                "med_schwierigkeiten_einkauf",
-                "med_schwierigkeiten_hausarb",
-                "med_schwierigkeiten_treppen_pequiv",
-                "med_subjective_status_dummy",
-                "med_krankenhaus_pequiv",
-                "med_bluthochdruck_pequiv",
-                "med_diabetes_pequiv",
-                "med_krebs_pequiv",
-                "med_herzkrankheit_pequiv",
-                "med_schlaganfall_pequiv",
-                "med_gelenk_pequiv",
-                "med_psych_pequiv",
-                "obese_pequiv",
-            ]
+    frailty_inputs = out[
+        [
+            "med_schwierigkeiten_anziehen_pequiv",
+            "med_schwierigkeiten_bett",
+            "med_schwierigkeiten_einkauf",
+            "med_schwierigkeiten_hausarb",
+            "med_schwierigkeiten_treppen_pequiv",
+            "med_krankenhaus_pequiv",
+            "med_bluthochdruck_pequiv",
+            "med_diabetes_pequiv",
+            "med_krebs_pequiv",
+            "med_herzkrankheit_pequiv",
+            "med_schlaganfall_pequiv",
+            "med_gelenk_pequiv",
+            "med_psych_pequiv",
+            "obese_pequiv",
         ]
+    ].assign(
+        med_subjective_status_dummy=create_dummy(
+            series=out["med_subjective_status_pequiv"],
+            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+            comparison_type="isin",
+        ),
     )
+    out["frailty_pequiv"] = _calculate_frailty(frailty_inputs=frailty_inputs)
     return out

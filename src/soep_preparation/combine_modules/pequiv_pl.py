@@ -34,7 +34,7 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
 
     # pequiv records this as a bool; pl as a 3-level intensity. Match pequiv's
     # binary granularity so the combined output is single-typed.
-    _pl_treppen_dummy = convert_to_categorical(
+    pl_treppen_dummy = convert_to_categorical(
         series=create_dummy(
             series=merged["med_schwierigkeiten_treppen_pl"],
             value_for_comparison=["Ein wenig", "Stark"],
@@ -44,7 +44,7 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
     )
     out["med_schwierigkeiten_treppen"] = combine_first_and_make_categorical(
         series_1=merged["med_schwierigkeiten_treppen_pequiv"],
-        series_2=_pl_treppen_dummy,
+        series_2=pl_treppen_dummy,
         ordered=True,
     )
     out["med_bluthochdruck"] = combine_first_and_make_categorical(

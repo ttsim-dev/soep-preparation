@@ -277,42 +277,41 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["frailty_pl"] = _calculate_frailty(
-        out[
-            [
-                "med_schlaf_pl",
-                "med_diabetes_pl",
-                "med_asthma_pl",
-                "med_herzkrankheit_pl",
-                "med_krebs_pl",
-                "med_schlaganfall_pl",
-                "med_migräne_pl",
-                "med_bluthochdruck_pl",
-                "med_depressiv_pl",
-                "med_demenz_pl",
-                "med_gelenk_pl",
-                "med_rücken_pl",
-                "med_sonst_pl",
-                "med_raucher_pl",
-            ]
-        ].assign(
-            med_schwierigkeiten_treppen_dummy=create_dummy(
-                series=out["med_schwierigkeiten_treppen_pl"],
-                value_for_comparison=["Ein wenig", "Stark"],
-                comparison_type="isin",
-            ),
-            med_schwierigkeiten_taten_dummy=create_dummy(
-                series=out["med_schwierigkeiten_taten_pl"],
-                value_for_comparison=["Ein wenig", "Stark"],
-                comparison_type="isin",
-            ),
-            med_subjective_status_dummy=create_dummy(
-                series=out["med_subjective_status_pl"],
-                value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
-                comparison_type="isin",
-            ),
+    frailty_inputs = out[
+        [
+            "med_schlaf_pl",
+            "med_diabetes_pl",
+            "med_asthma_pl",
+            "med_herzkrankheit_pl",
+            "med_krebs_pl",
+            "med_schlaganfall_pl",
+            "med_migräne_pl",
+            "med_bluthochdruck_pl",
+            "med_depressiv_pl",
+            "med_demenz_pl",
+            "med_gelenk_pl",
+            "med_rücken_pl",
+            "med_sonst_pl",
+            "med_raucher_pl",
+        ]
+    ].assign(
+        med_schwierigkeiten_treppen_dummy=create_dummy(
+            series=out["med_schwierigkeiten_treppen_pl"],
+            value_for_comparison=["Ein wenig", "Stark"],
+            comparison_type="isin",
+        ),
+        med_schwierigkeiten_taten_dummy=create_dummy(
+            series=out["med_schwierigkeiten_taten_pl"],
+            value_for_comparison=["Ein wenig", "Stark"],
+            comparison_type="isin",
+        ),
+        med_subjective_status_dummy=create_dummy(
+            series=out["med_subjective_status_pl"],
+            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+            comparison_type="isin",
         ),
     )
+    out["frailty_pl"] = _calculate_frailty(frailty_inputs=frailty_inputs)
 
     # personal positions, norms, and political variables
     out["political_spectrum_left_to_right"] = object_to_int_categorical(
