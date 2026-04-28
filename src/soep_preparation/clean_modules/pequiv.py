@@ -15,9 +15,20 @@ from soep_preparation.utilities.data_manipulator import (
     replace_not_applicable_answer,
 )
 
+_BAD_SUBJECTIVE_STATUS = ["Zufriedenstellend", "Weniger gut", "Schlecht"]
 
-def _calculate_frailty(frailty_input: pd.DataFrame) -> pd.Series:
-    return apply_smallest_float_dtype(frailty_input.mean(axis=1))
+
+def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
+    out = frailty_inputs.drop(columns=["med_subjective_status_pequiv"]).copy()
+    out["med_subjective_status_dummy"] = convert_to_categorical(
+        series=create_dummy(
+            series=frailty_inputs["med_subjective_status_pequiv"],
+            value_for_comparison=_BAD_SUBJECTIVE_STATUS,
+            comparison_type="isin",
+        ),
+        ordered=True,
+    )
+    return apply_smallest_float_dtype(out.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -386,7 +397,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         },
     )
 
-    _med_subjective_status_intensity_pequiv = object_to_str_categorical(
+    out["med_subjective_status_pequiv"] = object_to_str_categorical(
         series=raw_data["m11126"],
         renaming={
             "[1] Very good": "Sehr gut",
@@ -395,14 +406,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[4] Poor": "Weniger gut",
             "[5] Bad": "Schlecht",
         },
-        ordered=True,
-    )
-    out["med_subjective_status_pequiv"] = convert_to_categorical(
-        series=create_dummy(
-            series=_med_subjective_status_intensity_pequiv,
-            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
-            comparison_type="isin",
-        ),
         ordered=True,
     )
     out["frailty_pequiv"] = _calculate_frailty(

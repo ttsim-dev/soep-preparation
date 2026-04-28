@@ -4,6 +4,8 @@ import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
     combine_first_and_make_categorical,
+    convert_to_categorical,
+    create_dummy,
 )
 
 
@@ -30,9 +32,19 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
     out["hh_id_original"] = merged["hh_id_original"]
     out["survey_year"] = merged["survey_year"]
 
+    # pequiv records this as a bool; pl as a 3-level intensity. Match pequiv's
+    # binary granularity so the combined output is single-typed.
+    _pl_treppen_dummy = convert_to_categorical(
+        series=create_dummy(
+            series=merged["med_schwierigkeiten_treppen_pl"],
+            value_for_comparison=["Ein wenig", "Stark"],
+            comparison_type="isin",
+        ),
+        ordered=True,
+    )
     out["med_schwierigkeiten_treppen"] = combine_first_and_make_categorical(
         series_1=merged["med_schwierigkeiten_treppen_pequiv"],
-        series_2=merged["med_schwierigkeiten_treppen_pl"],
+        series_2=_pl_treppen_dummy,
         ordered=True,
     )
     out["med_bluthochdruck"] = combine_first_and_make_categorical(
@@ -71,8 +83,10 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
     out["med_größe"] = merged["med_größe_pequiv"].combine_first(merged["med_größe_pl"])
     out["bmi"] = merged["bmi_pequiv"].combine_first(merged["bmi_pl"])
     out["obese"] = merged["obese_pequiv"].combine_first(merged["obese_pl"])
-    out["med_subjective_status"] = merged["med_subjective_status_pequiv"].combine_first(
-        merged["med_subjective_status_pl"]
+    out["med_subjective_status"] = combine_first_and_make_categorical(
+        series_1=merged["med_subjective_status_pequiv"],
+        series_2=merged["med_subjective_status_pl"],
+        ordered=True,
     )
     out["frailty"] = merged["frailty_pequiv"].combine_first(merged["frailty_pl"])
 

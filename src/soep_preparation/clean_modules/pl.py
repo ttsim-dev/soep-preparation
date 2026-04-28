@@ -49,22 +49,26 @@ def _private_rente_beitrag_m(private_rente_data: pd.DataFrame) -> pd.Series:
     return apply_smallest_float_dtype(out)
 
 
+_ANY_DIFFICULTY = ["Ein wenig", "Stark"]
+_BAD_SUBJECTIVE_STATUS = ["Zufriedenstellend", "Weniger gut", "Schlecht"]
+
+
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
-    out = pd.DataFrame()
-    dummy_columns = [
-        col
-        for col in frailty_inputs.columns
-        if frailty_inputs[col].cat.categories.is_boolean()
-    ]
-    out[dummy_columns] = frailty_inputs[dummy_columns].copy()
-    out["med_schwierigkeiten_taten_dummy"] = convert_to_categorical(
-        series=create_dummy(
-            series=frailty_inputs["med_schwierigkeiten_taten"],
-            value_for_comparison=["Ein wenig", "Stark"],
-            comparison_type="isin",
-        ),
-        ordered=True,
-    )
+    ordinal_inputs = {
+        "med_schwierigkeiten_treppen_pl": _ANY_DIFFICULTY,
+        "med_schwierigkeiten_taten_pl": _ANY_DIFFICULTY,
+        "med_subjective_status_pl": _BAD_SUBJECTIVE_STATUS,
+    }
+    out = frailty_inputs.drop(columns=list(ordinal_inputs)).copy()
+    for col, bad_values in ordinal_inputs.items():
+        out[f"{col}_dummy"] = convert_to_categorical(
+            series=create_dummy(
+                series=frailty_inputs[col],
+                value_for_comparison=bad_values,
+                comparison_type="isin",
+            ),
+            ordered=True,
+        )
     return apply_smallest_float_dtype(out.mean(axis=1))
 
 
@@ -190,7 +194,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["disability_degree"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["ple0041_h"], value=0)
     )
-    out["med_schwierigkeiten_treppen_intensity"] = object_to_str_categorical(
+    out["med_schwierigkeiten_treppen_pl"] = object_to_str_categorical(
         raw_data["ple0004"],
         renaming={
             "[3] Gar nicht": "Gar nicht",
@@ -199,15 +203,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["med_schwierigkeiten_treppen_pl"] = convert_to_categorical(
-        series=create_dummy(
-            series=out["med_schwierigkeiten_treppen_intensity"],
-            value_for_comparison=["Ein wenig", "Stark"],
-            comparison_type="isin",
-        ),
-        ordered=True,
-    )
-    out["med_schwierigkeiten_taten"] = object_to_str_categorical(
+    out["med_schwierigkeiten_taten_pl"] = object_to_str_categorical(
         series=raw_data["ple0005"],
         renaming={
             "[3] Gar nicht": "Gar nicht",
@@ -222,7 +218,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["obese_pl"] = create_dummy(
         series=out["bmi_pl"], value_for_comparison=30, comparison_type="geq"
     )
-    out["med_subjective_status_intensity"] = object_to_str_categorical(
+    out["med_subjective_status_pl"] = object_to_str_categorical(
         series=raw_data["ple0008"],
         renaming={
             "[1] Sehr gut": "Sehr gut",
@@ -231,14 +227,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[4] Weniger gut": "Weniger gut",
             "[5] Schlecht": "Schlecht",
         },
-        ordered=True,
-    )
-    out["med_subjective_status_pl"] = convert_to_categorical(
-        series=create_dummy(
-            series=out["med_subjective_status_intensity"],
-            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
-            comparison_type="isin",
-        ),
         ordered=True,
     )
     out["med_schlaf_pl"] = object_to_bool_categorical(
@@ -314,7 +302,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             [
                 "med_subjective_status_pl",
                 "med_schwierigkeiten_treppen_pl",
-                "med_schwierigkeiten_taten",
+                "med_schwierigkeiten_taten_pl",
                 "med_schlaf_pl",
                 "med_diabetes_pl",
                 "med_asthma_pl",
