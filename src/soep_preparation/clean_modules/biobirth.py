@@ -4,7 +4,7 @@ import pandas as pd
 
 from soep_preparation.utilities import month_mapping
 from soep_preparation.utilities.data_manipulator import (
-    float_to_int,
+    apply_smallest_int_dtype,
     object_to_int,
     object_to_int_categorical,
 )
@@ -20,11 +20,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         The processed biobirth data.
     """
     wide = pd.DataFrame()
-    wide["hh_id_original"] = float_to_int(
-        series=raw_data["cid"],
-        code_negative_values_as_na=False,
-    )
-    wide["p_id"] = float_to_int(raw_data["pid"], code_negative_values_as_na=False)
+    wide["hh_id_original"] = object_to_int(raw_data["cid"])
+    wide["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
 
     wide["tmp_number_of_children"] = object_to_int(raw_data["sumkids"])
     # the personal id of children (kidpnr) only exists for the first 9 children

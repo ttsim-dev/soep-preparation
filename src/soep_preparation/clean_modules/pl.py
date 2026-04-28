@@ -112,7 +112,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     # bezog arbeitslosengeld m3-m5 available 2017 through 2020
     out["bezog_arbeitslosengeld_m3_m5"] = object_to_bool_categorical(
         series=raw_data["plc0130_v2"],
-        renaming={"[2] Nein": False, "[1] Ja": True},
+        renaming={"[1] Ja": True, 2: False},
         ordered=True,
     )
     out["bezog_mutterschaftsgeld_im_letzten_monat"] = object_to_bool_categorical(
@@ -211,65 +211,65 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["med_schlaf_pl"] = object_to_bool_categorical(
         series=raw_data["ple0011_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_diabetes_pl"] = object_to_bool_categorical(
         series=raw_data["ple0012_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_asthma_pl"] = object_to_bool_categorical(
         raw_data["ple0013_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_herzkrankheit_pl"] = object_to_bool_categorical(
         series=raw_data["ple0014_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_krebs_pl"] = object_to_bool_categorical(
         series=raw_data["ple0015_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_schlaganfall_pl"] = object_to_bool_categorical(
         series=raw_data["ple0016_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_migräne_pl"] = object_to_bool_categorical(
         series=raw_data["ple0017_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_bluthochdruck_pl"] = object_to_bool_categorical(
         series=raw_data["ple0018_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_depressiv_pl"] = object_to_bool_categorical(
         series=raw_data["ple0019_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_demenz_pl"] = object_to_bool_categorical(
         series=raw_data["ple0020_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_gelenk_pl"] = object_to_bool_categorical(
         series=raw_data["ple0021_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
     )
     out["med_rücken_pl"] = object_to_bool_categorical(
         series=raw_data["ple0022_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
     )
     out["med_sonst_pl"] = object_to_bool_categorical(
         series=raw_data["ple0023_v1"],
-        renaming={"[1] mentioned": True},
+        renaming={"[1] genannt": True},
         ordered=True,
     )
     out["med_raucher_pl"] = object_to_bool_categorical(

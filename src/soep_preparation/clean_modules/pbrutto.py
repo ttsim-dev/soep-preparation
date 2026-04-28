@@ -22,7 +22,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
     out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
-    out["hh_id"] = object_to_int(raw_data["hid"])
+    out["hh_id"] = apply_smallest_int_dtype(raw_data["hid"])
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     out["birth_year"] = object_to_int(raw_data["geburt_v2"])
