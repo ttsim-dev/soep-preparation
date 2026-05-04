@@ -22,8 +22,8 @@ dynamic = [ "version" ]
 dependencies = [
   "pandas>=3",
   "pyarrow>=21",
-  "pytask>=0.5.5,<0.6",
-  "pytask-parallel>=0.5.1,<0.6",
+  "pytask>=0.6",
+  "pytask-parallel>=0.5.1",
 ]
 [[project.authors]]
 name = "Felix Schmitz"

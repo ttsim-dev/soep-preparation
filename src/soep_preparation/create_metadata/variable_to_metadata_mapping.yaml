@@ -13028,6 +13028,10 @@ retired:
     - 2022
     - 2023
     - 2024
+rgroup20:
+  dtype: int8[pyarrow]
+  module: cirdef
+  survey_years: null
 riester_rente_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -13440,6 +13444,10 @@ tatsächliche_arbeitszeit_w:
     - 2022
     - 2023
     - 2024
+teaching_sample:
+  dtype: bool[pyarrow]
+  module: cirdef
+  survey_years: null
 tenure:
   dtype: float[pyarrow]
   module: pgen
