@@ -48,8 +48,12 @@ repos:
     hooks:
       - id: yamllint
         exclude: variable_to_metadata_mapping\.yaml
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.37.2
+    hooks:
+      - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.11
+    rev: v0.15.13
     hooks:
       - id: ruff-check
         types_or:

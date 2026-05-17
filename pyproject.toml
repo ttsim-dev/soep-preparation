@@ -85,20 +85,33 @@ extend-ignore = [
   "EM101",  # Exception must not use a string literal
   "EM102",  # Exception must not use an f-string literal
   "FBT001", # Boolean-typed positional argument in function definition
-  "FIX002", # rely on TODO-spotting from TD area.
+  "FIX002", # Line contains TODO (rely on TD area for spotting)
   "ISC001", # Avoid conflict with ruff-format
   "PD015",  # pd.merge fine because of inherent symmetry
-  "S101",   # Use of `assert` detected.
+  "S101",   # Use of `assert` detected
   "TC001",  # Move application import into a type-checking block
   "TC002",  # Move third-party import into a type-checking block
   "TC003",  # Move standard library import into a type-checking block
   "TRY003", # Avoid specifying long messages outside the exception class
 ]
-per-file-ignores."**/task.py" = [ "ANN" ]
-per-file-ignores."sandbox/*" = [ "INP001" ]
-per-file-ignores."src/soep_preparation/config.py" = [ "E402" ]
-per-file-ignores."tests/*" = [ "ANN201", "D", "INP001", "PD011" ]
-per-file-ignores."tests/metadata/test_mapping_changed.py" = [ "S108" ]
+per-file-ignores."**/task.py" = [
+  "ANN", # Type annotations (pytask signatures use Annotated[Path, Product])
+]
+per-file-ignores."sandbox/*" = [
+  "INP001", # Implicit namespace packages
+]
+per-file-ignores."src/soep_preparation/config.py" = [
+  "E402", # Module-level import not at top of file
+]
+per-file-ignores."tests/*" = [
+  "ANN201", # Missing return type annotation for public function
+  "D",      # Docstrings
+  "INP001", # Implicit namespace packages
+  "PD011",  # Use of .values (false positives on non-pandas objects)
+]
+per-file-ignores."tests/metadata/test_mapping_changed.py" = [
+  "S108", # Hardcoded temporary file path
+]
 pydocstyle.convention = "google"
 pylint.max-statements = 100
 
