@@ -62,7 +62,7 @@ dependencies.python = "~=3.14.0"
 pytest = "*"
 pytest-cov = "*"
 pytest-xdist = "*"
-ty = "*"
+ty = "==0.0.23"
 [tool.pixi.feature.tests.tasks]
 tests = "pytest"
 tests-with-cov = "pytest tests --cov-report=xml --cov=./"
