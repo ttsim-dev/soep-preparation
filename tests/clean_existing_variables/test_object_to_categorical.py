@@ -11,7 +11,9 @@ def test_object_to_bool_categorical_assert_dtype():
     expected_categories = pd.array([True, False], dtype="bool[pyarrow]")
     expected = pd.Series(pd.Categorical(expected_categories)).dtype
     sr = pd.Series(["Yes", "No"], dtype=object)
-    actual = object_to_bool_categorical(sr, {"Yes": True, "No": False}).dtype
+    actual = object_to_bool_categorical(
+        series=sr, renaming={"Yes": True, "No": False}
+    ).dtype
     assert actual == expected
 
 
@@ -19,7 +21,7 @@ def test_object_to_bool_categorical_assert_renaming():
     expected_categories = pd.array([True, False], dtype="bool[pyarrow]")
     expected = pd.Series(pd.Categorical(expected_categories))
     sr = pd.Series(["Yes", "No"], dtype=object)
-    actual = object_to_bool_categorical(sr, {"No": False, "Yes": True})
+    actual = object_to_bool_categorical(series=sr, renaming={"No": False, "Yes": True})
     pd.testing.assert_series_equal(actual, expected)
 
 
@@ -29,7 +31,9 @@ def test_object_to_bool_categorical_assert_remove_missing():
         pd.Categorical(expected_categories, ordered=True),
     ).cat.categories
     sr = pd.Series(["Yes", "No", "[-1] Missing"], dtype=object)
-    actual = object_to_bool_categorical(sr, {"No": False, "Yes": True}).cat.categories
+    actual = object_to_bool_categorical(
+        series=sr, renaming={"No": False, "Yes": True}
+    ).cat.categories
     assert (actual == expected).all()
 
 
