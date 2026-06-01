@@ -40,13 +40,13 @@ Repository = "https://github.com/OpenSourceEconomics/soep-preparation"
 Tracker = "https://github.com/OpenSourceEconomics/soep-preparation/issues"
 
 [tool.hatch]
+version.source = "vcs"
+metadata.allow-direct-references = true
 build.hooks.vcs.version-file = "src/soep_preparation/_version.py"
 build.targets.sdist.exclude = [ "tests" ]
 build.targets.sdist.only-packages = true
 build.targets.wheel.only-include = [ "src" ]
 build.targets.wheel.sources = [ "src" ]
-metadata.allow-direct-references = true
-version.source = "vcs"
 
 [tool.pixi.dependencies]
 deepdiff = "*"
@@ -132,9 +132,9 @@ rules.unused-awaitable = "error"
 rules.unused-ignore-comment = "error"
 
 [tool.pytest]
+ini_options.norecursedirs = [ "docs" ]
 ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
 ini_options.filterwarnings = []
-ini_options.norecursedirs = [ "docs" ]
 
 [tool.yamlfix]
 line_length = 88
