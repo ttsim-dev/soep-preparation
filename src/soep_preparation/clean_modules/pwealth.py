@@ -77,6 +77,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["net_overall_wealth_d"] = apply_smallest_float_dtype(raw_data["w0111d"])
     out["net_overall_wealth_e"] = apply_smallest_float_dtype(raw_data["w0111e"])
 
+    out["private_insurances_value_a"] = apply_smallest_float_dtype(raw_data["h0100a"])
+    out["private_insurances_value_b"] = apply_smallest_float_dtype(raw_data["h0100b"])
+    out["private_insurances_value_c"] = apply_smallest_float_dtype(raw_data["h0100c"])
+    out["private_insurances_value_d"] = apply_smallest_float_dtype(raw_data["h0100d"])
+    out["private_insurances_value_e"] = apply_smallest_float_dtype(raw_data["h0100e"])
+
+    out["consumer_debt_value_a"] = apply_smallest_float_dtype(raw_data["c0100a"])
+    out["consumer_debt_value_b"] = apply_smallest_float_dtype(raw_data["c0100b"])
+    out["consumer_debt_value_c"] = apply_smallest_float_dtype(raw_data["c0100c"])
+    out["consumer_debt_value_d"] = apply_smallest_float_dtype(raw_data["c0100d"])
+    out["consumer_debt_value_e"] = apply_smallest_float_dtype(raw_data["c0100e"])
+
     out["vehicles_value_a"] = apply_smallest_float_dtype(
         raw_data["v0100a"].replace({-8: pd.NA})
     )
