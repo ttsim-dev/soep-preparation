@@ -1153,7 +1153,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/d5/0c/043d5e551459da400957a1395e0febbf771446ff34291afcbe3d8be2a279/fsspec-2026.4.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/d7/51/ec641c26e6dca1b25a7d2035ba6ecb7c884ef1a100a9e42fbe4ce4405139/coverage-7.14.0-cp314-cp314-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/dd/1a/5d9a402b39ec892d856bbdd9db502ff73ce28cdf4aff72eb1ce1d6843506/universal_pathlib-0.3.10-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/e2/c5/4688652870e350a76a8157f7ffb59ad54f37d5d10725aa7076f66ac94ec8/ty-0.0.39-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f3/eb/ebffaa97dc55502df69584a8f0dcf07f69a3e0b3e2323670a2722db9aa39/numpy-2.4.6-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_2.conda
@@ -1352,7 +1351,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/88/39/799be3f2f0f38cc727ee3b4f1445fe6d5e4133064ec2e4115069418a5bb6/cloudpickle-3.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/8a/cb/c62454606daf5640369c94d8a9dd540599b1bfc090e2d2180cb77f4038d2/greenlet-3.5.1-cp314-cp314-macosx_11_0_universal2.whl
       - pypi: https://files.pythonhosted.org/packages/8e/eb/5da01e356015aee6ecfa1187ced87aef51364e306f5e695dd52719bf0e78/orjson-3.11.9-cp314-cp314-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl
-      - pypi: https://files.pythonhosted.org/packages/9c/c6/663ded50e823dbf9fb9d002eca46b7cb1fb2c72b744b84f22ce732a0ee0b/ty-0.0.39-py3-none-macosx_10_12_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/9d/7a/d968e294073affff457b041c2be9868a40c1c71f4a35fcc1e45e5493067b/pytest_cov-7.1.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/b9/a6d8bb7d228940f01885bd9f327ab7f9d366a9be775c4bf366bf9d9477ae/kaleido-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl
@@ -1565,7 +1563,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/80/b2/bba963dfce0fcbc5020a4f8b4361e132390c4bd78b46cfc7ae355e678b96/pytask-0.5.8-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/88/39/799be3f2f0f38cc727ee3b4f1445fe6d5e4133064ec2e4115069418a5bb6/cloudpickle-3.1.2-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/8b/ae/5d38ba9a6456ff4c78d212cf464fd8b9a25d8118465197b0b2dc891c0b19/ty-0.0.39-py3-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/8e/62/764ce66fa4147ae6d73071a3abf804ffe606f174618697c571acdf26a7c9/numpy-2.4.6-cp314-cp314-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/8e/eb/5da01e356015aee6ecfa1187ced87aef51364e306f5e695dd52719bf0e78/orjson-3.11.9-cp314-cp314-macosx_10_15_x86_64.macosx_11_0_arm64.macosx_10_15_universal2.whl
       - pypi: https://files.pythonhosted.org/packages/9d/7a/d968e294073affff457b041c2be9868a40c1c71f4a35fcc1e45e5493067b/pytest_cov-7.1.0-py3-none-any.whl
@@ -1794,7 +1791,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b1/29/c028a0731e202035f0e2e0bfbf1a3e46ad6c628cbb17f6f1cc9eea5d9ff1/pathlib_abc-0.5.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/b3/81/4da04ced5a082363ecfa159c010d200ecbd959ae410c10c0264a38cac0f5/markdown_it_py-4.2.0-py3-none-any.whl
-      - pypi: https://files.pythonhosted.org/packages/b5/5a/aaeb22faa8d4dae90a287d4c3636c671edcff3b99be5f4fc8b79ad71eef6/ty-0.0.39-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/ba/6c/ff8bf52315064dbeb55cb5067e191120a5b2e58bb648d0d34cf7969dc2c2/choreographer-1.3.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/c7/0d/67e5b4109ea4a837e80daa87c2c696711955e40449a97e8926672534def2/click-8.4.1-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ca/31/d4e37e9e550c2b92a9cbc2e4d0b7420a27224968580b5a447f420847c975/pytest_xdist-3.8.0-py3-none-any.whl
@@ -8431,11 +8427,6 @@ packages:
   - psutil ; extra == 'test'
   - setuptools ; extra == 'test'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/8b/ae/5d38ba9a6456ff4c78d212cf464fd8b9a25d8118465197b0b2dc891c0b19/ty-0.0.39-py3-none-macosx_11_0_arm64.whl
-  name: ty
-  version: 0.0.39
-  sha256: 5f136377ce46c73677701a9e1ad730bf72f699bcec046e422eb79d0886cac3ab
-  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/8e/3a/28ba9c1c1ebdbb5f1b94dfebb46f207e52e6a554b7fe4132540fde29a3a0/pyarrow-24.0.0-cp314-cp314-manylinux_2_28_x86_64.whl
   name: pyarrow
   version: 24.0.0
@@ -8535,11 +8526,6 @@ packages:
   - numpy ; extra == 'docs'
   - torch ; extra == 'docs'
   requires_python: '>=3.9'
-- pypi: https://files.pythonhosted.org/packages/9c/c6/663ded50e823dbf9fb9d002eca46b7cb1fb2c72b744b84f22ce732a0ee0b/ty-0.0.39-py3-none-macosx_10_12_x86_64.whl
-  name: ty
-  version: 0.0.39
-  sha256: 3435b64c1e59c14c9aa39c20cc018823937cd38d55db853e74d95b8f420569b0
-  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/9d/7a/d968e294073affff457b041c2be9868a40c1c71f4a35fcc1e45e5493067b/pytest_cov-7.1.0-py3-none-any.whl
   name: pytest-cov
   version: 7.1.0
@@ -8664,11 +8650,6 @@ packages:
   - pytest-timeout ; extra == 'testing'
   - requests ; extra == 'testing'
   requires_python: '>=3.10'
-- pypi: https://files.pythonhosted.org/packages/b5/5a/aaeb22faa8d4dae90a287d4c3636c671edcff3b99be5f4fc8b79ad71eef6/ty-0.0.39-py3-none-win_amd64.whl
-  name: ty
-  version: 0.0.39
-  sha256: ba7f2d54452535419e90f6f03ff39282999e87b43c21c00559f6d7ad711a36d5
-  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/ba/6c/ff8bf52315064dbeb55cb5067e191120a5b2e58bb648d0d34cf7969dc2c2/choreographer-1.3.0-py3-none-any.whl
   name: choreographer
   version: 1.3.0
@@ -8928,11 +8909,6 @@ packages:
   version: 2.4.6
   sha256: b507f5c4c1d508876d1819b6bf9a49d365b96320b5d4993426b33a23ca4b8261
   requires_python: '>=3.11'
-- pypi: https://files.pythonhosted.org/packages/e2/c5/4688652870e350a76a8157f7ffb59ad54f37d5d10725aa7076f66ac94ec8/ty-0.0.39-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-  name: ty
-  version: 0.0.39
-  sha256: 40b7840ff46764b6a6757f4ade1cd0530fc3e8a0b435ca93e7602360e4cb90b6
-  requires_python: '>=3.8'
 - pypi: https://files.pythonhosted.org/packages/e5/30/8519fdde58a7bdf155b714359791ad1dc018b47d60269d5d160d311fdc36/sqlalchemy-2.0.49-py3-none-any.whl
   name: sqlalchemy
   version: 2.0.49
