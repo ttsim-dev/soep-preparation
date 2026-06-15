@@ -84,4 +84,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["individual_weighting_factor_without_new"] = apply_smallest_float_dtype(
         raw_data["phrf1"]
     )
+
+    # SOEP-RV record-linkage identifier (`ID SUF Rentenversicherung`): the bridge
+    # to the FDZ-RV pension records, populated for respondents who consented to
+    # the linkage and missing otherwise.
+    out["rv_id"] = object_to_int(raw_data["rv_id"])
     return out
