@@ -34,8 +34,8 @@ pixi run -e py314 tests tests/clean_existing_variables/test_create_dummy.py
 # Run a single test by name
 pixi run -e py314 tests -k "test_name"
 
-# Type checking
-pixi run -e py314 ty
+# Type checking (runs as the ty pre-commit hook)
+prek run ty --all-files
 
 # Quality checks (linting, formatting, codespell, etc.)
 prek run --all-files
@@ -45,11 +45,11 @@ prek run --all-files
 
 ## Verification Before Finishing Any Code Change
 
-Before finishing any task that modifies code, always run these three verification steps
-in order:
+Before finishing any task that modifies code, always run these two verification steps in
+order:
 
-1. `pixi run -e py314 ty` (type checker)
-1. `prek run --all-files` (quality checks: linting, formatting, yaml, etc.)
+1. `prek run --all-files` (quality checks: ty type checking, linting, formatting, yaml,
+   etc.)
 1. `pixi run -e py314 tests -n 7` (full test suite)
 
 ## Architecture

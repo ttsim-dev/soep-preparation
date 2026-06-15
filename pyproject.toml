@@ -62,11 +62,9 @@ dependencies.python = "~=3.14.0"
 pytest = "*"
 pytest-cov = "*"
 pytest-xdist = "*"
-ty = "==0.0.23"
 [tool.pixi.feature.tests.tasks]
 tests = "pytest"
 tests-with-cov = "pytest tests --cov-report=xml --cov=./"
-ty = "ty check"
 [tool.pixi.pypi-dependencies]
 soep_preparation = { path = ".", editable = true }
 kaleido = ">=1.0.0"
@@ -131,6 +129,10 @@ expand_tables = [
 ]
 
 [tool.ty]
+# ty resolves third-party imports from this pixi env (the ty-pre-commit hook runs
+# `uv check --no-project`, so uv neither creates a `.venv` nor resolves deps). Run
+# `pixi install` once.
+environment.python = ".pixi/envs/py314"
 rules.ambiguous-protocol-member = "error"
 rules.deprecated = "error"
 rules.division-by-zero = "error"
