@@ -240,6 +240,28 @@ def float_to_int(
     return apply_smallest_int_dtype(series=series)
 
 
+def float_to_float(
+    series: pd.Series,
+    code_negative_values_as_na: bool,
+) -> pd.Series:
+    """Clean a float Series, optionally coding negative values as NA.
+
+    Use for already-numeric columns (e.g. continuous scores) where SOEP missing
+    codes arrive as negative floats rather than labelled strings.
+
+    Parameters:
+        series: The input series to be cleaned.
+        code_negative_values_as_na: Code negative values as NA if True.
+
+    Returns:
+        The series with cleaned entries and the smallest float dtype.
+    """
+    if code_negative_values_as_na:
+        sr_no_missing = series.where(series >= 0)
+        return apply_smallest_float_dtype(sr_no_missing)
+    return apply_smallest_float_dtype(series=series)
+
+
 def object_to_float(series: pd.Series) -> pd.Series:
     """Transform a mixed object Series to a float Series.
 

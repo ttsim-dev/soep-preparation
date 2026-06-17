@@ -5,7 +5,7 @@ import pandas as pd
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     create_dummy,
-    object_to_float,
+    float_to_float,
 )
 
 
@@ -32,19 +32,36 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
-    # Component summary scales.
-    out["sf12_pcs"] = object_to_float(raw_data["pcs"])
-    out["sf12_mcs"] = object_to_float(raw_data["mcs"])
+    # Component summary scales. The SF-12 scores and BMI arrive as floats with
+    # SOEP missing codes encoded as negative values.
+    out["sf12_pcs"] = float_to_float(raw_data["pcs"], code_negative_values_as_na=True)
+    out["sf12_mcs"] = float_to_float(raw_data["mcs"], code_negative_values_as_na=True)
 
     # The eight norm-based subscales underlying the summary scales.
-    out["sf12_physical_functioning_nbs"] = object_to_float(raw_data["pf_nbs"])
-    out["sf12_role_physical_nbs"] = object_to_float(raw_data["rp_nbs"])
-    out["sf12_bodily_pain_nbs"] = object_to_float(raw_data["bp_nbs"])
-    out["sf12_general_health_nbs"] = object_to_float(raw_data["gh_nbs"])
-    out["sf12_vitality_nbs"] = object_to_float(raw_data["vt_nbs"])
-    out["sf12_social_functioning_nbs"] = object_to_float(raw_data["sf_nbs"])
-    out["sf12_role_emotional_nbs"] = object_to_float(raw_data["re_nbs"])
-    out["sf12_mental_health_nbs"] = object_to_float(raw_data["mh_nbs"])
+    out["sf12_physical_functioning_nbs"] = float_to_float(
+        raw_data["pf_nbs"], code_negative_values_as_na=True
+    )
+    out["sf12_role_physical_nbs"] = float_to_float(
+        raw_data["rp_nbs"], code_negative_values_as_na=True
+    )
+    out["sf12_bodily_pain_nbs"] = float_to_float(
+        raw_data["bp_nbs"], code_negative_values_as_na=True
+    )
+    out["sf12_general_health_nbs"] = float_to_float(
+        raw_data["gh_nbs"], code_negative_values_as_na=True
+    )
+    out["sf12_vitality_nbs"] = float_to_float(
+        raw_data["vt_nbs"], code_negative_values_as_na=True
+    )
+    out["sf12_social_functioning_nbs"] = float_to_float(
+        raw_data["sf_nbs"], code_negative_values_as_na=True
+    )
+    out["sf12_role_emotional_nbs"] = float_to_float(
+        raw_data["re_nbs"], code_negative_values_as_na=True
+    )
+    out["sf12_mental_health_nbs"] = float_to_float(
+        raw_data["mh_nbs"], code_negative_values_as_na=True
+    )
 
     # Whether all twelve items needed for the SF-12 scoring are complete.
     out["sf12_valid"] = create_dummy(
@@ -53,6 +70,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         comparison_type="equal",
     )
 
-    out["bmi_health"] = object_to_float(raw_data["bmi"])
+    out["bmi_health"] = float_to_float(raw_data["bmi"], code_negative_values_as_na=True)
 
     return out
