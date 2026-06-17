@@ -3,6 +3,7 @@ import pandas as pd
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    float_to_float,
     float_to_int,
 )
 
@@ -53,4 +54,18 @@ def test_float_to_int_assert_code_negative_values_as_na():
     expected = pd.Series([0, 1, pd.NA], dtype="int8[pyarrow]")
     sr = pd.Series([0.0, 1.0, -1.0], dtype="float[pyarrow]")
     actual = float_to_int(series=sr, code_negative_values_as_na=True)
+    pd.testing.assert_series_equal(actual, expected)
+
+
+def test_float_to_float_assert_dtype():
+    expected = pd.Series([0.1, 0.2], dtype="float[pyarrow]").dtype
+    sr = pd.Series([0.1, 0.2])
+    actual = float_to_float(series=sr, code_negative_values_as_na=False).dtype
+    assert actual == expected
+
+
+def test_float_to_float_assert_code_negative_values_as_na():
+    expected = pd.Series([0.5, 1.5, pd.NA], dtype="float[pyarrow]")
+    sr = pd.Series([0.5, 1.5, -1.0], dtype="float[pyarrow]")
+    actual = float_to_float(series=sr, code_negative_values_as_na=True)
     pd.testing.assert_series_equal(actual, expected)
