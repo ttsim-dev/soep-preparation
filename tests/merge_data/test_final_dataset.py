@@ -4,6 +4,7 @@ import pytest
 
 from soep_preparation.final_dataset import (
     DatasetMergingInfo,
+    _get_sorted_dataset_merging_information,
     _harmonize_variables,
     _merge_data,
 )
@@ -77,3 +78,22 @@ def test_merge_data_assert_data(
         merging_information=merging_information,
     )
     pd.testing.assert_frame_equal(actual, expected)
+
+
+def test_get_sorted_dataset_merging_information_drops_unused_and_sorts_by_index_count():
+    """Modules without a requested variable are dropped; the rest are ordered by
+    descending index-variable count.
+    """
+    modules = {
+        "one_index": pd.DataFrame({"p_id": [0, 1], "column1": [1, 2]}),
+        "two_indexes": pd.DataFrame(
+            {"hh_id": [0, 1], "p_id": [0, 1], "column2": [3, 4]},
+        ),
+        "no_requested_variable": pd.DataFrame({"p_id": [0, 1], "other": [5, 6]}),
+    }
+    actual = _get_sorted_dataset_merging_information(
+        modules=modules,
+        variables=["column1", "column2"],
+        survey_years=None,
+    )
+    assert list(actual) == ["two_indexes", "one_index"]

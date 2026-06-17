@@ -172,7 +172,7 @@ def _get_sorted_dataset_merging_information(
     variables: list[str],
     survey_years: list[int] | None,
 ) -> dict[str, DatasetMergingInfo]:
-    dataset_merging_information = {}
+    dataset_merging_information: dict[str, DatasetMergingInfo] = {}
     for module_name, full_data in modules.items():
         idx_vars = [v for v in POTENTIAL_INDEX_VARIABLES if v in full_data.columns]
         mod_vars = [
