@@ -2437,6 +2437,30 @@ confession_specific:
     - 2020
     - 2021
     - 2023
+consumer_debt_value_a:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: &id001
+    - 2002
+    - 2007
+    - 2012
+    - 2017
+consumer_debt_value_b:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
+consumer_debt_value_c:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
+consumer_debt_value_d:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
+consumer_debt_value_e:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
 country_of_birth:
   dtype:
     categorical:
@@ -11757,6 +11781,26 @@ private_altersvorsorge_y:
     - 2022
     - 2023
     - 2024
+private_insurances_value_a:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
+private_insurances_value_b:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
+private_insurances_value_c:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
+private_insurances_value_d:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
+private_insurances_value_e:
+  dtype: float[pyarrow]
+  module: pwealth
+  survey_years: *id001
 private_rente_beitrag_m:
   dtype: float[pyarrow]
   module: pl
@@ -13028,6 +13072,10 @@ retired:
     - 2022
     - 2023
     - 2024
+rgroup20:
+  dtype: int8[pyarrow]
+  module: cirdef
+  survey_years: null
 riester_rente_hinterbliebene_y:
   dtype: float[pyarrow]
   module: pequiv
@@ -13076,6 +13124,51 @@ riester_rente_hinterbliebene_y:
 riester_rente_y:
   dtype: float[pyarrow]
   module: pequiv
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+rv_id:
+  dtype: int32[pyarrow]
+  module: ppathl
   survey_years:
     - 1984
     - 1985
@@ -13440,6 +13533,10 @@ tatsächliche_arbeitszeit_w:
     - 2022
     - 2023
     - 2024
+teaching_sample:
+  dtype: bool[pyarrow]
+  module: cirdef
+  survey_years: null
 tenure:
   dtype: float[pyarrow]
   module: pgen

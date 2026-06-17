@@ -136,13 +136,13 @@ def convert_to_categorical(
         The series converted to categorical dtype.
     """
     fail_if_series_cannot_be_transformed(
-        series,
-        "Any",
-        [
+        series=series,
+        expected_sr_dtype="Any",
+        input_expected_types=[
             [series, "pandas.core.series.Series"],
             [ordered, "bool"],
         ],
-        [series.unique(), ["Any"]],
+        entries_expected_types=[series.unique(), ["Any"]],
     )
     if series.isna().all():
         return series.astype("category[pyarrow]")
@@ -272,10 +272,10 @@ def object_to_float(series: pd.Series) -> pd.Series:
         The series with cleaned entries and transformed dtype.
     """
     fail_if_series_cannot_be_transformed(
-        series,
-        "object",
-        [[series, "pandas.core.series.Series"]],
-        [series.unique(), ("float", "int", "str")],
+        series=series,
+        expected_sr_dtype="object",
+        input_expected_types=[[series, "pandas.core.series.Series"]],
+        entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     return apply_smallest_float_dtype(sr_relevant_values_only)
@@ -291,10 +291,10 @@ def object_to_int(series: pd.Series) -> pd.Series:
         The series with cleaned entries and transformed dtype.
     """
     fail_if_series_cannot_be_transformed(
-        series,
-        "object",
-        [[series, "pandas.core.series.Series"]],
-        [series.unique(), ("float", "int", "str")],
+        series=series,
+        expected_sr_dtype="object",
+        input_expected_types=[[series, "pandas.core.series.Series"]],
+        entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     return apply_smallest_int_dtype(sr_relevant_values_only)
@@ -317,14 +317,14 @@ def object_to_bool_categorical(
         The series with cleaned entries and transformed dtype.
     """
     fail_if_series_cannot_be_transformed(
-        series,
-        "object",
-        [
+        series=series,
+        expected_sr_dtype="object",
+        input_expected_types=[
             [series, "pandas.core.series.Series"],
             [renaming, "dict"],
             [ordered, "bool"],
         ],
-        [series.unique(), ("float", "int", "str")],
+        entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
 
@@ -357,14 +357,14 @@ def object_to_int_categorical(
         The series with cleaned entries and transformed dtype.
     """
     fail_if_series_cannot_be_transformed(
-        series,
-        "object",
-        [
+        series=series,
+        expected_sr_dtype="object",
+        input_expected_types=[
             [series, "pandas.core.series.Series"],
             [renaming, "dict" if renaming is not None else "None"],
             [ordered, "bool"],
         ],
-        [series.unique(), ("float", "int", "str")],
+        entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     if renaming:
@@ -405,14 +405,14 @@ def object_to_str_categorical(
         The series with cleaned entries and transformed dtype.
     """
     fail_if_series_cannot_be_transformed(
-        series,
-        "object",
-        [
+        series=series,
+        expected_sr_dtype="object",
+        input_expected_types=[
             [series, "pandas.core.series.Series"],
             [renaming, "dict" if renaming is not None else "None"],
             [ordered, "bool"],
         ],
-        [series.unique(), ("float", "int", "str")],
+        entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = _remove_missing_data_values(series)
     if renaming:
