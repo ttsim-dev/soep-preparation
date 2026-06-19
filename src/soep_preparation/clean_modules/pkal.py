@@ -69,23 +69,6 @@ def _number_of_months_employed(
     )
 
 
-def _number_of_months_in_pension(
-    data: pd.DataFrame,
-) -> pd.Series:
-    # `in_pension_m_*` is True for a pension month and NA otherwise (the
-    # `"[1] genannt"` renaming drops the not-mentioned answers), so a
-    # not-mentioned / unanswered month counts as not-in-pension here.
-    months = range(1, 13)
-    in_pension = pd.concat(
-        [
-            data[f"in_pension_m_{month}"].astype("boolean").fillna(value=False)
-            for month in months
-        ],
-        axis=1,
-    )
-    return apply_smallest_int_dtype(in_pension.sum(axis=1))
-
-
 def _clean_in_pension_month(series: pd.Series) -> pd.Series:
     return object_to_bool_categorical(
         series=series,
@@ -496,7 +479,34 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["in_pension_m_10"] = _clean_in_pension_month(raw_data["kal1e010"])
     out["in_pension_m_11"] = _clean_in_pension_month(raw_data["kal1e011"])
     out["in_pension_m_12"] = _clean_in_pension_month(raw_data["kal1e012"])
-    out["number_of_months_in_pension"] = _number_of_months_in_pension(out)
+    # Count pension months from the twelve monthly indicators. Each is True for a
+    # pension month and NA otherwise (the `"[1] genannt"` renaming drops the
+    # not-mentioned answers), so a not-mentioned / unanswered month counts as
+    # not-in-pension. The columns are listed here, not hidden behind a helper
+    # taking the whole frame, so the count's provenance is visible at the caller.
+    in_pension_months = (
+        out[
+            [
+                "in_pension_m_1",
+                "in_pension_m_2",
+                "in_pension_m_3",
+                "in_pension_m_4",
+                "in_pension_m_5",
+                "in_pension_m_6",
+                "in_pension_m_7",
+                "in_pension_m_8",
+                "in_pension_m_9",
+                "in_pension_m_10",
+                "in_pension_m_11",
+                "in_pension_m_12",
+            ]
+        ]
+        .astype("boolean")
+        .fillna(value=False)
+    )
+    out["number_of_months_in_pension"] = apply_smallest_int_dtype(
+        in_pension_months.sum(axis=1)
+    )
     out["in_pension_in_at_least_one_month"] = out["number_of_months_in_pension"] > 0
 
     return out

@@ -37,9 +37,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # Consumer Price Index (CNEF y11101), for deflating nominal values to real
     # terms. A year-level series; constant within each survey year.
-    out["consumer_price_index"] = apply_smallest_float_dtype(
-        object_to_float(raw_data["y11101"])
-    )
+    out["cpi"] = apply_smallest_float_dtype(object_to_float(raw_data["y11101"]))
 
     # hh characteristics
     out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])

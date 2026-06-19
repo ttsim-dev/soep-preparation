@@ -161,8 +161,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
 
     # own old-age / disability pension. The questionnaire (Q121) does not split
     # Altersrente from Erwerbsminderungsrente — "Deutsche Rentenversicherung" is a
-    # single row — so EM-Rente receipt is inferred downstream from receipt below
-    # the earliest old-age claiming age (combine_modules/pl_pbrutto).
+    # single row. Any EM-Rente inference (e.g. own-pension receipt below the
+    # earliest old-age claiming age) is project-specific and belongs in the
+    # consuming project, not this general-purpose cleaning library.
     # SPOT-CHECK on data: the `plc0232_h` Ja/Nein label strings (harmonized
     # variables sometimes carry English "[1] Yes" / "[2] No").
     out["bezieht_eigene_rente"] = object_to_bool_categorical(
