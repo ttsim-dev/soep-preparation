@@ -31,6 +31,49 @@ def test_get_relevant_column_names_with_raw_data_in_docstring(
 
 @patch("soep_preparation.utilities.general.load_script")
 @patch("inspect.getsource")
+def test_get_relevant_column_names_ignores_raw_data_in_comment(
+    mock_getsource: MagicMock,
+    mock_load_script: MagicMock,
+) -> None:
+    function_content = """
+    def clean():
+        # historical note: raw_data["phantom_column"] once lived here
+        value = raw_data["real_column"]
+    """
+    mock_getsource.return_value = function_content
+
+    mock_module = MagicMock()
+    mock_module.clean = lambda: None
+    mock_load_script.return_value = mock_module
+
+    actual = get_relevant_column_names(Path("dummy/path"))
+    assert actual == ["real_column"]
+
+
+@patch("soep_preparation.utilities.general.load_script")
+@patch("inspect.getsource")
+def test_get_relevant_column_names_ignores_dynamic_fstring_subscript(
+    mock_getsource: MagicMock,
+    mock_load_script: MagicMock,
+) -> None:
+    function_content = """
+    def clean():
+        for month in range(1, 13):
+            out[f"m_{month}"] = raw_data[f"kal1e{month:03d}"]
+        value = raw_data["real_column"]
+    """
+    mock_getsource.return_value = function_content
+
+    mock_module = MagicMock()
+    mock_module.clean = lambda: None
+    mock_load_script.return_value = mock_module
+
+    actual = get_relevant_column_names(Path("dummy/path"))
+    assert actual == ["real_column"]
+
+
+@patch("soep_preparation.utilities.general.load_script")
+@patch("inspect.getsource")
 def test_get_relevant_column_names_with_empty_string(
     mock_getsource: MagicMock,
     mock_load_script: MagicMock,
