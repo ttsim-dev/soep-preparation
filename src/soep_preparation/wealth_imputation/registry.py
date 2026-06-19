@@ -8,6 +8,7 @@ the canonical component (`net_sign`), never carried as a separate, contradictabl
 field.
 """
 
+import math
 from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import Enum
@@ -32,6 +33,8 @@ class AggregationRule(Enum):
 
     PERSON_SHARE_THEN_PLAIN_SUM = "person_share_then_plain_sum"
     """Per-person = joint amount times ownership share; household = plain sum."""
+    PERSON_DIRECT_PLAIN_SUM = "person_direct_plain_sum"
+    """Per-person amount is already person-specific; household = plain sum, no share."""
     HOUSEHOLD_DIRECT = "household_direct"
     """Item is asked at household level; no per-person share step."""
 
@@ -81,6 +84,13 @@ class WealthVariable:
 
     def __post_init__(self) -> None:
         """Validate internal consistency; fail closed on contradictions."""
+        for name, bound in (
+            ("expected_min", self.expected_min),
+            ("expected_max", self.expected_max),
+        ):
+            if bound is not None and not math.isfinite(bound):
+                msg = f"{name} must be finite, got {bound}."
+                raise ValueError(msg)
         if (
             self.expected_min is not None
             and self.expected_max is not None
@@ -97,6 +107,35 @@ class WealthVariable:
         ):
             msg = f"VERIFIED entry {self.raw_variable} requires non-empty evidence."
             raise ValueError(msg)
+        self._fail_if_aggregation_rule_inconsistent()
+
+    def _fail_if_aggregation_rule_inconsistent(self) -> None:
+        has_share = self.ownership_share_variable is not None
+        if self.aggregation_rule is AggregationRule.HOUSEHOLD_DIRECT:
+            if self.level != "household":
+                msg = "HOUSEHOLD_DIRECT requires level='household'."
+                raise ValueError(msg)
+            if has_share:
+                msg = "HOUSEHOLD_DIRECT must not set an ownership_share_variable."
+                raise ValueError(msg)
+        elif self.aggregation_rule is AggregationRule.PERSON_SHARE_THEN_PLAIN_SUM:
+            if self.level != "person":
+                msg = "PERSON_SHARE_THEN_PLAIN_SUM requires level='person'."
+                raise ValueError(msg)
+            if not has_share:
+                msg = (
+                    "PERSON_SHARE_THEN_PLAIN_SUM requires an ownership_share_variable."
+                )
+                raise ValueError(msg)
+        elif self.aggregation_rule is AggregationRule.PERSON_DIRECT_PLAIN_SUM:
+            if self.level != "person":
+                msg = "PERSON_DIRECT_PLAIN_SUM requires level='person'."
+                raise ValueError(msg)
+            if has_share:
+                msg = (
+                    "PERSON_DIRECT_PLAIN_SUM must not set an ownership_share_variable."
+                )
+                raise ValueError(msg)
 
     @property
     def net_sign(self) -> int:

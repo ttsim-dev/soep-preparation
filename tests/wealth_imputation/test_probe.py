@@ -38,7 +38,7 @@ def _entry(raw_variable: str, *, required: bool) -> WealthVariable:
         ownership_flag=None,
         ownership_share_variable=None,
         level="person",
-        aggregation_rule=AggregationRule.PERSON_SHARE_THEN_PLAIN_SUM,
+        aggregation_rule=AggregationRule.PERSON_DIRECT_PLAIN_SUM,
         expected_min=0.0,
         expected_max=None,
         verification_status=VerificationStatus.UNRESOLVED,

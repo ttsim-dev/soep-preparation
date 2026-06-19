@@ -54,18 +54,46 @@ def _fail_if_pmm_inputs_invalid(  # noqa: PLR0913
     if donor_scores.shape[0] == 0:
         msg = "donors must be non-empty"
         raise ValueError(msg)
+    if not isinstance(k, int) or isinstance(k, bool):
+        msg = f"k must be an integer, got {type(k).__name__}"
+        raise TypeError(msg)
     if k < 1:
         msg = f"k must be >= 1, got {k}"
         raise ValueError(msg)
     if caliper is not None and (not np.isfinite(caliper) or caliper < 0):
         msg = f"caliper must be finite and non-negative, got {caliper}"
         raise ValueError(msg)
-    if exclude is not None and len(exclude) != recipient_scores.shape[0]:
+    if exclude is not None:
+        _fail_if_exclude_invalid(
+            exclude, recipient_scores.shape[0], donor_scores.shape[0]
+        )
+
+
+def _fail_if_exclude_invalid(
+    exclude: Sequence[Sequence[int]], n_recipients: int, n_donors: int
+) -> None:
+    if len(exclude) != n_recipients:
         msg = (
             "exclude must have one entry per recipient, got "
-            f"{len(exclude)} for {recipient_scores.shape[0]} recipients"
+            f"{len(exclude)} for {n_recipients} recipients"
         )
         raise ValueError(msg)
+    for r_idx, entry in enumerate(exclude):
+        entry_arr = np.asarray(entry)
+        if entry_arr.size == 0:
+            continue
+        if entry_arr.ndim != 1:
+            msg = f"exclude[{r_idx}] must be a 1-D sequence of donor indices"
+            raise ValueError(msg)
+        if entry_arr.dtype == np.bool_:
+            msg = f"exclude[{r_idx}] must contain integers, not booleans"
+            raise ValueError(msg)
+        if not np.issubdtype(entry_arr.dtype, np.integer):
+            msg = f"exclude[{r_idx}] must contain integer donor indices"
+            raise ValueError(msg)
+        if np.any((entry_arr < 0) | (entry_arr >= n_donors)):
+            msg = f"exclude[{r_idx}] has donor indices outside [0, {n_donors})"
+            raise ValueError(msg)
 
 
 def pmm_draw(  # noqa: PLR0913

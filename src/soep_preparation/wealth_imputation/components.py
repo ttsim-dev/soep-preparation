@@ -64,10 +64,19 @@ def component_sign(component: CanonicalComponent) -> int:
     """Return `-1` for liability components and `+1` for assets.
 
     Args:
-        component: The wealth component.
+        component: The wealth component (must be a `CanonicalComponent`).
 
     Returns:
         The sign used when summing components into net wealth.
 
+    Raises:
+        TypeError: If `component` is not a `CanonicalComponent` (e.g. a raw string),
+            which would otherwise silently be classified as an asset.
     """
+    if not isinstance(component, CanonicalComponent):
+        msg = (
+            "component must be a CanonicalComponent, got "
+            f"{type(component).__name__}; convert via CanonicalComponent(value) first."
+        )
+        raise TypeError(msg)
     return -1 if component in LIABILITY_COMPONENTS else 1

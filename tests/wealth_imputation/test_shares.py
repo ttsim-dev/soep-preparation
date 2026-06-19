@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -24,6 +26,15 @@ def test_resolve_person_amount_missing_share_yields_na():
 def test_resolve_person_amount_returns_float64():
     result = resolve_person_amount(pd.Series([200_000.0]), pd.Series([0.5]))
     assert result.dtype == np.float64
+
+
+def test_resolve_person_amount_multiplies_in_float64_after_promotion():
+    joint = pd.Series([3.0], dtype="float32")
+    share = pd.Series([0.1], dtype="float32")
+    result = resolve_person_amount(joint, share)
+    expected = np.float64(np.float32(3.0)) * np.float64(np.float32(0.1))
+    assert result.dtype == np.float64
+    assert math.isclose(result.iloc[0], expected)
 
 
 def test_resolve_person_amount_rejects_mismatched_index():

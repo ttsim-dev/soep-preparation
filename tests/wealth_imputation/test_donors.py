@@ -100,3 +100,67 @@ def test_pmm_draw_returns_float64_values_for_integer_donors():
         rng=np.random.default_rng(seed=0),
     )
     assert result.values.dtype == np.float64
+
+
+def test_pmm_draw_rejects_non_integer_k():
+    rng = np.random.default_rng(seed=0)
+    with pytest.raises(TypeError, match="k must be an integer"):
+        pmm_draw(
+            np.array([0.0]),
+            np.array([0.0]),
+            np.array([1.0]),
+            k=1.5,  # ty: ignore[invalid-argument-type]
+            rng=rng,
+        )
+
+
+def test_pmm_draw_rejects_negative_exclusion_index():
+    rng = np.random.default_rng(seed=0)
+    with pytest.raises(ValueError, match="outside"):
+        pmm_draw(
+            np.array([0.0]),
+            np.array([0.0, 1.0]),
+            np.array([10.0, 11.0]),
+            k=1,
+            rng=rng,
+            exclude=[[-1]],
+        )
+
+
+def test_pmm_draw_rejects_out_of_range_exclusion_index():
+    rng = np.random.default_rng(seed=0)
+    with pytest.raises(ValueError, match="outside"):
+        pmm_draw(
+            np.array([0.0]),
+            np.array([0.0, 1.0]),
+            np.array([10.0, 11.0]),
+            k=1,
+            rng=rng,
+            exclude=[[5]],
+        )
+
+
+def test_pmm_draw_rejects_fractional_exclusion_index():
+    rng = np.random.default_rng(seed=0)
+    with pytest.raises(ValueError, match="integer donor indices"):
+        pmm_draw(
+            np.array([0.0]),
+            np.array([0.0, 1.0]),
+            np.array([10.0, 11.0]),
+            k=1,
+            rng=rng,
+            exclude=[[0.9]],  # ty: ignore[invalid-argument-type]
+        )
+
+
+def test_pmm_draw_rejects_boolean_exclusion_index():
+    rng = np.random.default_rng(seed=0)
+    with pytest.raises(ValueError, match="not booleans"):
+        pmm_draw(
+            np.array([0.0]),
+            np.array([0.0, 1.0]),
+            np.array([10.0, 11.0]),
+            k=1,
+            rng=rng,
+            exclude=[[True]],
+        )
