@@ -69,6 +69,31 @@ def _number_of_months_employed(
     )
 
 
+def _number_of_months_in_pension(
+    data: pd.DataFrame,
+) -> pd.Series:
+    # `in_pension_m_*` is True for a pension month and NA otherwise (the
+    # `"[1] genannt"` renaming drops the not-mentioned answers), so a
+    # not-mentioned / unanswered month counts as not-in-pension here.
+    months = range(1, 13)
+    in_pension = pd.concat(
+        [
+            data[f"in_pension_m_{month}"].astype("boolean").fillna(value=False)
+            for month in months
+        ],
+        axis=1,
+    )
+    return apply_smallest_int_dtype(in_pension.sum(axis=1))
+
+
+def _clean_in_pension_month(series: pd.Series) -> pd.Series:
+    return object_to_bool_categorical(
+        series=series,
+        renaming={"[1] genannt": True},
+        ordered=True,
+    )
+
+
 def _combine_versions_employed_m(
     data_v1: pd.Series,
     renaming_v1: dict,
@@ -453,5 +478,25 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["number_of_months_employed"] = _number_of_months_employed(out)
     out["employed_in_at_least_one_month"] = out["number_of_months_employed"] > 0
+
+    # Monthly pension / pre-retirement calendar (Rente, Pension, Vorruhestand
+    # Jan-Dez im Vorjahr), SOEP pkal kal1e001-kal1e012. Read as explicit
+    # literals (not an f-string loop): the convert stage selects which raw
+    # columns to load from the .dta by scanning this function for literal
+    # string subscripts on raw_data, so a dynamic reference is silently dropped.
+    out["in_pension_m_1"] = _clean_in_pension_month(raw_data["kal1e001"])
+    out["in_pension_m_2"] = _clean_in_pension_month(raw_data["kal1e002"])
+    out["in_pension_m_3"] = _clean_in_pension_month(raw_data["kal1e003"])
+    out["in_pension_m_4"] = _clean_in_pension_month(raw_data["kal1e004"])
+    out["in_pension_m_5"] = _clean_in_pension_month(raw_data["kal1e005"])
+    out["in_pension_m_6"] = _clean_in_pension_month(raw_data["kal1e006"])
+    out["in_pension_m_7"] = _clean_in_pension_month(raw_data["kal1e007"])
+    out["in_pension_m_8"] = _clean_in_pension_month(raw_data["kal1e008"])
+    out["in_pension_m_9"] = _clean_in_pension_month(raw_data["kal1e009"])
+    out["in_pension_m_10"] = _clean_in_pension_month(raw_data["kal1e010"])
+    out["in_pension_m_11"] = _clean_in_pension_month(raw_data["kal1e011"])
+    out["in_pension_m_12"] = _clean_in_pension_month(raw_data["kal1e012"])
+    out["number_of_months_in_pension"] = _number_of_months_in_pension(out)
+    out["in_pension_in_at_least_one_month"] = out["number_of_months_in_pension"] > 0
 
     return out
