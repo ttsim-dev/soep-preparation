@@ -1589,6 +1589,86 @@ bezieht_aktuell_wohngeld_hh:
     - 2022
     - 2023
     - 2024
+bezieht_eigene_rente:
+  dtype:
+    categorical:
+      categories:
+      - false
+      - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  survey_years:
+  - 1995
+  - 1996
+  - 1997
+  - 1998
+  - 1999
+  - 2000
+  - 2001
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
+bezieht_eigene_rente:
+  dtype:
+    categorical:
+      categories:
+      - false
+      - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  survey_years:
+  - 1995
+  - 1996
+  - 1997
+  - 1998
+  - 1999
+  - 2000
+  - 2001
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
 bezog_arbeitslosengeld_im_letzten_monat:
   dtype:
     categorical:
@@ -3086,6 +3166,60 @@ ehegattenunterhalt_erhalten_y:
     - 2022
     - 2023
     - 2024
+eigene_rente_brutto_m:
+  dtype: float[pyarrow]
+  module: pl
+  survey_years:
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
+eigene_rente_brutto_m:
+  dtype: float[pyarrow]
+  module: pl
+  survey_years:
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
 eigenheimzulage_y_hh:
   dtype: float[pyarrow]
   module: pequiv
@@ -3762,6 +3896,96 @@ erhaltenes_mutterschaftsgeld_m:
     - 2022
     - 2023
     - 2024
+erwerbsminderungsrente_inferred:
+  dtype: boolean
+  module: pl_pbrutto
+  survey_years:
+  - 1984
+  - 1985
+  - 1986
+  - 1987
+  - 1988
+  - 1989
+  - 1990
+  - 1991
+  - 1992
+  - 1993
+  - 1994
+  - 1995
+  - 1996
+  - 1997
+  - 1998
+  - 1999
+  - 2000
+  - 2001
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
+erwerbsminderungsrente_inferred:
+  dtype: boolean
+  module: pl_pbrutto
+  survey_years:
+  - 1984
+  - 1985
+  - 1986
+  - 1987
+  - 1988
+  - 1989
+  - 1990
+  - 1991
+  - 1992
+  - 1993
+  - 1994
+  - 1995
+  - 1996
+  - 1997
+  - 1998
+  - 1999
+  - 2000
+  - 2001
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
 erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -4107,6 +4331,96 @@ first_nationality:
     - 2018
     - 2019
     - 2020
+first_pension_receipt_year:
+  dtype: int16[pyarrow]
+  module: pequiv_pkal
+  survey_years:
+  - 1984
+  - 1985
+  - 1986
+  - 1987
+  - 1988
+  - 1989
+  - 1990
+  - 1991
+  - 1992
+  - 1993
+  - 1994
+  - 1995
+  - 1996
+  - 1997
+  - 1998
+  - 1999
+  - 2000
+  - 2001
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
+first_pension_receipt_year:
+  dtype: int16[pyarrow]
+  module: pequiv_pkal
+  survey_years:
+  - 1984
+  - 1985
+  - 1986
+  - 1987
+  - 1988
+  - 1989
+  - 1990
+  - 1991
+  - 1992
+  - 1993
+  - 1994
+  - 1995
+  - 1996
+  - 1997
+  - 1998
+  - 1999
+  - 2000
+  - 2001
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
 frailty:
   dtype: float[pyarrow]
   module: pequiv_pl
@@ -12696,6 +13010,104 @@ pt_employed_m_9:
     - 2022
     - 2023
     - 2024
+recognized_reduced_earning_capacity:
+  dtype:
+    categorical:
+      categories:
+      - false
+      - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  survey_years:
+  - 1984
+  - 1985
+  - 1986
+  - 1987
+  - 1988
+  - 1989
+  - 1991
+  - 1992
+  - 1994
+  - 1995
+  - 1996
+  - 1997
+  - 1998
+  - 1999
+  - 2000
+  - 2001
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
+recognized_reduced_earning_capacity:
+  dtype:
+    categorical:
+      categories:
+      - false
+      - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  survey_years:
+  - 1984
+  - 1985
+  - 1986
+  - 1987
+  - 1988
+  - 1989
+  - 1991
+  - 1992
+  - 1994
+  - 1995
+  - 1996
+  - 1997
+  - 1998
+  - 1999
+  - 2000
+  - 2001
+  - 2002
+  - 2003
+  - 2004
+  - 2005
+  - 2006
+  - 2007
+  - 2008
+  - 2009
+  - 2010
+  - 2011
+  - 2012
+  - 2013
+  - 2014
+  - 2015
+  - 2016
+  - 2017
+  - 2018
+  - 2019
+  - 2020
+  - 2021
+  - 2022
+  - 2023
+  - 2024
 refugee_status:
   dtype:
     categorical:
