@@ -59,7 +59,7 @@ def replace_not_applicable_answer(series: pd.Series, value: float) -> pd.Series:
     source", so the appropriate replacement is 0.
 
     All other negative codes (-1, -3 … -9) represent genuinely missing data
-    and are left unchanged for ``_remove_missing_data_values`` to convert to
+    and are left unchanged for ``replace_missing_codes_with_na`` to convert to
     NA.
 
     Parameters:
@@ -82,14 +82,19 @@ def replace_not_applicable_answer(series: pd.Series, value: float) -> pd.Series:
     return series.replace(replacements)
 
 
-def _remove_missing_data_values(series: pd.Series) -> pd.Series:
-    """Remove values representing missing data or no response to the questionnaire.
+def replace_missing_codes_with_na(series: pd.Series) -> pd.Series:
+    """Replace SOEP missing-data codes with NA.
+
+    SOEP encodes missing data and "no response" in two forms, both handled here:
+
+    - numeric single-digit codes (-1 through -9)
+    - labelled strings of the form ``[-N] ...`` (e.g. ``[-1] Missing``)
 
     Parameters:
-        series: The series to be manipulated.
+        series: The series to be cleaned.
 
     Returns:
-        A new series with the missing data values replaced with NA.
+        A new series with all missing-data codes replaced by NA.
 
     """
     values_to_remove = _get_na_values_to_remove(series)
@@ -240,28 +245,6 @@ def float_to_int(
     return apply_smallest_int_dtype(series=series)
 
 
-def float_to_float(
-    series: pd.Series,
-    code_negative_values_as_na: bool,
-) -> pd.Series:
-    """Clean a float Series, optionally coding negative values as NA.
-
-    Use for already-numeric columns (e.g. continuous scores) where SOEP missing
-    codes arrive as negative floats rather than labelled strings.
-
-    Parameters:
-        series: The input series to be cleaned.
-        code_negative_values_as_na: Code negative values as NA if True.
-
-    Returns:
-        The series with cleaned entries and the smallest float dtype.
-    """
-    if code_negative_values_as_na:
-        sr_no_missing = series.where(series >= 0)
-        return apply_smallest_float_dtype(sr_no_missing)
-    return apply_smallest_float_dtype(series=series)
-
-
 def object_to_float(series: pd.Series) -> pd.Series:
     """Transform a mixed object Series to a float Series.
 
@@ -277,7 +260,7 @@ def object_to_float(series: pd.Series) -> pd.Series:
         input_expected_types=[[series, "pandas.core.series.Series"]],
         entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
-    sr_relevant_values_only = _remove_missing_data_values(series)
+    sr_relevant_values_only = replace_missing_codes_with_na(series)
     return apply_smallest_float_dtype(sr_relevant_values_only)
 
 
@@ -296,7 +279,7 @@ def object_to_int(series: pd.Series) -> pd.Series:
         input_expected_types=[[series, "pandas.core.series.Series"]],
         entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
-    sr_relevant_values_only = _remove_missing_data_values(series)
+    sr_relevant_values_only = replace_missing_codes_with_na(series)
     return apply_smallest_int_dtype(sr_relevant_values_only)
 
 
@@ -326,7 +309,7 @@ def object_to_bool_categorical(
         ],
         entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
-    sr_relevant_values_only = _remove_missing_data_values(series)
+    sr_relevant_values_only = replace_missing_codes_with_na(series)
 
     sr_renamed = sr_relevant_values_only.replace(renaming)
     sr_bool = sr_renamed.astype("bool[pyarrow]")
@@ -366,7 +349,7 @@ def object_to_int_categorical(
         ],
         entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
-    sr_relevant_values_only = _remove_missing_data_values(series)
+    sr_relevant_values_only = replace_missing_codes_with_na(series)
     if renaming:
         sr_renamed = sr_relevant_values_only.replace(renaming)
         sr_int = apply_smallest_int_dtype(sr_renamed)
@@ -414,7 +397,7 @@ def object_to_str_categorical(
         ],
         entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
-    sr_relevant_values_only = _remove_missing_data_values(series)
+    sr_relevant_values_only = replace_missing_codes_with_na(series)
     if renaming:
         sr_renamed = sr_relevant_values_only.replace(renaming)
         sr_str = sr_renamed.astype("string[pyarrow]")

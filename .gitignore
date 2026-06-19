@@ -73,6 +73,7 @@ __pycache__/
 # pytask
 .pytask/
 .pytask.sqlite3
+pytask.lock
 out/
 
 # Ruff

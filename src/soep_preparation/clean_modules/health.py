@@ -3,9 +3,10 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
+    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
     create_dummy,
-    float_to_float,
+    replace_missing_codes_with_na,
 )
 
 
@@ -34,33 +35,37 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # Component summary scales. The SF-12 scores and BMI arrive as floats with
     # SOEP missing codes encoded as negative values.
-    out["sf12_pcs"] = float_to_float(raw_data["pcs"], code_negative_values_as_na=True)
-    out["sf12_mcs"] = float_to_float(raw_data["mcs"], code_negative_values_as_na=True)
+    out["sf12_pcs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["pcs"])
+    )
+    out["sf12_mcs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["mcs"])
+    )
 
-    # The eight norm-based subscales underlying the summary scales.
-    out["sf12_physical_functioning_nbs"] = float_to_float(
-        raw_data["pf_nbs"], code_negative_values_as_na=True
+    # The eight norm-based subscales (suffix `_nbs`) underlying the summary scales.
+    out["sf12_physical_functioning_nbs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["pf_nbs"])
     )
-    out["sf12_role_physical_nbs"] = float_to_float(
-        raw_data["rp_nbs"], code_negative_values_as_na=True
+    out["sf12_role_physical_nbs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["rp_nbs"])
     )
-    out["sf12_bodily_pain_nbs"] = float_to_float(
-        raw_data["bp_nbs"], code_negative_values_as_na=True
+    out["sf12_bodily_pain_nbs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["bp_nbs"])
     )
-    out["sf12_general_health_nbs"] = float_to_float(
-        raw_data["gh_nbs"], code_negative_values_as_na=True
+    out["sf12_general_health_nbs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["gh_nbs"])
     )
-    out["sf12_vitality_nbs"] = float_to_float(
-        raw_data["vt_nbs"], code_negative_values_as_na=True
+    out["sf12_vitality_nbs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["vt_nbs"])
     )
-    out["sf12_social_functioning_nbs"] = float_to_float(
-        raw_data["sf_nbs"], code_negative_values_as_na=True
+    out["sf12_social_functioning_nbs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["sf_nbs"])
     )
-    out["sf12_role_emotional_nbs"] = float_to_float(
-        raw_data["re_nbs"], code_negative_values_as_na=True
+    out["sf12_role_emotional_nbs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["re_nbs"])
     )
-    out["sf12_mental_health_nbs"] = float_to_float(
-        raw_data["mh_nbs"], code_negative_values_as_na=True
+    out["sf12_mental_health_nbs"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["mh_nbs"])
     )
 
     # Whether all twelve items needed for the SF-12 scoring are complete.
@@ -70,6 +75,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         comparison_type="equal",
     )
 
-    out["bmi_health"] = float_to_float(raw_data["bmi"], code_negative_values_as_na=True)
+    out["bmi_health"] = apply_smallest_float_dtype(
+        replace_missing_codes_with_na(raw_data["bmi"])
+    )
 
     return out
