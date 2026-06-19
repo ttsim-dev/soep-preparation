@@ -32,7 +32,10 @@ pytask, pytest, ty, ruff.
 - Run everything through pixi: `pixi run -e py314 tests`, `pixi run ty`,
   `prek run --all-files`. Re-lock (`pixi lock`) and stage `pixi.lock` in the same commit as
   any `pyproject.toml` change.
-- No `# pragma`; suppress types only with `# ty: ignore[rule-name]`.
+- Lint suppressions via `# noqa: <RULE>` are acceptable for legitimate, localized
+  exceptions, matching repo convention (e.g. `# noqa: PLR0915` on long `clean` functions,
+  `# noqa: PLR0913` on a helper that genuinely needs many parameters); never suppress to
+  paper over a real, fixable defect. Type suppressions only via `# ty: ignore[rule-name]`.
 - TDD throughout: failing test first, watch it fail, minimal implementation, commit.
 
 ---
