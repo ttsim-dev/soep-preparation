@@ -1081,6 +1081,14 @@ git push -u origin feat/wealth-imputation-harness
 - **Model + draw stage:** HGB propensity + amount models, chained components, bootstrap +
   PMM replicates, interval calibration, validation (rolling-origin, masking, four metric
   blocks), 2022 provisional output. (Spec phases 5–9.)
+- **Donor-exclusion logic:** `pmm_draw` carries the `exclude` (per-recipient donor indices)
+  interface, but *populating* it — recipient itself, co-owners of the same asset, current
+  household members, household lineage, bootstrap cluster — needs real rosters and belongs
+  to data wiring.
+- **`task_probe.py` pytask dependencies:** declare the consumed catalog nodes + a
+  registry-content hash as task inputs (likely via a task factory) so a stale report is
+  not treated as current; prefer schema-only catalog reads. Wire this when the probe runs
+  against real catalogs on the compute server.
 
 ## Self-Review
 

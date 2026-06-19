@@ -3,7 +3,9 @@
 Each `WealthVariable` declares one raw questionnaire item for one component in one
 wave, together with the verification status that gates it. Production reads only
 verified (or inferred) entries; an unresolved entry that is `required_for_release`
-fails closed via `fail_if_unresolved_required`.
+fails closed via `fail_if_unresolved_required`. The net-wealth sign is derived from
+the canonical component (`net_sign`), never carried as a separate, contradictable
+field.
 """
 
 from collections.abc import Sequence
@@ -11,7 +13,10 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
 
-from soep_preparation.wealth_imputation.components import CanonicalComponent
+from soep_preparation.wealth_imputation.components import (
+    CanonicalComponent,
+    component_sign,
+)
 
 
 class VerificationStatus(Enum):
@@ -20,6 +25,15 @@ class VerificationStatus(Enum):
     VERIFIED = "verified"
     INFERRED = "inferred"
     UNRESOLVED = "unresolved"
+
+
+class AggregationRule(Enum):
+    """How a raw item's person values combine into the household total."""
+
+    PERSON_SHARE_THEN_PLAIN_SUM = "person_share_then_plain_sum"
+    """Per-person = joint amount times ownership share; household = plain sum."""
+    HOUSEHOLD_DIRECT = "household_direct"
+    """Item is asked at household level; no per-person share step."""
 
 
 @dataclass(frozen=True)
@@ -38,8 +52,6 @@ class WealthVariable:
     """Questionnaire concept in plain language."""
     unit: str
     """Measurement unit, e.g. `"euro"` or `"share"`."""
-    sign: int
-    """`+1` for assets, `-1` for liabilities."""
     universe: str
     """Population the item applies to (filter)."""
     missing_codes: tuple[int, ...]
@@ -52,8 +64,8 @@ class WealthVariable:
     """Per-person ownership-share variable, if any."""
     level: Literal["person", "household"]
     """Whether the raw item is asked of persons or households."""
-    aggregation_rule: str
-    """How person items combine to the household (e.g. `sum_member_shares`)."""
+    aggregation_rule: AggregationRule
+    """How person items combine to the household."""
     expected_min: float | None
     """Plausible lower bound for range checks, if known."""
     expected_max: float | None
@@ -66,6 +78,30 @@ class WealthVariable:
     """SOEP version the evidence is drawn from."""
     required_for_release: bool
     """Whether the advertised full total depends on this entry."""
+
+    def __post_init__(self) -> None:
+        """Validate internal consistency; fail closed on contradictions."""
+        if (
+            self.expected_min is not None
+            and self.expected_max is not None
+            and self.expected_min > self.expected_max
+        ):
+            msg = (
+                f"expected_min ({self.expected_min}) exceeds expected_max "
+                f"({self.expected_max}) for {self.raw_variable}."
+            )
+            raise ValueError(msg)
+        if (
+            self.verification_status is VerificationStatus.VERIFIED
+            and not self.verification_evidence.strip()
+        ):
+            msg = f"VERIFIED entry {self.raw_variable} requires non-empty evidence."
+            raise ValueError(msg)
+
+    @property
+    def net_sign(self) -> int:
+        """Net-wealth sign for this component (+1 asset, -1 liability)."""
+        return component_sign(self.component)
 
 
 def fail_if_unresolved_required(entries: Sequence[WealthVariable]) -> None:

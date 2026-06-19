@@ -1,9 +1,27 @@
+import json
+
 from soep_preparation.wealth_imputation.components import CanonicalComponent
 from soep_preparation.wealth_imputation.probe import assemble_probe_report
 from soep_preparation.wealth_imputation.registry import (
+    AggregationRule,
     VerificationStatus,
     WealthVariable,
 )
+
+_EXPECTED_ENTRY_KEYS = {
+    "component",
+    "wave",
+    "source_file",
+    "raw_variable",
+    "present",
+    "verification_status",
+}
+_EXPECTED_SUMMARY_KEYS = {
+    "n_entries",
+    "n_present",
+    "n_missing",
+    "n_unresolved_required",
+}
 
 
 def _entry(raw_variable: str, *, required: bool) -> WealthVariable:
@@ -14,14 +32,13 @@ def _entry(raw_variable: str, *, required: bool) -> WealthVariable:
         raw_variable=raw_variable,
         concept="financial assets",
         unit="euro",
-        sign=1,
         universe="adults 17+",
         missing_codes=(-1,),
         bracket_variable=None,
         ownership_flag=None,
         ownership_share_variable=None,
         level="person",
-        aggregation_rule="sum_member_shares",
+        aggregation_rule=AggregationRule.PERSON_SHARE_THEN_PLAIN_SUM,
         expected_min=0.0,
         expected_max=None,
         verification_status=VerificationStatus.UNRESOLVED,
@@ -43,3 +60,14 @@ def test_assemble_probe_report_flags_present_and_missing_without_leaking_data():
     assert report["summary"]["n_unresolved_required"] == 2  # noqa: PLR2004
     presence = {row["raw_variable"]: row["present"] for row in report["entries"]}
     assert presence == {"present_var": True, "absent_var": False}
+
+
+def test_assemble_probe_report_has_exact_disclosure_safe_schema():
+    report = assemble_probe_report(
+        [_entry("present_var", required=True)], {"pl": frozenset({"present_var"})}
+    )
+    assert set(report.keys()) == {"entries", "summary"}
+    assert set(report["summary"].keys()) == _EXPECTED_SUMMARY_KEYS
+    assert set(report["entries"][0].keys()) == _EXPECTED_ENTRY_KEYS
+    # Disclosure-safe: the whole report serialises to JSON (only primitives/keys).
+    json.dumps(report)
