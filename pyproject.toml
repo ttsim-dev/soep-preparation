@@ -54,6 +54,7 @@ jupyterlab = "*"
 prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
+scikit-learn = ">=1.9.0,<2"
 [tool.pixi.environments]
 py314 = [ "py314", "tests" ]
 [tool.pixi.feature.py314]
