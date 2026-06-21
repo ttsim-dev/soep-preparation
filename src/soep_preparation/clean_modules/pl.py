@@ -159,6 +159,24 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         ],
     )
 
+    # own old-age / disability pension. The questionnaire (Q121) does not split
+    # Altersrente from Erwerbsminderungsrente — "Deutsche Rentenversicherung" is a
+    # single row. Any EM-Rente inference is project-specific (it depends on the
+    # policy environment) and belongs in the consuming project, not this general
+    # cleaning library — e.g. flag EM-Rente when this is True and age is below the
+    # GETTSIM earliest old-age claiming age for the person's cohort and sex (an own
+    # pension below that age cannot be an old-age pension).
+    # SPOT-CHECK on data: the `plc0232_h` Ja/Nein label strings (harmonized
+    # variables sometimes carry English "[1] Yes" / "[2] No").
+    out["bezieht_rente_aus_eigener_versicherung"] = object_to_bool_categorical(
+        series=raw_data["plc0232_h"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["rente_aus_eigener_versicherung_brutto_m"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["plc0233_v2"], value=0)
+    )
+
     # health and medical characteristics
     out["type_of_health_insurance_1999_to_2020"] = object_to_str_categorical(
         raw_data["ple0097_v1"]
@@ -173,6 +191,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["disability_degree"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["ple0041_h"], value=0)
+    )
+    # Officially recognized reduced earning capacity OR severe disability (yes/no),
+    # SOEP `ple0040` (Q128). It bundles Erwerbsminderung and Schwerbehinderung; the
+    # GdB degree (`disability_degree` above) isolates the Schwerbehinderung part
+    # (GdB >= 50). Disentangle / compose downstream — e.g. a "cannot work" signal
+    # that is True only when this holds and the GdB is below 50, dropping pure
+    # Schwerbehinderung (who may still work). SPOT-CHECK on data: the "[1] Ja" /
+    # "[2] Nein" label strings.
+    out["erwerbsgemindert_oder_schwerbehindert"] = object_to_bool_categorical(
+        series=raw_data["ple0040"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
     out["med_schwierigkeiten_treppen_pl"] = object_to_str_categorical(
         raw_data["ple0004"],

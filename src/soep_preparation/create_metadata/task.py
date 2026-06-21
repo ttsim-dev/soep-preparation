@@ -1,5 +1,7 @@
 """Tasks to create metadata."""
 
+import hashlib
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -67,7 +69,9 @@ def task_create_variable_to_metadata_mapping_yaml(
 
     Raises:
         TypeError: If input data or data name is not of expected type.
+        FileNotFoundError: If a persisted module entry has no source file.
     """
+    _fail_if_stale_module_entries(modules_metadata)
     new_metadata = _create_variable_metadata(modules_metadata)
 
     with out_path.open("w", encoding="utf-8") as file:
@@ -205,6 +209,56 @@ def _create_variable_metadata(
                     mapping=mapping,
                 )
     return mapping
+
+
+def _fail_if_stale_module_entries(module_names: Iterable[str]) -> None:
+    """Abort if a persisted module entry has no cleaning/combining source file.
+
+    `MODULES` persists its entries on disk across runs (`.pytask/data_catalogs/`),
+    so deleting a module's `clean_modules/` or `combine_modules/` source file
+    leaves a stale entry that silently re-enters the metadata mapping. Each entry
+    is two files — `<sha256(name)>.pkl` and `<sha256(name)>-node.pkl` — in both the
+    `modules` and `metadata` catalogs; the error prints the exact `rm` command to
+    drop them, mirroring how `_fail_if_mapping_changed` prints its `cp` hint.
+
+    Args:
+        module_names: Names of the persisted module catalog entries.
+
+    Raises:
+        FileNotFoundError: If any entry has no source file under `clean_modules/`
+            or `combine_modules/`.
+    """
+    stale = [
+        name
+        for name in module_names
+        if not (SRC / "clean_modules" / f"{name}.py").exists()
+        and not (SRC / "combine_modules" / f"{name}.py").exists()
+    ]
+    if not stale:
+        return
+
+    catalog_dirs = [
+        catalog.path
+        for catalog in (MODULES, _METADATA_CATALOG)
+        if catalog.path is not None
+    ]
+    stale_files = []
+    for name in stale:
+        digest = hashlib.sha256(name.encode()).hexdigest()
+        for catalog_dir in catalog_dirs:
+            stale_files.append(catalog_dir / f"{digest}.pkl")
+            stale_files.append(catalog_dir / f"{digest}-node.pkl")
+    remove_command = "    rm -f " + " ".join(str(path) for path in stale_files)
+
+    msg = (
+        "The module catalog has persisted entries with no source file under "
+        f"clean_modules/ or combine_modules/: {stale}. A deleted module's catalog "
+        "entry persists across runs and silently re-enters the metadata mapping. If "
+        "you removed these modules deliberately, drop their stale catalog files and "
+        "run pytask again:\n\n"
+        f"{remove_command}\n"
+    )
+    raise FileNotFoundError(msg)
 
 
 def _fail_if_mapping_changed(  # noqa: C901

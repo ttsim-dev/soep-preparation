@@ -35,6 +35,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["hh_id_original"] = apply_smallest_int_dtype(raw_data["cid"])
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
+    # Consumer Price Index (CNEF y11101), for deflating nominal values to real
+    # terms. A year-level series; constant within each survey year.
+    out["cpi"] = apply_smallest_float_dtype(object_to_float(raw_data["y11101"]))
+
     # hh characteristics
     out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])
     out["number_of_children_living_in_hh"] = apply_smallest_int_dtype(
