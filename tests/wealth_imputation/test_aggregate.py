@@ -6,9 +6,49 @@ import pytest
 
 from soep_preparation.wealth_imputation.aggregate import (
     household_component_sum,
+    household_net_total,
     punr_residual,
     unmodelled_components_residual,
 )
+
+
+def test_household_net_total_sums_signed_components_per_household():
+    """Net total = assets minus liabilities, summed within household and year."""
+    component_values = pd.DataFrame(
+        {
+            "hh_id": [1, 1, 1],
+            "survey_year": [2017, 2017, 2017],
+            "component": [
+                "owner_occupied_property_gross",
+                "owner_occupied_mortgage",
+                "financial_assets",
+            ],
+            "household_component_value": [200000.0, 50000.0, 30000.0],
+        }
+    )
+    result = household_net_total(component_values)
+    # 200000 - 50000 + 30000 = 180000.
+    np.testing.assert_allclose(result["net_total"].to_numpy(), [180000.0], atol=1e-6)
+
+
+def test_household_net_total_sums_each_household_and_year_separately():
+    """Distinct households and years get independent net totals."""
+    component_values = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 1],
+            "survey_year": [2017, 2017, 2012],
+            "component": ["financial_assets", "financial_assets", "consumer_debt"],
+            "household_component_value": [30000.0, 80000.0, 5000.0],
+        }
+    )
+    result = household_net_total(component_values)
+    keyed = {
+        (hh_id, year): net
+        for hh_id, year, net in zip(
+            result["hh_id"], result["survey_year"], result["net_total"], strict=True
+        )
+    }
+    assert keyed == {(1, 2017): 30000.0, (2, 2017): 80000.0, (1, 2012): -5000.0}
 
 
 def test_unmodelled_components_residual_subtracts_signed_components_from_total():

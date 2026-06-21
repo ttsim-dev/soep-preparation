@@ -173,6 +173,49 @@ _COMPONENT_VALUE_COLUMNS = (
 )
 
 
+def household_net_total(component_values: pd.DataFrame) -> pd.DataFrame:
+    """Sum signed component values into a household net total per year.
+
+    Each component value is a positive magnitude; its net-wealth sign comes from
+    `component_sign`, so liabilities (mortgage, consumer debt) subtract. This is one
+    joint draw's modelled household net wealth -- the quantity whose draw-to-draw
+    spread `intervals.household_total_intervals` summarises. Arithmetic runs in
+    `float64`.
+
+    Args:
+        component_values: Columns `hh_id`, `survey_year`, `component`,
+            `household_component_value`. `component` is a `CanonicalComponent.value`
+            string and the value a finite magnitude.
+
+    Returns:
+        Columns `hh_id`, `survey_year`, `net_total` (float64).
+
+    Raises:
+        ValueError: On missing columns, non-canonical components, or non-numeric /
+            non-finite values.
+    """
+    _fail_if_columns_missing(
+        component_values, _COMPONENT_VALUE_COLUMNS, "component_values"
+    )
+    _fail_if_components_non_canonical(component_values["component"])
+    value = _to_finite_float64(
+        component_values["household_component_value"], "household_component_value"
+    )
+    signs = component_values["component"].map(
+        lambda name: component_sign(CanonicalComponent(name))
+    )
+    signed = component_values[_HOUSEHOLD_KEY_COLUMNS].assign(
+        signed_value=value.to_numpy() * signs.to_numpy().astype("float64")
+    )
+    summed = (
+        signed.groupby(_HOUSEHOLD_KEY_COLUMNS, observed=True)["signed_value"]
+        .sum()
+        .reset_index(name="net_total")
+    )
+    summed["net_total"] = summed["net_total"].astype("float64")
+    return summed
+
+
 def unmodelled_components_residual(
     component_values: pd.DataFrame, official_totals: pd.DataFrame
 ) -> pd.DataFrame:
@@ -181,9 +224,7 @@ def unmodelled_components_residual(
     SOEP-Core exposes only a subset of wealth components separately; the rest (other
     real estate, business assets) live only inside the official totals. This residual
     is what those unmodelled components contribute: the authoritative net total minus
-    the signed sum of the components the harness does model. Each component value is a
-    positive magnitude; its net-wealth sign comes from `component_sign` (liabilities
-    subtract). All arithmetic runs in `float64`.
+    the modelled `household_net_total`. All arithmetic runs in `float64`.
 
     Args:
         component_values: Columns `hh_id`, `survey_year`, `component`,
@@ -200,30 +241,15 @@ def unmodelled_components_residual(
             differ between the two tables.
     """
     _fail_if_columns_missing(
-        component_values, _COMPONENT_VALUE_COLUMNS, "component_values"
-    )
-    _fail_if_columns_missing(
         official_totals,
         (*_HOUSEHOLD_KEY_COLUMNS, "official_net_total"),
         "official_totals",
     )
-    _fail_if_components_non_canonical(component_values["component"])
     if official_totals.duplicated(subset=_HOUSEHOLD_KEY_COLUMNS).any():
         msg = "official_totals has duplicate (hh_id, survey_year) keys."
         raise ValueError(msg)
-    value = _to_finite_float64(
-        component_values["household_component_value"], "household_component_value"
-    )
-    signs = component_values["component"].map(
-        lambda name: component_sign(CanonicalComponent(name))
-    )
-    signed = component_values[_HOUSEHOLD_KEY_COLUMNS].assign(
-        signed_value=value.to_numpy() * signs.to_numpy().astype("float64")
-    )
-    modelled = (
-        signed.groupby(_HOUSEHOLD_KEY_COLUMNS, observed=True)["signed_value"]
-        .sum()
-        .reset_index(name="modelled_sum")
+    modelled = household_net_total(component_values).rename(
+        columns={"net_total": "modelled_sum"}
     )
     merged = official_totals.merge(
         modelled,
