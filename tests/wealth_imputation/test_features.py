@@ -7,8 +7,45 @@ from soep_preparation.wealth_imputation.features import (
     FEATURE_SPECS,
     assemble_feature_matrix,
     fail_if_features_missing,
+    lagged_wealth,
     required_columns_by_module,
 )
+
+
+def test_lagged_wealth_attaches_prior_wave_value_to_the_current_wave():
+    """A person's prior-wave wealth becomes a `lagged_` predictor one cycle later."""
+    wealth_panel = pd.DataFrame(
+        {
+            "p_id": [1, 1],
+            "survey_year": [2012, 2017],
+            "financial_assets_value": [100.0, 150.0],
+        }
+    )
+    result = lagged_wealth(
+        wealth_panel, value_columns=("financial_assets_value",), wave_gap=5
+    )
+    by_year = result.set_index("survey_year")
+    prior_value = wealth_panel.set_index("survey_year").loc[
+        2012, "financial_assets_value"
+    ]
+    # The 2012 value is the lag attached to the 2017 row.
+    assert by_year.loc[2017, "lagged_financial_assets_value"] == prior_value
+
+
+def test_lagged_wealth_has_no_lag_for_the_first_observed_wave():
+    """The earliest wave has no prior value, so it is absent from the lag frame."""
+    wealth_panel = pd.DataFrame(
+        {
+            "p_id": [1],
+            "survey_year": [2012],
+            "financial_assets_value": [100.0],
+        }
+    )
+    result = lagged_wealth(
+        wealth_panel, value_columns=("financial_assets_value",), wave_gap=5
+    )
+    first_wave = wealth_panel["survey_year"].iloc[0]
+    assert first_wave not in set(result["survey_year"])
 
 
 def _modules_with_two_persons_one_household() -> dict[str, pd.DataFrame]:

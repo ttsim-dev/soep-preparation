@@ -8,7 +8,7 @@ model stage selects predictors by confirmed name rather than guessing. Household
 predictors are broadcast to persons via `hh_id` during feature assembly.
 """
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Literal
 
@@ -90,6 +90,44 @@ def assemble_feature_matrix(modules: Mapping[str, pd.DataFrame]) -> pd.DataFrame
         subset = modules[module][list(columns_by_module[module])]
         matrix = matrix.merge(subset, on=list(_HOUSEHOLD_KEYS), how="left")
     return matrix
+
+
+def lagged_wealth(
+    wealth_panel: pd.DataFrame,
+    *,
+    value_columns: Sequence[str],
+    wave_gap: int = 5,
+) -> pd.DataFrame:
+    """Shift prior-wave wealth values forward by one wealth-module cycle.
+
+    Each person's wealth at `survey_year` becomes a `lagged_`-prefixed predictor for
+    that person at `survey_year + wave_gap` (the next wealth wave). The earliest wave
+    has no predecessor and so is absent from the result; assembly left-joins this onto
+    the feature matrix, leaving new entrants' lags as NA.
+
+    Args:
+        wealth_panel: Columns `p_id`, `survey_year`, and every name in
+            `value_columns`.
+        value_columns: Prior-wave wealth columns to carry forward.
+        wave_gap: Years between wealth waves (the SOEP module runs every five years).
+
+    Returns:
+        Columns `p_id`, `survey_year` (the wave the lag applies to), and
+        `lagged_<column>` for each value column.
+
+    Raises:
+        ValueError: If a required column is missing from `wealth_panel`.
+    """
+    required = ("p_id", "survey_year", *value_columns)
+    missing = [column for column in required if column not in wealth_panel.columns]
+    if missing:
+        msg = f"wealth_panel is missing required columns: {missing}"
+        raise ValueError(msg)
+    lagged = wealth_panel[list(required)].copy()
+    lagged["survey_year"] = lagged["survey_year"] + wave_gap
+    return lagged.rename(
+        columns={column: f"lagged_{column}" for column in value_columns}
+    )
 
 
 def required_columns_by_module() -> dict[str, tuple[str, ...]]:
