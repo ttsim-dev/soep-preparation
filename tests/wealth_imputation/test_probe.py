@@ -66,8 +66,15 @@ def test_assemble_probe_report_has_exact_disclosure_safe_schema():
     report = assemble_probe_report(
         [_entry("present_var", required=True)], {"pl": frozenset({"present_var"})}
     )
-    assert set(report.keys()) == {"entries", "summary"}
+    assert set(report.keys()) == {"entries", "summary", "observed_columns"}
     assert set(report["summary"].keys()) == _EXPECTED_SUMMARY_KEYS
     assert set(report["entries"][0].keys()) == _EXPECTED_ENTRY_KEYS
     # Disclosure-safe: the whole report serialises to JSON (only primitives/keys).
     json.dumps(report)
+
+
+def test_assemble_probe_report_lists_only_wealth_pattern_columns():
+    """`observed_columns` surfaces DIW wealth names and drops identifiers/free text."""
+    available = {"pwealth": frozenset({"p0100a", "p10000", "pid", "syear", "comment"})}
+    report = assemble_probe_report([_entry("p0100a", required=True)], available)
+    assert report["observed_columns"] == {"pwealth": ["p0100a", "p10000"]}

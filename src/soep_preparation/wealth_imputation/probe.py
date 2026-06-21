@@ -1,15 +1,23 @@
 """Milestone-0 source probe: confirm registry variables exist, disclosure-safe.
 
-Reports only registry keys and presence booleans — never row-level data — so it is
-safe to read from logs/artifacts under the no-data-access rule.
+Reports only registry keys, presence booleans, and the wealth-pattern *column names*
+present in each probed source file — never row-level data — so it is safe to read
+from logs/artifacts under the no-data-access rule.
 """
 
+import re
 from collections.abc import Mapping, Sequence
 
 from soep_preparation.wealth_imputation.registry import (
     VerificationStatus,
     WealthVariable,
 )
+
+# DIW generated wealth variables: a single component letter, four or five digits,
+# and an optional implicate suffix `a`-`e` (e.g. `p0100a`, `p0010a`, `w0101a`,
+# `p10000`). Matching column names lets us discover the real V41 names for any
+# component whose expected name probes absent.
+_WEALTH_COLUMN_PATTERN = re.compile(r"^[a-z]\d{4,5}[a-e]?$")
 
 
 def assemble_probe_report(
@@ -23,8 +31,9 @@ def assemble_probe_report(
         available_columns: Source-file name → set of its column names.
 
     Returns:
-        A dict with per-entry presence flags and a numeric summary. Contains no
-        row-level data.
+        A dict with per-entry presence flags, a numeric summary, and the
+        wealth-pattern column names observed in each probed source file. Contains
+        no row-level data.
     """
     rows = []
     for entry in entries:
@@ -53,4 +62,14 @@ def assemble_probe_report(
         "n_missing": len(rows) - n_present,
         "n_unresolved_required": n_unresolved_required,
     }
-    return {"entries": rows, "summary": summary}
+    observed_columns = {
+        source_file: sorted(
+            column for column in columns if _WEALTH_COLUMN_PATTERN.fullmatch(column)
+        )
+        for source_file, columns in available_columns.items()
+    }
+    return {
+        "entries": rows,
+        "summary": summary,
+        "observed_columns": observed_columns,
+    }
