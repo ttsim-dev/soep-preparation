@@ -4,7 +4,11 @@ import hashlib
 
 import pytest
 
-from soep_preparation.create_metadata.task import _fail_if_stale_module_entries
+from soep_preparation.config import MODULES
+from soep_preparation.create_metadata.task import (
+    _METADATA_CATALOG,
+    _fail_if_stale_module_entries,
+)
 
 _ABSENT_MODULE = "module_that_does_not_exist_xyz"
 
@@ -42,5 +46,5 @@ def test_error_targets_both_modules_and_metadata_catalogs() -> None:
     with pytest.raises(FileNotFoundError) as exc_info:
         _fail_if_stale_module_entries([_ABSENT_MODULE])
     error_msg = str(exc_info.value)
-    assert "data_catalogs/modules" in error_msg
-    assert "data_catalogs/metadata" in error_msg
+    assert str(MODULES.path) in error_msg
+    assert str(_METADATA_CATALOG.path) in error_msg
