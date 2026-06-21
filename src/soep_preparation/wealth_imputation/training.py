@@ -9,9 +9,11 @@ component's magnitude. Pure functions over arrays; the I/O lives in the probe/im
 tasks.
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import numpy as np
+import pandas as pd
 
 from soep_preparation.wealth_imputation.amount_model import AmountModel
 from soep_preparation.wealth_imputation.components import CanonicalComponent
@@ -29,6 +31,46 @@ class ComponentModels:
     """Amount model predicting euro amounts for owners."""
     scale: float
     """The asinh component scale used by the amount model."""
+
+
+def select_household_heads(frame: pd.DataFrame) -> pd.DataFrame:
+    """Keep one representative row -- the oldest member -- per household and year.
+
+    Representing each household by its oldest member lets the simulation aggregate one
+    row per household without summing jointly-held amounts across members (which would
+    double-count, since SOEP-Core omits the person-level ownership shares).
+
+    Args:
+        frame: Rows with `p_id`, `hh_id`, `survey_year`, and `age`.
+
+    Returns:
+        One row per `(hh_id, survey_year)`, the member with the greatest `age`.
+    """
+    ordered = frame.sort_values(["hh_id", "survey_year", "age"])
+    return ordered.drop_duplicates(
+        subset=["hh_id", "survey_year"], keep="last"
+    ).reset_index(drop=True)
+
+
+def encode_design_matrix(frame: pd.DataFrame, columns: Sequence[str]) -> np.ndarray:
+    """Return a float64 design matrix, filling missing values with column medians.
+
+    Args:
+        frame: Source frame containing every name in `columns`.
+        columns: Predictor columns to encode, in order.
+
+    Returns:
+        A `(len(frame), len(columns))` float64 array; an all-missing column becomes
+        zeros.
+    """
+    encoded = []
+    for column in columns:
+        values = pd.to_numeric(frame[column], errors="coerce").to_numpy(dtype="float64")
+        median = np.nanmedian(values) if np.any(~np.isnan(values)) else 0.0
+        encoded.append(np.where(np.isnan(values), median, values))
+    if not encoded:
+        return np.empty((len(frame), 0), dtype="float64")
+    return np.column_stack(encoded).astype("float64")
 
 
 def derive_ownership(values: np.ndarray) -> np.ndarray:

@@ -1,6 +1,7 @@
 """Behavior of the per-component training and config-building helpers."""
 
 import numpy as np
+import pandas as pd
 
 from soep_preparation.wealth_imputation.components import CanonicalComponent
 from soep_preparation.wealth_imputation.simulate import ComponentDrawConfig
@@ -8,8 +9,32 @@ from soep_preparation.wealth_imputation.training import (
     build_component_config,
     component_scale,
     derive_ownership,
+    encode_design_matrix,
     fit_component_models,
+    select_household_heads,
 )
+
+
+def test_select_household_heads_keeps_the_oldest_member_per_household():
+    """Each household-year is represented by its oldest member."""
+    frame = pd.DataFrame(
+        {
+            "p_id": [1, 2, 3],
+            "hh_id": [10, 10, 11],
+            "survey_year": [2017, 2017, 2017],
+            "age": [40, 38, 50],
+        }
+    )
+    heads = select_household_heads(frame)
+    assert set(heads["p_id"]) == {1, 3}
+
+
+def test_encode_design_matrix_fills_missing_with_the_column_median():
+    """Numeric encoding replaces NaN with the column median and returns float64."""
+    frame = pd.DataFrame({"x": [1.0, np.nan, 3.0]})
+    matrix = encode_design_matrix(frame, ["x"])
+    assert matrix.dtype == np.float64
+    np.testing.assert_allclose(matrix.ravel(), [1.0, 2.0, 3.0], atol=1e-6)
 
 
 def test_derive_ownership_flags_positive_values_as_owners():
