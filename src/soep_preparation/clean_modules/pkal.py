@@ -69,6 +69,14 @@ def _number_of_months_employed(
     )
 
 
+def _clean_in_pension_month(series: pd.Series) -> pd.Series:
+    return object_to_bool_categorical(
+        series=series,
+        renaming={"[1] genannt": True},
+        ordered=True,
+    )
+
+
 def _combine_versions_employed_m(
     data_v1: pd.Series,
     renaming_v1: dict,
@@ -453,5 +461,52 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["number_of_months_employed"] = _number_of_months_employed(out)
     out["employed_in_at_least_one_month"] = out["number_of_months_employed"] > 0
+
+    # Monthly pension / pre-retirement calendar (Rente, Pension, Vorruhestand
+    # Jan-Dez im Vorjahr), SOEP pkal kal1e001-kal1e012. Read as explicit
+    # literals (not an f-string loop): the convert stage selects which raw
+    # columns to load from the .dta by scanning this function for literal
+    # string subscripts on raw_data, so a dynamic reference is silently dropped.
+    out["in_pension_m_1"] = _clean_in_pension_month(raw_data["kal1e001"])
+    out["in_pension_m_2"] = _clean_in_pension_month(raw_data["kal1e002"])
+    out["in_pension_m_3"] = _clean_in_pension_month(raw_data["kal1e003"])
+    out["in_pension_m_4"] = _clean_in_pension_month(raw_data["kal1e004"])
+    out["in_pension_m_5"] = _clean_in_pension_month(raw_data["kal1e005"])
+    out["in_pension_m_6"] = _clean_in_pension_month(raw_data["kal1e006"])
+    out["in_pension_m_7"] = _clean_in_pension_month(raw_data["kal1e007"])
+    out["in_pension_m_8"] = _clean_in_pension_month(raw_data["kal1e008"])
+    out["in_pension_m_9"] = _clean_in_pension_month(raw_data["kal1e009"])
+    out["in_pension_m_10"] = _clean_in_pension_month(raw_data["kal1e010"])
+    out["in_pension_m_11"] = _clean_in_pension_month(raw_data["kal1e011"])
+    out["in_pension_m_12"] = _clean_in_pension_month(raw_data["kal1e012"])
+    # Count pension months from the twelve monthly indicators. Each is True for a
+    # pension month and NA otherwise (the `"[1] genannt"` renaming drops the
+    # not-mentioned answers), so a not-mentioned / unanswered month counts as
+    # not-in-pension. The columns are listed here, not hidden behind a helper
+    # taking the whole frame, so the count's provenance is visible at the caller.
+    in_pension_months = (
+        out[
+            [
+                "in_pension_m_1",
+                "in_pension_m_2",
+                "in_pension_m_3",
+                "in_pension_m_4",
+                "in_pension_m_5",
+                "in_pension_m_6",
+                "in_pension_m_7",
+                "in_pension_m_8",
+                "in_pension_m_9",
+                "in_pension_m_10",
+                "in_pension_m_11",
+                "in_pension_m_12",
+            ]
+        ]
+        .astype("boolean")
+        .fillna(value=False)
+    )
+    out["number_of_months_in_pension"] = apply_smallest_int_dtype(
+        in_pension_months.sum(axis=1)
+    )
+    out["in_pension_in_at_least_one_month"] = out["number_of_months_in_pension"] > 0
 
     return out

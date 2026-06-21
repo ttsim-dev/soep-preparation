@@ -1,7 +1,8 @@
 """General utility functions."""
 
+import ast
 import inspect
-import re
+import textwrap
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
@@ -108,17 +109,22 @@ def get_relevant_column_names(script_path: Path) -> list[str]:
         A list of relevant column names.
     """
     script = load_script(script_path, expected_function="clean")
-    # Remove the docstring, if existent.
-    function_source = re.sub(
-        r'""".*?"""|\'\'\'.*?\'\'\'',
-        "",
-        inspect.getsource(script.clean),
-        flags=re.DOTALL,
+    tree = ast.parse(textwrap.dedent(inspect.getsource(script.clean)))
+    # Collect `raw_data["column"]` subscripts with a string-literal key. Parsing
+    # the AST (rather than scanning text) ignores the same name appearing in
+    # comments, docstrings, or dynamic f-string keys, none of which are real
+    # column reads.
+    columns_in_source_order = sorted(
+        (node.lineno, node.col_offset, node.slice.value)
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Subscript)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "raw_data"
+        and isinstance(node.slice, ast.Constant)
+        and isinstance(node.slice.value, str)
+        and node.slice.value
     )
-    # Find all occurrences of raw["column_name"] or ['column_name'].
-    pattern = r'raw_data\["([^"]+)"\]|\[\'([^\']+)\'\]'
-    matches = [match[0] or match[1] for match in re.findall(pattern, function_source)]
-    return list(dict.fromkeys(matches))
+    return list(dict.fromkeys(column for _, _, column in columns_in_source_order))
 
 
 def load_script(script_path: Path, expected_function: str) -> ModuleType:

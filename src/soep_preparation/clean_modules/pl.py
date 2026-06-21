@@ -159,6 +159,22 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         ],
     )
 
+    # own old-age / disability pension. The questionnaire (Q121) does not split
+    # Altersrente from Erwerbsminderungsrente — "Deutsche Rentenversicherung" is a
+    # single row. Any EM-Rente inference (e.g. own-pension receipt below the
+    # earliest old-age claiming age) is project-specific and belongs in the
+    # consuming project, not this general-purpose cleaning library.
+    # SPOT-CHECK on data: the `plc0232_h` Ja/Nein label strings (harmonized
+    # variables sometimes carry English "[1] Yes" / "[2] No").
+    out["bezieht_eigene_rente"] = object_to_bool_categorical(
+        series=raw_data["plc0232_h"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
+    )
+    out["eigene_rente_brutto_m"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["plc0233_v2"], value=0)
+    )
+
     # health and medical characteristics
     out["type_of_health_insurance_1999_to_2020"] = object_to_str_categorical(
         raw_data["ple0097_v1"]
@@ -173,6 +189,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["disability_degree"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["ple0041_h"], value=0)
+    )
+    # Officially recognized reduced earning capacity / severe disability (yes/no),
+    # distinct from the GdB degree above. SOEP `ple0040` (Q128, 2020 person
+    # questionnaire). SPOT-CHECK on data: the "[1] Ja" / "[2] Nein" label strings.
+    out["recognized_reduced_earning_capacity"] = object_to_bool_categorical(
+        series=raw_data["ple0040"],
+        renaming={"[2] Nein": False, "[1] Ja": True},
+        ordered=True,
     )
     out["med_schwierigkeiten_treppen_pl"] = object_to_str_categorical(
         raw_data["ple0004"],
