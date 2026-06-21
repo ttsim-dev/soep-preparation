@@ -54,6 +54,44 @@ FEATURE_SPECS: tuple[FeatureSpec, ...] = (
 )
 
 
+def assemble_feature_matrix(modules: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
+    """Join the cleaned modules into one person-level predictor matrix.
+
+    Person-level modules are merged on `(p_id, hh_id, survey_year)`; household-level
+    modules are then left-joined on `(hh_id, survey_year)`, broadcasting each household
+    predictor to its members. Only the registered feature columns (plus keys) are kept.
+
+    Args:
+        modules: `MODULES` name -> cleaned module frame. Must contain every source
+            module in `FEATURE_SPECS` with its required columns.
+
+    Returns:
+        One row per person-year with `p_id`, `hh_id`, `survey_year`, and every
+        registered feature column.
+
+    Raises:
+        ValueError: If a source module or a registered column is missing.
+    """
+    fail_if_features_missing(modules)
+    columns_by_module = required_columns_by_module()
+    person_modules = sorted(
+        {spec.source_module for spec in FEATURE_SPECS if spec.level == "person"}
+    )
+    household_modules = sorted(
+        {spec.source_module for spec in FEATURE_SPECS if spec.level == "household"}
+    )
+    person_frames = [
+        modules[module][list(columns_by_module[module])] for module in person_modules
+    ]
+    matrix = person_frames[0]
+    for subset in person_frames[1:]:
+        matrix = matrix.merge(subset, on=list(_PERSON_KEYS), how="outer")
+    for module in household_modules:
+        subset = modules[module][list(columns_by_module[module])]
+        matrix = matrix.merge(subset, on=list(_HOUSEHOLD_KEYS), how="left")
+    return matrix
+
+
 def required_columns_by_module() -> dict[str, tuple[str, ...]]:
     """Return the columns each source module must provide, including its keys.
 
