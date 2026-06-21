@@ -10,10 +10,27 @@ from soep_preparation.wealth_imputation.registry import (
 )
 from soep_preparation.wealth_imputation.registry_content import REGISTRY_ENTRIES
 
-_FIRST_WAVE = 2002
-_FIRST_SPLIT_WAVE = 2007
 _PREDICTION_WAVE = 2022
-_WAVES = (_FIRST_WAVE, _FIRST_SPLIT_WAVE, 2012, 2017, _PREDICTION_WAVE)
+_WAVES = (2002, 2007, 2012, 2017, _PREDICTION_WAVE)
+
+# Components available directly in the reduced SOEP-Core V41 pwealth file.
+_AVAILABLE_COMPONENTS = frozenset(
+    {
+        CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS,
+        CanonicalComponent.FINANCIAL_ASSETS,
+        CanonicalComponent.PRIVATE_PENSION,
+        CanonicalComponent.VEHICLES,
+        CanonicalComponent.CONSUMER_DEBT,
+    }
+)
+# Components not separately sourceable from the SOEP-Core file.
+_UNAVAILABLE_COMPONENTS = frozenset(
+    {
+        CanonicalComponent.OWNER_OCCUPIED_MORTGAGE,
+        CanonicalComponent.OTHER_REAL_ESTATE,
+        CanonicalComponent.BUSINESS_ASSETS,
+    }
+)
 _SHARE_COMPONENTS = frozenset(
     {
         CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS,
@@ -22,6 +39,13 @@ _SHARE_COMPONENTS = frozenset(
         CanonicalComponent.FINANCIAL_ASSETS,
     }
 )
+_EXPECTED_NAMES = {
+    CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: "p0100a",
+    CanonicalComponent.FINANCIAL_ASSETS: "f0100a",
+    CanonicalComponent.PRIVATE_PENSION: "h0100a",
+    CanonicalComponent.VEHICLES: "v0100a",
+    CanonicalComponent.CONSUMER_DEBT: "c0100a",
+}
 
 
 def test_registry_has_one_entry_per_component_and_wave():
@@ -39,27 +63,39 @@ def test_each_component_appears_in_every_wave():
 
 
 @pytest.mark.parametrize("component", sorted(CanonicalComponent, key=lambda c: c.value))
-def test_property_components_use_the_same_variable_across_post_2002_waves(
+def test_each_component_uses_the_same_variable_in_every_wave(
     component: CanonicalComponent,
 ) -> None:
-    """A component's raw variable is identical across 2007-2022 (wave-invariance)."""
+    """A component's raw variable is identical across all waves (wave-invariance)."""
     names = {
-        entry.wave: entry.raw_variable
-        for entry in REGISTRY_ENTRIES
-        if entry.component is component and entry.wave != _FIRST_WAVE
+        entry.raw_variable for entry in REGISTRY_ENTRIES if entry.component is component
     }
-    assert len(set(names.values())) == 1
+    assert len(names) == 1
 
 
-def test_private_pension_switches_from_combined_to_insurances_at_2007():
-    """Private provision is `i0100a` in 2002 and `h0100a` from 2007 on."""
+@pytest.mark.parametrize(
+    ("component", "expected"),
+    sorted(_EXPECTED_NAMES.items(), key=lambda item: item[0].value),
+)
+def test_available_components_map_to_their_v41_column(
+    component: CanonicalComponent,
+    expected: str,
+) -> None:
+    """Each available component probes its confirmed SOEP-Core V41 column."""
     names = {
-        entry.wave: entry.raw_variable
+        entry.raw_variable for entry in REGISTRY_ENTRIES if entry.component is component
+    }
+    assert names == {expected}
+
+
+def test_private_pension_uses_insurances_column_in_every_wave():
+    """Private provision maps to `h0100a` in all waves, including 2002."""
+    names = {
+        entry.raw_variable
         for entry in REGISTRY_ENTRIES
         if entry.component is CanonicalComponent.PRIVATE_PENSION
     }
-    assert names[_FIRST_WAVE] == "i0100a"
-    assert names[_FIRST_SPLIT_WAVE] == "h0100a"
+    assert names == {"h0100a"}
 
 
 def test_share_components_apply_the_ownership_share_rule():
@@ -78,19 +114,28 @@ def test_direct_components_have_no_ownership_share():
             assert entry.ownership_share_variable is None
 
 
-def test_2022_entries_are_unresolved_and_release_critical():
-    """The unreleased 2022 module is UNRESOLVED and required for release."""
+def test_available_pre_2022_entries_are_verified_and_required():
+    """Present components are VERIFIED before 2022 and drive the release."""
     for entry in REGISTRY_ENTRIES:
-        if entry.wave == _PREDICTION_WAVE:
+        if entry.component in _AVAILABLE_COMPONENTS and entry.wave != _PREDICTION_WAVE:
+            assert entry.verification_status is VerificationStatus.VERIFIED
+            assert entry.required_for_release
+
+
+def test_available_2022_entries_are_unresolved_and_required():
+    """The unreleased 2022 values are UNRESOLVED but still release-critical."""
+    for entry in REGISTRY_ENTRIES:
+        if entry.component in _AVAILABLE_COMPONENTS and entry.wave == _PREDICTION_WAVE:
             assert entry.verification_status is VerificationStatus.UNRESOLVED
             assert entry.required_for_release
 
 
-def test_pre_2022_entries_are_resolved():
-    """Every pre-2022 entry is VERIFIED or INFERRED, never UNRESOLVED."""
+def test_unavailable_components_are_unresolved_and_not_required():
+    """Components absent from SOEP-Core are UNRESOLVED and not release-critical."""
     for entry in REGISTRY_ENTRIES:
-        if entry.wave != _PREDICTION_WAVE:
-            assert entry.verification_status is not VerificationStatus.UNRESOLVED
+        if entry.component in _UNAVAILABLE_COMPONENTS:
+            assert entry.verification_status is VerificationStatus.UNRESOLVED
+            assert not entry.required_for_release
 
 
 def test_vehicles_uses_the_v41_name_not_the_sp272_tangible_name():
