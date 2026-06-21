@@ -70,6 +70,8 @@ tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 soep_preparation = { path = ".", editable = true }
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
+[tool.pixi.tasks]
+wealth = { cmd = "pytask", env = { SOEP_WEALTH_IMPUTATION = "1" } }
 [tool.pixi.workspace]
 channels = [ "conda-forge" ]
 platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
