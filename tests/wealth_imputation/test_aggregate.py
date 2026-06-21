@@ -7,7 +7,94 @@ import pytest
 from soep_preparation.wealth_imputation.aggregate import (
     household_component_sum,
     punr_residual,
+    unmodelled_components_residual,
 )
+
+
+def test_unmodelled_components_residual_subtracts_signed_components_from_total():
+    """Residual = official net total minus the signed sum of modelled components."""
+    component_values = pd.DataFrame(
+        {
+            "hh_id": [1, 1, 1, 1, 1],
+            "survey_year": [2017, 2017, 2017, 2017, 2017],
+            "component": [
+                "owner_occupied_property_gross",
+                "owner_occupied_mortgage",
+                "financial_assets",
+                "vehicles",
+                "consumer_debt",
+            ],
+            "household_component_value": [200000.0, 50000.0, 30000.0, 10000.0, 5000.0],
+        }
+    )
+    official_totals = pd.DataFrame(
+        {"hh_id": [1], "survey_year": [2017], "official_net_total": [195000.0]}
+    )
+    result = unmodelled_components_residual(component_values, official_totals)
+    # 200000 - 50000 + 30000 + 10000 - 5000 = 185000; 195000 - 185000 = 10000.
+    np.testing.assert_allclose(result["residual"].to_numpy(), [10000.0], atol=1e-6)
+
+
+def _component_values(hh_id: int, value: float) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "hh_id": [hh_id],
+            "survey_year": [2017],
+            "component": ["financial_assets"],
+            "household_component_value": [value],
+        }
+    )
+
+
+def test_unmodelled_components_residual_reconciles_each_household_independently():
+    """Each household's residual uses only its own components and total."""
+    component_values = pd.concat(
+        [_component_values(1, 30000.0), _component_values(2, 80000.0)],
+        ignore_index=True,
+    )
+    official_totals = pd.DataFrame(
+        {
+            "hh_id": [1, 2],
+            "survey_year": [2017, 2017],
+            "official_net_total": [50000.0, 100000.0],
+        }
+    )
+    result = unmodelled_components_residual(
+        component_values, official_totals
+    ).set_index("hh_id")
+    np.testing.assert_allclose(result.loc[1, "residual"], 20000.0, atol=1e-6)
+    np.testing.assert_allclose(result.loc[2, "residual"], 20000.0, atol=1e-6)
+
+
+def test_unmodelled_components_residual_raises_on_household_key_mismatch():
+    """A household present in only one table fails closed rather than misaligning."""
+    component_values = _component_values(1, 30000.0)
+    official_totals = pd.DataFrame(
+        {"hh_id": [2], "survey_year": [2017], "official_net_total": [50000.0]}
+    )
+    with pytest.raises(ValueError, match="identical"):
+        unmodelled_components_residual(component_values, official_totals)
+
+
+def test_unmodelled_components_residual_returns_float64():
+    """The residual column is float64 even when inputs are integer-typed."""
+    component_values = pd.DataFrame(
+        {
+            "hh_id": [1],
+            "survey_year": [2017],
+            "component": ["financial_assets"],
+            "household_component_value": pd.array([30000], dtype="int64"),
+        }
+    )
+    official_totals = pd.DataFrame(
+        {
+            "hh_id": [1],
+            "survey_year": [2017],
+            "official_net_total": pd.array([50000], dtype="int64"),
+        }
+    )
+    result = unmodelled_components_residual(component_values, official_totals)
+    assert result["residual"].dtype == np.float64
 
 
 def _panel() -> pd.DataFrame:

@@ -11,7 +11,10 @@ can neither silently lose precision nor concatenate strings into a plausible tot
 import numpy as np
 import pandas as pd
 
-from soep_preparation.wealth_imputation.components import CanonicalComponent
+from soep_preparation.wealth_imputation.components import (
+    CanonicalComponent,
+    component_sign,
+)
 
 _PERSON_PANEL_COLUMNS = (
     "p_id",
@@ -21,6 +24,7 @@ _PERSON_PANEL_COLUMNS = (
     "person_component_value",
 )
 _KEY_COLUMNS = ["hh_id", "survey_year", "component"]
+_HOUSEHOLD_KEY_COLUMNS = ["hh_id", "survey_year"]
 
 
 def _fail_if_columns_missing(
@@ -158,4 +162,85 @@ def punr_residual(
     member = _to_finite_float64(merged["member_sum"], "member_sum")
     out = merged[_KEY_COLUMNS].copy()
     out["punr_residual"] = (total - member).to_numpy()
+    return out
+
+
+_COMPONENT_VALUE_COLUMNS = (
+    "hh_id",
+    "survey_year",
+    "component",
+    "household_component_value",
+)
+
+
+def unmodelled_components_residual(
+    component_values: pd.DataFrame, official_totals: pd.DataFrame
+) -> pd.DataFrame:
+    """Return the official net total minus the signed sum of modelled components.
+
+    SOEP-Core exposes only a subset of wealth components separately; the rest (other
+    real estate, business assets) live only inside the official totals. This residual
+    is what those unmodelled components contribute: the authoritative net total minus
+    the signed sum of the components the harness does model. Each component value is a
+    positive magnitude; its net-wealth sign comes from `component_sign` (liabilities
+    subtract). All arithmetic runs in `float64`.
+
+    Args:
+        component_values: Columns `hh_id`, `survey_year`, `component`,
+            `household_component_value`. `component` is a `CanonicalComponent.value`
+            string and the value a finite non-negative magnitude.
+        official_totals: Columns `hh_id`, `survey_year`, `official_net_total`.
+
+    Returns:
+        Columns `hh_id`, `survey_year`, `residual` (float64).
+
+    Raises:
+        ValueError: On missing columns, non-canonical components, non-numeric /
+            non-finite values, non-unique official-total keys, or household keys that
+            differ between the two tables.
+    """
+    _fail_if_columns_missing(
+        component_values, _COMPONENT_VALUE_COLUMNS, "component_values"
+    )
+    _fail_if_columns_missing(
+        official_totals,
+        (*_HOUSEHOLD_KEY_COLUMNS, "official_net_total"),
+        "official_totals",
+    )
+    _fail_if_components_non_canonical(component_values["component"])
+    if official_totals.duplicated(subset=_HOUSEHOLD_KEY_COLUMNS).any():
+        msg = "official_totals has duplicate (hh_id, survey_year) keys."
+        raise ValueError(msg)
+    value = _to_finite_float64(
+        component_values["household_component_value"], "household_component_value"
+    )
+    signs = component_values["component"].map(
+        lambda name: component_sign(CanonicalComponent(name))
+    )
+    signed = component_values[_HOUSEHOLD_KEY_COLUMNS].assign(
+        signed_value=value.to_numpy() * signs.to_numpy().astype("float64")
+    )
+    modelled = (
+        signed.groupby(_HOUSEHOLD_KEY_COLUMNS, observed=True)["signed_value"]
+        .sum()
+        .reset_index(name="modelled_sum")
+    )
+    merged = official_totals.merge(
+        modelled,
+        on=_HOUSEHOLD_KEY_COLUMNS,
+        how="outer",
+        validate="one_to_one",
+        indicator=True,
+    )
+    if (merged["_merge"] != "both").any():
+        msg = (
+            "official_totals and component_values must cover identical "
+            "(hh_id, survey_year) households."
+        )
+        raise ValueError(msg)
+    total = _to_finite_float64(merged["official_net_total"], "official_net_total")
+    out = merged[_HOUSEHOLD_KEY_COLUMNS].copy()
+    out["residual"] = (total.to_numpy() - merged["modelled_sum"].to_numpy()).astype(
+        "float64"
+    )
     return out
