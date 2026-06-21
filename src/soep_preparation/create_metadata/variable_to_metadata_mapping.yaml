@@ -1589,7 +1589,7 @@ bezieht_aktuell_wohngeld_hh:
     - 2022
     - 2023
     - 2024
-bezieht_eigene_rente:
+bezieht_rente_aus_eigener_versicherung:
   dtype:
     categorical:
       categories:
@@ -2885,7 +2885,7 @@ disability_degree:
     - 2022
     - 2023
     - 2024
-early_retirement_pension_number_months:
+early_retirement_number_months_last_year:
   dtype: int8[pyarrow]
   module: pkal
   survey_years:
@@ -3148,33 +3148,6 @@ ehegattenunterhalt_erhalten_y:
     - 1999
     - 2000
     - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-eigene_rente_brutto_m:
-  dtype: float[pyarrow]
-  module: pl
-  survey_years:
     - 2002
     - 2003
     - 2004
@@ -3843,6 +3816,55 @@ erhaltenes_mutterschaftsgeld_m:
     - 1991
     - 1992
     - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+erwerbsgemindert_oder_schwerbehindert:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1991
+    - 1992
     - 1994
     - 1995
     - 1996
@@ -7328,7 +7350,25 @@ in_education:
     - 2022
     - 2023
     - 2024
-in_pension_in_at_least_one_month:
+in_private_rente_eingezahlt:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  survey_years:
+    - 2013
+    - 2018
+in_private_rente_eingezahlte_monate:
+  dtype: int8[pyarrow]
+  module: pl
+  survey_years:
+    - 2013
+    - 2018
+in_retirement_in_at_least_one_month_last_year:
   dtype: bool[pyarrow]
   module: pkal
   survey_years:
@@ -7373,7 +7413,7 @@ in_pension_in_at_least_one_month:
     - 2022
     - 2023
     - 2024
-in_pension_m_1:
+in_retirement_m_10_last_year:
   dtype:
     categorical:
       categories:
@@ -7423,7 +7463,7 @@ in_pension_m_1:
     - 2022
     - 2023
     - 2024
-in_pension_m_10:
+in_retirement_m_11_last_year:
   dtype:
     categorical:
       categories:
@@ -7473,7 +7513,7 @@ in_pension_m_10:
     - 2022
     - 2023
     - 2024
-in_pension_m_11:
+in_retirement_m_12_last_year:
   dtype:
     categorical:
       categories:
@@ -7523,7 +7563,7 @@ in_pension_m_11:
     - 2022
     - 2023
     - 2024
-in_pension_m_12:
+in_retirement_m_1_last_year:
   dtype:
     categorical:
       categories:
@@ -7573,7 +7613,7 @@ in_pension_m_12:
     - 2022
     - 2023
     - 2024
-in_pension_m_2:
+in_retirement_m_2_last_year:
   dtype:
     categorical:
       categories:
@@ -7623,7 +7663,7 @@ in_pension_m_2:
     - 2022
     - 2023
     - 2024
-in_pension_m_3:
+in_retirement_m_3_last_year:
   dtype:
     categorical:
       categories:
@@ -7673,7 +7713,7 @@ in_pension_m_3:
     - 2022
     - 2023
     - 2024
-in_pension_m_4:
+in_retirement_m_4_last_year:
   dtype:
     categorical:
       categories:
@@ -7723,7 +7763,7 @@ in_pension_m_4:
     - 2022
     - 2023
     - 2024
-in_pension_m_5:
+in_retirement_m_5_last_year:
   dtype:
     categorical:
       categories:
@@ -7773,7 +7813,7 @@ in_pension_m_5:
     - 2022
     - 2023
     - 2024
-in_pension_m_6:
+in_retirement_m_6_last_year:
   dtype:
     categorical:
       categories:
@@ -7823,7 +7863,7 @@ in_pension_m_6:
     - 2022
     - 2023
     - 2024
-in_pension_m_7:
+in_retirement_m_7_last_year:
   dtype:
     categorical:
       categories:
@@ -7873,7 +7913,7 @@ in_pension_m_7:
     - 2022
     - 2023
     - 2024
-in_pension_m_8:
+in_retirement_m_8_last_year:
   dtype:
     categorical:
       categories:
@@ -7923,7 +7963,7 @@ in_pension_m_8:
     - 2022
     - 2023
     - 2024
-in_pension_m_9:
+in_retirement_m_9_last_year:
   dtype:
     categorical:
       categories:
@@ -7973,24 +8013,6 @@ in_pension_m_9:
     - 2022
     - 2023
     - 2024
-in_private_rente_eingezahlt:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2013
-    - 2018
-in_private_rente_eingezahlte_monate:
-  dtype: int8[pyarrow]
-  module: pl
-  survey_years:
-    - 2013
-    - 2018
 in_teilzeit_erwerbstätig:
   dtype: bool[pyarrow]
   module: pgen
@@ -11743,7 +11765,7 @@ number_of_months_employed:
     - 2022
     - 2023
     - 2024
-number_of_months_in_pension:
+number_of_months_in_retirement_last_year:
   dtype: int8[pyarrow]
   module: pkal
   survey_years:
@@ -13543,55 +13565,6 @@ pt_employed_m_9:
     - 2022
     - 2023
     - 2024
-recognized_reduced_earning_capacity:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1991
-    - 1992
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 refugee_status:
   dtype:
     categorical:
@@ -13874,6 +13847,33 @@ rent_minus_heating_costs_m_hh:
     - 1999
     - 2000
     - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+rente_aus_eigener_versicherung_brutto_m:
+  dtype: float[pyarrow]
+  module: pl
+  survey_years:
     - 2002
     - 2003
     - 2004
