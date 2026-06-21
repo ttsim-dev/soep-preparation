@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 from typing import Annotated
 
+import pandas as pd
 from pytask import Product
 
 from soep_preparation.config import (
@@ -30,9 +31,15 @@ from soep_preparation.wealth_imputation.registry_content import REGISTRY_ENTRIES
 # context (hgen, hl); only those present in the catalog are inventoried.
 _FEATURE_SOURCE_FILES = ("ppathl", "pgen", "pequiv", "pl", "hgen", "hl")
 
+# Raw-data files the probe reads: the registry source files plus the covariate files.
+_REGISTRY_SOURCE_FILES = tuple(
+    sorted({entry.source_file for entry in REGISTRY_ENTRIES})
+)
+_PROBED_FILES = tuple(sorted({*_REGISTRY_SOURCE_FILES, *_FEATURE_SOURCE_FILES}))
+
 # First-party source modules whose content determines the report. Declared as task
-# dependencies so editing any of them re-runs the probe without `--force`; the data
-# catalogs and third-party imports are deliberately excluded.
+# dependencies so editing any of them re-runs the probe without `--force`; third-party
+# imports are deliberately excluded.
 _WEALTH_SRC = SRC / "wealth_imputation"
 _SOURCE_DEPENDENCIES: tuple[Path, ...] = (
     _WEALTH_SRC / "probe.py",
@@ -42,8 +49,16 @@ _SOURCE_DEPENDENCIES: tuple[Path, ...] = (
 )
 
 if RUN_WEALTH_IMPUTATION:
+    # Declare each probed catalog entry as a dependency so pytask runs the
+    # convert_stata_to_pandas tasks first and injects the loaded frames; only files
+    # actually present in the V41 catalog are wired.
+    _CATALOG_FILES = set(get_raw_data_file_names())
+    _DATA_INPUTS = {
+        name: RAW_DATA_FILES[name] for name in _PROBED_FILES if name in _CATALOG_FILES
+    }
 
     def task_wealth_imputation_probe(
+        data_inputs: Annotated[dict[str, pd.DataFrame], _DATA_INPUTS],
         source_dependencies: tuple[Path, ...] = _SOURCE_DEPENDENCIES,
         report_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
@@ -54,26 +69,26 @@ if RUN_WEALTH_IMPUTATION:
     ) -> None:
         """Probe registry variables and inventory covariate columns; write JSON reports.
 
-        Reads only column names from each `RAW_DATA_FILES` entry and writes two
-        disclosure-safe reports (no row-level data): the registry presence report and
-        a column inventory of the feature-source files. `source_dependencies` carries
-        the first-party modules whose edits should re-run the probe.
+        Reads only column names from each injected `RAW_DATA_FILES` frame and writes two
+        disclosure-safe reports (no row-level data): the registry presence report and a
+        column inventory of the feature-source files. `data_inputs` declares the catalog
+        dependencies so the raw-data conversions run first; `source_dependencies`
+        carries the first-party modules whose edits should re-run the probe.
         """
-        catalog_files = set(get_raw_data_file_names())
-        needed = {entry.source_file for entry in REGISTRY_ENTRIES}
+        registry_files = set(_REGISTRY_SOURCE_FILES)
         available = {
-            name: frozenset(RAW_DATA_FILES[name].load().columns)
-            for name in catalog_files
-            if name in needed
+            name: frozenset(frame.columns)
+            for name, frame in data_inputs.items()
+            if name in registry_files
         }
         report = assemble_probe_report(REGISTRY_ENTRIES, available)
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
         feature_available = {
-            name: frozenset(RAW_DATA_FILES[name].load().columns)
-            for name in _FEATURE_SOURCE_FILES
-            if name in catalog_files
+            name: frozenset(frame.columns)
+            for name, frame in data_inputs.items()
+            if name in _FEATURE_SOURCE_FILES
         }
         feature_columns = inventory_columns(feature_available)
         feature_columns_path.write_text(
