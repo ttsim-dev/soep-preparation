@@ -1,7 +1,10 @@
 import json
 
 from soep_preparation.wealth_imputation.components import CanonicalComponent
-from soep_preparation.wealth_imputation.probe import assemble_probe_report
+from soep_preparation.wealth_imputation.probe import (
+    assemble_probe_report,
+    inventory_columns,
+)
 from soep_preparation.wealth_imputation.registry import (
     AggregationRule,
     VerificationStatus,
@@ -71,6 +74,18 @@ def test_assemble_probe_report_has_exact_disclosure_safe_schema():
     assert set(report["entries"][0].keys()) == _EXPECTED_ENTRY_KEYS
     # Disclosure-safe: the whole report serialises to JSON (only primitives/keys).
     json.dumps(report)
+
+
+def test_inventory_columns_returns_sorted_names_per_source():
+    """Each source file maps to its column names, sorted, with no row data."""
+    available = {
+        "pgen": frozenset({"pgisced11", "pgemplst", "pid"}),
+        "hgen": frozenset({"hgowner", "hid"}),
+    }
+    assert inventory_columns(available) == {
+        "pgen": ["pgemplst", "pgisced11", "pid"],
+        "hgen": ["hgowner", "hid"],
+    }
 
 
 def test_assemble_probe_report_lists_only_wealth_pattern_columns():

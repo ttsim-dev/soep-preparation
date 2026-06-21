@@ -20,6 +20,27 @@ from soep_preparation.wealth_imputation.registry import (
 _WEALTH_COLUMN_PATTERN = re.compile(r"^[a-z]\d{4,5}[a-e]?$")
 
 
+def inventory_columns(
+    available_columns: Mapping[str, frozenset[str]],
+) -> dict[str, list[str]]:
+    """Return the sorted column names of each probed source file.
+
+    Disclosure-safe: column names only, no row-level data. Used to discover the real
+    covariate variable names in the feature-source files (`ppathl`, `pgen`, ...) so
+    model predictors are chosen against confirmed names rather than guessed.
+
+    Args:
+        available_columns: Source-file name -> set of its column names.
+
+    Returns:
+        Source-file name -> sorted list of its column names.
+    """
+    return {
+        source_file: sorted(columns)
+        for source_file, columns in available_columns.items()
+    }
+
+
 def assemble_probe_report(
     entries: Sequence[WealthVariable],
     available_columns: Mapping[str, frozenset[str]],

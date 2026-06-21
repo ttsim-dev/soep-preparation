@@ -19,8 +19,16 @@ from soep_preparation.config import (
     SRC,
     get_raw_data_file_names,
 )
-from soep_preparation.wealth_imputation.probe import assemble_probe_report
+from soep_preparation.wealth_imputation.probe import (
+    assemble_probe_report,
+    inventory_columns,
+)
 from soep_preparation.wealth_imputation.registry_content import REGISTRY_ENTRIES
+
+# Covariate source files to inventory so model predictors are chosen against the real
+# V41 column names. Demographics/income (ppathl, pgen, pequiv, pl) and household
+# context (hgen, hl); only those present in the catalog are inventoried.
+_FEATURE_SOURCE_FILES = ("ppathl", "pgen", "pequiv", "pl", "hgen", "hl")
 
 # First-party source modules whose content determines the report. Declared as task
 # dependencies so editing any of them re-runs the probe without `--force`; the data
@@ -40,19 +48,34 @@ if RUN_WEALTH_IMPUTATION:
         report_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
         / "milestone_0_probe.json",
+        feature_columns_path: Annotated[Path, Product] = BLD
+        / "wealth_imputation"
+        / "milestone_0_feature_columns.json",
     ) -> None:
-        """Probe registry variables against available raw columns; write a JSON report.
+        """Probe registry variables and inventory covariate columns; write JSON reports.
 
-        Reads only column names from each needed `RAW_DATA_FILES` entry and writes a
-        disclosure-safe presence report (no row-level data). `source_dependencies`
-        carries the first-party modules whose edits should re-run the probe.
+        Reads only column names from each `RAW_DATA_FILES` entry and writes two
+        disclosure-safe reports (no row-level data): the registry presence report and
+        a column inventory of the feature-source files. `source_dependencies` carries
+        the first-party modules whose edits should re-run the probe.
         """
+        catalog_files = set(get_raw_data_file_names())
         needed = {entry.source_file for entry in REGISTRY_ENTRIES}
         available = {
             name: frozenset(RAW_DATA_FILES[name].load().columns)
-            for name in get_raw_data_file_names()
+            for name in catalog_files
             if name in needed
         }
         report = assemble_probe_report(REGISTRY_ENTRIES, available)
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+
+        feature_available = {
+            name: frozenset(RAW_DATA_FILES[name].load().columns)
+            for name in _FEATURE_SOURCE_FILES
+            if name in catalog_files
+        }
+        feature_columns = inventory_columns(feature_available)
+        feature_columns_path.write_text(
+            json.dumps(feature_columns, indent=2), encoding="utf-8"
+        )
