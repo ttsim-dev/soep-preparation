@@ -14,12 +14,14 @@ to the official total reconstruct net wealth. The pipeline composes the tested b
    on continuous + one-hot categorical predictors, with cross-wave donor values
    deflated to 2022 terms by asset-class indices (MSCI -> financial, BIS house prices
    -> property, REX bonds -> insurances);
-4. simulate joint draws into household net-total intervals, shifted by the mean
-   historical residual to the official total.
+4. simulate joint draws into household net-total intervals, shifted by a per-household
+   residual to the official total -- an OLS model on the design allocates the
+   unmodelled business / other-real-estate mass to the households whose covariates
+   predict it, rather than spreading the population mean uniformly.
 
 Documented approximations: vehicles and consumer-debt donors are not deflated (no
-asset index); the residual offset is nominal and flat; implicate `a` is the
-representative value; household property is taken net of mortgage.
+asset index); the residual is modelled in nominal euros (no within-2022 deflation);
+implicate `a` is the representative value; household property is taken net of mortgage.
 """
 
 from collections.abc import Mapping, Sequence
@@ -46,6 +48,7 @@ from soep_preparation.wealth_imputation.market_indices import (
     MSCI_WORLD_INDEX,
     REX_BOND_INDEX,
 )
+from soep_preparation.wealth_imputation.residual_model import ResidualModel
 from soep_preparation.wealth_imputation.simulate import simulate_household_totals
 from soep_preparation.wealth_imputation.training import (
     build_component_config,
@@ -204,15 +207,33 @@ def run_imputation(
         rng=np.random.default_rng(seed),
         level=level,
     )
-    mean_residual = _mean_training_residual(training, used)
+    have_total, residual = _training_residual(training, used)
+    if len(have_total) >= _MIN_TRAINING_ROWS:
+        residual_design = encode_features(
+            have_total, continuous_columns=continuous_columns, encoder=encoder
+        )
+        recipient_residual = ResidualModel.fit(residual_design, residual).predict(
+            recipient_design
+        )
+        residual_model_kind = "ols"
+    else:
+        flat = float(np.mean(residual)) if residual.size else 0.0
+        recipient_residual = np.full(len(recipients), flat, dtype="float64")
+        residual_model_kind = "flat"
+    residual_frame = recipients[_HH_KEYS].assign(applied_residual=recipient_residual)
+    intervals = intervals.merge(
+        residual_frame, on=_HH_KEYS, how="left", validate="one_to_one"
+    )
     for column in ("point_estimate", "lower", "upper"):
-        intervals[column] = intervals[column] + mean_residual
+        intervals[column] = intervals[column] + intervals["applied_residual"]
+    intervals = intervals.drop(columns="applied_residual")
     summary = {
         "n_recipients": len(recipient_keys),
         "n_training_heads": len(training),
         "components_used": [component.value for component in used],
         "components_skipped": skipped,
-        "mean_residual": mean_residual,
+        "residual_model": residual_model_kind,
+        "mean_residual": float(np.mean(recipient_residual)),
         "n_draws": n_draws,
         "k": k,
         "level": level,
@@ -248,12 +269,19 @@ def _household_person_direct(pwealth: pd.DataFrame) -> pd.DataFrame:
     return pwealth.groupby(_HH_KEYS, as_index=False).agg(**aggregation)
 
 
-def _mean_training_residual(
+def _training_residual(
     training: pd.DataFrame, used: Sequence[CanonicalComponent]
-) -> float:
+) -> tuple[pd.DataFrame, np.ndarray]:
+    """Return training heads with an official total and their signed residual to it.
+
+    The residual is `official_net_total - sum(component_sign * modelled_component)`
+    over the fitted components, kept in euros and signed (negative when modelled wealth
+    exceeds the official total). Rows whose residual is non-finite are dropped so the
+    frame and the residual array stay aligned for `ResidualModel.fit`.
+    """
     have_total = training.dropna(subset=[_OFFICIAL_TOTAL_COLUMN])
     if have_total.empty:
-        return 0.0
+        return have_total, np.empty(0, dtype="float64")
     modelled = np.zeros(len(have_total), dtype="float64")
     for component in used:
         values = (
@@ -266,5 +294,5 @@ def _mean_training_residual(
         have_total[_OFFICIAL_TOTAL_COLUMN], errors="coerce"
     ).to_numpy(dtype="float64")
     residual = official - modelled
-    residual = residual[np.isfinite(residual)]
-    return float(np.mean(residual)) if residual.size else 0.0
+    finite = np.isfinite(residual)
+    return have_total[finite], residual[finite]

@@ -158,6 +158,12 @@ def test_run_imputation_fits_all_five_components():
     assert result.summary["n_recipients"] == len(_RECIPIENT_IDS)
 
 
+def test_run_imputation_allocates_residual_with_an_ols_model():
+    """The residual to the official total is modelled per household, not flat."""
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
+    assert result.summary["residual_model"] == "ols"
+
+
 def test_run_imputation_raises_without_recipients():
     """Imputation fails closed when no 2022 households are present."""
     modules = _synthetic_modules()
