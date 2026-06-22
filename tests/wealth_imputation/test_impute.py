@@ -6,36 +6,32 @@ import pytest
 
 from soep_preparation.wealth_imputation.impute import run_imputation
 
-_TRAIN_IDS = list(range(1, 9))  # eight 2017 households (one person each)
-_RECIPIENT_IDS = [101, 102, 103]  # three 2022 households
+_TRAIN_IDS = list(range(1, 11))  # ten 2017 training households (one person each)
+_RECIPIENT_IDS = [101, 102, 103]  # three 2022 recipient households
 
 
-def _person_rows(p_ids: list[int], year: int) -> dict[str, list]:
-    return {
-        "p_id": p_ids,
-        "hh_id": p_ids,
-        "survey_year": [year] * len(p_ids),
-    }
+def _feature_frame(p_ids: list[int], year: int) -> pd.DataFrame:
+    n = len(p_ids)
+    return pd.DataFrame(
+        {
+            "p_id": p_ids,
+            "hh_id": p_ids,
+            "survey_year": [year] * n,
+            "age": np.linspace(35, 70, n),
+            "gender": ["m", "f"] * (n // 2) + ["m"] * (n % 2),
+            "number_of_persons_hh": [2] * n,
+            "number_of_children_living_in_hh": [1] * n,
+            "federal_state_of_residence": ["BY"] * n,
+            "einkommen_nach_steuern_y_hh": np.linspace(20000, 90000, n),
+        }
+    )
 
 
 def _pequiv() -> pd.DataFrame:
-    rows = {
-        key: train + rec
-        for (key, train), (_, rec) in zip(
-            _person_rows(_TRAIN_IDS, 2017).items(),
-            _person_rows(_RECIPIENT_IDS, 2022).items(),
-            strict=True,
-        )
-    }
-    frame = pd.DataFrame(rows)
-    n = len(frame)
-    frame["age"] = np.linspace(35, 70, n)
-    frame["gender"] = ["m", "f"] * (n // 2) + ["m"] * (n % 2)
-    frame["number_of_persons_hh"] = 2
-    frame["number_of_children_living_in_hh"] = 1
-    frame["federal_state_of_residence"] = "BY"
-    frame["einkommen_nach_steuern_y_hh"] = np.linspace(20000, 90000, n)
-    return frame
+    return pd.concat(
+        [_feature_frame(_TRAIN_IDS, 2017), _feature_frame(_RECIPIENT_IDS, 2022)],
+        ignore_index=True,
+    )
 
 
 def _pgen() -> pd.DataFrame:
@@ -67,25 +63,45 @@ def _hgen() -> pd.DataFrame:
     return frame
 
 
+def _owns_first(count: int, value: float, total: int) -> list[float]:
+    return [value] * count + [0.0] * (total - count)
+
+
 def _pwealth() -> pd.DataFrame:
-    """Eight 2017 heads with a mix of owners and non-owners per component."""
-    frame = pd.DataFrame(_person_rows(_TRAIN_IDS, 2017))
-    owns_first = lambda count, value: [value] * count + [0.0] * (8 - count)  # noqa: E731
-    frame["property_value_primary_residence_a"] = owns_first(4, 250000.0)
-    frame["financial_assets_value_a"] = owns_first(6, 40000.0)
-    frame["private_insurances_value_a"] = owns_first(5, 20000.0)
-    frame["vehicles_value_a"] = owns_first(7, 12000.0)
-    frame["consumer_debt_value_a"] = owns_first(3, 8000.0)
-    # Official total exceeds the modelled net by a fixed residual (other RE/business).
-    modelled = (
-        frame["property_value_primary_residence_a"]
-        + frame["financial_assets_value_a"]
-        + frame["private_insurances_value_a"]
-        + frame["vehicles_value_a"]
-        - frame["consumer_debt_value_a"]
+    """Person wealth used only for the lagged predictor (2012 -> 2017, 2017 -> 2022)."""
+    train_lag = pd.DataFrame(
+        {"p_id": _TRAIN_IDS, "hh_id": _TRAIN_IDS, "survey_year": [2012] * 10}
     )
-    frame["net_overall_wealth_including_vehicles_and_student_loans_a"] = (
-        modelled + 10000.0
+    recipient_lag = pd.DataFrame(
+        {
+            "p_id": _RECIPIENT_IDS,
+            "hh_id": _RECIPIENT_IDS,
+            "survey_year": [2017] * len(_RECIPIENT_IDS),
+        }
+    )
+    frame = pd.concat([train_lag, recipient_lag], ignore_index=True)
+    n = len(frame)
+    frame["property_value_primary_residence_a"] = np.linspace(0, 300000, n)
+    frame["financial_assets_value_a"] = np.linspace(0, 60000, n)
+    frame["private_insurances_value_a"] = np.linspace(0, 30000, n)
+    frame["vehicles_value_a"] = np.linspace(0, 15000, n)
+    frame["consumer_debt_value_a"] = np.linspace(0, 9000, n)
+    return frame
+
+
+def _hwealth() -> pd.DataFrame:
+    """Household targets for the ten 2017 training households (owners + non-owners)."""
+    frame = pd.DataFrame({"hh_id": _TRAIN_IDS, "survey_year": [2017] * 10})
+    frame["hh_net_property_value_primary_residence_a"] = _owns_first(6, 250000.0, 10)
+    frame["hh_financial_assets_value_a"] = _owns_first(7, 40000.0, 10)
+    frame["hh_vehicles_value_a"] = _owns_first(8, 12000.0, 10)
+    total = (
+        frame["hh_net_property_value_primary_residence_a"]
+        + frame["hh_financial_assets_value_a"]
+        + frame["hh_vehicles_value_a"]
+    )
+    frame["hh_net_overall_wealth_including_vehicles_and_student_loans_a"] = (
+        total + 10000.0  # residual = other RE/business/insurance net of debts
     )
     return frame
 
@@ -97,6 +113,7 @@ def _synthetic_modules() -> dict[str, pd.DataFrame]:
         "ppathl": _ppathl(),
         "hgen": _hgen(),
         "pwealth": _pwealth(),
+        "hwealth": _hwealth(),
     }
 
 
@@ -110,7 +127,7 @@ def test_run_imputation_produces_one_interval_per_recipient_household():
 
 
 def test_run_imputation_summary_reports_used_components():
-    """The run summary lists the components actually fit."""
+    """The run summary lists the household components actually fit."""
     result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
     assert result.summary["components_used"]
     assert result.summary["n_recipients"] == len(_RECIPIENT_IDS)
@@ -119,8 +136,7 @@ def test_run_imputation_summary_reports_used_components():
 def test_run_imputation_raises_without_recipients():
     """Imputation fails closed when no 2022 households are present."""
     modules = _synthetic_modules()
-    for name in ("pequiv", "pgen", "ppathl"):
+    for name in ("pequiv", "pgen", "ppathl", "hgen"):
         modules[name] = modules[name].query("survey_year != 2022")
-    modules["hgen"] = modules["hgen"].query("survey_year != 2022")
     with pytest.raises(ValueError, match="2022 recipients"):
         run_imputation(modules, n_draws=10, seed=0, k=3)

@@ -22,8 +22,8 @@ from soep_preparation.config import (
 )
 from soep_preparation.wealth_imputation.impute import run_imputation
 
-# Cleaned modules the imputation consumes: the wealth targets and the covariates.
-_IMPUTE_MODULES = ("pwealth", "pequiv", "pgen", "ppathl", "hgen")
+# Cleaned modules the imputation consumes: household + person wealth and the covariates.
+_IMPUTE_MODULES = ("hwealth", "pwealth", "pequiv", "pgen", "ppathl", "hgen")
 
 # Run settings (kept explicit so a re-run is reproducible).
 _N_DRAWS = 200
@@ -44,6 +44,8 @@ _SOURCE_DEPENDENCIES: tuple[Path, ...] = (
     _WEALTH_SRC / "ownership_model.py",
     _WEALTH_SRC / "amount_model.py",
     _WEALTH_SRC / "transforms.py",
+    _WEALTH_SRC / "deflation.py",
+    _WEALTH_SRC / "market_indices.py",
     _WEALTH_SRC / "components.py",
 )
 
