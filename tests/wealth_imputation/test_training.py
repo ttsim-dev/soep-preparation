@@ -4,14 +4,16 @@ import numpy as np
 import pandas as pd
 
 from soep_preparation.wealth_imputation.components import CanonicalComponent
+from soep_preparation.wealth_imputation.features import (
+    encode_design_matrix,
+    select_household_heads,
+)
 from soep_preparation.wealth_imputation.simulate import ComponentDrawConfig
 from soep_preparation.wealth_imputation.training import (
     build_component_config,
     component_scale,
     derive_ownership,
-    encode_design_matrix,
     fit_component_models,
-    select_household_heads,
 )
 
 

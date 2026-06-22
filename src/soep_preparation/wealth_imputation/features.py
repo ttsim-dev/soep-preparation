@@ -10,8 +10,10 @@ predictors are broadcast to persons via `hh_id` during feature assembly.
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from types import MappingProxyType
 from typing import Literal
 
+import numpy as np
 import pandas as pd
 
 _PERSON_KEYS = ("p_id", "hh_id", "survey_year")
@@ -90,6 +92,107 @@ def assemble_feature_matrix(modules: Mapping[str, pd.DataFrame]) -> pd.DataFrame
         subset = modules[module][list(columns_by_module[module])]
         matrix = matrix.merge(subset, on=list(_HOUSEHOLD_KEYS), how="left")
     return matrix
+
+
+def select_household_heads(frame: pd.DataFrame) -> pd.DataFrame:
+    """Keep one representative row -- the oldest member -- per household and year.
+
+    Representing each household by its oldest member lets the simulation aggregate one
+    row per household without summing jointly-held amounts across members (which would
+    double-count, since SOEP-Core omits the person-level ownership shares).
+
+    Args:
+        frame: Rows with `p_id`, `hh_id`, `survey_year`, and `age`.
+
+    Returns:
+        One row per `(hh_id, survey_year)`, the member with the greatest `age`.
+    """
+    ordered = frame.sort_values(["hh_id", "survey_year", "age"])
+    return ordered.drop_duplicates(
+        subset=["hh_id", "survey_year"], keep="last"
+    ).reset_index(drop=True)
+
+
+def encode_design_matrix(frame: pd.DataFrame, columns: Sequence[str]) -> np.ndarray:
+    """Return a float64 design matrix, filling missing values with column medians.
+
+    Args:
+        frame: Source frame containing every name in `columns`.
+        columns: Predictor columns to encode, in order.
+
+    Returns:
+        A `(len(frame), len(columns))` float64 array; an all-missing column becomes
+        zeros.
+    """
+    encoded = []
+    for column in columns:
+        values = pd.to_numeric(frame[column], errors="coerce").to_numpy(dtype="float64")
+        median = np.nanmedian(values) if np.any(~np.isnan(values)) else 0.0
+        encoded.append(np.where(np.isnan(values), median, values))
+    if not encoded:
+        return np.empty((len(frame), 0), dtype="float64")
+    return np.column_stack(encoded).astype("float64")
+
+
+@dataclass(frozen=True)
+class CategoricalEncoder:
+    """Fixed categories per column, learned from training, for stable one-hot width."""
+
+    categories: Mapping[str, tuple[str, ...]]
+    """Column name -> the sorted distinct training categories."""
+
+
+def fit_categorical_encoder(
+    frame: pd.DataFrame, columns: Sequence[str]
+) -> CategoricalEncoder:
+    """Record the sorted distinct categories of each column for later encoding.
+
+    Args:
+        frame: Training frame containing every name in `columns`.
+        columns: Categorical predictor columns.
+
+    Returns:
+        A `CategoricalEncoder` with one fixed category tuple per column.
+    """
+    categories = {
+        column: tuple(sorted(frame[column].dropna().astype(str).unique()))
+        for column in columns
+    }
+    return CategoricalEncoder(categories=MappingProxyType(categories))
+
+
+def encode_features(
+    frame: pd.DataFrame,
+    *,
+    continuous_columns: Sequence[str],
+    encoder: CategoricalEncoder,
+) -> np.ndarray:
+    """Build a float64 design matrix from continuous and one-hot categorical columns.
+
+    Continuous columns are median-filled; categorical columns are one-hot encoded
+    against the encoder's fixed categories, so an unseen or missing level maps to an
+    all-zero block and train and recipient matrices share an identical column layout.
+
+    Args:
+        frame: Frame to encode.
+        continuous_columns: Numeric predictor columns.
+        encoder: Encoder carrying the fixed categorical levels.
+
+    Returns:
+        A `(len(frame), n_continuous + sum(n_categories))` float64 design matrix.
+    """
+    blocks = []
+    if continuous_columns:
+        blocks.append(encode_design_matrix(frame, continuous_columns))
+    for column, levels in encoder.categories.items():
+        as_string = frame[column].astype(str)
+        blocks.extend(
+            (as_string == level).to_numpy(dtype="float64").reshape(-1, 1)
+            for level in levels
+        )
+    if not blocks:
+        return np.empty((len(frame), 0), dtype="float64")
+    return np.hstack(blocks).astype("float64")
 
 
 def lagged_wealth(

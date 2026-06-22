@@ -32,14 +32,14 @@ from soep_preparation.wealth_imputation.components import (
 from soep_preparation.wealth_imputation.features import (
     FEATURE_SPECS,
     assemble_feature_matrix,
+    encode_design_matrix,
+    select_household_heads,
 )
 from soep_preparation.wealth_imputation.simulate import simulate_household_totals
 from soep_preparation.wealth_imputation.training import (
     build_component_config,
     derive_ownership,
-    encode_design_matrix,
     fit_component_models,
-    select_household_heads,
 )
 
 _PREDICTION_WAVE = 2022

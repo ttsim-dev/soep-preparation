@@ -1,15 +1,47 @@
 """Behavior of the wealth-model feature registry."""
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from soep_preparation.wealth_imputation.features import (
     FEATURE_SPECS,
     assemble_feature_matrix,
+    encode_features,
     fail_if_features_missing,
+    fit_categorical_encoder,
     lagged_wealth,
     required_columns_by_module,
 )
+
+
+def test_fit_categorical_encoder_captures_sorted_training_categories():
+    """The encoder records the sorted distinct categories seen in training."""
+    frame = pd.DataFrame({"education": ["b", "a", "a", "b"]})
+    encoder = fit_categorical_encoder(frame, ["education"])
+    assert encoder.categories["education"] == ("a", "b")
+
+
+def test_encode_features_one_hot_encodes_against_fixed_categories():
+    """One-hot columns follow the encoder's categories, unseen levels go to zero."""
+    train = pd.DataFrame({"x": [1.0, 2.0], "g": ["a", "b"]})
+    encoder = fit_categorical_encoder(train, ["g"])
+    recipients = pd.DataFrame({"x": [3.0, 4.0], "g": ["b", "c"]})  # "c" unseen
+    matrix = encode_features(recipients, continuous_columns=["x"], encoder=encoder)
+    # Columns: [x, g==a, g==b]; row 0 -> [3,0,1]; row 1 (unseen c) -> [4,0,0].
+    np.testing.assert_allclose(matrix, [[3.0, 0.0, 1.0], [4.0, 0.0, 0.0]], atol=1e-6)
+
+
+def test_encode_features_gives_train_and_recipients_the_same_width():
+    """Train and recipient matrices share column layout for model compatibility."""
+    train = pd.DataFrame({"x": [1.0, 2.0, 3.0], "g": ["a", "b", "a"]})
+    encoder = fit_categorical_encoder(train, ["g"])
+    recipients = pd.DataFrame({"x": [9.0], "g": ["b"]})
+    train_matrix = encode_features(train, continuous_columns=["x"], encoder=encoder)
+    recipient_matrix = encode_features(
+        recipients, continuous_columns=["x"], encoder=encoder
+    )
+    assert train_matrix.shape[1] == recipient_matrix.shape[1]
 
 
 def test_lagged_wealth_attaches_prior_wave_value_to_the_current_wave():
