@@ -26,10 +26,10 @@ from soep_preparation.wealth_imputation.probe import (
 )
 from soep_preparation.wealth_imputation.registry_content import REGISTRY_ENTRIES
 
-# Covariate source files to inventory so model predictors are chosen against the real
-# V41 column names. Demographics/income (ppathl, pgen, pequiv, pl) and household
-# context (hgen, hl); only those present in the catalog are inventoried.
-_FEATURE_SOURCE_FILES = ("ppathl", "pgen", "pequiv", "pl", "hgen", "hl")
+# Source files to inventory so columns are chosen against the real V41 names.
+# Covariates (ppathl, pgen, pequiv, pl, hgen, hl) plus hwealth, to confirm the
+# household insurance/consumer-debt columns (h010h/c010h) before cleaning them.
+_FEATURE_SOURCE_FILES = ("ppathl", "pgen", "pequiv", "pl", "hgen", "hl", "hwealth")
 
 # Raw-data files the probe reads: the registry source files plus the covariate files.
 _REGISTRY_SOURCE_FILES = tuple(

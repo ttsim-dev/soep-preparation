@@ -15,10 +15,12 @@ blocks:
    historical residual to the official total.
 
 v1->v2 status: household-level targets, wealth-wave training, categorical encoding,
-lagged wealth, and MSCI deflation of the financial component are wired. Remaining
-approximations (documented): property/vehicles donors are not deflated (no verified
-house-price index on file yet); the residual offset is nominal and flat; implicate `a`
-is the representative value; household property is taken net of mortgage.
+lagged wealth, and asset-class deflation (MSCI for financial, BIS house prices for
+property) are wired. Remaining approximations (documented): vehicles donors are not
+deflated (depreciating, no asset index); the residual offset is nominal and flat;
+implicate `a` is the representative value; household property is taken net of mortgage;
+insurances and consumer debt fold into the residual until the household `h010h`/`c010h`
+columns are confirmed in V41 and split out.
 """
 
 from collections.abc import Mapping, Sequence
@@ -40,7 +42,10 @@ from soep_preparation.wealth_imputation.features import (
     lagged_wealth,
     select_household_heads,
 )
-from soep_preparation.wealth_imputation.market_indices import MSCI_WORLD_INDEX
+from soep_preparation.wealth_imputation.market_indices import (
+    HOUSE_PRICE_INDEX,
+    MSCI_WORLD_INDEX,
+)
 from soep_preparation.wealth_imputation.simulate import simulate_household_totals
 from soep_preparation.wealth_imputation.training import (
     build_component_config,
@@ -72,9 +77,9 @@ _COMPONENT_COLUMNS: dict[CanonicalComponent, str] = {
     CanonicalComponent.VEHICLES: "hh_vehicles_value_a",
 }
 _COMPONENT_INDEX: dict[CanonicalComponent, Mapping[int, float] | None] = {
-    CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: None,  # no house-price index yet
+    CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: HOUSE_PRICE_INDEX,
     CanonicalComponent.FINANCIAL_ASSETS: MSCI_WORLD_INDEX,
-    CanonicalComponent.VEHICLES: None,
+    CanonicalComponent.VEHICLES: None,  # depreciating; no asset index
 }
 _OFFICIAL_TOTAL_COLUMN = "hh_net_overall_wealth_including_vehicles_and_student_loans_a"
 

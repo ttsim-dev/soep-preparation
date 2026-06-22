@@ -5,10 +5,12 @@ ran ahead of consumer prices, so the donor pool is brought to 2022 terms with
 component-appropriate indices rather than a uniform CPI. Index levels are base 100 in
 2000.
 
-Source: MSCI World and REX (5-year German government bonds) annual series provided by
-MImmesberger on PR #88 (`benchmark_index_annual.csv`). A house-price index for the
-property components is not yet on file; until a verified series is added, property
-donors are deflated by a pass-through factor of 1.0 (documented downward bias).
+Sources:
+- MSCI World and REX (5-year German government bonds): annual series provided by
+  MImmesberger on PR #88 (`benchmark_index_annual.csv`), base 100 in 2000.
+- House prices: BIS nominal residential property prices for Germany, FRED series
+  `QDEN628BIS`, annual averages of the quarterly index (base 100 in 2010); used to
+  deflate the owner-occupied and other-real-estate components.
 """
 
 from types import MappingProxyType
@@ -70,5 +72,35 @@ REX_BOND_INDEX: MappingProxyType[int, float] = MappingProxyType(
         2022: 178.85,
         2023: 186.26,
         2024: 188.37,
+    }
+)
+
+HOUSE_PRICE_INDEX: MappingProxyType[int, float] = MappingProxyType(
+    {
+        2000: 101.37,
+        2001: 101.27,
+        2002: 100.58,
+        2003: 99.18,
+        2004: 97.88,
+        2005: 96.98,
+        2006: 97.07,
+        2007: 96.88,
+        2008: 100.05,
+        2009: 99.42,
+        2010: 100.00,
+        2011: 102.42,
+        2012: 105.47,
+        2013: 108.67,
+        2014: 111.85,
+        2015: 117.12,
+        2016: 125.93,
+        2017: 133.62,
+        2018: 142.53,
+        2019: 150.75,
+        2020: 162.47,
+        2021: 181.28,
+        2022: 192.22,
+        2023: 176.03,
+        2024: 173.35,
     }
 )
