@@ -1,26 +1,25 @@
 """Run the provisional 2022 household-wealth imputation end to end.
 
-Targets are the DIW-aggregated **household** totals from cleaned `hwealth` (correctly
-share-summed, so no person-share double-counting), modelled per available component
-with a residual to the official total. The pipeline composes the tested building
-blocks:
+Targets are bias-free household component totals: the joint components (property,
+financial, vehicles) come from the DIW-aggregated `hwealth` file (correctly
+share-summed), and the person-direct components (insurances, consumer debt) -- which
+have no ownership share and so are absent from the household file -- are summed from
+person `pwealth` across members, which is unbiased. The five components plus a residual
+to the official total reconstruct net wealth. The pipeline composes the tested blocks:
 
 1. assemble the person feature matrix, attach each person's lagged prior-wave wealth,
    and represent each household by its oldest member (`select_household_heads`);
-2. merge the household component targets onto the heads;
+2. merge the joint household targets and the summed person-direct targets onto heads;
 3. restrict training to the wealth waves, fit ownership + amount models per component
    on continuous + one-hot categorical predictors, with cross-wave donor values
-   deflated to 2022 terms by asset-class indices;
+   deflated to 2022 terms by asset-class indices (MSCI -> financial, BIS house prices
+   -> property, REX bonds -> insurances);
 4. simulate joint draws into household net-total intervals, shifted by the mean
    historical residual to the official total.
 
-v1->v2 status: household-level targets, wealth-wave training, categorical encoding,
-lagged wealth, and asset-class deflation (MSCI for financial, BIS house prices for
-property) are wired. Remaining approximations (documented): vehicles donors are not
-deflated (depreciating, no asset index); the residual offset is nominal and flat;
-implicate `a` is the representative value; household property is taken net of mortgage;
-insurances and consumer debt fold into the residual until the household `h010h`/`c010h`
-columns are confirmed in V41 and split out.
+Documented approximations: vehicles and consumer-debt donors are not deflated (no
+asset index); the residual offset is nominal and flat; implicate `a` is the
+representative value; household property is taken net of mortgage.
 """
 
 from collections.abc import Mapping, Sequence
@@ -45,6 +44,7 @@ from soep_preparation.wealth_imputation.features import (
 from soep_preparation.wealth_imputation.market_indices import (
     HOUSE_PRICE_INDEX,
     MSCI_WORLD_INDEX,
+    REX_BOND_INDEX,
 )
 from soep_preparation.wealth_imputation.simulate import simulate_household_totals
 from soep_preparation.wealth_imputation.training import (
@@ -68,18 +68,34 @@ _LAG_SOURCE_COLUMNS = (
     "consumer_debt_value_a",
 )
 
-# Household component target (cleaned hwealth, implicate `a`) and its deflation index.
+# Joint components taken from the DIW-aggregated household file (correctly
+# share-summed). Net property folds in the mortgage.
+_HW_PROPERTY = "hh_net_property_value_primary_residence_a"
+_HW_FINANCIAL = "hh_financial_assets_value_a"
+_HW_VEHICLES = "hh_vehicles_value_a"
+
+# Person-direct components (no ownership share) absent from the household file: summed
+# from person `pwealth` across members, which is unbiased because they are individual
+# holdings (no joint double-counting).
+_PERSON_DIRECT_SOURCE = {
+    "hh_private_insurances_value_a": "private_insurances_value_a",
+    "hh_consumer_debt_value_a": "consumer_debt_value_a",
+}
+
+# Each component's target column and the asset-class index used to deflate its donors.
 _COMPONENT_COLUMNS: dict[CanonicalComponent, str] = {
-    CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: (
-        "hh_net_property_value_primary_residence_a"  # net of mortgage
-    ),
-    CanonicalComponent.FINANCIAL_ASSETS: "hh_financial_assets_value_a",
-    CanonicalComponent.VEHICLES: "hh_vehicles_value_a",
+    CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: _HW_PROPERTY,
+    CanonicalComponent.FINANCIAL_ASSETS: _HW_FINANCIAL,
+    CanonicalComponent.VEHICLES: _HW_VEHICLES,
+    CanonicalComponent.PRIVATE_PENSION: "hh_private_insurances_value_a",
+    CanonicalComponent.CONSUMER_DEBT: "hh_consumer_debt_value_a",
 }
 _COMPONENT_INDEX: dict[CanonicalComponent, Mapping[int, float] | None] = {
     CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: HOUSE_PRICE_INDEX,
     CanonicalComponent.FINANCIAL_ASSETS: MSCI_WORLD_INDEX,
     CanonicalComponent.VEHICLES: None,  # depreciating; no asset index
+    CanonicalComponent.PRIVATE_PENSION: REX_BOND_INDEX,
+    CanonicalComponent.CONSUMER_DEBT: None,  # nominal debt
 }
 _OFFICIAL_TOTAL_COLUMN = "hh_net_overall_wealth_including_vehicles_and_student_loans_a"
 
@@ -205,16 +221,31 @@ def run_imputation(
 
 
 def _household_heads(modules: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
+    pwealth = modules["pwealth"]
     features = assemble_feature_matrix(modules)
     lagged = lagged_wealth(
-        modules["pwealth"][["p_id", "survey_year", *_LAG_SOURCE_COLUMNS]],
+        pwealth[["p_id", "survey_year", *_LAG_SOURCE_COLUMNS]],
         value_columns=_LAG_SOURCE_COLUMNS,
     )
     with_lag = features.merge(lagged, on=["p_id", "survey_year"], how="left")
     heads = select_household_heads(with_lag)
-    target_columns = [*_COMPONENT_COLUMNS.values(), _OFFICIAL_TOTAL_COLUMN]
-    household_wealth = modules["hwealth"][[*_HH_KEYS, *target_columns]]
-    return heads.merge(household_wealth, on=_HH_KEYS, how="left")
+    household_wealth = modules["hwealth"][
+        [*_HH_KEYS, _HW_PROPERTY, _HW_FINANCIAL, _HW_VEHICLES, _OFFICIAL_TOTAL_COLUMN]
+    ]
+    heads = heads.merge(household_wealth, on=_HH_KEYS, how="left")
+    return heads.merge(_household_person_direct(pwealth), on=_HH_KEYS, how="left")
+
+
+def _household_person_direct(pwealth: pd.DataFrame) -> pd.DataFrame:
+    """Sum person-direct components (insurances, consumer debt) to the household.
+
+    These have no ownership share, so a plain member sum is the correct household
+    total -- there is no joint-ownership double-counting to worry about.
+    """
+    aggregation = {
+        target: (source, "sum") for target, source in _PERSON_DIRECT_SOURCE.items()
+    }
+    return pwealth.groupby(_HH_KEYS, as_index=False).agg(**aggregation)
 
 
 def _mean_training_residual(

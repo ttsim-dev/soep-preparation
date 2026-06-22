@@ -8,6 +8,7 @@ from soep_preparation.wealth_imputation.impute import run_imputation
 
 _TRAIN_IDS = list(range(1, 11))  # ten 2017 training households (one person each)
 _RECIPIENT_IDS = [101, 102, 103]  # three 2022 recipient households
+_TRAIN_WAVE = 2017
 
 
 def _feature_frame(p_ids: list[int], year: int) -> pd.DataFrame:
@@ -68,24 +69,40 @@ def _owns_first(count: int, value: float, total: int) -> list[float]:
 
 
 def _pwealth() -> pd.DataFrame:
-    """Person wealth used only for the lagged predictor (2012 -> 2017, 2017 -> 2022)."""
-    train_lag = pd.DataFrame(
-        {"p_id": _TRAIN_IDS, "hh_id": _TRAIN_IDS, "survey_year": [2012] * 10}
-    )
-    recipient_lag = pd.DataFrame(
-        {
-            "p_id": _RECIPIENT_IDS,
-            "hh_id": _RECIPIENT_IDS,
-            "survey_year": [2017] * len(_RECIPIENT_IDS),
-        }
-    )
-    frame = pd.concat([train_lag, recipient_lag], ignore_index=True)
+    """Person wealth: lag sources plus the summed person-direct components.
+
+    Rows at 2012 lag into the 2017 training features; 2017 rows for the training
+    households supply the insurances/consumer-debt component targets (summed to the
+    household); 2017 rows for the recipients lag into 2022.
+    """
+    blocks = [
+        pd.DataFrame(  # lag source for the 2017 training features
+            {"p_id": _TRAIN_IDS, "hh_id": _TRAIN_IDS, "survey_year": [2012] * 10}
+        ),
+        pd.DataFrame(  # 2017 person-direct component source for training households
+            {"p_id": _TRAIN_IDS, "hh_id": _TRAIN_IDS, "survey_year": [2017] * 10}
+        ),
+        pd.DataFrame(  # lag source for the 2022 recipients
+            {
+                "p_id": _RECIPIENT_IDS,
+                "hh_id": _RECIPIENT_IDS,
+                "survey_year": [2017] * len(_RECIPIENT_IDS),
+            }
+        ),
+    ]
+    frame = pd.concat(blocks, ignore_index=True)
     n = len(frame)
     frame["property_value_primary_residence_a"] = np.linspace(0, 300000, n)
     frame["financial_assets_value_a"] = np.linspace(0, 60000, n)
-    frame["private_insurances_value_a"] = np.linspace(0, 30000, n)
     frame["vehicles_value_a"] = np.linspace(0, 15000, n)
+    frame["private_insurances_value_a"] = np.linspace(0, 30000, n)
     frame["consumer_debt_value_a"] = np.linspace(0, 9000, n)
+    # Give the 2017 training households a clear owner/non-owner split per component.
+    is_train_2017 = (frame["survey_year"] == _TRAIN_WAVE) & frame["hh_id"].isin(
+        _TRAIN_IDS
+    )
+    frame.loc[is_train_2017, "private_insurances_value_a"] = _owns_first(6, 20000.0, 10)
+    frame.loc[is_train_2017, "consumer_debt_value_a"] = _owns_first(5, 8000.0, 10)
     return frame
 
 
@@ -126,10 +143,18 @@ def test_run_imputation_produces_one_interval_per_recipient_household():
     assert np.all(intervals["lower"].to_numpy() <= intervals["upper"].to_numpy())
 
 
-def test_run_imputation_summary_reports_used_components():
-    """The run summary lists the household components actually fit."""
+def test_run_imputation_fits_all_five_components():
+    """All five components (3 joint + 2 person-direct) are fit and none skipped."""
     result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
-    assert result.summary["components_used"]
+    expected = {
+        "owner_occupied_property_gross",
+        "financial_assets",
+        "vehicles",
+        "private_pension",
+        "consumer_debt",
+    }
+    assert set(result.summary["components_used"]) == expected
+    assert result.summary["components_skipped"] == []
     assert result.summary["n_recipients"] == len(_RECIPIENT_IDS)
 
 
