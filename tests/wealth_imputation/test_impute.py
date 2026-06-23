@@ -116,6 +116,8 @@ def _hwealth() -> pd.DataFrame:
     """Household targets for the ten 2017 training households (owners + non-owners)."""
     frame = pd.DataFrame({"hh_id": _TRAIN_IDS, "survey_year": [2017] * 10})
     frame["hh_net_property_value_primary_residence_a"] = _owns_first(6, 250000.0, 10)
+    # Gross property exceeds net for owners, so mortgage = gross - net = 50000.
+    frame["hh_property_value_primary_residence_a"] = _owns_first(6, 300000.0, 10)
     frame["hh_financial_assets_value_a"] = _owns_first(7, 40000.0, 10)
     frame["hh_vehicles_value_a"] = _owns_first(8, 12000.0, 10)
     total = (
@@ -149,11 +151,12 @@ def test_run_imputation_produces_one_interval_per_recipient_household():
     assert np.all(intervals["lower"].to_numpy() <= intervals["upper"].to_numpy())
 
 
-def test_run_imputation_fits_all_five_components():
-    """All five components (3 joint + 2 person-direct) are fit and none skipped."""
+def test_run_imputation_fits_all_six_components():
+    """Gross property, mortgage, financial, vehicles, pension, debt are all fit."""
     result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
     expected = {
         "owner_occupied_property_gross",
+        "owner_occupied_mortgage",
         "financial_assets",
         "vehicles",
         "private_pension",
@@ -164,10 +167,10 @@ def test_run_imputation_fits_all_five_components():
     assert result.summary["n_recipients"] == len(_RECIPIENT_IDS)
 
 
-def test_run_imputation_allocates_residual_with_a_two_part_model():
-    """The residual to the official total is allocated per household, not flat."""
+def test_run_imputation_draws_the_residual_with_a_signed_pmm_model():
+    """The residual to the official total is drawn by the signed PMM model."""
     result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
-    assert result.summary["residual_model"] == "two_part"
+    assert result.summary["residual_model"] == "signed_pmm"
 
 
 def test_training_residual_deflates_to_the_target_wave():

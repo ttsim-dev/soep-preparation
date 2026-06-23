@@ -1,22 +1,25 @@
-"""Residual model: a two-part allocator for the unmodelled-components residual.
+"""Residual model: a signed matching score for the unmodelled-components residual.
 
-The five SOEP-Core wealth components leave a residual to the official household total --
-chiefly business assets and other real estate, which appear only inside the total and
-are highly concentrated (most households hold none). A single linear fit smears that
-mass across every household, inflating the middle of the distribution and manufacturing
-spurious negatives. Instead, model it like a wealth component: a logistic incidence
-model for *whether* a household holds unmodelled wealth (a positive residual), times an
-asinh-scaled amount model for *how much*. The expected residual `P(owns) * amount` is
-clipped at zero, so the allocation stays non-negative and concentrated where the
-covariates predict it.
+The residual to the official total -- chiefly business and other real estate, net of any
+omitted liabilities -- is *signed* (negative where modelled wealth meets or exceeds the
+total) and concentrated. This fits an asinh-scaled linear regression on the signed
+residual to produce a matching score. The residual itself is not plugged in
+deterministically; it is drawn by predictive mean matching from observed donor residuals
+in the simulation (`simulate_household_totals`), which preserves the sign and the
+empirical distribution, avoids retransformation bias, and lets the residual contribute
+genuine spread to the bands rather than a fixed shift.
 """
 
 from dataclasses import dataclass
 
 import numpy as np
+import pandas as pd
+from sklearn.linear_model import LinearRegression
 
-from soep_preparation.wealth_imputation.amount_model import AmountModel
-from soep_preparation.wealth_imputation.ownership_model import OwnershipModel
+from soep_preparation.wealth_imputation.transforms import (
+    asinh_scaled,
+    inverse_asinh_scaled,
+)
 
 
 def _fail_if_features_invalid(features: np.ndarray) -> None:
@@ -46,57 +49,47 @@ def _fail_if_training_data_invalid(features: np.ndarray, residual: np.ndarray) -
 
 @dataclass(frozen=True)
 class ResidualModel:
-    """A fitted two-part model of the signed unmodelled-components residual."""
+    """A fitted signed matching-score model for the residual, with its asinh scale."""
 
-    ownership: OwnershipModel
-    """Logistic model for `P(residual > 0)` -- holding any unmodelled wealth."""
-    amount: AmountModel
-    """Asinh-scaled amount model fitted on the positive residuals only."""
+    estimator: LinearRegression
+    """The fitted linear regression on the asinh-scaled signed residual."""
+    scale: float
+    """The positive, finite scale used in the asinh transform."""
 
     @classmethod
-    def fit(
-        cls, features: np.ndarray, residual: np.ndarray, *, seed: int
-    ) -> ResidualModel:
-        """Fit the incidence and amount parts on the signed training residual.
-
-        A household with a positive residual is treated as holding unmodelled wealth;
-        the amount part is fitted on those positive residuals only. Non-positive
-        residuals (fit noise, where modelled wealth meets or exceeds the total) inform
-        the incidence part as non-owners but do not enter the amount fit.
+    def fit(cls, features: np.ndarray, residual: np.ndarray) -> ResidualModel:
+        """Fit the signed matching-score model on the training residual.
 
         Args:
             features: Design matrix, shape `(n_rows, n_features)`, all finite.
-            residual: Signed euro residual per row (`official - modelled`), all finite,
-                with both positive and non-positive values present.
-            seed: Random seed for the incidence model's solver.
+            residual: Signed euro residual per row (`official - modelled`), all finite.
 
         Returns:
             A fitted `ResidualModel`.
 
         Raises:
-            ValueError: On invalid shapes / lengths / non-finite inputs, or a residual
-                without both owners and non-owners.
+            ValueError: On invalid shapes, mismatched lengths, or non-finite inputs.
         """
         _fail_if_training_data_invalid(features, residual)
-        owns = residual > 0.0
-        ownership = OwnershipModel.fit(features, owns.astype("int64"), seed=seed)
-        positive = residual[owns]
-        scale = float(np.median(positive)) if positive.size else 1.0
-        amount = AmountModel.fit(features[owns], positive, scale=scale)
-        return cls(ownership=ownership, amount=amount)
+        magnitude = float(np.median(np.abs(residual)))
+        scale = magnitude if magnitude > 0.0 else 1.0
+        target = asinh_scaled(pd.Series(residual), scale).to_numpy()
+        estimator = LinearRegression()
+        estimator.fit(features, target)
+        return cls(estimator=estimator, scale=scale)
 
     def predict(self, features: np.ndarray) -> np.ndarray:
-        """Return the expected non-negative residual `P(owns) * amount` per row.
+        """Return the predicted signed residual (matching score) per row as float64.
 
         Args:
             features: Design matrix with the same column layout used in `fit`.
 
         Returns:
-            Expected signed euro residuals clipped at zero, shape `(n_rows,)`.
+            Predicted signed euro residuals, shape `(n_rows,)`.
 
         Raises:
             ValueError: On a non-2-D design matrix or non-finite features.
         """
         _fail_if_features_invalid(features)
-        expected = self.ownership.probability(features) * self.amount.predict(features)
-        return np.clip(expected, 0.0, None).astype("float64")
+        transformed = self.estimator.predict(features)
+        return inverse_asinh_scaled(pd.Series(transformed), self.scale).to_numpy()

@@ -1,9 +1,15 @@
-"""Annual asset-class index levels for cross-wave donor deflation.
+"""Annual asset-class index levels for cross-wave donor scaling.
 
-Donors observed in an earlier wealth wave understate 2022 values when asset prices
-ran ahead of consumer prices, so the donor pool is brought to 2022 terms with
+Donors observed in an earlier wealth wave understate 2022 values when asset prices ran
+ahead of consumer prices, so the donor pool is scaled to 2022 terms with
 component-appropriate indices rather than a uniform CPI. Index levels are base 100 in
 2000.
+
+These mappings (financial -> MSCI World, pension -> REX bonds, property -> BIS house
+prices, residual -> a property/equity blend) are **modelling assumptions, not deflation
+identities**: a household's component need not track its proxy index, so each is a
+sensitivity choice that should be compared against CPI / no-scaling alternatives, not
+treated as a known transformation.
 
 Sources:
 - MSCI World and REX (5-year German government bonds): annual series provided by

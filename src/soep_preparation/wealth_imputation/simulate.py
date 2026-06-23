@@ -21,10 +21,30 @@ import pandas as pd
 
 from soep_preparation.wealth_imputation.aggregate import household_net_total
 from soep_preparation.wealth_imputation.components import CanonicalComponent
+from soep_preparation.wealth_imputation.donors import pmm_draw
 from soep_preparation.wealth_imputation.intervals import household_total_intervals
 from soep_preparation.wealth_imputation.value_generator import draw_component
 
 _RECIPIENT_KEYS = ("p_id", "hh_id", "survey_year")
+
+
+@dataclass(frozen=True)
+class ResidualDrawConfig:
+    """Inputs for drawing the signed unmodelled-components residual per recipient.
+
+    The residual is drawn by predictive mean matching on the signed matching score, so
+    it preserves the empirical sign and distribution of the donor residuals and adds
+    genuine spread to the household total across draws.
+    """
+
+    recipient_predicted: np.ndarray
+    """Predicted signed residual (matching score) per recipient."""
+    donor_predicted: np.ndarray
+    """Predicted signed residual (matching score) per donor."""
+    donor_observed: np.ndarray
+    """Observed signed (deflated) residual per donor."""
+    k: int
+    """Number of nearest eligible donors to sample from (>= 1)."""
 
 
 @dataclass(frozen=True)
@@ -49,15 +69,16 @@ class ComponentDrawConfig:
     """Number of nearest eligible donors to sample from (>= 1)."""
 
 
-def simulate_household_totals(
+def simulate_household_totals(  # noqa: PLR0913 -- keyword-only simulation knobs
     recipients: pd.DataFrame,
     configs: Sequence[ComponentDrawConfig],
     *,
     n_draws: int,
     rng: np.random.Generator,
     level: float = 0.9,
+    residual_config: ResidualDrawConfig | None = None,
 ) -> pd.DataFrame:
-    """Simulate household net-wealth totals and summarise them as intervals.
+    """Simulate household net-wealth totals and summarise them as donor-spread bands.
 
     Args:
         recipients: Columns `p_id`, `hh_id`, `survey_year`; one row per recipient,
@@ -65,7 +86,9 @@ def simulate_household_totals(
         configs: One `ComponentDrawConfig` per modelled component.
         n_draws: Number of complete joint draws (>= 1).
         rng: NumPy random generator threaded through all draws.
-        level: Central coverage of the reported interval.
+        level: Central level of the reported donor-spread band.
+        residual_config: If given, the signed unmodelled-components residual is drawn by
+            PMM each draw and added to the total, so its spread enters the band.
 
     Returns:
         Columns `hh_id`, `survey_year`, `point_estimate`, `lower`, `upper` (float64).
@@ -100,6 +123,25 @@ def simulate_household_totals(
         totals = household_net_total(per_draw).rename(
             columns={"net_total": "household_total_draw"}
         )
+        if residual_config is not None:
+            residual_result = pmm_draw(
+                residual_config.recipient_predicted,
+                residual_config.donor_predicted,
+                residual_config.donor_observed,
+                residual_config.k,
+                rng,
+            )
+            drawn_residual = residual_result.values  # noqa: PD011 -- PmmResult, not Series
+            residual_frame = keys[["hh_id", "survey_year"]].assign(
+                residual_draw=drawn_residual
+            )
+            totals = totals.merge(
+                residual_frame, on=["hh_id", "survey_year"], how="left"
+            )
+            totals["household_total_draw"] = (
+                totals["household_total_draw"] + totals["residual_draw"]
+            )
+            totals = totals.drop(columns="residual_draw")
         draw_frames.append(totals)
     all_draws = pd.concat(draw_frames, ignore_index=True)
     return household_total_intervals(all_draws, level=level)

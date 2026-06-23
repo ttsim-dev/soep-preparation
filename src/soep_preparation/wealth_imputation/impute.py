@@ -1,11 +1,21 @@
 """Run the provisional 2022 household-wealth imputation end to end.
 
+This is a **historical-model synthetic projection**, not an edit-and-impute of the 2022
+wealth wave: it does not ingest a raw 2022 wealth-answer module, preserves no observed
+2022 cell, and predicts every 2022 household from the 2002-2017 completed waves plus
+2022 covariates. Where the raw 2022 answers become available they should anchor the
+donor pool and be preserved; until then `summary["uses_observed_2022_answers"]` is
+`False`.
+
 Targets are bias-free household component totals: the joint components (property,
 financial, vehicles) come from the DIW-aggregated `hwealth` file (correctly
 share-summed), and the person-direct components (insurances, consumer debt) -- which
 have no ownership share and so are absent from the household file -- are summed from
-person `pwealth` across members, which is unbiased. The five components plus a residual
-to the official total reconstruct net wealth. The pipeline composes the tested blocks:
+person `pwealth` across members, which is unbiased for fully-represented households (the
+partial-unit-nonresponse caveat is in `_household_person_direct`). Property enters gross
+with a separate mortgage liability; together with financial, vehicles, pension, and
+consumer debt -- plus a residual to the official total -- they reconstruct net wealth.
+The pipeline composes the tested blocks:
 
 1. assemble the person feature matrix, attach each person's lagged prior-wave wealth,
    and represent each household by its oldest member (`select_household_heads`);
@@ -14,16 +24,18 @@ to the official total reconstruct net wealth. The pipeline composes the tested b
    on continuous + one-hot categorical predictors, with cross-wave donor values
    deflated to 2022 terms by asset-class indices (MSCI -> financial, BIS house prices
    -> property, REX bonds -> insurances);
-4. simulate joint draws into household net-total intervals, shifted by a per-household
-   residual to the official total -- a two-part model (logistic incidence times an
-   asinh amount model, clipped at zero) allocates the unmodelled business /
-   other-real-estate mass to the households whose covariates predict it, keeping it
-   concentrated rather than smeared across every household.
+4. simulate joint draws into household net-total bands; within each draw the signed
+   unmodelled-components residual (business / other real estate, net of omitted
+   liabilities) is drawn by PMM from observed donor residuals, matched on a signed
+   asinh score, so it preserves sign and the empirical distribution and contributes
+   spread to the band rather than a deterministic shift. The residual is provisional
+   (a single-wave fit) and flagged as a sensitivity term in the summary.
 
-Documented approximations: vehicles and consumer-debt donors are not deflated (no
-asset index); the residual is deflated to 2022 by a property/equity blend
-(`RESIDUAL_INDEX`) standing in for its business and other-real-estate mass; implicate
-`a` is the representative value; household property is taken net of mortgage.
+Documented approximations: vehicles, mortgage, and consumer-debt donors are not
+deflated (nominal / no asset index); the residual is deflated to 2022 by a
+property/equity blend (`RESIDUAL_INDEX`) standing in for its business and
+other-real-estate mass; implicate `a` is the representative value; property enters
+gross with the mortgage as a separate liability, so net equity is rebuilt per draw.
 """
 
 from collections.abc import Mapping, Sequence
@@ -52,7 +64,10 @@ from soep_preparation.wealth_imputation.market_indices import (
     REX_BOND_INDEX,
 )
 from soep_preparation.wealth_imputation.residual_model import ResidualModel
-from soep_preparation.wealth_imputation.simulate import simulate_household_totals
+from soep_preparation.wealth_imputation.simulate import (
+    ResidualDrawConfig,
+    simulate_household_totals,
+)
 from soep_preparation.wealth_imputation.training import (
     build_component_config,
     fit_component_models,
@@ -75,8 +90,12 @@ _LAG_SOURCE_COLUMNS = (
 )
 
 # Joint components taken from the DIW-aggregated household file (correctly
-# share-summed). Net property folds in the mortgage.
-_HW_PROPERTY = "hh_net_property_value_primary_residence_a"
+# share-summed). Property enters gross (appreciated by the house-price index) with the
+# mortgage carried as a separate nominal liability, so net equity = gross - mortgage is
+# rebuilt inside each draw rather than scaling the mortgage by house prices.
+_HW_PROPERTY_GROSS = "hh_property_value_primary_residence_a"
+_HW_PROPERTY_NET = "hh_net_property_value_primary_residence_a"
+_HW_MORTGAGE = "hh_owner_occupied_mortgage_a"  # derived: gross - net property value
 _HW_FINANCIAL = "hh_financial_assets_value_a"
 _HW_VEHICLES = "hh_vehicles_value_a"
 
@@ -90,7 +109,8 @@ _PERSON_DIRECT_SOURCE = {
 
 # Each component's target column and the asset-class index used to deflate its donors.
 _COMPONENT_COLUMNS: dict[CanonicalComponent, str] = {
-    CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: _HW_PROPERTY,
+    CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: _HW_PROPERTY_GROSS,
+    CanonicalComponent.OWNER_OCCUPIED_MORTGAGE: _HW_MORTGAGE,
     CanonicalComponent.FINANCIAL_ASSETS: _HW_FINANCIAL,
     CanonicalComponent.VEHICLES: _HW_VEHICLES,
     CanonicalComponent.PRIVATE_PENSION: "hh_private_insurances_value_a",
@@ -98,6 +118,7 @@ _COMPONENT_COLUMNS: dict[CanonicalComponent, str] = {
 }
 _COMPONENT_INDEX: dict[CanonicalComponent, Mapping[int, float] | None] = {
     CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS: HOUSE_PRICE_INDEX,
+    CanonicalComponent.OWNER_OCCUPIED_MORTGAGE: None,  # nominal debt balance
     CanonicalComponent.FINANCIAL_ASSETS: MSCI_WORLD_INDEX,
     CanonicalComponent.VEHICLES: None,  # depreciating; no asset index
     CanonicalComponent.PRIVATE_PENSION: REX_BOND_INDEX,
@@ -213,46 +234,44 @@ def run_imputation(
         msg = "No wealth component could be fit on the historical waves."
         raise ValueError(msg)
 
+    have_total, residual = _training_residual(
+        training, used, target_year=_PREDICTION_WAVE
+    )
+    residual_config = None
+    residual_model_kind = "none"
+    mean_residual = 0.0
+    if len(have_total) >= _MIN_TRAINING_ROWS:
+        residual_design = encode_features(
+            have_total, continuous_columns=continuous_columns, encoder=encoder
+        )
+        model = ResidualModel.fit(residual_design, residual)
+        recipient_predicted = model.predict(recipient_design)
+        residual_config = ResidualDrawConfig(
+            recipient_predicted=recipient_predicted,
+            donor_predicted=model.predict(residual_design),
+            donor_observed=residual,
+            k=min(k, residual.size),
+        )
+        residual_model_kind = "signed_pmm"
+        mean_residual = float(recipient_predicted.mean())
+
     intervals = simulate_household_totals(
         recipient_keys,
         configs,
         n_draws=n_draws,
         rng=np.random.default_rng(seed),
         level=level,
+        residual_config=residual_config,
     )
-    have_total, residual = _training_residual(
-        training, used, target_year=_PREDICTION_WAVE
-    )
-    residual_owners = int((residual > 0.0).sum())
-    if (
-        len(have_total) >= _MIN_TRAINING_ROWS
-        and _MIN_OWNERS <= residual_owners < residual.size
-    ):
-        residual_design = encode_features(
-            have_total, continuous_columns=continuous_columns, encoder=encoder
-        )
-        recipient_residual = ResidualModel.fit(
-            residual_design, residual, seed=seed
-        ).predict(recipient_design)
-        residual_model_kind = "two_part"
-    else:
-        flat = float(np.mean(residual)) if residual.size else 0.0
-        recipient_residual = np.full(len(recipients), flat, dtype="float64")
-        residual_model_kind = "flat"
-    residual_frame = recipients[_HH_KEYS].assign(applied_residual=recipient_residual)
-    intervals = intervals.merge(
-        residual_frame, on=_HH_KEYS, how="left", validate="one_to_one"
-    )
-    for column in ("point_estimate", "lower", "upper"):
-        intervals[column] = intervals[column] + intervals["applied_residual"]
-    intervals = intervals.drop(columns="applied_residual")
     summary = {
         "n_recipients": len(recipient_keys),
         "n_training_heads": len(training),
         "components_used": [component.value for component in used],
         "components_skipped": skipped,
         "residual_model": residual_model_kind,
-        "mean_residual": float(np.mean(recipient_residual)),
+        "residual_is_sensitivity": True,
+        "uses_observed_2022_answers": False,
+        "mean_residual": mean_residual,
         "n_draws": n_draws,
         "k": k,
         "level": level,
@@ -270,8 +289,18 @@ def _household_heads(modules: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
     with_lag = features.merge(lagged, on=["p_id", "survey_year"], how="left")
     heads = select_household_heads(with_lag)
     household_wealth = modules["hwealth"][
-        [*_HH_KEYS, _HW_PROPERTY, _HW_FINANCIAL, _HW_VEHICLES, _OFFICIAL_TOTAL_COLUMN]
-    ]
+        [
+            *_HH_KEYS,
+            _HW_PROPERTY_GROSS,
+            _HW_PROPERTY_NET,
+            _HW_FINANCIAL,
+            _HW_VEHICLES,
+            _OFFICIAL_TOTAL_COLUMN,
+        ]
+    ].copy()
+    gross = pd.to_numeric(household_wealth[_HW_PROPERTY_GROSS], errors="coerce")
+    net = pd.to_numeric(household_wealth[_HW_PROPERTY_NET], errors="coerce")
+    household_wealth[_HW_MORTGAGE] = (gross - net).clip(lower=0.0)
     heads = heads.merge(household_wealth, on=_HH_KEYS, how="left")
     return heads.merge(_household_person_direct(pwealth), on=_HH_KEYS, how="left")
 
@@ -279,8 +308,12 @@ def _household_heads(modules: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
 def _household_person_direct(pwealth: pd.DataFrame) -> pd.DataFrame:
     """Sum person-direct components (insurances, consumer debt) to the household.
 
-    These have no ownership share, so a plain member sum is the correct household
-    total -- there is no joint-ownership double-counting to worry about.
+    These have no ownership share, so a plain member sum avoids the joint-ownership
+    double-counting that plagues the joint components. The sum is unbiased **only for
+    households whose eligible adults are all represented** in person `pwealth`: under
+    partial unit nonresponse (an adult lacking an individual wealth response) the member
+    sum omits that person's holdings, which then surface unpredictably in the residual.
+    A proper fix needs an eligible-adult roster and component-level PUNR completion.
     """
     aggregation = {
         target: (source, "sum") for target, source in _PERSON_DIRECT_SOURCE.items()

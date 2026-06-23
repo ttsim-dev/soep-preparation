@@ -2,8 +2,10 @@
 
 A donor observed in wave `w` is scaled by `index[target] / index[w]` so the pre-2022
 donor pool reflects 2022 price levels for its component (equities, bonds, ...). This
-removes the downward bias a uniform CPI leaves when asset prices outpaced consumer
-prices. Fails closed on a donor wave absent from the index.
+reduces the downward bias a uniform CPI leaves when asset prices outpaced consumer
+prices. The per-component index is a **sensitivity assumption, not an identity** (a
+household's holding need not track the proxy index); see `market_indices`. Fails closed
+on a donor wave absent from the index.
 """
 
 from collections.abc import Mapping, Sequence

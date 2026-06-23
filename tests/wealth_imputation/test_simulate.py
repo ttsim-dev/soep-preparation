@@ -7,6 +7,7 @@ import pytest
 from soep_preparation.wealth_imputation.components import CanonicalComponent
 from soep_preparation.wealth_imputation.simulate import (
     ComponentDrawConfig,
+    ResidualDrawConfig,
     simulate_household_totals,
 )
 
@@ -38,6 +39,24 @@ def test_simulate_household_totals_point_estimate_equals_sole_donor_value():
         rng=np.random.default_rng(seed=0),
     )
     np.testing.assert_allclose(result["point_estimate"].to_numpy(), [100.0], atol=1e-6)
+
+
+def test_simulate_household_totals_adds_the_drawn_residual():
+    """A residual config whose sole donor holds 500 shifts every total by 500."""
+    residual = ResidualDrawConfig(
+        recipient_predicted=np.array([500.0]),
+        donor_predicted=np.array([500.0]),
+        donor_observed=np.array([500.0]),
+        k=1,
+    )
+    result = simulate_household_totals(
+        _one_person_household(),
+        [_financial_config()],
+        n_draws=3,
+        rng=np.random.default_rng(seed=0),
+        residual_config=residual,
+    )
+    np.testing.assert_allclose(result["point_estimate"].to_numpy(), [600.0], atol=1e-6)
 
 
 def _two_person_household() -> pd.DataFrame:
