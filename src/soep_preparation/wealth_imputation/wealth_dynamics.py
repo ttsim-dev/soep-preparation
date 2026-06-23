@@ -56,8 +56,14 @@ def gini(values: np.ndarray) -> float:
     mean = float(array.mean())
     if not np.isfinite(mean) or mean <= 0.0:
         return float("nan")
-    absolute_differences = np.abs(array[:, None] - array[None, :]).sum()
-    return float(absolute_differences / (2.0 * array.size**2 * mean))
+    # sum_ij |x_i - x_j| = 2 * sum_i (2i - n - 1) x_(i) for x sorted ascending, so the
+    # Gini is computed in O(n log n) without ever materialising the n-by-n difference
+    # matrix (which would exhaust memory at survey scale).
+    sorted_values = np.sort(array)
+    count = array.size
+    rank = np.arange(1, count + 1)
+    weighted_sum = float(np.sum((2 * rank - count - 1) * sorted_values))
+    return weighted_sum / (count**2 * mean)
 
 
 def top_share(values: np.ndarray, *, top_fraction: float) -> float:
@@ -190,16 +196,20 @@ def build_dynamics_report(
         A nested, disclosure-safe dict with `metadata`, `distribution` (per wave) and
         `transitions` (per `"from->to"` horizon).
     """
+    available = [
+        wave for wave in waves if bool((household_wealth["survey_year"] == wave).any())
+    ]
+    without_data = [wave for wave in waves if wave not in available]
     distribution = {
         str(wave): wave_distribution_summary(
             household_wealth.loc[
                 household_wealth["survey_year"] == wave, "net_wealth"
             ].to_numpy(dtype="float64")
         )
-        for wave in waves
+        for wave in available
     }
     person_rank = _person_quintile_ranks(
-        household_wealth, roster, waves=waves, n_groups=n_groups
+        household_wealth, roster, waves=available, n_groups=n_groups
     )
     transitions = {
         f"{wave_from}->{wave_to}": _horizon_transition(
@@ -210,6 +220,7 @@ def build_dynamics_report(
             min_cell=min_cell,
         )
         for wave_from, wave_to in pairwise(waves)
+        if wave_from in available and wave_to in available
     }
     return {
         "metadata": {
@@ -220,6 +231,7 @@ def build_dynamics_report(
             "n_groups": n_groups,
             "min_cell": min_cell,
             "waves": list(waves),
+            "waves_without_data": without_data,
         },
         "distribution": distribution,
         "transitions": transitions,

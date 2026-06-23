@@ -25,6 +25,11 @@ def test_gini_for_one_holder_is_n_minus_one_over_n():
     assert gini(np.array([0.0, 0.0, 0.0, 100.0])) == pytest.approx(0.75)
 
 
+def test_gini_matches_the_hand_computed_value_for_a_small_ladder():
+    """The Gini of 1,2,3,4 is 0.25 by the mean-absolute-difference definition."""
+    assert gini(np.array([1.0, 2.0, 3.0, 4.0])) == pytest.approx(0.25)
+
+
 def test_top_share_returns_fraction_held_by_the_top_group():
     """The top 10% of 1..10 is the single value 10, i.e. 10/55 of the total."""
     values = np.arange(1.0, 11.0)
@@ -54,6 +59,24 @@ def test_transition_probabilities_normalise_each_row_to_one():
     counts = np.array([[3, 1], [0, 4]], dtype="float64")
     probabilities = transition_probabilities(counts)
     np.testing.assert_allclose(probabilities.sum(axis=1), [1.0, 1.0])
+
+
+def test_build_dynamics_report_skips_waves_without_data():
+    """A wave with no households is recorded and omitted, not raised on."""
+    households = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 3, 4],
+            "survey_year": [2017, 2017, 2017, 2017],
+            "net_wealth": [10.0, 20.0, 30.0, 40.0],
+        }
+    )
+    roster = pd.DataFrame(
+        {"p_id": [1, 2, 3, 4], "hh_id": [1, 2, 3, 4], "survey_year": [2017] * 4}
+    )
+    report = build_dynamics_report(
+        households, roster, waves=(2012, 2017), n_groups=2, min_cell=1
+    )
+    assert report["metadata"]["waves_without_data"] == [2012]
 
 
 def test_build_dynamics_report_covers_every_wave_and_horizon():
