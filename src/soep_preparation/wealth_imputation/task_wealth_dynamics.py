@@ -6,6 +6,12 @@ person-household roster), plus the imputed 2022 intervals produced by the imputa
 task, and writes a single JSON of aggregates -- per-wave distribution statistics and
 quintile transition matrices across the four 5-year horizons. No row-level value leaves
 the secure environment.
+
+The actual waves are ranked on `hh_net_overall_wealth_a` (SOEP `w011h`), the net overall
+wealth populated in every wealth wave. The vehicle/student-loan-augmented total
+(`n011h`) that the imputation targets exists only from 2017, so it cannot anchor a
+cross-wave comparison. The imputed 2022 leg is on that augmented concept; the difference
+(vehicles plus student loans) is negligible for quintile ranking and small for levels.
 """
 
 import json
@@ -21,7 +27,6 @@ from soep_preparation.config import (
     RUN_WEALTH_IMPUTATION,
     SRC,
 )
-from soep_preparation.wealth_imputation.impute import _OFFICIAL_TOTAL_COLUMN
 from soep_preparation.wealth_imputation.wealth_dynamics import build_dynamics_report
 
 # Actual wealth-module waves carried by `hwealth`; 2022 is appended from the imputation.
@@ -31,11 +36,14 @@ _WAVES = (*_ACTUAL_WAVES, _IMPUTED_WAVE)
 _N_GROUPS = 5
 _MIN_CELL = 30
 
+# Cross-wave-consistent net overall wealth, present in every wealth wave.
+_CROSS_WAVE_TOTAL_COLUMN = "hh_net_overall_wealth_a"
+
 _DYNAMICS_MODULES = ("hwealth", "ppathl")
 _WEALTH_SRC = SRC / "wealth_imputation"
 _SOURCE_DEPENDENCIES: tuple[Path, ...] = (
     _WEALTH_SRC / "wealth_dynamics.py",
-    _WEALTH_SRC / "impute.py",
+    _WEALTH_SRC / "task_wealth_dynamics.py",
 )
 _IMPUTED_INTERVALS = BLD / "wealth_imputation" / "household_wealth_2022.arrow"
 
@@ -47,9 +55,9 @@ def _assemble_household_wealth(
     actual = (
         hwealth.loc[
             hwealth["survey_year"].isin(_ACTUAL_WAVES),
-            ["hh_id", "survey_year", _OFFICIAL_TOTAL_COLUMN],
+            ["hh_id", "survey_year", _CROSS_WAVE_TOTAL_COLUMN],
         ]
-        .rename(columns={_OFFICIAL_TOTAL_COLUMN: "net_wealth"})
+        .rename(columns={_CROSS_WAVE_TOTAL_COLUMN: "net_wealth"})
         .dropna(subset=["net_wealth"])
     )
     proxy = imputed[["hh_id", "survey_year", "point_estimate"]].rename(
