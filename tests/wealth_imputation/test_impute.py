@@ -4,7 +4,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from soep_preparation.wealth_imputation.impute import run_imputation
+from soep_preparation.wealth_imputation.components import CanonicalComponent
+from soep_preparation.wealth_imputation.impute import (
+    _OFFICIAL_TOTAL_COLUMN,
+    _training_residual,
+    run_imputation,
+)
+from soep_preparation.wealth_imputation.market_indices import RESIDUAL_INDEX
 
 _TRAIN_IDS = list(range(1, 11))  # ten 2017 training households (one person each)
 _RECIPIENT_IDS = [101, 102, 103]  # three 2022 recipient households
@@ -162,6 +168,22 @@ def test_run_imputation_allocates_residual_with_an_ols_model():
     """The residual to the official total is modelled per household, not flat."""
     result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
     assert result.summary["residual_model"] == "ols"
+
+
+def test_training_residual_deflates_to_the_target_wave():
+    """The signed residual to the official total is brought into target-wave terms."""
+    training = pd.DataFrame(
+        {
+            "survey_year": [2012, 2012],
+            "hh_vehicles_value_a": [10000.0, 0.0],
+            _OFFICIAL_TOTAL_COLUMN: [30000.0, 5000.0],
+        }
+    )
+    _, residual = _training_residual(
+        training, [CanonicalComponent.VEHICLES], target_year=2022
+    )
+    factor = RESIDUAL_INDEX[2022] / RESIDUAL_INDEX[2012]
+    np.testing.assert_allclose(residual, np.array([20000.0, 5000.0]) * factor)
 
 
 def test_run_imputation_raises_without_recipients():

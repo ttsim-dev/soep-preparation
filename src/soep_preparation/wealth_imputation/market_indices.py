@@ -75,6 +75,17 @@ REX_BOND_INDEX: MappingProxyType[int, float] = MappingProxyType(
     }
 )
 
+_BASE_YEAR = 2000
+_REBASE_LEVEL = 100.0
+_RESIDUAL_PROPERTY_WEIGHT = 0.5
+
+
+def _rebased(index: MappingProxyType[int, float]) -> dict[int, float]:
+    """Rescale an index so its base-year level is `_REBASE_LEVEL`."""
+    base = index[_BASE_YEAR]
+    return {year: level / base * _REBASE_LEVEL for year, level in index.items()}
+
+
 HOUSE_PRICE_INDEX: MappingProxyType[int, float] = MappingProxyType(
     {
         2000: 101.37,
@@ -102,5 +113,20 @@ HOUSE_PRICE_INDEX: MappingProxyType[int, float] = MappingProxyType(
         2022: 192.22,
         2023: 176.03,
         2024: 173.35,
+    }
+)
+
+# The residual to the official total is chiefly business assets and other real estate.
+# Lacking a separate series for either, deflate it by an equal-weight blend of the
+# property and equity indices (other real estate ~ house prices; business ~ equities),
+# each rebased to a common base year so the 50/50 weighting is economic, not an artefact
+# of the legs' different base years. The weight is a rough default, easily adjusted.
+_HOUSE_REBASED = _rebased(HOUSE_PRICE_INDEX)
+_MSCI_REBASED = _rebased(MSCI_WORLD_INDEX)
+RESIDUAL_INDEX: MappingProxyType[int, float] = MappingProxyType(
+    {
+        year: _RESIDUAL_PROPERTY_WEIGHT * _HOUSE_REBASED[year]
+        + (1.0 - _RESIDUAL_PROPERTY_WEIGHT) * _MSCI_REBASED[year]
+        for year in sorted(set(_HOUSE_REBASED) & set(_MSCI_REBASED))
     }
 )

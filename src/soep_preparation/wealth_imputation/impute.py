@@ -20,8 +20,9 @@ to the official total reconstruct net wealth. The pipeline composes the tested b
    predict it, rather than spreading the population mean uniformly.
 
 Documented approximations: vehicles and consumer-debt donors are not deflated (no
-asset index); the residual is modelled in nominal euros (no within-2022 deflation);
-implicate `a` is the representative value; household property is taken net of mortgage.
+asset index); the residual is deflated to 2022 by a property/equity blend
+(`RESIDUAL_INDEX`) standing in for its business and other-real-estate mass; implicate
+`a` is the representative value; household property is taken net of mortgage.
 """
 
 from collections.abc import Mapping, Sequence
@@ -46,6 +47,7 @@ from soep_preparation.wealth_imputation.features import (
 from soep_preparation.wealth_imputation.market_indices import (
     HOUSE_PRICE_INDEX,
     MSCI_WORLD_INDEX,
+    RESIDUAL_INDEX,
     REX_BOND_INDEX,
 )
 from soep_preparation.wealth_imputation.residual_model import ResidualModel
@@ -207,7 +209,9 @@ def run_imputation(
         rng=np.random.default_rng(seed),
         level=level,
     )
-    have_total, residual = _training_residual(training, used)
+    have_total, residual = _training_residual(
+        training, used, target_year=_PREDICTION_WAVE
+    )
     if len(have_total) >= _MIN_TRAINING_ROWS:
         residual_design = encode_features(
             have_total, continuous_columns=continuous_columns, encoder=encoder
@@ -270,14 +274,21 @@ def _household_person_direct(pwealth: pd.DataFrame) -> pd.DataFrame:
 
 
 def _training_residual(
-    training: pd.DataFrame, used: Sequence[CanonicalComponent]
+    training: pd.DataFrame,
+    used: Sequence[CanonicalComponent],
+    *,
+    target_year: int,
 ) -> tuple[pd.DataFrame, np.ndarray]:
-    """Return training heads with an official total and their signed residual to it.
+    """Return training heads with an official total and their residual, in 2022 terms.
 
     The residual is `official_net_total - sum(component_sign * modelled_component)`
     over the fitted components, kept in euros and signed (negative when modelled wealth
-    exceeds the official total). Rows whose residual is non-finite are dropped so the
-    frame and the residual array stay aligned for `ResidualModel.fit`.
+    exceeds the official total). It is deflated from each household's wave into
+    `target_year` terms by `RESIDUAL_INDEX` -- a property/equity blend standing in for
+    the unmodelled business and other-real-estate mass -- so the time component is
+    explicit rather than absorbed into the OLS coefficients. Rows whose residual is
+    non-finite are dropped so the frame and the residual array stay aligned for
+    `ResidualModel.fit`.
     """
     have_total = training.dropna(subset=[_OFFICIAL_TOTAL_COLUMN])
     if have_total.empty:
@@ -295,4 +306,11 @@ def _training_residual(
     ).to_numpy(dtype="float64")
     residual = official - modelled
     finite = np.isfinite(residual)
-    return have_total[finite], residual[finite]
+    have_total = have_total[finite]
+    deflated = deflate_donor_values(
+        residual[finite],
+        have_total["survey_year"].tolist(),
+        index_by_year=RESIDUAL_INDEX,
+        target_year=target_year,
+    )
+    return have_total, deflated

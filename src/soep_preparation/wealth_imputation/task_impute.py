@@ -43,6 +43,7 @@ _SOURCE_DEPENDENCIES: tuple[Path, ...] = (
     _WEALTH_SRC / "intervals.py",
     _WEALTH_SRC / "ownership_model.py",
     _WEALTH_SRC / "amount_model.py",
+    _WEALTH_SRC / "residual_model.py",
     _WEALTH_SRC / "transforms.py",
     _WEALTH_SRC / "deflation.py",
     _WEALTH_SRC / "market_indices.py",
