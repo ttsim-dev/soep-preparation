@@ -15,9 +15,10 @@ to the official total reconstruct net wealth. The pipeline composes the tested b
    deflated to 2022 terms by asset-class indices (MSCI -> financial, BIS house prices
    -> property, REX bonds -> insurances);
 4. simulate joint draws into household net-total intervals, shifted by a per-household
-   residual to the official total -- an OLS model on the design allocates the
-   unmodelled business / other-real-estate mass to the households whose covariates
-   predict it, rather than spreading the population mean uniformly.
+   residual to the official total -- a two-part model (logistic incidence times an
+   asinh amount model, clipped at zero) allocates the unmodelled business /
+   other-real-estate mass to the households whose covariates predict it, keeping it
+   concentrated rather than smeared across every household.
 
 Documented approximations: vehicles and consumer-debt donors are not deflated (no
 asset index); the residual is deflated to 2022 by a property/equity blend
@@ -212,14 +213,18 @@ def run_imputation(
     have_total, residual = _training_residual(
         training, used, target_year=_PREDICTION_WAVE
     )
-    if len(have_total) >= _MIN_TRAINING_ROWS:
+    residual_owners = int((residual > 0.0).sum())
+    if (
+        len(have_total) >= _MIN_TRAINING_ROWS
+        and _MIN_OWNERS <= residual_owners < residual.size
+    ):
         residual_design = encode_features(
             have_total, continuous_columns=continuous_columns, encoder=encoder
         )
-        recipient_residual = ResidualModel.fit(residual_design, residual).predict(
-            recipient_design
-        )
-        residual_model_kind = "ols"
+        recipient_residual = ResidualModel.fit(
+            residual_design, residual, seed=seed
+        ).predict(recipient_design)
+        residual_model_kind = "two_part"
     else:
         flat = float(np.mean(residual)) if residual.size else 0.0
         recipient_residual = np.full(len(recipients), flat, dtype="float64")
