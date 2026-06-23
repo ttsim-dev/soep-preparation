@@ -108,7 +108,14 @@ _OFFICIAL_TOTAL_COLUMN = "hh_net_overall_wealth_including_vehicles_and_student_l
 
 @dataclass(frozen=True)
 class ImputationResult:
-    """The 2022 household-wealth intervals and a disclosure-safe run summary."""
+    """The 2022 household-wealth point estimates with donor-spread bands and a summary.
+
+    The `lower`/`upper` bounds are **conditional donor-randomisation spreads**, not
+    calibrated predictive intervals: they reflect ownership/PMM draw variability only,
+    holding the fitted models, the single wealth implicate, and the residual fixed, and
+    carry no modelled cross-component covariance. Treat them as a lower bound on
+    predictive uncertainty.
+    """
 
     intervals: pd.DataFrame
     """Columns `hh_id`, `survey_year`, `point_estimate`, `lower`, `upper`."""
@@ -124,7 +131,7 @@ def run_imputation(
     k: int,
     level: float = 0.9,
 ) -> ImputationResult:
-    """Impute 2022 household net wealth as donor-based intervals.
+    """Impute 2022 household net wealth as point estimates with donor-spread bands.
 
     Args:
         modules: Cleaned `MODULES` frames; must include `pwealth`, `hwealth`, and the
@@ -132,7 +139,8 @@ def run_imputation(
         n_draws: Number of complete joint draws.
         seed: Seed for model fitting and the draw RNG.
         k: Nearest-donor count for PMM (clipped to each component's owner count).
-        level: Central coverage of the reported intervals.
+        level: Central level of the reported donor-spread bands (not calibrated
+            coverage).
 
     Returns:
         An `ImputationResult` with the 2022 intervals and a run summary.
@@ -154,7 +162,9 @@ def run_imputation(
         msg = "No 2022 recipients found; cannot impute the prediction wave."
         raise ValueError(msg)
 
-    encoder = fit_categorical_encoder(training, categorical_columns)
+    encoder = fit_categorical_encoder(
+        training, categorical_columns, continuous_columns=continuous_columns
+    )
     recipient_design = encode_features(
         recipients, continuous_columns=continuous_columns, encoder=encoder
     )

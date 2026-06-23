@@ -113,12 +113,23 @@ def select_household_heads(frame: pd.DataFrame) -> pd.DataFrame:
     ).reset_index(drop=True)
 
 
-def encode_design_matrix(frame: pd.DataFrame, columns: Sequence[str]) -> np.ndarray:
+def encode_design_matrix(
+    frame: pd.DataFrame,
+    columns: Sequence[str],
+    *,
+    medians: Mapping[str, float] | None = None,
+) -> np.ndarray:
     """Return a float64 design matrix, filling missing values with column medians.
+
+    When `medians` is supplied (the training medians carried by a fitted encoder), each
+    column's missing values are filled with the *training* median, so a recipient frame
+    and a training subset assign the same numeric meaning to a missing covariate. When
+    it is not supplied, the per-frame median is used as a fallback for standalone use.
 
     Args:
         frame: Source frame containing every name in `columns`.
         columns: Predictor columns to encode, in order.
+        medians: Optional training median per column.
 
     Returns:
         A `(len(frame), len(columns))` float64 array; an all-missing column becomes
@@ -127,7 +138,12 @@ def encode_design_matrix(frame: pd.DataFrame, columns: Sequence[str]) -> np.ndar
     encoded = []
     for column in columns:
         values = pd.to_numeric(frame[column], errors="coerce").to_numpy(dtype="float64")
-        median = np.nanmedian(values) if np.any(~np.isnan(values)) else 0.0
+        if medians is not None and column in medians:
+            median = medians[column]
+        elif np.any(~np.isnan(values)):
+            median = float(np.nanmedian(values))
+        else:
+            median = 0.0
         encoded.append(np.where(np.isnan(values), median, values))
     if not encoded:
         return np.empty((len(frame), 0), dtype="float64")
@@ -136,29 +152,46 @@ def encode_design_matrix(frame: pd.DataFrame, columns: Sequence[str]) -> np.ndar
 
 @dataclass(frozen=True)
 class CategoricalEncoder:
-    """Fixed categories per column, learned from training, for stable one-hot width."""
+    """Fixed training statistics for stable one-hot width and consistent NA filling."""
 
     categories: Mapping[str, tuple[str, ...]]
     """Column name -> the sorted distinct training categories."""
+    continuous_medians: Mapping[str, float] = MappingProxyType({})
+    """Continuous column name -> its training median, used to fill missing values."""
 
 
 def fit_categorical_encoder(
-    frame: pd.DataFrame, columns: Sequence[str]
+    frame: pd.DataFrame,
+    columns: Sequence[str],
+    *,
+    continuous_columns: Sequence[str] = (),
 ) -> CategoricalEncoder:
-    """Record the sorted distinct categories of each column for later encoding.
+    """Record fixed training categories and continuous medians for later encoding.
 
     Args:
         frame: Training frame containing every name in `columns`.
         columns: Categorical predictor columns.
+        continuous_columns: Continuous predictor columns whose training median is
+            stored so recipients are filled with the training (not their own) median.
 
     Returns:
-        A `CategoricalEncoder` with one fixed category tuple per column.
+        A `CategoricalEncoder` with one fixed category tuple per categorical column and
+        one training median per continuous column.
     """
     categories = {
         column: tuple(sorted(frame[column].dropna().astype(str).unique()))
         for column in columns
     }
-    return CategoricalEncoder(categories=MappingProxyType(categories))
+    medians = {}
+    for column in continuous_columns:
+        values = pd.to_numeric(frame[column], errors="coerce").to_numpy(dtype="float64")
+        medians[column] = (
+            float(np.nanmedian(values)) if np.any(~np.isnan(values)) else 0.0
+        )
+    return CategoricalEncoder(
+        categories=MappingProxyType(categories),
+        continuous_medians=MappingProxyType(medians),
+    )
 
 
 def encode_features(
@@ -183,7 +216,11 @@ def encode_features(
     """
     blocks = []
     if continuous_columns:
-        blocks.append(encode_design_matrix(frame, continuous_columns))
+        blocks.append(
+            encode_design_matrix(
+                frame, continuous_columns, medians=encoder.continuous_medians
+            )
+        )
     for column, levels in encoder.categories.items():
         as_string = frame[column].astype(str)
         blocks.extend(

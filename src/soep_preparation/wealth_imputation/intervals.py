@@ -1,11 +1,15 @@
-"""Assemble household-total intervals from the joint-draw distribution.
+"""Assemble household-total donor-spread bands from the joint-draw distribution.
 
-Each draw is one complete joint draw already aggregated to the household total, so an
-interval is the empirical spread of those totals -- the median as point estimate and
-the central-`level` quantiles as bounds. Intervals are formed on the household-total
-distribution directly; component interval endpoints are **never** summed, which would
-ignore the cross-component dependence carried in each joint draw. Quantiles run in
-`float64` and the helper fails closed on invalid input.
+Each draw is one complete joint draw already aggregated to the household total, so a
+band is the empirical spread of those totals -- the median as point estimate and the
+central-`level` quantiles as bounds. Bands are formed on the household-total
+distribution directly; component band endpoints are **never** summed.
+
+These are **conditional donor-randomisation spreads**, not calibrated predictive
+intervals: they capture ownership/PMM draw variability holding the fitted models,
+implicate, and residual fixed, and the components carry no modelled cross-component
+covariance (only shared-covariate dependence). Quantiles run in `float64` and the
+helper fails closed on invalid input.
 """
 
 import numpy as np

@@ -36,6 +36,14 @@ def test_top_share_returns_fraction_held_by_the_top_group():
     assert top_share(values, top_fraction=0.1) == pytest.approx(10.0 / 55.0)
 
 
+def test_quintile_ranks_assign_tied_values_the_same_rank_regardless_of_order():
+    """Equal wealth values get identical quintiles, so row order cannot move them."""
+    values = [0.0, 0.0, 0.0, 0.0, 5.0]
+    forward = quintile_ranks(pd.Series(values), n_groups=5)
+    reverse = quintile_ranks(pd.Series(values[::-1]), n_groups=5)
+    assert forward.tolist() == reverse.tolist()[::-1]
+
+
 def test_quintile_ranks_split_a_uniform_range_evenly():
     """Ten evenly spaced values fall two-per-quintile, ranked 1..5."""
     ranks = quintile_ranks(pd.Series(np.arange(1.0, 11.0)), n_groups=5)

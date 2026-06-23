@@ -1,10 +1,15 @@
-"""Joint-draw simulation of household wealth totals with intervals.
+"""Joint-draw simulation of household wealth totals with donor-spread bands.
 
 Each draw runs every component's sequential `draw_component`, sums the signed
 person-component values to a household net total, and the spread of those totals
-across draws becomes the interval. Because each draw aggregates a *complete* joint
-draw before the spread is taken, cross-component dependence is preserved -- component
-interval endpoints are never summed. One shared RNG threads all draws so a fixed seed
+across draws becomes the band. Summing within each draw before taking the spread is
+the correct way to aggregate -- component band endpoints are never summed.
+
+The resulting bands are **conditional donor-randomisation spreads**, not calibrated
+predictive intervals: given the fitted models and covariates, the components are drawn
+independently (the only cross-component dependence is through shared covariates, not a
+modelled component covariance), and the draws hold the fitted models, the chosen
+implicate, and the residual fixed. One shared RNG threads all draws so a fixed seed
 reproduces the whole simulation.
 """
 

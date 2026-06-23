@@ -94,20 +94,24 @@ def top_share(values: np.ndarray, *, top_fraction: float) -> float:
 
 
 def quintile_ranks(values: pd.Series, *, n_groups: int = 5) -> pd.Series:
-    """Rank values into `n_groups` equal-count groups, labelled 1 (lowest) upward.
+    """Rank values into `n_groups` groups, labelled 1 (lowest) upward, ties shared.
 
-    Ties at a quantile boundary are absorbed by dropping duplicate edges, so the number
-    of distinct ranks may be below `n_groups` on heavily-tied data.
+    Each value's group is `ceil(n_groups * percentile_rank)` using the *average* rank
+    of ties, so identical wealth values always receive the identical group, independent
+    of row order. Heavy ties (e.g. many households at exactly zero) therefore land
+    together in one group rather than being split across a boundary by position -- the
+    alternative would manufacture mobility between waves from row order alone.
 
     Args:
         values: Net-wealth values to rank.
-        n_groups: Number of equal-count groups.
+        n_groups: Number of groups (5 for quintiles).
 
     Returns:
-        Integer ranks aligned to `values.index`.
+        Integer ranks in `1..n_groups`, aligned to `values.index`.
     """
-    ranked = pd.qcut(values.rank(method="first"), n_groups, labels=False)
-    return (ranked + 1).astype("int64")
+    percentile = values.rank(method="average", pct=True)
+    group = np.ceil(percentile * n_groups).clip(lower=1, upper=n_groups)
+    return group.astype("int64")
 
 
 def transition_counts(
@@ -232,6 +236,13 @@ def build_dynamics_report(
             "min_cell": min_cell,
             "waves": list(waves),
             "waves_without_data": without_data,
+            "caveats": [
+                "unweighted: no SOEP design/longitudinal weights applied",
+                "not a population trend: sample composition and refresh samples vary "
+                "by wave",
+                "the imputed wave is a proxy; transitions into it are attenuated by "
+                "regression to the mean",
+            ],
         },
         "distribution": distribution,
         "transitions": transitions,

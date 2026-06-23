@@ -32,6 +32,15 @@ def test_encode_features_one_hot_encodes_against_fixed_categories():
     np.testing.assert_allclose(matrix, [[3.0, 0.0, 1.0], [4.0, 0.0, 0.0]], atol=1e-6)
 
 
+def test_encode_features_fills_missing_with_the_training_median():
+    """A missing recipient covariate is filled with the training median, not its own."""
+    train = pd.DataFrame({"x": [10.0, 20.0, 30.0], "g": ["a", "a", "a"]})
+    encoder = fit_categorical_encoder(train, ["g"], continuous_columns=["x"])
+    recipients = pd.DataFrame({"x": [np.nan], "g": ["a"]})
+    matrix = encode_features(recipients, continuous_columns=["x"], encoder=encoder)
+    np.testing.assert_allclose(matrix[0, 0], train["x"].median())
+
+
 def test_encode_features_gives_train_and_recipients_the_same_width():
     """Train and recipient matrices share column layout for model compatibility."""
     train = pd.DataFrame({"x": [1.0, 2.0, 3.0], "g": ["a", "b", "a"]})
