@@ -245,15 +245,16 @@ def run_imputation(
             have_total, continuous_columns=continuous_columns, encoder=encoder
         )
         model = ResidualModel.fit(residual_design, residual)
-        recipient_predicted = model.predict(recipient_design)
         residual_config = ResidualDrawConfig(
-            recipient_predicted=recipient_predicted,
+            recipient_predicted=model.predict(recipient_design),
             donor_predicted=model.predict(residual_design),
             donor_observed=residual,
             k=min(k, residual.size),
         )
         residual_model_kind = "signed_pmm"
-        mean_residual = float(recipient_predicted.mean())
+        # The drawn residual comes from this donor pool, so its mean is the
+        # representative contribution (the matching score itself is not in euros).
+        mean_residual = float(np.mean(residual))
 
     intervals = simulate_household_totals(
         recipient_keys,

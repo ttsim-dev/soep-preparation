@@ -16,10 +16,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 
-from soep_preparation.wealth_imputation.transforms import (
-    asinh_scaled,
-    inverse_asinh_scaled,
-)
+from soep_preparation.wealth_imputation.transforms import asinh_scaled
 
 
 def _fail_if_features_invalid(features: np.ndarray) -> None:
@@ -79,17 +76,22 @@ class ResidualModel:
         return cls(estimator=estimator, scale=scale)
 
     def predict(self, features: np.ndarray) -> np.ndarray:
-        """Return the predicted signed residual (matching score) per row as float64.
+        """Return the asinh-scale matching score per row as float64.
+
+        The score is the linear prediction on the `asinh`-transformed axis, used only to
+        rank donors for PMM. It is intentionally *not* back-transformed with `sinh`:
+        PMM draws the observed (euro) donor residual, and `sinh` of an extrapolated
+        linear prediction overflows, which would corrupt both the score ordering and any
+        summary built from it.
 
         Args:
             features: Design matrix with the same column layout used in `fit`.
 
         Returns:
-            Predicted signed euro residuals, shape `(n_rows,)`.
+            Matching scores on the asinh axis, shape `(n_rows,)`.
 
         Raises:
             ValueError: On a non-2-D design matrix or non-finite features.
         """
         _fail_if_features_invalid(features)
-        transformed = self.estimator.predict(features)
-        return inverse_asinh_scaled(pd.Series(transformed), self.scale).to_numpy()
+        return self.estimator.predict(features).astype("float64")
