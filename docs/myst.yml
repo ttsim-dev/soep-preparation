@@ -18,6 +18,7 @@ project:
     - file: creating_a_dataset.md
     - file: extending.md
     - file: naming_conventions.md
+    - file: using_with_gettsim.md
     - file: variables.md
   error_rules:
     - rule: link-resolves
