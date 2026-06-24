@@ -23,8 +23,16 @@ from soep_preparation.config import (
 from soep_preparation.wealth_imputation.probe import (
     assemble_probe_report,
     inventory_columns,
+    probe_wealth_wave_population,
 )
 from soep_preparation.wealth_imputation.registry_content import REGISTRY_ENTRIES
+
+# Wealth files and waves whose 2022 population/imputation status we confirm: the wealth
+# module is fielded every ~5 years; 2017 is a known multiply-imputed reference, 2019 and
+# 2022 are the recent waves whose content (populated? imputed implicates b-e, or raw `a`
+# only?) the no-data rule otherwise hides.
+_WEALTH_POPULATION_FILES = ("pwealth", "hwealth")
+_WEALTH_POPULATION_YEARS = (2017, 2019, 2022)
 
 # Source files to inventory so columns are chosen against the real V41 names.
 # Covariates (ppathl, pgen, pequiv, pl, hgen, hl) plus hwealth, to confirm the
@@ -94,3 +102,28 @@ if RUN_WEALTH_IMPUTATION:
         feature_columns_path.write_text(
             json.dumps(feature_columns, indent=2), encoding="utf-8"
         )
+
+    def task_wealth_imputation_wealth_population(
+        data_inputs: Annotated[dict[str, pd.DataFrame], _DATA_INPUTS],
+        source_dependencies: tuple[Path, ...] = _SOURCE_DEPENDENCIES,
+        population_path: Annotated[Path, Product] = BLD
+        / "wealth_imputation"
+        / "milestone_0_wealth_population.json",
+    ) -> None:
+        """Write disclosure-safe non-null counts for the recent wealth waves.
+
+        Confirms whether the 2022 wealth module in V41 is populated and whether it is
+        multiply imputed (implicates `b`-`e` filled) or raw-only (`a` with item-NR
+        holes), by counting non-null wealth cells per source file and survey year. Only
+        aggregate counts leave the secure environment.
+        """
+        wealth_frames = {
+            name: frame
+            for name, frame in data_inputs.items()
+            if name in _WEALTH_POPULATION_FILES
+        }
+        population = probe_wealth_wave_population(
+            wealth_frames, years=_WEALTH_POPULATION_YEARS
+        )
+        population_path.parent.mkdir(parents=True, exist_ok=True)
+        population_path.write_text(json.dumps(population, indent=2), encoding="utf-8")

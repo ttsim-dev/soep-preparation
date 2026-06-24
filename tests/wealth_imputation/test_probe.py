@@ -1,9 +1,12 @@
 import json
 
+import pandas as pd
+
 from soep_preparation.wealth_imputation.components import CanonicalComponent
 from soep_preparation.wealth_imputation.probe import (
     assemble_probe_report,
     inventory_columns,
+    probe_wealth_wave_population,
 )
 from soep_preparation.wealth_imputation.registry import (
     AggregationRule,
@@ -93,3 +96,31 @@ def test_assemble_probe_report_lists_only_wealth_pattern_columns():
     available = {"pwealth": frozenset({"p0100a", "p10000", "pid", "syear", "comment"})}
     report = assemble_probe_report([_entry("p0100a", required=True)], available)
     assert report["observed_columns"] == {"pwealth": ["p0100a", "p10000"]}
+
+
+def _wealth_frame() -> pd.DataFrame:
+    """Raw-style wealth frame: implicate `a` populated, `b` empty (raw, not imputed)."""
+    return pd.DataFrame(
+        {
+            "syear": [2017, 2017, 2022, 2022],
+            "p0100a": [100.0, None, 200.0, 300.0],
+            "p0100b": [110.0, 120.0, None, None],
+            "notwealth": [1, 2, 3, 4],
+        }
+    )
+
+
+def test_probe_wealth_wave_population_counts_non_null_in_the_target_year():
+    """The probe counts non-null wealth cells per source and survey year."""
+    frame = _wealth_frame()
+    report = probe_wealth_wave_population({"pwealth": frame}, years=(2017, 2022))
+    expected = int(frame.query("syear == 2022")["p0100a"].notna().sum())
+    assert report["pwealth"]["2022"]["wealth_columns_non_null"]["p0100a"] == expected
+
+
+def test_probe_wealth_wave_population_flags_an_empty_implicate():
+    """An implicate empty in the target year reads as zero (raw, not imputed)."""
+    report = probe_wealth_wave_population(
+        {"pwealth": _wealth_frame()}, years=(2017, 2022)
+    )
+    assert report["pwealth"]["2022"]["wealth_columns_non_null"]["p0100b"] == 0

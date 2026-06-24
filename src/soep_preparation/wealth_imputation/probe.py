@@ -8,10 +8,14 @@ from logs/artifacts under the no-data-access rule.
 import re
 from collections.abc import Mapping, Sequence
 
+import pandas as pd
+
 from soep_preparation.wealth_imputation.registry import (
     VerificationStatus,
     WealthVariable,
 )
+
+_YEAR_COLUMN = "syear"
 
 # DIW generated wealth variables: a single component letter, four or five digits,
 # and an optional implicate suffix `a`-`e` (e.g. `p0100a`, `p0010a`, `w0101a`,
@@ -39,6 +43,51 @@ def inventory_columns(
         source_file: sorted(columns)
         for source_file, columns in available_columns.items()
     }
+
+
+def probe_wealth_wave_population(
+    frames: Mapping[str, pd.DataFrame], *, years: Sequence[int]
+) -> dict:
+    """Count populated wealth cells per source file and survey year.
+
+    Answers two questions the column-presence probe cannot: whether a wealth wave (e.g.
+    2022) actually carries values, and whether it is multiply imputed or raw-only. For
+    each wealth-pattern column the non-null count is reported per year; comparing the
+    implicate `a` count with the `b`-`e` counts distinguishes a DIW multiply-imputed
+    wave (all implicates populated) from raw answers (only `a`, with item-NR holes).
+
+    Disclosure-safe: only aggregate counts and row totals are returned, never a
+    row-level value.
+
+    Args:
+        frames: Source-file name -> raw frame (must carry a `syear` column to split by
+            year; a frame without it reports zero rows for every year).
+        years: Survey years to report.
+
+    Returns:
+        Source-file name -> `{str(year): {"n_rows": int, "wealth_columns_non_null":
+        {column: int}}}`.
+    """
+    report = {}
+    for source_file, frame in frames.items():
+        wealth_columns = sorted(
+            column
+            for column in frame.columns
+            if _WEALTH_COLUMN_PATTERN.fullmatch(column)
+        )
+        has_year = _YEAR_COLUMN in frame.columns
+        per_year = {}
+        for year in years:
+            subset = frame[frame[_YEAR_COLUMN] == year] if has_year else frame.iloc[:0]
+            per_year[str(year)] = {
+                "n_rows": len(subset),
+                "wealth_columns_non_null": {
+                    column: int(subset[column].notna().sum())
+                    for column in wealth_columns
+                },
+            }
+        report[source_file] = per_year
+    return report
 
 
 def assemble_probe_report(
