@@ -30,22 +30,15 @@ def _number_of_months_employed(
     data: pd.DataFrame,
 ) -> pd.Series:
     months = range(1, 13)
-    kinds = ["ft", "pt", "minijob"]
 
     # Per-month: employed if any of the types has a category in [0,1]
-    employed = pd.concat(
-        [
-            pd.concat(
-                [
-                    data[f"{kind}_employed_m_{month}"].cat.codes.between(0, 1)
-                    for kind in kinds
-                ],
-                axis=1,
-            ).any(axis=1)
-            for month in months
-        ],
-        axis=1,
-    )
+    employed_per_month = [
+        data[f"ft_employed_m_{month}"].cat.codes.between(0, 1)
+        | data[f"pt_employed_m_{month}"].cat.codes.between(0, 1)
+        | data[f"minijob_employed_m_{month}"].cat.codes.between(0, 1)
+        for month in months
+    ]
+    employed = pd.concat(employed_per_month, axis=1)
 
     # Compute per-month non-missingness
     nonmissing = pd.concat(
