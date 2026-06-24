@@ -104,12 +104,20 @@ metadata `reference` field:
 
 ### Recipe: build `ryear` / `rmonth`
 
+The `add_reference_columns` helper turns `survey_year` into the reference year and month,
+with the January→December rollover for `previous_month`:
+
 ```python
+from soep_preparation.utilities.reference_period import add_reference_columns
+
 # `reference` for a variable comes from variable_to_metadata_mapping.yaml.
-if reference == "previous_year":
-    df["ryear"] = df["survey_year"] - 1
-elif reference == "current":
-    df["ryear"] = df["survey_year"]
+periods = add_reference_columns(
+    survey_year=df["survey_year"],
+    reference="previous_year",  # or "current" / "previous_month" / "time_invariant"
+    interview_month=df["month_interview"],  # only needed for "previous_month"
+)
+df["ryear"] = periods["ryear"]
+df["rmonth"] = periods["rmonth"]
 # Then merge on `ryear` (e.g. to align income to its calendar year for GETTSIM) or keep
 # `survey_year` — your choice.
 ```
