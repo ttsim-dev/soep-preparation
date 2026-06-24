@@ -261,7 +261,46 @@ def _fail_if_stale_module_entries(module_names: Iterable[str]) -> None:
     raise FileNotFoundError(msg)
 
 
-def _fail_if_mapping_changed(  # noqa: C901
+def _metadata_field_change_messages(
+    new_metadata: dict[str, Any],
+    existing_metadata: dict[str, Any],
+) -> list[str]:
+    """Describe every metadata field that differs between two variable entries.
+
+    Compares all fields generically so a change to any field — including ones
+    added to the schema later — trips the gate. `dtype` and `survey_years` get
+    tailored messages; every other field reports its before/after values.
+
+    Args:
+        new_metadata: The newly generated metadata for one variable.
+        existing_metadata: The committed metadata for the same variable.
+
+    Returns:
+        One human-readable message per differing field.
+    """
+    messages = []
+    for field in sorted(set(new_metadata) | set(existing_metadata)):
+        new_value = new_metadata.get(field)
+        existing_value = existing_metadata.get(field)
+        if new_value == existing_value:
+            continue
+        if field == "survey_years":
+            old_years = set(existing_value or [])
+            new_years = set(new_value or [])
+            added_years = sorted(new_years - old_years)
+            removed_years = sorted(old_years - new_years)
+            if added_years:
+                messages.append(f"  - new survey years: {added_years}")
+            if removed_years:
+                messages.append(f"  - removed survey years: {removed_years}")
+        elif field == "dtype":
+            messages.append(f"  - dtype changed from {existing_value} to {new_value}")
+        else:
+            messages.append(f"  - {field} changed from {existing_value} to {new_value}")
+    return messages
+
+
+def _fail_if_mapping_changed(
     new_mapping: dict[str, Any],
     existing_mapping: dict[str, Any],
     new_mapping_path: Path,
@@ -282,22 +321,12 @@ def _fail_if_mapping_changed(  # noqa: C901
             )
         elif metadata != existing_mapping[variable]:
             existing_metadata = existing_mapping[variable]
-
-            if metadata["dtype"] != existing_metadata["dtype"]:
-                error_messages.append(
-                    f"  - dtype changed from {existing_metadata['dtype']} "
-                    f"to {metadata['dtype']}"
+            error_messages.extend(
+                _metadata_field_change_messages(
+                    new_metadata=metadata,
+                    existing_metadata=existing_metadata,
                 )
-
-            if metadata["survey_years"] != existing_metadata["survey_years"]:
-                old_years = set(existing_metadata["survey_years"] or [])
-                new_years = set(metadata["survey_years"] or [])
-                added_years = sorted(new_years - old_years)
-                removed_years = sorted(old_years - new_years)
-                if added_years:
-                    error_messages.append(f"  - new survey years: {added_years}")
-                if removed_years:
-                    error_messages.append(f"  - removed survey years: {removed_years}")
+            )
 
         if error_messages:
             variables_with_errors[variable] = {
