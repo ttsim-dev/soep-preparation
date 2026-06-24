@@ -27,7 +27,10 @@ from soep_preparation.config import (
     RUN_WEALTH_IMPUTATION,
     SRC,
 )
-from soep_preparation.wealth_imputation.wealth_dynamics import build_dynamics_report
+from soep_preparation.wealth_imputation.wealth_dynamics import (
+    build_dynamics_report,
+    mean_draw_distribution,
+)
 
 # Actual wealth-module waves carried by `hwealth`; 2022 is appended from the imputation.
 _ACTUAL_WAVES = (2002, 2007, 2012, 2017)
@@ -46,6 +49,7 @@ _SOURCE_DEPENDENCIES: tuple[Path, ...] = (
     _WEALTH_SRC / "task_wealth_dynamics.py",
 )
 _IMPUTED_INTERVALS = BLD / "wealth_imputation" / "household_wealth_2022.arrow"
+_IMPUTED_SUMMARY = BLD / "wealth_imputation" / "imputation_summary.json"
 
 
 def _assemble_household_wealth(
@@ -74,6 +78,7 @@ if RUN_WEALTH_IMPUTATION:
     def task_wealth_imputation_dynamics(
         modules: Annotated[dict[str, pd.DataFrame], _MODULE_INPUTS],
         imputed_intervals: Path = _IMPUTED_INTERVALS,
+        imputed_summary: Path = _IMPUTED_SUMMARY,
         source_dependencies: tuple[Path, ...] = _SOURCE_DEPENDENCIES,
         report_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
@@ -84,18 +89,28 @@ if RUN_WEALTH_IMPUTATION:
         Args:
             modules: Injected cleaned `hwealth` and `ppathl` frames.
             imputed_intervals: The imputation task's per-household 2022 intervals.
+            imputed_summary: The imputation summary; its `distribution_across_draws`
+                supplies the draw-level 2022 distribution (the per-household medians in
+                `imputed_intervals` would erase the zero/negative mass).
             source_dependencies: First-party modules whose edits re-run the task.
             report_path: Output JSON of the disclosure-safe dynamics report.
         """
         imputed = pd.read_feather(imputed_intervals)
         household_wealth = _assemble_household_wealth(modules["hwealth"], imputed)
         roster = modules["ppathl"][["p_id", "hh_id", "survey_year"]]
+        summary = json.loads(imputed_summary.read_text(encoding="utf-8"))
+        overrides = {
+            _IMPUTED_WAVE: mean_draw_distribution(
+                summary["distribution_across_draws"], n=int(summary["n_recipients"])
+            )
+        }
         report = build_dynamics_report(
             household_wealth,
             roster,
             waves=_WAVES,
             n_groups=_N_GROUPS,
             min_cell=_MIN_CELL,
+            distribution_overrides=overrides,
         )
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")

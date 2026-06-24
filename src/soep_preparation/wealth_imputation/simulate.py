@@ -69,16 +69,15 @@ class ComponentDrawConfig:
     """Number of nearest eligible donors to sample from (>= 1)."""
 
 
-def simulate_household_totals(  # noqa: PLR0913 -- keyword-only simulation knobs
+def simulate_household_total_draws(
     recipients: pd.DataFrame,
     configs: Sequence[ComponentDrawConfig],
     *,
     n_draws: int,
     rng: np.random.Generator,
-    level: float = 0.9,
     residual_config: ResidualDrawConfig | None = None,
 ) -> pd.DataFrame:
-    """Simulate household net-wealth totals and summarise them as donor-spread bands.
+    """Simulate the complete joint draws of household net-wealth totals.
 
     Args:
         recipients: Columns `p_id`, `hh_id`, `survey_year`; one row per recipient,
@@ -86,12 +85,13 @@ def simulate_household_totals(  # noqa: PLR0913 -- keyword-only simulation knobs
         configs: One `ComponentDrawConfig` per modelled component.
         n_draws: Number of complete joint draws (>= 1).
         rng: NumPy random generator threaded through all draws.
-        level: Central level of the reported donor-spread band.
         residual_config: If given, the signed unmodelled-components residual is drawn by
-            PMM each draw and added to the total, so its spread enters the band.
+            PMM each draw and added to the total, so its spread enters the draws.
 
     Returns:
-        Columns `hh_id`, `survey_year`, `point_estimate`, `lower`, `upper` (float64).
+        Columns `hh_id`, `survey_year`, `household_total_draw` (float64); `n_draws` rows
+        per household, one per complete draw. Draw membership is the within-household
+        row order, as `distribution_across_draws` expects.
 
     Raises:
         ValueError: On missing recipient keys, no configs, `n_draws < 1`, or a config
@@ -143,8 +143,51 @@ def simulate_household_totals(  # noqa: PLR0913 -- keyword-only simulation knobs
             )
             totals = totals.drop(columns="residual_draw")
         draw_frames.append(totals)
-    all_draws = pd.concat(draw_frames, ignore_index=True)
-    return household_total_intervals(all_draws, level=level)
+    return pd.concat(draw_frames, ignore_index=True)
+
+
+def simulate_household_totals(  # noqa: PLR0913 -- keyword-only simulation knobs
+    recipients: pd.DataFrame,
+    configs: Sequence[ComponentDrawConfig],
+    *,
+    n_draws: int,
+    rng: np.random.Generator,
+    level: float = 0.9,
+    residual_config: ResidualDrawConfig | None = None,
+) -> pd.DataFrame:
+    """Simulate household net-wealth totals and summarise them as donor-spread bands.
+
+    A thin wrapper over `simulate_household_total_draws` that collapses the complete
+    joint draws to per-household point estimates and central-`level` bands. Use
+    `simulate_household_total_draws` directly when the predictive distribution across
+    draws is needed (`distribution_across_draws`), since the cross-section of these
+    per-household medians is not that distribution.
+
+    Args:
+        recipients: Columns `p_id`, `hh_id`, `survey_year`; one row per recipient,
+            aligned to every config's per-recipient arrays.
+        configs: One `ComponentDrawConfig` per modelled component.
+        n_draws: Number of complete joint draws (>= 1).
+        rng: NumPy random generator threaded through all draws.
+        level: Central level of the reported donor-spread band.
+        residual_config: If given, the signed unmodelled-components residual is drawn by
+            PMM each draw and added to the total, so its spread enters the band.
+
+    Returns:
+        Columns `hh_id`, `survey_year`, `point_estimate`, `lower`, `upper` (float64).
+
+    Raises:
+        ValueError: On missing recipient keys, no configs, `n_draws < 1`, or a config
+            whose arrays do not align with the recipients.
+    """
+    draws = simulate_household_total_draws(
+        recipients,
+        configs,
+        n_draws=n_draws,
+        rng=rng,
+        residual_config=residual_config,
+    )
+    return household_total_intervals(draws, level=level)
 
 
 def _fail_if_simulation_inputs_invalid(

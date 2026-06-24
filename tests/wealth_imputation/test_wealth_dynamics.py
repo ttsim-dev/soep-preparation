@@ -8,12 +8,57 @@ from soep_preparation.wealth_imputation.wealth_dynamics import (
     apply_complementary_suppression,
     build_dynamics_report,
     gini,
+    mean_draw_distribution,
     quintile_ranks,
     top_share,
     transition_counts,
     transition_probabilities,
     wave_distribution_summary,
 )
+
+
+def test_mean_draw_distribution_takes_the_across_draw_mean_of_each_statistic():
+    """Each statistic's across-draw mean lands in a wave-summary-shaped dict."""
+    distribution = {
+        "mean": {"mean": 10.0, "lower": 9.0, "upper": 11.0},
+        "gini": {"mean": 0.5, "lower": 0.4, "upper": 0.6},
+        "top10_share": {"mean": 0.3, "lower": 0.2, "upper": 0.4},
+        "top1_share": {"mean": 0.1, "lower": 0.05, "upper": 0.15},
+        "zero_share": {"mean": 0.2, "lower": 0.1, "upper": 0.3},
+        "negative_share": {"mean": 0.05, "lower": 0.0, "upper": 0.1},
+        **{
+            f"p{p}": {"mean": float(p), "lower": 0.0, "upper": 100.0}
+            for p in (1, 5, 10, 25, 50, 75, 90, 95, 99)
+        },
+    }
+    summary = mean_draw_distribution(distribution, n=42)
+    assert summary["n"] == 42
+    assert summary["gini"] == 0.5
+    assert summary["zero_share"] == 0.2
+    assert summary["quantiles"]["p50"] == 50.0
+
+
+def test_build_dynamics_report_uses_distribution_override_for_the_imputed_wave():
+    """A wave in `distribution_overrides` is reported as-is; others are computed."""
+    households = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 3, 4],
+            "survey_year": [2017, 2017, 2022, 2022],
+            "net_wealth": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+    roster = households[["hh_id", "survey_year"]].assign(p_id=[1, 2, 3, 4])
+    override = {"n": 999, "gini": 0.99}
+    report = build_dynamics_report(
+        households,
+        roster,
+        waves=(2017, 2022),
+        n_groups=2,
+        min_cell=1,
+        distribution_overrides={2022: override},
+    )
+    assert report["distribution"]["2022"] == override
+    assert report["distribution"]["2017"]["n"] == 2
 
 
 def test_gini_is_zero_for_perfect_equality():

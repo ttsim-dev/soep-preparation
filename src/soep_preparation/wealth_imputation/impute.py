@@ -57,6 +57,10 @@ from soep_preparation.wealth_imputation.features import (
     lagged_wealth,
     select_household_heads,
 )
+from soep_preparation.wealth_imputation.intervals import (
+    distribution_across_draws,
+    household_total_intervals,
+)
 from soep_preparation.wealth_imputation.market_indices import (
     HOUSE_PRICE_INDEX,
     MSCI_WORLD_INDEX,
@@ -66,7 +70,7 @@ from soep_preparation.wealth_imputation.market_indices import (
 from soep_preparation.wealth_imputation.residual_model import ResidualModel
 from soep_preparation.wealth_imputation.simulate import (
     ResidualDrawConfig,
-    simulate_household_totals,
+    simulate_household_total_draws,
 )
 from soep_preparation.wealth_imputation.training import (
     build_component_config,
@@ -141,7 +145,9 @@ class ImputationResult:
     intervals: pd.DataFrame
     """Columns `hh_id`, `survey_year`, `point_estimate`, `lower`, `upper`."""
     summary: dict
-    """Counts and choices for the run (no row-level data)."""
+    """Counts and choices for the run, plus `distribution_across_draws` -- the
+    predictive distribution taken across complete draws, not from the per-household
+    medians in `intervals` (no row-level data)."""
 
 
 def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest waves
@@ -264,14 +270,14 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         # representative contribution (the matching score itself is not in euros).
         mean_residual = float(np.mean(residual))
 
-    intervals = simulate_household_totals(
+    draws = simulate_household_total_draws(
         recipient_keys,
         configs,
         n_draws=n_draws,
         rng=np.random.default_rng(seed),
-        level=level,
         residual_config=residual_config,
     )
+    intervals = household_total_intervals(draws, level=level)
     summary = {
         "n_recipients": len(recipient_keys),
         "n_training_heads": len(training),
@@ -284,6 +290,9 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "n_draws": n_draws,
         "k": k,
         "level": level,
+        # Predictive distribution computed WITHIN each complete draw then summarised
+        # across draws -- the per-household medians in `intervals` are not this.
+        "distribution_across_draws": distribution_across_draws(draws, level=level),
     }
     return ImputationResult(intervals=intervals, summary=summary)
 

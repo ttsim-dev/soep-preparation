@@ -174,6 +174,14 @@ def test_run_imputation_fits_all_six_components():
     assert result.summary["n_recipients"] == len(_RECIPIENT_IDS)
 
 
+def test_run_imputation_summary_carries_the_draw_level_distribution():
+    """The summary exposes the predictive distribution across draws, with bands."""
+    result = run_imputation(_synthetic_modules(), n_draws=50, seed=0, k=3)
+    distribution = result.summary["distribution_across_draws"]
+    assert {"gini", "zero_share", "negative_share", "p50"} <= set(distribution)
+    assert set(distribution["gini"]) == {"mean", "lower", "upper"}
+
+
 def test_run_imputation_draws_the_residual_with_a_signed_pmm_model():
     """The residual to the official total is drawn by the signed PMM model."""
     result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)

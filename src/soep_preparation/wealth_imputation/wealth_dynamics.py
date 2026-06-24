@@ -18,7 +18,7 @@ transition into 2022 is attenuated by imputation regression-to-the-mean. The Gin
 the mean-absolute-difference form and can exceed 1 when negative net wealth is present.
 """
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from itertools import pairwise
 
 import numpy as np
@@ -207,13 +207,47 @@ def wave_distribution_summary(values: np.ndarray) -> dict:
     }
 
 
-def build_dynamics_report(
+def mean_draw_distribution(
+    distribution: Mapping[str, Mapping[str, float]], *, n: int
+) -> dict:
+    """Convert a `distribution_across_draws` result to a wave-summary-shaped dict.
+
+    Takes the across-draw mean of each statistic so the imputed wave slots into
+    `build_dynamics_report`'s per-wave `distribution` in the same shape as the observed
+    waves. Discards the across-draw band (the full band lives in the imputation
+    summary); this is the point summary that correctly averages the within-draw
+    zero/negative mass rather than reading it off per-household medians.
+
+    Args:
+        distribution: A `distribution_across_draws` mapping, `{statistic: {mean, lower,
+            upper}}`.
+        n: Household count to record for the wave.
+
+    Returns:
+        A dict shaped like `wave_distribution_summary`'s output.
+    """
+    return {
+        "n": n,
+        "mean": distribution["mean"]["mean"],
+        "quantiles": {
+            name: distribution[name]["mean"] for name in _QUANTILE_PROBABILITIES
+        },
+        "gini": distribution["gini"]["mean"],
+        "top10_share": distribution["top10_share"]["mean"],
+        "top1_share": distribution["top1_share"]["mean"],
+        "negative_share": distribution["negative_share"]["mean"],
+        "zero_share": distribution["zero_share"]["mean"],
+    }
+
+
+def build_dynamics_report(  # noqa: PLR0913 -- keyword-only report knobs
     household_wealth: pd.DataFrame,
     roster: pd.DataFrame,
     *,
     waves: Sequence[int],
     n_groups: int = 5,
     min_cell: int = 30,
+    distribution_overrides: Mapping[int, dict] | None = None,
 ) -> dict:
     """Assemble the per-wave distribution and per-horizon mobility report.
 
@@ -224,17 +258,24 @@ def build_dynamics_report(
         waves: Waves in chronological order; consecutive pairs form the horizons.
         n_groups: Number of mobility groups (5 for quintiles).
         min_cell: Transition cells below this many movers are suppressed to `None`.
+        distribution_overrides: Per-wave distribution summaries to use instead of
+            computing from `net_wealth`. The imputed wave passes its draw-level summary
+            here (statistics averaged across complete draws), since the cross-section of
+            its per-household point estimates would erase the zero/negative mass.
 
     Returns:
         A nested, disclosure-safe dict with `metadata`, `distribution` (per wave) and
         `transitions` (per `"from->to"` horizon).
     """
+    overrides = distribution_overrides or {}
     available = [
         wave for wave in waves if bool((household_wealth["survey_year"] == wave).any())
     ]
     without_data = [wave for wave in waves if wave not in available]
     distribution = {
-        str(wave): wave_distribution_summary(
+        str(wave): overrides[wave]
+        if wave in overrides
+        else wave_distribution_summary(
             household_wealth.loc[
                 household_wealth["survey_year"] == wave, "net_wealth"
             ].to_numpy(dtype="float64")
