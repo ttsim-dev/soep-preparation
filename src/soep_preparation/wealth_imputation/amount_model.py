@@ -1,10 +1,12 @@
 """Amount model: predict component euro amounts via an asinh-scaled regression.
 
 Wraps a scikit-learn `LinearRegression` fitted on the `asinh(y / s_c)`-transformed
-amount, so the heavy right tail of wealth is variance-stabilised during fitting. The
-public `predict` returns euro amounts (the asinh prediction is inverted with the same
-component scale), which feed the PMM matching in `amounts.draw_amounts`. The wrapper is
-a thin, fail-closed boundary; real covariates are wired in the deferred data stage.
+amount, so the heavy right tail of wealth is variance-stabilised during fitting. PMM
+matching consumes `predict_score`, the linear prediction on the asinh axis: matching on
+that axis is what the model fits, and it stays finite where `sinh` of an extrapolated
+prediction would overflow at the support boundary. `predict` back-transforms the score
+to euros with `sinh` and exists only for diagnostics, never as a PMM input. The wrapper
+is a thin, fail-closed boundary; real covariates are wired in the deferred data stage.
 """
 
 from dataclasses import dataclass
@@ -75,8 +77,34 @@ class AmountModel:
         estimator.fit(features, target)
         return cls(estimator=estimator, scale=scale)
 
+    def predict_score(self, features: np.ndarray) -> np.ndarray:
+        """Return the asinh-axis matching score per row as float64.
+
+        The score is the raw linear prediction on the `asinh(y / s_c)` axis the model
+        was fitted on, so PMM matches recipients and donors on the same axis. It is
+        intentionally *not* back-transformed: `sinh` of a far-out-of-support linear
+        prediction overflows, which would corrupt the donor ordering. The PMM draw
+        returns an observed euro value, so no analytic back-transform is ever needed.
+
+        Args:
+            features: Design matrix with the same column layout used in `fit`.
+
+        Returns:
+            Matching scores on the asinh axis, shape `(n_rows,)`.
+
+        Raises:
+            ValueError: On a non-2-D design matrix or non-finite features.
+        """
+        self._fail_if_features_invalid(features)
+        return self.estimator.predict(features).astype("float64")
+
     def predict(self, features: np.ndarray) -> np.ndarray:
-        """Return predicted euro amounts for each row of `features` as float64.
+        """Return back-transformed euro amounts for diagnostics only.
+
+        Inverts the asinh score with `scale * sinh(.)`. This overflows at the
+        extrapolation boundary, so it must never feed PMM matching -- use
+        `predict_score` there. It is retained for human-readable diagnostics within
+        the observed support.
 
         Args:
             features: Design matrix with the same column layout used in `fit`.
@@ -87,11 +115,14 @@ class AmountModel:
         Raises:
             ValueError: On a non-2-D design matrix or non-finite features.
         """
+        transformed = self.predict_score(features)
+        return inverse_asinh_scaled(pd.Series(transformed), self.scale).to_numpy()
+
+    @staticmethod
+    def _fail_if_features_invalid(features: np.ndarray) -> None:
         if features.ndim != 2:  # noqa: PLR2004 -- a design matrix is 2-D by definition
             msg = f"features must be a 2-D design matrix, got {features.ndim}-D."
             raise ValueError(msg)
         if not np.all(np.isfinite(features)):
             msg = "features must be finite (no NaN/inf)."
             raise ValueError(msg)
-        transformed = self.estimator.predict(features)
-        return inverse_asinh_scaled(pd.Series(transformed), self.scale).to_numpy()

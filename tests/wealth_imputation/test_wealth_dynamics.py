@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from soep_preparation.wealth_imputation.wealth_dynamics import (
+    apply_complementary_suppression,
     build_dynamics_report,
     gini,
     quintile_ranks,
@@ -67,6 +68,41 @@ def test_transition_probabilities_normalise_each_row_to_one():
     counts = np.array([[3, 1], [0, 4]], dtype="float64")
     probabilities = transition_probabilities(counts)
     np.testing.assert_allclose(probabilities.sum(axis=1), [1.0, 1.0])
+
+
+def test_complementary_suppression_hides_a_lone_cell_behind_a_second_one():
+    """A single suppressed cell in a row also suppresses one more cell in that row.
+
+    Releasing a count row with exactly one cell blanked leaks it: the row total minus
+    the visible cells recovers it. Suppressing a second cell in any row that has a
+    primary suppression makes the blanked cell unrecoverable from the released counts.
+    """
+    counts = np.array([[100.0, 5.0, 95.0], [50.0, 50.0, 50.0]])
+    primary = counts < 30.0  # only the lone (0, 1) cell
+    secondary = apply_complementary_suppression(counts, primary)
+    assert secondary[0].sum() >= 2  # the lone cell plus a complementary one
+    assert not secondary[1].any()  # an unsuppressed row is left intact
+
+
+def test_complementary_suppression_blanks_probabilities_for_suppressed_rows():
+    """A horizon row with any suppressed count releases no probabilities."""
+    households = pd.DataFrame(
+        {
+            "hh_id": list(range(1, 9)),
+            "survey_year": [2012] * 4 + [2017] * 4,
+            "net_wealth": [1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 100.0],
+        }
+    )
+    roster = households[["hh_id", "survey_year"]].assign(p_id=list(range(1, 9)))
+    report = build_dynamics_report(
+        households, roster, waves=(2012, 2017), n_groups=2, min_cell=2
+    )
+    horizon = report["transitions"]["2012->2017"]
+    for row_counts, row_probs in zip(
+        horizon["counts"], horizon["probabilities"], strict=True
+    ):
+        if any(cell is None for cell in row_counts):
+            assert all(cell is None for cell in row_probs)
 
 
 def test_build_dynamics_report_skips_waves_without_data():

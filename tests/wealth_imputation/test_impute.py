@@ -4,9 +4,15 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from soep_preparation.wealth_imputation import impute
 from soep_preparation.wealth_imputation.components import CanonicalComponent
 from soep_preparation.wealth_imputation.impute import (
+    _HW_FINANCIAL,
+    _HW_MORTGAGE,
+    _HW_PROPERTY_GROSS,
+    _HW_VEHICLES,
     _OFFICIAL_TOTAL_COLUMN,
+    _household_person_direct,
     _training_residual,
     observed_component_total,
     run_imputation,
@@ -198,6 +204,75 @@ def test_observed_component_total_signs_the_modelled_components():
     # + 20000 insurances - 8000 consumer debt.
     expected_total = 300000.0 - 50000.0 + 40000.0 + 12000.0 + 20000.0 - 8000.0
     np.testing.assert_allclose(value, expected_total)
+
+
+def test_all_missing_target_is_excluded_from_observed_truth(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """A household whose every modelled component is missing is not scored as zero.
+
+    The backtest truth roster must hold only genuinely observed households. A household
+    with all components missing carries no observed wealth, so recoding it to zero would
+    inflate the zero mass and the household count of the comparison target.
+    """
+    heads = pd.DataFrame(
+        {
+            "p_id": [1],
+            "hh_id": [20],
+            "survey_year": [2017],
+            _HW_PROPERTY_GROSS: [np.nan],
+            _HW_MORTGAGE: [np.nan],
+            _HW_FINANCIAL: [np.nan],
+            _HW_VEHICLES: [np.nan],
+            "hh_private_insurances_value_a": [np.nan],
+            "hh_consumer_debt_value_a": [np.nan],
+        }
+    )
+    monkeypatch.setattr(impute, "_household_heads", lambda *_: heads)
+    out = observed_component_total({}, 2017)
+    assert 20 not in out["hh_id"].tolist()
+
+
+def test_observed_total_keeps_partially_observed_household(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """Keep a household with at least one observed component, summing that value."""
+    heads = pd.DataFrame(
+        {
+            "p_id": [1],
+            "hh_id": [21],
+            "survey_year": [2017],
+            _HW_PROPERTY_GROSS: [np.nan],
+            _HW_MORTGAGE: [np.nan],
+            _HW_FINANCIAL: [40000.0],
+            _HW_VEHICLES: [np.nan],
+            "hh_private_insurances_value_a": [np.nan],
+            "hh_consumer_debt_value_a": [np.nan],
+        }
+    )
+    monkeypatch.setattr(impute, "_household_heads", lambda *_: heads)
+    out = observed_component_total({}, 2017)
+    value = out.loc[out["hh_id"] == 21, "observed_total"].iloc[0]
+    np.testing.assert_allclose(value, 40000.0)
+
+
+def test_person_direct_all_missing_group_is_not_summed_to_zero():
+    """A household whose members all lack a person-direct value yields NA, not 0.
+
+    Pandas sums an all-missing group to zero, which would confound nonresponse with a
+    genuine structural zero. With `min_count=1`, an all-missing group is `NA`.
+    """
+    pwealth = pd.DataFrame(
+        {
+            "p_id": [1, 2],
+            "hh_id": [50, 50],
+            "survey_year": [2017, 2017],
+            "private_insurances_value_a": [np.nan, np.nan],
+            "consumer_debt_value_a": [np.nan, np.nan],
+        }
+    )
+    out = _household_person_direct(pwealth)
+    assert pd.isna(out.loc[out["hh_id"] == 50, "hh_private_insurances_value_a"].iloc[0])
 
 
 def test_run_imputation_raises_without_recipients():

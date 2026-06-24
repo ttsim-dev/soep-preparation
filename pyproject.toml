@@ -106,10 +106,11 @@ per-file-ignores."src/soep_preparation/config.py" = [
   "E402", # Module-level import not at top of file
 ]
 per-file-ignores."tests/*" = [
-  "ANN201", # Missing return type annotation for public function
-  "D",      # Docstrings
-  "INP001", # Implicit namespace packages
-  "PD011",  # Use of .values (false positives on non-pandas objects)
+  "ANN201",  # Missing return type annotation for public function
+  "D",       # Docstrings
+  "INP001",  # Implicit namespace packages
+  "PD011",   # Use of .values (false positives on non-pandas objects)
+  "PLR2004", # Magic value in comparison (expected results in assertions)
 ]
 per-file-ignores."tests/metadata/test_mapping_changed.py" = [
   "S108", # Hardcoded temporary file path

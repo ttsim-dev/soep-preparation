@@ -148,6 +148,35 @@ def transition_probabilities(counts: np.ndarray) -> np.ndarray:
     return counts / safe_totals
 
 
+def apply_complementary_suppression(
+    counts: np.ndarray, primary: np.ndarray
+) -> np.ndarray:
+    """Extend a primary cell-suppression mask so no hidden cell is recoverable.
+
+    A single suppressed cell in a row leaks: the row total minus the visible cells
+    recovers it. For every row that carries at least one primary suppression, this
+    suppresses the next-smallest still-visible cell until the row hides at least two
+    cells, so a released count row cannot be back-solved. Rows with no primary
+    suppression are left untouched.
+
+    Args:
+        counts: The square count matrix.
+        primary: Boolean mask of cells suppressed by the primary `min_cell` rule.
+
+    Returns:
+        A boolean mask (a superset of `primary`) to apply to the released counts.
+    """
+    mask = primary.copy()
+    for row in range(counts.shape[0]):
+        if not mask[row].any():
+            continue
+        while mask[row].sum() < 2 and not mask[row].all():  # noqa: PLR2004
+            visible = np.where(~mask[row])[0]
+            smallest_visible = visible[np.argmin(counts[row, visible])]
+            mask[row, smallest_visible] = True
+    return mask
+
+
 def wave_distribution_summary(values: np.ndarray) -> dict:
     """Summarise one wave's net-wealth distribution into disclosure-safe scalars.
 
@@ -242,6 +271,10 @@ def build_dynamics_report(
                 "by wave",
                 "the imputed wave is a proxy; transitions into it are attenuated by "
                 "regression to the mean",
+                "concept-mixed: observed waves use w011h (net overall wealth excl. "
+                "the augmented concept); the imputed wave targets the augmented n011h. "
+                "Levels are not strictly comparable near zero, so treat the series as "
+                "rank discrimination, not tail-calibrated levels",
             ],
         },
         "distribution": distribution,
@@ -285,12 +318,18 @@ def _horizon_transition(
         movers["rank_from"], movers["rank_to"], n_groups=n_groups
     )
     probabilities = transition_probabilities(counts)
-    suppressed = counts < min_cell
+    primary = counts < min_cell
+    suppressed = apply_complementary_suppression(counts, primary)
+    # A row with any suppressed count releases no probabilities: a row-normalised
+    # probability plus the visible counts would otherwise recover the hidden cell.
+    rows_with_suppression = suppressed.any(axis=1)
+    probability_suppressed = np.zeros_like(suppressed)
+    probability_suppressed[rows_with_suppression, :] = True
     return {
         "n_persons": int(counts.sum()),
         "n_suppressed_cells": int(suppressed.sum()),
         "counts": _mask_suppressed(counts, suppressed),
-        "probabilities": _mask_suppressed(probabilities, suppressed),
+        "probabilities": _mask_suppressed(probabilities, probability_suppressed),
     }
 
 

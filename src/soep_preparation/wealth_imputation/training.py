@@ -26,7 +26,7 @@ class ComponentModels:
     ownership_model: OwnershipModel
     """Incidence model predicting `P(owns)`."""
     amount_model: AmountModel
-    """Amount model predicting euro amounts for owners."""
+    """Amount model whose `predict_score` gives the asinh-axis PMM match for owners."""
     scale: float
     """The asinh component scale used by the amount model."""
 
@@ -116,8 +116,8 @@ def build_component_config(  # noqa: PLR0913
         component=component,
         ownership_prob=models.ownership_model.probability(recipient_features),
         ownership_share=np.asarray(recipient_shares, dtype="float64"),
-        recipient_predicted=models.amount_model.predict(recipient_features),
-        donor_predicted=models.amount_model.predict(donor_features),
+        recipient_predicted=models.amount_model.predict_score(recipient_features),
+        donor_predicted=models.amount_model.predict_score(donor_features),
         donor_observed=np.asarray(donor_values, dtype="float64"),
         scale=models.scale,
         k=k,

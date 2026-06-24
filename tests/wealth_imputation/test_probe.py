@@ -63,7 +63,7 @@ def test_assemble_probe_report_flags_present_and_missing_without_leaking_data():
     report = assemble_probe_report(entries, available)
     assert report["summary"]["n_present"] == 1
     assert report["summary"]["n_missing"] == 1
-    assert report["summary"]["n_unresolved_required"] == 2  # noqa: PLR2004
+    assert report["summary"]["n_unresolved_required"] == 2
     presence = {row["raw_variable"]: row["present"] for row in report["entries"]}
     assert presence == {"present_var": True, "absent_var": False}
 

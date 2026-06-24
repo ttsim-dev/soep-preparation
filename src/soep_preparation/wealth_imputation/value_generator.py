@@ -69,8 +69,8 @@ def draw_component(  # noqa: PLR0913
     Args:
         ownership_prob: Ownership incidence probability per recipient, in `[0, 1]`.
         ownership_share: Ownership share per recipient, in `[0, 1]` for owners.
-        recipient_predicted: Predicted gross euro amount per recipient (PMM matching).
-        donor_predicted: Predicted gross euro amounts for donors.
+        recipient_predicted: Recipient matching score on the asinh axis (PMM matching).
+        donor_predicted: Donor matching scores on the asinh axis.
         donor_observed: Observed gross euro amounts for donors.
         scale: Positive, finite component scale for the asinh transform.
         k: Number of nearest eligible donors to sample from (>= 1).

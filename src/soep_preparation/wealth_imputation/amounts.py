@@ -1,27 +1,25 @@
-"""Draw component amounts by predictive mean matching on the asinh-scaled scale.
+"""Draw component amounts by predictive mean matching on the asinh-scaled axis.
 
-The amount model predicts on the `asinh(y / s_c)` scale, so recipients and donors are
-matched there: both predicted amounts are transformed with the component scale `s_c`,
-matched by `pmm_draw`, and each recipient takes the **observed** euro value of its drawn
-donor. Matching on the scaled axis makes the donor caliper comparable across components
-regardless of their euro magnitude, and drawing an observed value keeps every imputed
-amount on the real support without back-transforming a prediction.
+The amount model's `predict_score` already lives on the `asinh(y / s_c)` axis, so
+recipients and donors are matched there directly -- no further transform, and in
+particular no `sinh`-then-`asinh` round trip that overflows at the support boundary.
+Each recipient takes the **observed** euro value of its drawn donor, so every imputed
+amount stays on the real support without back-transforming a prediction. The component
+scale is carried only for caliper interpretation.
 """
 
 from collections.abc import Sequence
 
 import numpy as np
-import pandas as pd
 
 from soep_preparation.wealth_imputation.donors import PmmResult, pmm_draw
-from soep_preparation.wealth_imputation.transforms import asinh_scaled
 
 
 def draw_amounts(  # noqa: PLR0913
     recipient_predicted: np.ndarray,
     donor_predicted: np.ndarray,
     donor_observed: np.ndarray,
-    scale: float,
+    scale: float,  # noqa: ARG001 -- kept for a uniform component-draw signature
     k: int,
     rng: np.random.Generator,
     caliper: float | None = None,
@@ -30,11 +28,12 @@ def draw_amounts(  # noqa: PLR0913
     """Draw each recipient's amount from a near donor's observed value.
 
     Args:
-        recipient_predicted: Predicted euro amounts for recipients, shape
-            `(n_recipients,)`.
-        donor_predicted: Predicted euro amounts for donors, shape `(n_donors,)`.
+        recipient_predicted: Recipient matching scores on the asinh axis
+            (`AmountModel.predict_score`), shape `(n_recipients,)`.
+        donor_predicted: Donor matching scores on the asinh axis, shape `(n_donors,)`.
         donor_observed: Observed euro amounts for donors, shape `(n_donors,)`.
-        scale: Positive, finite component scale `s_c` for the asinh transform.
+        scale: Component scale `s_c`; retained for signature uniformity. The scores are
+            already on the asinh axis, so no transform is applied here.
         k: Number of nearest eligible donors to sample from (>= 1).
         rng: NumPy random generator.
         caliper: Maximum allowed distance on the asinh-scaled axis, if set (>= 0).
@@ -44,14 +43,11 @@ def draw_amounts(  # noqa: PLR0913
         A `PmmResult` whose `values` are the drawn observed euro amounts (float64).
 
     Raises:
-        ValueError: On an invalid scale, invalid PMM inputs, or a recipient with no
-            eligible donor.
+        ValueError: On invalid PMM inputs or a recipient with no eligible donor.
     """
-    recipient_scores = asinh_scaled(pd.Series(recipient_predicted), scale).to_numpy()
-    donor_scores = asinh_scaled(pd.Series(donor_predicted), scale).to_numpy()
     return pmm_draw(
-        recipient_scores=recipient_scores,
-        donor_scores=donor_scores,
+        recipient_scores=np.asarray(recipient_predicted, dtype="float64"),
+        donor_scores=np.asarray(donor_predicted, dtype="float64"),
         donor_values=np.asarray(donor_observed, dtype="float64"),
         k=k,
         rng=rng,

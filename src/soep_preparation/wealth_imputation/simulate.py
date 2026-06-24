@@ -8,9 +8,9 @@ the correct way to aggregate -- component band endpoints are never summed.
 The resulting bands are **conditional donor-randomisation spreads**, not calibrated
 predictive intervals: given the fitted models and covariates, the components are drawn
 independently (the only cross-component dependence is through shared covariates, not a
-modelled component covariance), and the draws hold the fitted models, the chosen
-implicate, and the residual fixed. One shared RNG threads all draws so a fixed seed
-reproduces the whole simulation.
+modelled component covariance), and the draws hold the fitted models and the chosen
+implicate fixed -- the residual *model* is fixed but its donor value is redrawn each
+draw. One shared RNG threads all draws so a fixed seed reproduces the whole simulation.
 """
 
 from collections.abc import Sequence
@@ -58,9 +58,9 @@ class ComponentDrawConfig:
     ownership_share: np.ndarray
     """Ownership share per recipient, in `[0, 1]` for owners."""
     recipient_predicted: np.ndarray
-    """Predicted gross euro amount per recipient (PMM matching)."""
+    """Recipient matching score on the asinh axis (`AmountModel.predict_score`)."""
     donor_predicted: np.ndarray
-    """Predicted gross euro amounts for donors."""
+    """Donor matching scores on the asinh axis."""
     donor_observed: np.ndarray
     """Observed gross euro amounts for donors."""
     scale: float

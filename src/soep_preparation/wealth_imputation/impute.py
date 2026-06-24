@@ -133,9 +133,9 @@ class ImputationResult:
 
     The `lower`/`upper` bounds are **conditional donor-randomisation spreads**, not
     calibrated predictive intervals: they reflect ownership/PMM draw variability only,
-    holding the fitted models, the single wealth implicate, and the residual fixed, and
-    carry no modelled cross-component covariance. Treat them as a lower bound on
-    predictive uncertainty.
+    holding the fitted models and the single wealth implicate fixed -- the residual
+    *model* is fixed but its donor value is redrawn per draw -- and carry no modelled
+    cross-component covariance. Treat them as a lower bound on predictive uncertainty.
     """
 
     intervals: pd.DataFrame
@@ -291,13 +291,19 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
 def observed_component_total(
     modules: Mapping[str, pd.DataFrame], wave: int
 ) -> pd.DataFrame:
-    """Return the observed signed sum of the modelled components for one wave.
+    """Return the observed signed component sum for genuinely observed households.
 
     This is the comparison target for the out-of-fold backtest: the same six components
     the imputation models (property gross, mortgage, financial, vehicles, pension,
     consumer debt), signed and summed per household from the actual `wave` data, with no
-    residual. Missing component values are treated as zero, matching the residual's
-    convention.
+    residual. Only households with **at least one** non-missing modelled component are
+    kept -- a household whose every component is missing carries no observed wealth and
+    would otherwise be scored as an "observed zero", inflating both the zero mass
+    and the household count of the backtest truth.
+
+    Missing cells within an otherwise-observed household are treated as a structural
+    zero (the household *is* in the wealth wave and answered at least one component), so
+    a partially observed household keeps the sum of its observed components.
 
     Args:
         modules: Cleaned `MODULES` frames.
@@ -305,19 +311,22 @@ def observed_component_total(
 
     Returns:
         Columns `hh_id`, `survey_year`, `observed_total` (float64); one row per
-        household.
+        genuinely-observed household.
     """
     heads = _household_heads(modules)
     wave_heads = heads[heads["survey_year"] == wave]
-    total = np.zeros(len(wave_heads), dtype="float64")
+    component_columns = list(_COMPONENT_COLUMNS.values())
+    numeric = wave_heads[component_columns].apply(
+        lambda column: pd.to_numeric(column, errors="coerce")
+    )
+    any_observed = numeric.notna().any(axis=1).to_numpy()
+    observed = wave_heads.loc[any_observed].reset_index(drop=True)
+    numeric = numeric.loc[any_observed].reset_index(drop=True)
+    total = np.zeros(len(observed), dtype="float64")
     for component, column in _COMPONENT_COLUMNS.items():
-        values = (
-            pd.to_numeric(wave_heads[column], errors="coerce")
-            .fillna(0.0)
-            .to_numpy(dtype="float64")
-        )
+        values = numeric[column].fillna(0.0).to_numpy(dtype="float64")
         total += component_sign(component) * values
-    return wave_heads[_HH_KEYS].assign(observed_total=total)
+    return observed[_HH_KEYS].assign(observed_total=total)
 
 
 def _household_heads(modules: Mapping[str, pd.DataFrame]) -> pd.DataFrame:
@@ -350,16 +359,28 @@ def _household_person_direct(pwealth: pd.DataFrame) -> pd.DataFrame:
     """Sum person-direct components (insurances, consumer debt) to the household.
 
     These have no ownership share, so a plain member sum avoids the joint-ownership
-    double-counting that plagues the joint components. The sum is unbiased **only for
-    households whose eligible adults are all represented** in person `pwealth`: under
-    partial unit nonresponse (an adult lacking an individual wealth response) the member
-    sum omits that person's holdings, which then surface unpredictably in the residual.
-    A proper fix needs an eligible-adult roster and component-level PUNR completion.
+    double-counting that plagues the joint components. The sum uses `min_count=1`, so a
+    household whose members are *all* missing a component yields `NA`, not `0` -- pandas
+    sums an all-missing group to zero, which would confound nonresponse with a genuine
+    structural zero and feed a spurious observed zero into the truth roster.
+
+    Even with `min_count=1` the member sum is unbiased **only for households whose
+    eligible adults are all represented** in person `pwealth`: under partial unit
+    nonresponse (an adult lacking an individual wealth response, a PUNR adult absent
+    from `pwealth` altogether) the member sum omits that person's holdings, which then
+    surface
+    unpredictably in the residual. A proper fix needs an eligible-adult roster and
+    component-level PUNR completion.
     """
-    aggregation = {
-        target: (source, "sum") for target, source in _PERSON_DIRECT_SOURCE.items()
+    source_to_target = {
+        source: target for target, source in _PERSON_DIRECT_SOURCE.items()
     }
-    return pwealth.groupby(_HH_KEYS, as_index=False).agg(**aggregation)
+    numeric = pwealth[list(source_to_target)].apply(
+        lambda column: pd.to_numeric(column, errors="coerce")
+    )
+    keyed = pd.concat([pwealth[_HH_KEYS], numeric], axis=1)
+    grouped = keyed.groupby(_HH_KEYS, as_index=False).sum(min_count=1)
+    return grouped.rename(columns=source_to_target)
 
 
 def _training_residual(
