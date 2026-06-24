@@ -4416,8 +4416,8 @@ ft_employed_m_1:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4467,8 +4467,8 @@ ft_employed_m_10:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4518,8 +4518,8 @@ ft_employed_m_11:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4569,8 +4569,8 @@ ft_employed_m_12:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4620,8 +4620,8 @@ ft_employed_m_2:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4671,8 +4671,8 @@ ft_employed_m_3:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4722,8 +4722,8 @@ ft_employed_m_4:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4773,8 +4773,8 @@ ft_employed_m_5:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4824,8 +4824,8 @@ ft_employed_m_6:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4875,8 +4875,8 @@ ft_employed_m_7:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4926,8 +4926,8 @@ ft_employed_m_8:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4977,8 +4977,8 @@ ft_employed_m_9:
   dtype:
     categorical:
       categories:
-        - full-time employed
         - Werkstatt für behinderte Menschen
+        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -10336,11 +10336,11 @@ med_subjective_status:
   dtype:
     categorical:
       categories:
-        - Good
         - Bad
-        - Very good
+        - Good
         - Poor
         - Satisfactory
+        - Very good
       categories_dtype: str
       ordered: true
   module: pequiv_pl
@@ -12975,8 +12975,8 @@ pt_employed_m_1:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13026,8 +13026,8 @@ pt_employed_m_10:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13059,8 +13059,8 @@ pt_employed_m_11:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13110,8 +13110,8 @@ pt_employed_m_12:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13161,8 +13161,8 @@ pt_employed_m_2:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13212,8 +13212,8 @@ pt_employed_m_3:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13263,8 +13263,8 @@ pt_employed_m_4:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13314,8 +13314,8 @@ pt_employed_m_5:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13365,8 +13365,8 @@ pt_employed_m_6:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13416,8 +13416,8 @@ pt_employed_m_7:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13467,8 +13467,8 @@ pt_employed_m_8:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13518,8 +13518,8 @@ pt_employed_m_9:
   dtype:
     categorical:
       categories:
-        - part-time employed
         - Werkstatt für behinderte Menschen
+        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
