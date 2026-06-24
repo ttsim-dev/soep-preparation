@@ -144,15 +144,17 @@ class ImputationResult:
     """Counts and choices for the run (no row-level data)."""
 
 
-def run_imputation(
+def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest waves
     modules: Mapping[str, pd.DataFrame],
     *,
     n_draws: int,
     seed: int,
     k: int,
     level: float = 0.9,
+    prediction_wave: int = _PREDICTION_WAVE,
+    training_waves: Sequence[int] = _WEALTH_WAVES,
 ) -> ImputationResult:
-    """Impute 2022 household net wealth as point estimates with donor-spread bands.
+    """Impute household net wealth for `prediction_wave` as point estimates with bands.
 
     Args:
         modules: Cleaned `MODULES` frames; must include `pwealth`, `hwealth`, and the
@@ -162,12 +164,17 @@ def run_imputation(
         k: Nearest-donor count for PMM (clipped to each component's owner count).
         level: Central level of the reported donor-spread bands (not calibrated
             coverage).
+        prediction_wave: The survey year to impute (2022 in production; an earlier wave
+            for an out-of-fold backtest).
+        training_waves: The wealth waves to fit on (the prediction wave is always
+            excluded so a backtest stays out of fold).
 
     Returns:
-        An `ImputationResult` with the 2022 intervals and a run summary.
+        An `ImputationResult` with the prediction-wave intervals and a run summary.
 
     Raises:
-        ValueError: If there are no 2022 recipients or no component can be fit.
+        ValueError: If there are no recipients in the prediction wave or no component
+            can be fit.
     """
     heads = _household_heads(modules)
     continuous_columns = [
@@ -177,10 +184,11 @@ def run_imputation(
         spec.column for spec in FEATURE_SPECS if spec.kind == "categorical"
     ]
 
-    training = heads[heads["survey_year"].isin(_WEALTH_WAVES)]
-    recipients = heads[heads["survey_year"] == _PREDICTION_WAVE].reset_index(drop=True)
+    in_training_waves = heads["survey_year"].isin(training_waves)
+    training = heads[in_training_waves & (heads["survey_year"] != prediction_wave)]
+    recipients = heads[heads["survey_year"] == prediction_wave].reset_index(drop=True)
     if recipients.empty:
-        msg = "No 2022 recipients found; cannot impute the prediction wave."
+        msg = f"No recipients in prediction wave {prediction_wave}."
         raise ValueError(msg)
 
     encoder = fit_categorical_encoder(
@@ -211,7 +219,7 @@ def run_imputation(
                 values,
                 trained["survey_year"].tolist(),
                 index_by_year=index,
-                target_year=_PREDICTION_WAVE,
+                target_year=prediction_wave,
             )
         design = encode_features(
             trained, continuous_columns=continuous_columns, encoder=encoder
@@ -235,7 +243,7 @@ def run_imputation(
         raise ValueError(msg)
 
     have_total, residual = _training_residual(
-        training, used, target_year=_PREDICTION_WAVE
+        training, used, target_year=prediction_wave
     )
     residual_config = None
     residual_model_kind = "none"
@@ -278,6 +286,38 @@ def run_imputation(
         "level": level,
     }
     return ImputationResult(intervals=intervals, summary=summary)
+
+
+def observed_component_total(
+    modules: Mapping[str, pd.DataFrame], wave: int
+) -> pd.DataFrame:
+    """Return the observed signed sum of the modelled components for one wave.
+
+    This is the comparison target for the out-of-fold backtest: the same six components
+    the imputation models (property gross, mortgage, financial, vehicles, pension,
+    consumer debt), signed and summed per household from the actual `wave` data, with no
+    residual. Missing component values are treated as zero, matching the residual's
+    convention.
+
+    Args:
+        modules: Cleaned `MODULES` frames.
+        wave: The survey year whose observed component sum to return.
+
+    Returns:
+        Columns `hh_id`, `survey_year`, `observed_total` (float64); one row per
+        household.
+    """
+    heads = _household_heads(modules)
+    wave_heads = heads[heads["survey_year"] == wave]
+    total = np.zeros(len(wave_heads), dtype="float64")
+    for component, column in _COMPONENT_COLUMNS.items():
+        values = (
+            pd.to_numeric(wave_heads[column], errors="coerce")
+            .fillna(0.0)
+            .to_numpy(dtype="float64")
+        )
+        total += component_sign(component) * values
+    return wave_heads[_HH_KEYS].assign(observed_total=total)
 
 
 def _household_heads(modules: Mapping[str, pd.DataFrame]) -> pd.DataFrame:

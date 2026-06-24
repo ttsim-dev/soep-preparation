@@ -8,6 +8,7 @@ from soep_preparation.wealth_imputation.components import CanonicalComponent
 from soep_preparation.wealth_imputation.impute import (
     _OFFICIAL_TOTAL_COLUMN,
     _training_residual,
+    observed_component_total,
     run_imputation,
 )
 from soep_preparation.wealth_imputation.market_indices import RESIDUAL_INDEX
@@ -189,10 +190,20 @@ def test_training_residual_deflates_to_the_target_wave():
     np.testing.assert_allclose(residual, np.array([20000.0, 5000.0]) * factor)
 
 
+def test_observed_component_total_signs_the_modelled_components():
+    """The observed total nets gross property and debts across the six components."""
+    observed = observed_component_total(_synthetic_modules(), _TRAIN_WAVE)
+    value = observed.loc[observed["hh_id"] == 1, "observed_total"].iloc[0]
+    # 300000 gross - 50000 mortgage + 40000 financial + 12000 vehicles
+    # + 20000 insurances - 8000 consumer debt.
+    expected_total = 300000.0 - 50000.0 + 40000.0 + 12000.0 + 20000.0 - 8000.0
+    np.testing.assert_allclose(value, expected_total)
+
+
 def test_run_imputation_raises_without_recipients():
     """Imputation fails closed when no 2022 households are present."""
     modules = _synthetic_modules()
     for name in ("pequiv", "pgen", "ppathl", "hgen"):
         modules[name] = modules[name].query("survey_year != 2022")
-    with pytest.raises(ValueError, match="2022 recipients"):
+    with pytest.raises(ValueError, match="recipients in prediction wave"):
         run_imputation(modules, n_draws=10, seed=0, k=3)
