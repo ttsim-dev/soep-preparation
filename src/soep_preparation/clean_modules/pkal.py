@@ -30,22 +30,15 @@ def _number_of_months_employed(
     data: pd.DataFrame,
 ) -> pd.Series:
     months = range(1, 13)
-    kinds = ["ft", "pt", "minijob"]
 
     # Per-month: employed if any of the types has a category in [0,1]
-    employed = pd.concat(
-        [
-            pd.concat(
-                [
-                    data[f"{kind}_employed_m_{month}"].cat.codes.between(0, 1)
-                    for kind in kinds
-                ],
-                axis=1,
-            ).any(axis=1)
-            for month in months
-        ],
-        axis=1,
-    )
+    employed_per_month = [
+        data[f"ft_employed_m_{month}"].cat.codes.between(0, 1)
+        | data[f"pt_employed_m_{month}"].cat.codes.between(0, 1)
+        | data[f"minijob_employed_m_{month}"].cat.codes.between(0, 1)
+        for month in months
+    ]
+    employed = pd.concat(employed_per_month, axis=1)
 
     # Compute per-month non-missingness
     nonmissing = pd.concat(
@@ -465,6 +458,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # Monthly retirement calendar of the previous year (raw SOEP label "Rente,
     # Pension, Vorruhestand Jan-Dez im Vorjahr", pkal kal1e001-kal1e012): a
     # labour-market status, not a benefit-claiming flag, hence `in_retirement`.
+    # REVIEW: combine_modules/pequiv_pkal.py uses this status as a fallback signal
+    # for `first_pension_receipt_year`. It can flag early exit / Vorruhestand that is
+    # not statutory pension claiming; whether it should feed "first statutory pension
+    # receipt" at all is an open decision for the maintainer.
     # Read as explicit literals (not an f-string loop): the convert stage selects
     # which raw columns to load from the .dta by scanning this function for literal
     # string subscripts on raw_data, so a dynamic reference is silently dropped.
