@@ -392,11 +392,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["med_subjective_status_pequiv"] = object_to_str_categorical(
         series=raw_data["m11126"],
         renaming={
-            "[1] Very good": "Sehr gut",
-            "[2] Good": "Gut",
-            "[3] Satisfactory": "Zufriedenstellend",
-            "[4] Poor": "Weniger gut",
-            "[5] Bad": "Schlecht",
+            "[1] Very good": "Very good",
+            "[2] Good": "Good",
+            "[3] Satisfactory": "Satisfactory",
+            "[4] Poor": "Poor",
+            "[5] Bad": "Bad",
         },
         ordered=True,
     )
@@ -420,7 +420,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     ].assign(
         med_subjective_status_dummy=create_dummy(
             series=out["med_subjective_status_pequiv"],
-            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+            value_for_comparison=["Satisfactory", "Poor", "Bad"],
             comparison_type="isin",
         ),
     )

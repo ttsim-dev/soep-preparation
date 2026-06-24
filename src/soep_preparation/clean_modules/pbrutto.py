@@ -80,10 +80,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["willingness_to_participate"] = object_to_str_categorical(
         series=raw_data["ber"],
         renaming={
-            "[4] sehr schlecht": "sehr schlecht",
-            "[3] schlecht": "schlecht",
-            "[2] gut": "gut",
-            "[1] sehr gut": "sehr gut",
+            "[4] sehr schlecht": "very bad",
+            "[3] schlecht": "bad",
+            "[2] gut": "good",
+            "[1] sehr gut": "very good",
         },
         ordered=True,
     )

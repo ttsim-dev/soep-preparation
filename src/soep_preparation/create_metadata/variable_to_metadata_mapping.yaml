@@ -4416,7 +4416,7 @@ ft_employed_m_1:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4467,7 +4467,7 @@ ft_employed_m_10:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4518,7 +4518,7 @@ ft_employed_m_11:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4569,7 +4569,7 @@ ft_employed_m_12:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4620,7 +4620,7 @@ ft_employed_m_2:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4671,7 +4671,7 @@ ft_employed_m_3:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4722,7 +4722,7 @@ ft_employed_m_4:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4773,7 +4773,7 @@ ft_employed_m_5:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4824,7 +4824,7 @@ ft_employed_m_6:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4875,7 +4875,7 @@ ft_employed_m_7:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4926,7 +4926,7 @@ ft_employed_m_8:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -4977,7 +4977,7 @@ ft_employed_m_9:
   dtype:
     categorical:
       categories:
-        - Vollzeit erwerbstätig
+        - full-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -5079,10 +5079,10 @@ general_trust:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Lehne eher ab
-        - Lehne voll ab
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -7254,10 +7254,10 @@ importance_faith:
   dtype:
     categorical:
       categories:
-        - Sehr wichtig
-        - Wichtig
-        - Weniger wichtig
-        - Ganz unwichtig
+        - Very important
+        - Important
+        - Less important
+        - Not at all important
       categories_dtype: string
       ordered: true
   module: pl
@@ -7272,10 +7272,10 @@ importance_faith_v2:
   dtype:
     categorical:
       categories:
-        - Sehr wichtig
-        - Wichtig
-        - Weniger wichtig
-        - Ganz unwichtig
+        - Very important
+        - Important
+        - Less important
+        - Not at all important
       categories_dtype: string
       ordered: true
   module: pl
@@ -10213,9 +10213,9 @@ med_difficulty_demanding_activities_pl:
   dtype:
     categorical:
       categories:
-        - Gar nicht
-        - Ein wenig
-        - Stark
+        - Not at all
+        - A little
+        - A lot
       categories_dtype: string
       ordered: true
   module: pl
@@ -10292,9 +10292,9 @@ med_difficulty_stairs_pl:
   dtype:
     categorical:
       categories:
-        - Gar nicht
-        - Ein wenig
-        - Stark
+        - Not at all
+        - A little
+        - A lot
       categories_dtype: string
       ordered: true
   module: pl
@@ -10336,11 +10336,11 @@ med_subjective_status:
   dtype:
     categorical:
       categories:
-        - Gut
-        - Schlecht
-        - Sehr gut
-        - Weniger gut
-        - Zufriedenstellend
+        - Good
+        - Bad
+        - Very good
+        - Poor
+        - Satisfactory
       categories_dtype: str
       ordered: true
   module: pequiv_pl
@@ -10381,11 +10381,11 @@ med_subjective_status_pequiv:
   dtype:
     categorical:
       categories:
-        - Sehr gut
-        - Gut
-        - Zufriedenstellend
-        - Weniger gut
-        - Schlecht
+        - Very good
+        - Good
+        - Satisfactory
+        - Poor
+        - Bad
       categories_dtype: string
       ordered: true
   module: pequiv
@@ -10426,11 +10426,11 @@ med_subjective_status_pl:
   dtype:
     categorical:
       categories:
-        - Sehr gut
-        - Gut
-        - Zufriedenstellend
-        - Weniger gut
-        - Schlecht
+        - Very good
+        - Good
+        - Satisfactory
+        - Poor
+        - Bad
       categories_dtype: string
       ordered: true
   module: pl
@@ -10628,7 +10628,7 @@ minijob_employed_m_1:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10658,7 +10658,7 @@ minijob_employed_m_10:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10688,7 +10688,7 @@ minijob_employed_m_11:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10718,7 +10718,7 @@ minijob_employed_m_12:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10748,7 +10748,7 @@ minijob_employed_m_2:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10778,7 +10778,7 @@ minijob_employed_m_3:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10808,7 +10808,7 @@ minijob_employed_m_4:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10838,7 +10838,7 @@ minijob_employed_m_5:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10868,7 +10868,7 @@ minijob_employed_m_6:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10898,7 +10898,7 @@ minijob_employed_m_7:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10928,7 +10928,7 @@ minijob_employed_m_8:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10958,7 +10958,7 @@ minijob_employed_m_9:
   dtype:
     categorical:
       categories:
-        - Minijob erwerbstätig
+        - minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -11507,10 +11507,10 @@ norm_career_mothers_same_warmth:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Stimme eher nicht zu
-        - Stimme überhaupt nicht zu
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -11520,10 +11520,10 @@ norm_child_suffers_father_career:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Stimme eher nicht zu
-        - Stimme überhaupt nicht zu
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -11533,10 +11533,10 @@ norm_child_suffers_under_3:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Stimme eher nicht zu
-        - Stimme überhaupt nicht zu
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -11562,10 +11562,10 @@ norm_child_suffers_under_6:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Stimme eher nicht zu
-        - Stimme überhaupt nicht zu
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -11591,10 +11591,10 @@ norm_genders_similar:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Stimme eher nicht zu
-        - Stimme überhaupt nicht zu
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -11620,10 +11620,10 @@ norm_marry_when_together:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Stimme eher nicht zu
-        - Stimme überhaupt nicht zu
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -11649,10 +11649,10 @@ norm_men_chores:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Stimme eher nicht zu
-        - Stimme überhaupt nicht zu
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -11662,10 +11662,10 @@ norm_women_family_priority:
   dtype:
     categorical:
       categories:
-        - Stimme voll zu
-        - Stimme eher zu
-        - Stimme eher nicht zu
-        - Stimme überhaupt nicht zu
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
       categories_dtype: string
       ordered: true
   module: pl
@@ -12268,11 +12268,11 @@ party_affiliation_intensity:
   dtype:
     categorical:
       categories:
-        - Sehr stark
-        - Ziemlich stark
-        - Mäßig
-        - Ziemlich schwach
-        - Sehr schwach
+        - Very strong
+        - Fairly strong
+        - Moderate
+        - Fairly weak
+        - Very weak
       categories_dtype: string
       ordered: true
   module: pl
@@ -12408,8 +12408,8 @@ place_of_residence_current:
   dtype:
     categorical:
       categories:
-        - Westdeutschland (alte Bundesländer)
-        - Ostdeutschland (neue Bundesländer)
+        - West Germany (old federal states)
+        - East Germany (new federal states)
       categories_dtype: string
       ordered: false
   module: ppathl
@@ -12549,10 +12549,10 @@ political_interest:
   dtype:
     categorical:
       categories:
-        - Sehr stark
-        - Stark
-        - Nicht so stark
-        - Überhaupt nicht
+        - Very strong
+        - Strong
+        - Not so strong
+        - Not at all
       categories_dtype: string
       ordered: true
   module: pl
@@ -12975,7 +12975,7 @@ pt_employed_m_1:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13026,7 +13026,7 @@ pt_employed_m_10:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13059,7 +13059,7 @@ pt_employed_m_11:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13110,7 +13110,7 @@ pt_employed_m_12:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13161,7 +13161,7 @@ pt_employed_m_2:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13212,7 +13212,7 @@ pt_employed_m_3:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13263,7 +13263,7 @@ pt_employed_m_4:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13314,7 +13314,7 @@ pt_employed_m_5:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13365,7 +13365,7 @@ pt_employed_m_6:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13416,7 +13416,7 @@ pt_employed_m_7:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13467,7 +13467,7 @@ pt_employed_m_8:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13518,7 +13518,7 @@ pt_employed_m_9:
   dtype:
     categorical:
       categories:
-        - Teilzeit erwerbstätig
+        - part-time employed
         - Werkstatt für behinderte Menschen
       categories_dtype: str
       ordered: false
@@ -13715,10 +13715,10 @@ relevance_career:
   dtype:
     categorical:
       categories:
-        - Sehr wichtig
-        - Wichtig
-        - Weniger wichtig
-        - Ganz unwichtig
+        - Very important
+        - Important
+        - Less important
+        - Not at all important
       categories_dtype: string
       ordered: true
   module: pl
@@ -13736,10 +13736,10 @@ relevance_children:
   dtype:
     categorical:
       categories:
-        - Sehr wichtig
-        - Wichtig
-        - Weniger wichtig
-        - Ganz unwichtig
+        - Very important
+        - Important
+        - Less important
+        - Not at all important
       categories_dtype: string
       ordered: true
   module: pl
@@ -13901,11 +13901,11 @@ rented_or_owned:
   dtype:
     categorical:
       categories:
-        - Eigentümer
-        - Hauptmieter
-        - Untermieter
-        - Mieter
-        - Heimbewohner oder Gemeinschaftsunterkunft
+        - Owner
+        - Main tenant
+        - Subtenant
+        - Tenant
+        - Resident of a home or communal accommodation
       categories_dtype: string
       ordered: false
   module: hgen
@@ -13955,10 +13955,10 @@ residence_childhood:
   dtype:
     categorical:
       categories:
-        - Auf dem Land
-        - Kleinstadt
-        - Mittelgroße Stadt
-        - Großstadt
+        - Rural area
+        - Small town
+        - Medium-sized town
+        - Large city
       categories_dtype: string
       ordered: true
   module: biol
@@ -15548,10 +15548,10 @@ willingness_to_participate:
   dtype:
     categorical:
       categories:
-        - sehr schlecht
-        - schlecht
-        - gut
-        - sehr gut
+        - very bad
+        - bad
+        - good
+        - very good
       categories_dtype: string
       ordered: true
   module: pbrutto

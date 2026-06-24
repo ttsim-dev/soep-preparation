@@ -37,7 +37,7 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
     pl_treppen_dummy = convert_to_categorical(
         series=create_dummy(
             series=merged["med_difficulty_stairs_pl"],
-            value_for_comparison=["Ein wenig", "Stark"],
+            value_for_comparison=["A little", "A lot"],
             comparison_type="isin",
         ),
         ordered=True,

@@ -182,6 +182,87 @@ def _violations(name: str) -> list[str]:
     return reasons
 
 
+# German category-label outputs intentionally kept (named institutions / programmes
+# with no faithful one-word English equivalent), mirroring the variable-name allow-list.
+_ALLOWED_GERMAN_CATEGORY_VALUES = frozenset({"Werkstatt für behinderte Menschen"})
+
+# German category labels translated to English. The keys of the renaming maps are raw
+# SOEP value labels and stay verbatim; only these output labels are translated.
+_GERMAN_CATEGORY_VALUES = frozenset(
+    {
+        "Vollzeit erwerbstätig",
+        "Teilzeit erwerbstätig",
+        "Minijob erwerbstätig",
+        "Auf dem Land",
+        "Kleinstadt",
+        "Mittelgroße Stadt",
+        "Großstadt",
+        "Eigentümer",
+        "Hauptmieter",
+        "Untermieter",
+        "Mieter",
+        "Heimbewohner oder Gemeinschaftsunterkunft",
+        "Gar nicht",
+        "Ein wenig",
+        "Stark",
+        "Sehr gut",
+        "Gut",
+        "Zufriedenstellend",
+        "Weniger gut",
+        "Schlecht",
+        "Sehr stark",
+        "Nicht so stark",
+        "Überhaupt nicht",
+        "Ziemlich stark",
+        "Mäßig",
+        "Ziemlich schwach",
+        "Sehr schwach",
+        "Sehr wichtig",
+        "Wichtig",
+        "Weniger wichtig",
+        "Ganz unwichtig",
+        "Stimme voll zu",
+        "Stimme eher zu",
+        "Stimme eher nicht zu",
+        "Stimme überhaupt nicht zu",
+        "Lehne eher ab",
+        "Lehne voll ab",
+        "Westdeutschland (alte Bundesländer)",
+        "Ostdeutschland (neue Bundesländer)",
+        "sehr schlecht",
+        "schlecht",
+        "gut",
+        "sehr gut",
+    }
+)
+
+
+def _categorical_value_literals() -> set[str]:
+    """Every string output label in a string-keyed dict literal (renaming maps).
+
+    String-keyed dicts are the category renaming maps: their keys are raw SOEP value
+    labels (kept verbatim) and their string values are the output category labels.
+    Int-keyed dicts (numeric missing-/error-code maps that inject canonical German SOEP
+    missing labels) are skipped.
+    """
+    values: set[str] = set()
+    for directory in _CLEAN_DIRS:
+        for module in (_SRC / directory).glob("*.py"):
+            tree = ast.parse(module.read_text(encoding="utf-8"))
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.Dict) or not node.keys:
+                    continue
+                if not all(
+                    isinstance(key, ast.Constant) and isinstance(key.value, str)
+                    for key in node.keys
+                ):
+                    continue
+                for value in node.values:
+                    if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                        values.add(value.value)
+    return values
+
+
 def _final_names() -> list[str]:
     return list(yaml.safe_load(_MAPPING.read_text(encoding="utf-8")))
 
@@ -236,3 +317,18 @@ def test_convention_accepts_approved_unicode_names():
 def test_convention_rejects_leading_digit():
     """A leading digit fails PEP 8."""
     assert _violations("1989_place_of_residence")
+
+
+def test_no_german_category_values_remain():
+    """Translated German category labels no longer appear as renaming outputs."""
+    assert _categorical_value_literals() & _GERMAN_CATEGORY_VALUES == set()
+
+
+def test_category_values_are_ascii_or_allowlisted():
+    """Category output labels are ASCII English, except allow-listed German names."""
+    offenders = {
+        value
+        for value in _categorical_value_literals()
+        if not value.isascii() and value not in _ALLOWED_GERMAN_CATEGORY_VALUES
+    }
+    assert offenders == set()

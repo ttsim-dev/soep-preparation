@@ -205,18 +205,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["med_difficulty_stairs_pl"] = object_to_str_categorical(
         raw_data["ple0004"],
         renaming={
-            "[3] Gar nicht": "Gar nicht",
-            "[2] Ein wenig": "Ein wenig",
-            "[1] Stark": "Stark",
+            "[3] Gar nicht": "Not at all",
+            "[2] Ein wenig": "A little",
+            "[1] Stark": "A lot",
         },
         ordered=True,
     )
     out["med_difficulty_demanding_activities_pl"] = object_to_str_categorical(
         series=raw_data["ple0005"],
         renaming={
-            "[3] Gar nicht": "Gar nicht",
-            "[2] Ein wenig": "Ein wenig",
-            "[1] Stark": "Stark",
+            "[3] Gar nicht": "Not at all",
+            "[2] Ein wenig": "A little",
+            "[1] Stark": "A lot",
         },
         ordered=True,
     )
@@ -229,11 +229,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["med_subjective_status_pl"] = object_to_str_categorical(
         series=raw_data["ple0008"],
         renaming={
-            "[1] Sehr gut": "Sehr gut",
-            "[2] Gut": "Gut",
-            "[3] Zufriedenstellend": "Zufriedenstellend",
-            "[4] Weniger gut": "Weniger gut",
-            "[5] Schlecht": "Schlecht",
+            "[1] Sehr gut": "Very good",
+            "[2] Gut": "Good",
+            "[3] Zufriedenstellend": "Satisfactory",
+            "[4] Weniger gut": "Poor",
+            "[5] Schlecht": "Bad",
         },
         ordered=True,
     )
@@ -325,17 +325,17 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     ].assign(
         med_schwierigkeiten_treppen_dummy=create_dummy(
             series=out["med_difficulty_stairs_pl"],
-            value_for_comparison=["Ein wenig", "Stark"],
+            value_for_comparison=["A little", "A lot"],
             comparison_type="isin",
         ),
         med_schwierigkeiten_taten_dummy=create_dummy(
             series=out["med_difficulty_demanding_activities_pl"],
-            value_for_comparison=["Ein wenig", "Stark"],
+            value_for_comparison=["A little", "A lot"],
             comparison_type="isin",
         ),
         med_subjective_status_dummy=create_dummy(
             series=out["med_subjective_status_pl"],
-            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+            value_for_comparison=["Satisfactory", "Poor", "Bad"],
             comparison_type="isin",
         ),
     )
@@ -362,10 +362,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["political_interest"] = object_to_str_categorical(
         series=raw_data["plh0007"],
         renaming={
-            "[1] Sehr stark": "Sehr stark",
-            "[2] Stark": "Stark",
-            "[3] Nicht so stark": "Nicht so stark",
-            "[4] Ueberhaupt nicht": "Überhaupt nicht",
+            "[1] Sehr stark": "Very strong",
+            "[2] Stark": "Strong",
+            "[3] Nicht so stark": "Not so strong",
+            "[4] Ueberhaupt nicht": "Not at all",
         },
         ordered=True,
     )
@@ -378,31 +378,31 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["party_affiliation_intensity"] = object_to_str_categorical(
         series=raw_data["plh0013_h"],
         renaming={
-            "[1] Sehr stark": "Sehr stark",
-            "[2] Ziemlich stark": "Ziemlich stark",
-            "[3] Maessig": "Mäßig",
-            "[4] Ziemlich schwach": "Ziemlich schwach",
-            "[5] Sehr schwach": "Sehr schwach",
+            "[1] Sehr stark": "Very strong",
+            "[2] Ziemlich stark": "Fairly strong",
+            "[3] Maessig": "Moderate",
+            "[4] Ziemlich schwach": "Fairly weak",
+            "[5] Sehr schwach": "Very weak",
         },
         ordered=True,
     )
     out["relevance_career"] = object_to_str_categorical(
         series=raw_data["plh0107"],
         renaming={
-            "[1] 1 Sehr wichtig": "Sehr wichtig",
-            "[2] 2 Wichtig": "Wichtig",
-            "[3] 3 Weniger wichtig": "Weniger wichtig",
-            "[4] 4 Ganz unwichtig": "Ganz unwichtig",
+            "[1] 1 Sehr wichtig": "Very important",
+            "[2] 2 Wichtig": "Important",
+            "[3] 3 Weniger wichtig": "Less important",
+            "[4] 4 Ganz unwichtig": "Not at all important",
         },
         ordered=True,
     )
     out["relevance_children"] = object_to_str_categorical(
         series=raw_data["plh0110"],
         renaming={
-            "[1] 1 Sehr wichtig": "Sehr wichtig",
-            "[2] 2 Wichtig": "Wichtig",
-            "[3] 3 Weniger wichtig": "Weniger wichtig",
-            "[4] 4 Ganz unwichtig": "Ganz unwichtig",
+            "[1] 1 Sehr wichtig": "Very important",
+            "[2] 2 Wichtig": "Important",
+            "[3] 3 Weniger wichtig": "Less important",
+            "[4] 4 Ganz unwichtig": "Not at all important",
         },
         ordered=True,
     )
@@ -426,10 +426,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["general_trust"] = object_to_str_categorical(
         series=raw_data["plh0192"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Lehne eher ab": "Lehne eher ab",
-            "[4] Lehne voll ab": "Lehne voll ab",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Lehne eher ab": "Somewhat disagree",
+            "[4] Lehne voll ab": "Strongly disagree",
         },
         ordered=True,
     )
@@ -438,10 +438,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_child_suffers_under_6"] = object_to_str_categorical(
         series=raw_data["plh0298_v1"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
@@ -461,10 +461,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_marry_when_together"] = object_to_str_categorical(
         series=raw_data["plh0300_v1"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
@@ -483,20 +483,20 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_women_family_priority"] = object_to_str_categorical(
         series=raw_data["plh0301"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
     out["norm_child_suffers_under_3"] = object_to_str_categorical(
         series=raw_data["plh0302_v1"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
@@ -515,30 +515,30 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_men_chores"] = object_to_str_categorical(
         series=raw_data["plh0303"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
     out["norm_child_suffers_father_career"] = object_to_str_categorical(
         series=raw_data["plh0304"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
     out["norm_genders_similar"] = object_to_str_categorical(
         series=raw_data["plh0308_v1"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
@@ -557,30 +557,30 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_career_mothers_same_warmth"] = object_to_str_categorical(
         series=raw_data["plh0309"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
     out["importance_faith"] = object_to_str_categorical(
         series=raw_data["plh0343_v1"],
         renaming={
-            "[1] sehr wichtig": "Sehr wichtig",
-            "[2] wichtig": "Wichtig",
-            "[3] weniger wichtig": "Weniger wichtig",
-            "[4] ganz unwichtig": "Ganz unwichtig",
+            "[1] sehr wichtig": "Very important",
+            "[2] wichtig": "Important",
+            "[3] weniger wichtig": "Less important",
+            "[4] ganz unwichtig": "Not at all important",
         },
         ordered=True,
     )
     out["importance_faith_v2"] = object_to_str_categorical(
         series=raw_data["plh0343_v2"],
         renaming={
-            "[1] sehr wichtig": "Sehr wichtig",
-            "[2] wichtig": "Wichtig",
-            "[3] weniger wichtig": "Weniger wichtig",
-            "[4] ganz unwichtig": "Ganz unwichtig",
+            "[1] sehr wichtig": "Very important",
+            "[2] wichtig": "Important",
+            "[3] weniger wichtig": "Less important",
+            "[4] ganz unwichtig": "Not at all important",
         },
         ordered=True,
     )
