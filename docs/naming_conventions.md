@@ -19,7 +19,10 @@ The only tokens allowed to remain German:
   `arbeitslosengeld_2`, `arbeitslosenhilfe`, `grundsicherung_im_alter`,
   `grundsicherung`, `sozialhilfe`, `hilfe_zum_lebensunterhalt`, `bafög`, `pflegegeld`,
   `mutterschaftsgeld`, `mutterschutz`, `elternzeit`, `elterngeld`,
-  `kriegsopferversorgung`
+  `kriegsopferversorgung`, `betreuungsgeld`, `eigenheimzulage`, `vorruhestandsgeld`
+- **Maintenance (Unterhalt):** `kindesunterhalt`, `ehegattenunterhalt`, `unterhalt`,
+  `unterhaltsvorschuss` — the German *Unterhalt* terms are kept; English "support" /
+  "maintenance" / "alimony" are not interchangeable, so the legal term stays German
 - **Pension pillars / schemes:** `gesetzliche_rente`, `knappschaftliche_rente`,
   `riester_rente`, `betriebliche_altersversorgung`, `berufsständische_altersvorsorge`,
   `private_altersvorsorge`, `private_rente`, `beamtenpension`,

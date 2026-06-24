@@ -5,7 +5,7 @@ import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
-    combine_first_and_make_categorical,
+    combined_categorical,
     object_to_bool_categorical,
     object_to_int,
     object_to_str_categorical,
@@ -84,7 +84,7 @@ def _combine_versions_employed_m(
         series=data_v2,
         renaming=renaming_v2,
     )
-    return combine_first_and_make_categorical(
+    return combined_categorical(
         series_1=ft_employed_m_v1,
         series_2=ft_employed_m_v2,
         ordered=False,
@@ -108,7 +108,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
     # individual status previous calendar year
-    out["unemployed_anzahl_monate"] = object_to_int(
+    out["unemployed_number_of_months"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["kal1d02"], value=0)
     )
     out["early_retirement_number_months_last_year"] = object_to_int(
@@ -117,14 +117,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["unemployment_benefits_number_months"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["kal2f02"], value=0)
     )
-    out["bezog_mutterschaftsgeld_pkal"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_received_pkal"] = object_to_bool_categorical(
         series=raw_data["kal2j01"],
         renaming={"[2] Nein": False, "[1] genannt": True},
         ordered=True,
     )
-    out["mutterschaftsgeld_anzahl_monate"] = _mutterschaftsgeld_anzahl_monate(
+    out["mutterschaftsgeld_number_of_months"] = _mutterschaftsgeld_anzahl_monate(
         monate=raw_data["kal2j02"],
-        bezug=out["bezog_mutterschaftsgeld_pkal"],
+        bezug=out["mutterschaftsgeld_received_pkal"],
     )
 
     # the first full time employment variables includes the timeframe 1984 until 1997,

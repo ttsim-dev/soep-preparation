@@ -37,9 +37,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         renaming=month_mapping.de,
         ordered=True,
     )
-    out["1989_place_of_residence"] = object_to_str_categorical(raw_data["loc1989"])
+    out["place_of_residence_1989"] = object_to_str_categorical(raw_data["loc1989"])
     out["migration_background"] = object_to_str_categorical(raw_data["migback"])
-    out["birth_bundesland"] = object_to_str_categorical(raw_data["birthregion"])
+    out["birth_state"] = object_to_str_categorical(raw_data["birthregion"])
 
     # individual current information
     out["survey_status_current"] = object_to_str_categorical(raw_data["netto"])
@@ -64,7 +64,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["sexual_orientation"] = object_to_str_categorical(raw_data["sexor"])
     out["partnership_status"] = object_to_str_categorical(raw_data["partner"])
-    out["pointer_partner"] = object_to_int(
+    out["partner_p_id"] = object_to_int(
         raw_data["parid"].replace(
             {
                 -1: "[-1] Keine Angabe",

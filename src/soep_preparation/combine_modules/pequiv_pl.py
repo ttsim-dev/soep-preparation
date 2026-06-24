@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    combine_first_and_make_categorical,
+    combined_categorical,
     convert_to_categorical,
     create_dummy,
 )
@@ -36,62 +36,64 @@ def combine(pequiv: pd.DataFrame, pl: pd.DataFrame) -> pd.DataFrame:
     # binary granularity so the combined output is single-typed.
     pl_treppen_dummy = convert_to_categorical(
         series=create_dummy(
-            series=merged["med_schwierigkeiten_treppen_pl"],
+            series=merged["med_difficulty_stairs_pl"],
             value_for_comparison=["Ein wenig", "Stark"],
             comparison_type="isin",
         ),
         ordered=True,
     )
-    out["med_schwierigkeiten_treppen"] = combine_first_and_make_categorical(
-        series_1=merged["med_schwierigkeiten_treppen_pequiv"],
+    out["med_difficulty_stairs"] = combined_categorical(
+        series_1=merged["med_difficulty_stairs_pequiv"],
         series_2=pl_treppen_dummy,
         ordered=True,
     )
-    out["med_bluthochdruck"] = combine_first_and_make_categorical(
-        series_1=merged["med_bluthochdruck_pequiv"],
-        series_2=merged["med_bluthochdruck_pl"],
+    out["med_hypertension"] = combined_categorical(
+        series_1=merged["med_hypertension_pequiv"],
+        series_2=merged["med_hypertension_pl"],
         ordered=True,
     )
-    out["med_diabetes"] = combine_first_and_make_categorical(
+    out["med_diabetes"] = combined_categorical(
         series_1=merged["med_diabetes_pequiv"],
         series_2=merged["med_diabetes_pl"],
         ordered=True,
     )
-    out["med_krebs"] = combine_first_and_make_categorical(
-        series_1=merged["med_krebs_pequiv"],
-        series_2=merged["med_krebs_pl"],
+    out["med_cancer"] = combined_categorical(
+        series_1=merged["med_cancer_pequiv"],
+        series_2=merged["med_cancer_pl"],
         ordered=True,
     )
-    out["med_herzkrankheit"] = combine_first_and_make_categorical(
-        series_1=merged["med_herzkrankheit_pequiv"],
-        series_2=merged["med_herzkrankheit_pl"],
+    out["med_heart_disease"] = combined_categorical(
+        series_1=merged["med_heart_disease_pequiv"],
+        series_2=merged["med_heart_disease_pl"],
         ordered=True,
     )
-    out["med_schlaganfall"] = combine_first_and_make_categorical(
-        series_1=merged["med_schlaganfall_pequiv"],
-        series_2=merged["med_schlaganfall_pl"],
+    out["med_stroke"] = combined_categorical(
+        series_1=merged["med_stroke_pequiv"],
+        series_2=merged["med_stroke_pl"],
         ordered=True,
     )
-    out["med_gelenk"] = combine_first_and_make_categorical(
-        series_1=merged["med_gelenk_pequiv"],
-        series_2=merged["med_gelenk_pl"],
+    out["med_joint_disease"] = combined_categorical(
+        series_1=merged["med_joint_disease_pequiv"],
+        series_2=merged["med_joint_disease_pl"],
         ordered=True,
     )
-    out["med_gewicht"] = merged["med_gewicht_pequiv"].combine_first(
-        merged["med_gewicht_pl"]
+    out["med_weight"] = merged["med_weight_pequiv"].combine_first(
+        merged["med_weight_pl"]
     )
-    out["med_größe"] = merged["med_größe_pequiv"].combine_first(merged["med_größe_pl"])
+    out["med_height"] = merged["med_height_pequiv"].combine_first(
+        merged["med_height_pl"]
+    )
     out["bmi"] = merged["bmi_pequiv"].combine_first(merged["bmi_pl"])
     out["obese"] = merged["obese_pequiv"].combine_first(merged["obese_pl"])
-    out["med_subjective_status"] = combine_first_and_make_categorical(
+    out["med_subjective_status"] = combined_categorical(
         series_1=merged["med_subjective_status_pequiv"],
         series_2=merged["med_subjective_status_pl"],
         ordered=True,
     )
     out["frailty"] = merged["frailty_pequiv"].combine_first(merged["frailty_pl"])
 
-    out["kindesunterhalt_erhalten_m"] = merged[
-        "kindesunterhalt_erhalten_m_pequiv"
-    ].combine_first(merged["kindesunterhalt_erhalten_m_pl"])
+    out["kindesunterhalt_received_m"] = merged[
+        "kindesunterhalt_received_m_pequiv"
+    ].combine_first(merged["kindesunterhalt_received_m_pl"])
 
     return out

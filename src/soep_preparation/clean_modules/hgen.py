@@ -62,9 +62,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["hgheatinfo"],
         ordered=False,
     )
-    out["hh_typ_one_digit"] = object_to_str_categorical(
+    out["hh_type_one_digit"] = object_to_str_categorical(
         series=raw_data["hgtyp1hh"],
         nr_identifiers=2,
     )
-    out["hh_typ_two_digits"] = object_to_str_categorical(raw_data["hgtyp2hh"])
+    out["hh_type_two_digits"] = object_to_str_categorical(raw_data["hgtyp2hh"])
     return out

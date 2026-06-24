@@ -36,15 +36,15 @@ def _private_rente_beitrag_m_ein_umfragejahr(
 def _private_rente_beitrag_m(private_rente_data: pd.DataFrame) -> pd.Series:
     """Combine private pension contributions and forward-fill within individuals."""
     combined_years = pd.Series(
-        private_rente_data["private_rente_beitrag_m_2013"].mask(
+        private_rente_data["private_rente_contribution_m_2013"].mask(
             private_rente_data["survey_year"] == 2018,  # noqa: PLR2004
-            private_rente_data["private_rente_beitrag_m_2018"],
+            private_rente_data["private_rente_contribution_m_2018"],
         ),
-        name="private_rente_beitrag_m",
+        name="private_rente_contribution_m",
     )
 
     data = pd.concat([private_rente_data["p_id"], combined_years], axis=1)
-    out = data.groupby("p_id")["private_rente_beitrag_m"].ffill()
+    out = data.groupby("p_id")["private_rente_contribution_m"].ffill()
     return apply_smallest_float_dtype(out)
 
 
@@ -82,79 +82,77 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["beendigung_beschäftigungsverhältnis_grund"] = object_to_str_categorical(
-        raw_data["plb0304_v14"]
-    )
-    out["beendigung_beschäftigungsverhältnis_grund_1999"] = object_to_str_categorical(
+    out["employment_ended_reason"] = object_to_str_categorical(raw_data["plb0304_v14"])
+    out["employment_ended_reason_1999"] = object_to_str_categorical(
         raw_data["plb0304_v13"]
     )
-    out["beendigung_beschäftigungsverhältnis_betriebsstillegung"] = (
-        object_to_str_categorical(raw_data["plb0304_v11"])
+    out["employment_ended_business_closure"] = object_to_str_categorical(
+        raw_data["plb0304_v11"]
     )
     out["active_work_search_last_four_weeks"] = object_to_bool_categorical(
         series=raw_data["plb0424_v2"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
+    out["altersteilzeit_type"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plb0471_h"], value=0)
     )
-    out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_received_pl"] = object_to_bool_categorical(
         series=raw_data["plc0126_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
-    out["bezog_arbeitslosengeld_im_letzten_monat"] = object_to_bool_categorical(
+    out["arbeitslosengeld_received_last_month"] = object_to_bool_categorical(
         series=raw_data["plc0130_v1"],
         renaming={"[1] Ja": True},
         ordered=True,
     )
     # bezog arbeitslosengeld m3-m5 available 2017 through 2020
-    out["bezog_arbeitslosengeld_m3_m5"] = object_to_bool_categorical(
+    out["arbeitslosengeld_received_months_3_to_5"] = object_to_bool_categorical(
         series=raw_data["plc0130_v2"],
         renaming={"[1] Ja": True, 2: False},
         ordered=True,
     )
-    out["bezog_mutterschaftsgeld_im_letzten_monat"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_received_last_month"] = object_to_bool_categorical(
         series=raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
-    out["erhaltenes_mutterschaftsgeld_im_letzten_monat_m"] = object_to_float(
+    out["mutterschaftsgeld_received_last_month_m"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plc0153_h"], value=0)
     )
-    out["erhaltenes_mutterschaftsgeld_m"] = object_to_float(
+    out["mutterschaftsgeld_received_m"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plc0155_h"], value=0)
     )
-    out["kindesunterhalt_erhalten_m_pl"] = object_to_float(
+    out["kindesunterhalt_received_m_pl"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plc0178"], value=0)
     )
 
     # private pension plan
-    out["in_private_rente_eingezahlt"] = object_to_bool_categorical(
+    out["paid_into_private_rente"] = object_to_bool_categorical(
         series=raw_data["plc0437"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["in_private_rente_eingezahlte_monate"] = object_to_int(raw_data["plc0438"])
-    out["private_rente_beitrag_m_2013"] = _private_rente_beitrag_m_ein_umfragejahr(
+    out["private_rente_number_of_months_paid_in"] = object_to_int(raw_data["plc0438"])
+    out["private_rente_contribution_m_2013"] = _private_rente_beitrag_m_ein_umfragejahr(
         private_rente_beitrag_jahr=raw_data["plc0439_v1"],
-        eingezahlte_monate=out["in_private_rente_eingezahlte_monate"],
-        eingezahlt=out["in_private_rente_eingezahlt"],
+        eingezahlte_monate=out["private_rente_number_of_months_paid_in"],
+        eingezahlt=out["paid_into_private_rente"],
         survey_year=2013,
     )
-    out["private_rente_beitrag_m_2018"] = _private_rente_beitrag_m_ein_umfragejahr(
+    out["private_rente_contribution_m_2018"] = _private_rente_beitrag_m_ein_umfragejahr(
         private_rente_beitrag_jahr=raw_data["plc0439_v2"],
-        eingezahlte_monate=out["in_private_rente_eingezahlte_monate"],
-        eingezahlt=out["in_private_rente_eingezahlt"],
+        eingezahlte_monate=out["private_rente_number_of_months_paid_in"],
+        eingezahlt=out["paid_into_private_rente"],
         survey_year=2018,
     )
-    out["private_rente_beitrag_m"] = _private_rente_beitrag_m(
+    out["private_rente_contribution_m"] = _private_rente_beitrag_m(
         out[
             [
                 "p_id",
                 "survey_year",
-                "private_rente_beitrag_m_2013",
-                "private_rente_beitrag_m_2018",
+                "private_rente_contribution_m_2013",
+                "private_rente_contribution_m_2018",
             ]
         ],
     )
@@ -168,12 +166,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     # pension below that age cannot be an old-age pension).
     # SPOT-CHECK on data: the `plc0232_h` Ja/Nein label strings (harmonized
     # variables sometimes carry English "[1] Yes" / "[2] No").
-    out["bezieht_rente_aus_eigener_versicherung"] = object_to_bool_categorical(
+    out["receives_own_pension"] = object_to_bool_categorical(
         series=raw_data["plc0232_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["rente_aus_eigener_versicherung_brutto_m"] = object_to_float(
+    out["own_pension_gross_m"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plc0233_v2"], value=0)
     )
 
@@ -199,12 +197,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     # that is True only when this holds and the GdB is below 50, dropping pure
     # Schwerbehinderung (who may still work). SPOT-CHECK on data: the "[1] Ja" /
     # "[2] Nein" label strings.
-    out["erwerbsgemindert_oder_schwerbehindert"] = object_to_bool_categorical(
+    out["reduced_earning_capacity_or_severely_disabled"] = object_to_bool_categorical(
         series=raw_data["ple0040"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_schwierigkeiten_treppen_pl"] = object_to_str_categorical(
+    out["med_difficulty_stairs_pl"] = object_to_str_categorical(
         raw_data["ple0004"],
         renaming={
             "[3] Gar nicht": "Gar nicht",
@@ -213,7 +211,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["med_schwierigkeiten_taten_pl"] = object_to_str_categorical(
+    out["med_difficulty_demanding_activities_pl"] = object_to_str_categorical(
         series=raw_data["ple0005"],
         renaming={
             "[3] Gar nicht": "Gar nicht",
@@ -222,9 +220,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["med_größe_pl"] = object_to_float(raw_data["ple0006"])
-    out["med_gewicht_pl"] = object_to_float(raw_data["ple0007"])
-    out["bmi_pl"] = out["med_gewicht_pl"] / ((out["med_größe_pl"] / 100) ** 2)
+    out["med_height_pl"] = object_to_float(raw_data["ple0006"])
+    out["med_weight_pl"] = object_to_float(raw_data["ple0007"])
+    out["bmi_pl"] = out["med_weight_pl"] / ((out["med_height_pl"] / 100) ** 2)
     out["obese_pl"] = create_dummy(
         series=out["bmi_pl"], value_for_comparison=30, comparison_type="geq"
     )
@@ -239,7 +237,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["med_schlaf_pl"] = object_to_bool_categorical(
+    out["med_sleep_disorder_pl"] = object_to_bool_categorical(
         series=raw_data["ple0011_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
@@ -254,84 +252,84 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_herzkrankheit_pl"] = object_to_bool_categorical(
+    out["med_heart_disease_pl"] = object_to_bool_categorical(
         series=raw_data["ple0014_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_krebs_pl"] = object_to_bool_categorical(
+    out["med_cancer_pl"] = object_to_bool_categorical(
         series=raw_data["ple0015_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_schlaganfall_pl"] = object_to_bool_categorical(
+    out["med_stroke_pl"] = object_to_bool_categorical(
         series=raw_data["ple0016_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_migräne_pl"] = object_to_bool_categorical(
+    out["med_migraine_pl"] = object_to_bool_categorical(
         series=raw_data["ple0017_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_bluthochdruck_pl"] = object_to_bool_categorical(
+    out["med_hypertension_pl"] = object_to_bool_categorical(
         series=raw_data["ple0018_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_depressiv_pl"] = object_to_bool_categorical(
+    out["med_depression_pl"] = object_to_bool_categorical(
         series=raw_data["ple0019_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_demenz_pl"] = object_to_bool_categorical(
+    out["med_dementia_pl"] = object_to_bool_categorical(
         series=raw_data["ple0020_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_gelenk_pl"] = object_to_bool_categorical(
+    out["med_joint_disease_pl"] = object_to_bool_categorical(
         series=raw_data["ple0021_v1"],
         renaming={"[1] genannt": True},
     )
-    out["med_rücken_pl"] = object_to_bool_categorical(
+    out["med_back_pl"] = object_to_bool_categorical(
         series=raw_data["ple0022_v1"],
         renaming={"[1] genannt": True},
     )
-    out["med_sonst_pl"] = object_to_bool_categorical(
+    out["med_other_pl"] = object_to_bool_categorical(
         series=raw_data["ple0023_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_raucher_pl"] = object_to_bool_categorical(
+    out["med_smoker_pl"] = object_to_bool_categorical(
         series=raw_data["ple0081_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     frailty_inputs = out[
         [
-            "med_schlaf_pl",
+            "med_sleep_disorder_pl",
             "med_diabetes_pl",
             "med_asthma_pl",
-            "med_herzkrankheit_pl",
-            "med_krebs_pl",
-            "med_schlaganfall_pl",
-            "med_migräne_pl",
-            "med_bluthochdruck_pl",
-            "med_depressiv_pl",
-            "med_demenz_pl",
-            "med_gelenk_pl",
-            "med_rücken_pl",
-            "med_sonst_pl",
-            "med_raucher_pl",
+            "med_heart_disease_pl",
+            "med_cancer_pl",
+            "med_stroke_pl",
+            "med_migraine_pl",
+            "med_hypertension_pl",
+            "med_depression_pl",
+            "med_dementia_pl",
+            "med_joint_disease_pl",
+            "med_back_pl",
+            "med_other_pl",
+            "med_smoker_pl",
         ]
     ].assign(
         med_schwierigkeiten_treppen_dummy=create_dummy(
-            series=out["med_schwierigkeiten_treppen_pl"],
+            series=out["med_difficulty_stairs_pl"],
             value_for_comparison=["Ein wenig", "Stark"],
             comparison_type="isin",
         ),
         med_schwierigkeiten_taten_dummy=create_dummy(
-            series=out["med_schwierigkeiten_taten_pl"],
+            series=out["med_difficulty_demanding_activities_pl"],
             value_for_comparison=["Ein wenig", "Stark"],
             comparison_type="isin",
         ),
