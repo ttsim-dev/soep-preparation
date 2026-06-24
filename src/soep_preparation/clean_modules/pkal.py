@@ -458,6 +458,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # Monthly retirement calendar of the previous year (raw SOEP label "Rente,
     # Pension, Vorruhestand Jan-Dez im Vorjahr", pkal kal1e001-kal1e012): a
     # labour-market status, not a benefit-claiming flag, hence `in_retirement`.
+    # REVIEW: combine_modules/pequiv_pkal.py uses this status as a fallback signal
+    # for `first_pension_receipt_year`. It can flag early exit / Vorruhestand that is
+    # not statutory pension claiming; whether it should feed "first statutory pension
+    # receipt" at all is an open decision for the maintainer.
     # Read as explicit literals (not an f-string loop): the convert stage selects
     # which raw columns to load from the .dta by scanning this function for literal
     # string subscripts on raw_data, so a dynamic reference is silently dropped.
