@@ -50,7 +50,9 @@ build.targets.wheel.sources = [ "src" ]
 
 [tool.pixi.dependencies]
 deepdiff = "*"
+jupyter-book = ">=2"
 jupyterlab = "*"
+mystmd = "*"
 prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
@@ -69,6 +71,10 @@ tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 soep_preparation = { path = ".", editable = true }
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
+[tool.pixi.tasks]
+generate-variables = { cmd = "python _generate_variables.py", cwd = "docs" }
+build-docs = { cmd = "python _generate_variables.py && jupyter book build --html", cwd = "docs" }
+view-docs = { cmd = "python _generate_variables.py && jupyter book start", cwd = "docs" }
 [tool.pixi.workspace]
 channels = [ "conda-forge" ]
 platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
@@ -94,6 +100,9 @@ extend-ignore = [
 ]
 per-file-ignores."**/task.py" = [
   "ANN", # Type annotations (pytask signatures use Annotated[Path, Product])
+]
+per-file-ignores."docs/*" = [
+  "INP001", # Implicit namespace packages
 ]
 per-file-ignores."sandbox/*" = [
   "INP001", # Implicit namespace packages
