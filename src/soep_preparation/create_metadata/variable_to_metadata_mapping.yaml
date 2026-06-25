@@ -2885,7 +2885,7 @@ disability_degree:
     - 2022
     - 2023
     - 2024
-early_retirement_number_months_last_year:
+early_retirement_number_of_months_last_year:
   dtype: int8[pyarrow]
   module: pkal
   survey_years:
@@ -4412,7 +4412,7 @@ frailty_pl:
     - 2022
     - 2023
     - 2024
-ft_employed_m_1:
+full_time_employed_m_1:
   dtype:
     categorical:
       categories:
@@ -4463,7 +4463,7 @@ ft_employed_m_1:
     - 2022
     - 2023
     - 2024
-ft_employed_m_10:
+full_time_employed_m_10:
   dtype:
     categorical:
       categories:
@@ -4514,7 +4514,7 @@ ft_employed_m_10:
     - 2022
     - 2023
     - 2024
-ft_employed_m_11:
+full_time_employed_m_11:
   dtype:
     categorical:
       categories:
@@ -4565,7 +4565,7 @@ ft_employed_m_11:
     - 2022
     - 2023
     - 2024
-ft_employed_m_12:
+full_time_employed_m_12:
   dtype:
     categorical:
       categories:
@@ -4616,7 +4616,7 @@ ft_employed_m_12:
     - 2022
     - 2023
     - 2024
-ft_employed_m_2:
+full_time_employed_m_2:
   dtype:
     categorical:
       categories:
@@ -4667,7 +4667,7 @@ ft_employed_m_2:
     - 2022
     - 2023
     - 2024
-ft_employed_m_3:
+full_time_employed_m_3:
   dtype:
     categorical:
       categories:
@@ -4718,7 +4718,7 @@ ft_employed_m_3:
     - 2022
     - 2023
     - 2024
-ft_employed_m_4:
+full_time_employed_m_4:
   dtype:
     categorical:
       categories:
@@ -4769,7 +4769,7 @@ ft_employed_m_4:
     - 2022
     - 2023
     - 2024
-ft_employed_m_5:
+full_time_employed_m_5:
   dtype:
     categorical:
       categories:
@@ -4820,7 +4820,7 @@ ft_employed_m_5:
     - 2022
     - 2023
     - 2024
-ft_employed_m_6:
+full_time_employed_m_6:
   dtype:
     categorical:
       categories:
@@ -4871,7 +4871,7 @@ ft_employed_m_6:
     - 2022
     - 2023
     - 2024
-ft_employed_m_7:
+full_time_employed_m_7:
   dtype:
     categorical:
       categories:
@@ -4922,7 +4922,7 @@ ft_employed_m_7:
     - 2022
     - 2023
     - 2024
-ft_employed_m_8:
+full_time_employed_m_8:
   dtype:
     categorical:
       categories:
@@ -4973,7 +4973,7 @@ ft_employed_m_8:
     - 2022
     - 2023
     - 2024
-ft_employed_m_9:
+full_time_employed_m_9:
   dtype:
     categorical:
       categories:
@@ -12971,7 +12971,7 @@ property_value_primary_residence_e:
     - 2007
     - 2012
     - 2017
-pt_employed_m_1:
+part_time_employed_m_1:
   dtype:
     categorical:
       categories:
@@ -13022,7 +13022,7 @@ pt_employed_m_1:
     - 2022
     - 2023
     - 2024
-pt_employed_m_10:
+part_time_employed_m_10:
   dtype:
     categorical:
       categories:
@@ -13055,58 +13055,7 @@ pt_employed_m_10:
     - 2018
     - 2019
     - 2020
-pt_employed_m_11:
-  dtype:
-    categorical:
-      categories:
-        - Werkstatt für behinderte Menschen
-        - part-time employed
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pt_employed_m_12:
+part_time_employed_m_11:
   dtype:
     categorical:
       categories:
@@ -13157,7 +13106,7 @@ pt_employed_m_12:
     - 2022
     - 2023
     - 2024
-pt_employed_m_2:
+part_time_employed_m_12:
   dtype:
     categorical:
       categories:
@@ -13208,7 +13157,7 @@ pt_employed_m_2:
     - 2022
     - 2023
     - 2024
-pt_employed_m_3:
+part_time_employed_m_2:
   dtype:
     categorical:
       categories:
@@ -13259,7 +13208,7 @@ pt_employed_m_3:
     - 2022
     - 2023
     - 2024
-pt_employed_m_4:
+part_time_employed_m_3:
   dtype:
     categorical:
       categories:
@@ -13310,7 +13259,7 @@ pt_employed_m_4:
     - 2022
     - 2023
     - 2024
-pt_employed_m_5:
+part_time_employed_m_4:
   dtype:
     categorical:
       categories:
@@ -13361,7 +13310,7 @@ pt_employed_m_5:
     - 2022
     - 2023
     - 2024
-pt_employed_m_6:
+part_time_employed_m_5:
   dtype:
     categorical:
       categories:
@@ -13412,7 +13361,7 @@ pt_employed_m_6:
     - 2022
     - 2023
     - 2024
-pt_employed_m_7:
+part_time_employed_m_6:
   dtype:
     categorical:
       categories:
@@ -13463,7 +13412,7 @@ pt_employed_m_7:
     - 2022
     - 2023
     - 2024
-pt_employed_m_8:
+part_time_employed_m_7:
   dtype:
     categorical:
       categories:
@@ -13514,7 +13463,58 @@ pt_employed_m_8:
     - 2022
     - 2023
     - 2024
-pt_employed_m_9:
+part_time_employed_m_8:
+  dtype:
+    categorical:
+      categories:
+        - Werkstatt für behinderte Menschen
+        - part-time employed
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_9:
   dtype:
     categorical:
       categories:
@@ -15069,7 +15069,7 @@ unemployed_number_of_months:
     - 2022
     - 2023
     - 2024
-unemployment_benefits_number_months:
+unemployment_benefits_number_of_months:
   dtype: double[pyarrow]
   module: pkal
   survey_years:
