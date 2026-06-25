@@ -88,8 +88,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["employment_ended_reason"] = object_to_str_categorical(raw_data["plb0304_v14"])
-    out["employment_ended_reason_1999"] = object_to_str_categorical(
+    out["employment_ended_reason_pl"] = object_to_str_categorical(
+        raw_data["plb0304_v14"]
+    )
+    out["employment_ended_reason_1999_pl"] = object_to_str_categorical(
         raw_data["plb0304_v13"]
     )
     out["employment_ended_business_closure"] = object_to_str_categorical(

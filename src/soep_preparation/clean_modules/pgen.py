@@ -452,10 +452,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=out["employment_status"],
         value_for_comparison="Irregularly/marginally employed",
     )
+    # The sheltered-workshop response option existed in pgemplst only from 1998 to
+    # 2020 (per the SOEP category label). Outside that window the distinction was not
+    # collected, so the indicator is NA there rather than a misleading False.
     out["werkstatt_für_behinderte"] = create_dummy(
         series=out["employment_status"],
         value_for_comparison="Werkstatt für behinderte Menschen (1998-2020)",
-    )
+    ).where(out["survey_year"].between(1998, 2020), other=pd.NA)
     out["civil_servant"] = create_dummy(
         series=out["occupation_status"],
         value_for_comparison="Beamt*innen",
@@ -492,7 +495,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             {-5: "[-5] in Fragebogenversion nicht enthalten"},
         ),
     )
-    out["reason_employment_ended"] = translate_categories(
+    out["employment_ended_reason_pgen"] = translate_categories(
         object_to_str_categorical(raw_data["pgjobend"]),
         _REASON_EMPLOYMENT_ENDED_EN,
     )

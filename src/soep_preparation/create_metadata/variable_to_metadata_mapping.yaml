@@ -1017,7 +1017,7 @@ employment_ended_business_closure:
     - 1996
     - 1997
     - 1998
-employment_ended_reason:
+employment_ended_reason_pl:
   dtype:
     categorical:
       categories:
@@ -1057,7 +1057,7 @@ employment_ended_reason:
     - 2022
     - 2023
     - 2024
-employment_ended_reason_1999:
+employment_ended_reason_1999_pl:
   dtype:
     categorical:
       categories:
@@ -4416,8 +4416,8 @@ full_time_employed_m_1:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4467,8 +4467,8 @@ full_time_employed_m_10:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4518,8 +4518,8 @@ full_time_employed_m_11:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4569,8 +4569,8 @@ full_time_employed_m_12:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4620,8 +4620,8 @@ full_time_employed_m_2:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4671,8 +4671,8 @@ full_time_employed_m_3:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4722,8 +4722,8 @@ full_time_employed_m_4:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4773,8 +4773,8 @@ full_time_employed_m_5:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4824,8 +4824,8 @@ full_time_employed_m_6:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4875,8 +4875,8 @@ full_time_employed_m_7:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4926,8 +4926,8 @@ full_time_employed_m_8:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -4977,8 +4977,8 @@ full_time_employed_m_9:
   dtype:
     categorical:
       categories:
+        - Full-time employed
         - Werkstatt für behinderte Menschen
-        - full-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -5468,7 +5468,7 @@ gross_overall_wealth_including_vehicles_e:
   module: pwealth
   survey_years:
     - 2017
-reason_employment_ended:
+employment_ended_reason_pgen:
   dtype:
     categorical:
       categories:
@@ -10628,7 +10628,7 @@ minijob_employed_m_1:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10658,7 +10658,7 @@ minijob_employed_m_10:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10688,7 +10688,7 @@ minijob_employed_m_11:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10718,7 +10718,7 @@ minijob_employed_m_12:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10748,7 +10748,7 @@ minijob_employed_m_2:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10778,7 +10778,7 @@ minijob_employed_m_3:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10808,7 +10808,7 @@ minijob_employed_m_4:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10838,7 +10838,7 @@ minijob_employed_m_5:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10868,7 +10868,7 @@ minijob_employed_m_6:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10898,7 +10898,7 @@ minijob_employed_m_7:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10928,7 +10928,7 @@ minijob_employed_m_8:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -10958,7 +10958,7 @@ minijob_employed_m_9:
   dtype:
     categorical:
       categories:
-        - minijob employed
+        - Minijob employed
         - Werkstatt für behinderte Menschen
       categories_dtype: string
       ordered: false
@@ -12975,8 +12975,8 @@ part_time_employed_m_1:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13026,8 +13026,8 @@ part_time_employed_m_10:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13059,8 +13059,8 @@ part_time_employed_m_11:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13110,8 +13110,8 @@ part_time_employed_m_12:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13161,8 +13161,8 @@ part_time_employed_m_2:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13212,8 +13212,8 @@ part_time_employed_m_3:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13263,8 +13263,8 @@ part_time_employed_m_4:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13314,8 +13314,8 @@ part_time_employed_m_5:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13365,8 +13365,8 @@ part_time_employed_m_6:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13416,8 +13416,8 @@ part_time_employed_m_7:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13467,8 +13467,8 @@ part_time_employed_m_8:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -13518,8 +13518,8 @@ part_time_employed_m_9:
   dtype:
     categorical:
       categories:
+        - Part-time employed
         - Werkstatt für behinderte Menschen
-        - part-time employed
       categories_dtype: str
       ordered: false
   module: pkal
@@ -15503,20 +15503,6 @@ werkstatt_für_behinderte:
   dtype: bool[pyarrow]
   module: pgen
   survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
     - 1998
     - 1999
     - 2000
@@ -15540,10 +15526,6 @@ werkstatt_für_behinderte:
     - 2018
     - 2019
     - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 willingness_to_participate:
   dtype:
     categorical:
