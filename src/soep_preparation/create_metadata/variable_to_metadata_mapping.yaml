@@ -9160,17 +9160,17 @@ labor_force_status:
       categories:
         - Employed
         - Employed but inactive in the last 7 days (since 2000)
-        - NE: 65 years and older
-        - NE: but occasional secondary job (1985-2016)
-        - NE: but paid secondary job (since 2017)
-        - NE: but paid work in the last 7 days (since 1999)
-        - NE: but regularly paid secondary job (1985-2016)
-        - NE: currently in education/training
-        - NE: in military/civilian service
-        - NE: maternity/parental leave (since 1991)
-        - NE: partial retirement with zero working hours
-        - NE: registered unemployed
-        - Not employed (NE): no further information
+        - 'NE: 65 years and older'
+        - 'NE: but occasional secondary job (1985-2016)'
+        - 'NE: but paid secondary job (since 2017)'
+        - 'NE: but paid work in the last 7 days (since 1999)'
+        - 'NE: but regularly paid secondary job (1985-2016)'
+        - 'NE: currently in education/training'
+        - 'NE: in military/civilian service'
+        - 'NE: maternity/parental leave (since 1991)'
+        - 'NE: partial retirement with zero working hours'
+        - 'NE: registered unemployed'
+        - 'Not employed (NE): no further information'
       categories_dtype: string
       ordered: false
   module: pgen
