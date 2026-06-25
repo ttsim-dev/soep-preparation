@@ -10,7 +10,7 @@ from soep_preparation.utilities.data_manipulator import (
     create_dummy,
     object_to_bool_categorical,
     object_to_float,
-    object_to_int_categorical,
+    object_to_int,
     object_to_str_categorical,
     replace_not_applicable_answer,
     translate_categories,
@@ -369,10 +369,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["p_id"] = apply_smallest_int_dtype(raw_data["pid"])
     out["survey_year"] = apply_smallest_int_dtype(raw_data["syear"])
 
-    out["month_interview"] = object_to_int_categorical(
+    out["month_interview"] = object_to_int(
         series=raw_data["imonth"],
         renaming=month_mapping.de,
-        ordered=True,
     )
     out["education_isced_97"] = object_to_str_categorical(
         raw_data["pgisced97"],

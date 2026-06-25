@@ -9,7 +9,6 @@ from soep_preparation.utilities.data_manipulator import (
     object_to_bool_categorical,
     object_to_float,
     object_to_int,
-    object_to_int_categorical,
     object_to_str_categorical,
     replace_not_applicable_answer,
 )
@@ -368,7 +367,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=out["bmi_pequiv"], value_for_comparison=30, comparison_type="geq"
     )
 
-    out["med_health_satisfaction_pequiv"] = object_to_int_categorical(
+    out["med_health_satisfaction_pequiv"] = object_to_int(
         series=raw_data["m11125"],
         renaming={
             "[0] Completely dissatisfied": 0,

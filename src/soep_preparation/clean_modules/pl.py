@@ -9,7 +9,6 @@ from soep_preparation.utilities.data_manipulator import (
     object_to_bool_categorical,
     object_to_float,
     object_to_int,
-    object_to_int_categorical,
     object_to_str_categorical,
     replace_not_applicable_answer,
     translate_categories,
@@ -350,7 +349,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["frailty_pl"] = _calculate_frailty(frailty_inputs=frailty_inputs)
 
     # personal positions, norms, and political variables
-    out["political_spectrum_left_to_right"] = object_to_int_categorical(
+    out["political_spectrum_left_to_right"] = object_to_int(
         series=raw_data["plh0004"],
         renaming={
             "[0] 0 ganz links": 0,
@@ -365,7 +364,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[9] 9": 9,
             "[10] 10 ganz rechts": 10,
         },
-        ordered=True,
     )
     out["political_interest"] = object_to_str_categorical(
         series=raw_data["plh0007"],
@@ -414,7 +412,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["life_satisfaction_low_to_high"] = object_to_int_categorical(
+    out["life_satisfaction_low_to_high"] = object_to_int(
         series=raw_data["plh0182"],
         renaming={
             "[0] 0 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 0,
@@ -429,7 +427,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[9] 9 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 9,
             "[10] 10 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 10,
         },
-        ordered=True,
     )
     out["general_trust"] = object_to_str_categorical(
         series=raw_data["plh0192"],
@@ -453,7 +450,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["norm_child_suffers_under_6_low_to_high_2018"] = object_to_int_categorical(
+    out["norm_child_suffers_under_6_low_to_high_2018"] = object_to_int(
         series=raw_data["plh0298_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -464,7 +461,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[6] Skala von 1-7": 6,
             "[7] Stimme voll zu": 7,
         },
-        ordered=True,
     )
     out["norm_marry_when_together"] = object_to_str_categorical(
         series=raw_data["plh0300_v1"],
@@ -476,7 +472,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["norm_marry_when_together_low_to_high_2018"] = object_to_int_categorical(
+    out["norm_marry_when_together_low_to_high_2018"] = object_to_int(
         series=raw_data["plh0300_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -508,7 +504,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["norm_child_suffers_under_3_low_to_high_2018"] = object_to_int_categorical(
+    out["norm_child_suffers_under_3_low_to_high_2018"] = object_to_int(
         series=raw_data["plh0302_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -550,7 +546,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["norm_genders_similar_low_to_high_2018"] = object_to_int_categorical(
+    out["norm_genders_similar_low_to_high_2018"] = object_to_int(
         series=raw_data["plh0308_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -592,7 +588,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         },
         ordered=True,
     )
-    out["trust_public_admin_low_to_high"] = object_to_int_categorical(
+    out["trust_public_admin_low_to_high"] = object_to_int(
         series=raw_data["plm0672"],
         renaming={
             "[0] Skala von 0-10: Überhaupt kein Vertrauen": 0,
@@ -607,9 +603,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[9] Skala von 0-10": 9,
             "[10] Skala von 0-10: Volles Vertrauen": 10,
         },
-        ordered=True,
     )
-    out["trust_government_low_to_high"] = object_to_int_categorical(
+    out["trust_government_low_to_high"] = object_to_int(
         series=raw_data["plm0673"],
         renaming={
             "[0] Skala von 0-10: Überhaupt kein Vertrauen": 0,
@@ -624,7 +619,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[9] Skala von 0-10": 9,
             "[10] Skala von 0-10: Volles Vertrauen": 10,
         },
-        ordered=True,
     )
 
     # time spent

@@ -7,7 +7,6 @@ from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     convert_to_float,
     object_to_int,
-    object_to_int_categorical,
     object_to_str_categorical,
     translate_categories,
 )
@@ -227,10 +226,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["country_of_birth"] = translate_categories(
         object_to_str_categorical(raw_data["corigin"]), _COUNTRY_OF_BIRTH_EN
     )
-    out["birth_month_ppathl"] = object_to_int_categorical(
+    out["birth_month_ppathl"] = object_to_int(
         series=raw_data["gebmonat"],
         renaming=month_mapping.de,
-        ordered=True,
     )
     out["place_of_residence_1989"] = object_to_str_categorical(raw_data["loc1989"])
     out["migration_background"] = object_to_str_categorical(raw_data["migback"])

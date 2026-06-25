@@ -268,11 +268,17 @@ def object_to_float(series: pd.Series) -> pd.Series:
     return convert_to_float(sr_relevant_values_only)
 
 
-def object_to_int(series: pd.Series) -> pd.Series:
-    """Transform a mixed object Series to an integer Series.
+def object_to_int(series: pd.Series, renaming: dict | None = None) -> pd.Series:
+    """Transform a mixed object Series to a plain integer Series.
+
+    Use this for variables whose integer *is* the value — month numbers and genuine
+    rating scales — including ones whose raw labels need remapping to codes (pass
+    `renaming`). The result is a plain `int[pyarrow]` column, so missing values
+    display as `<NA>` rather than the numpy `NaN` a `category` dtype would show.
 
     Parameters:
         series: The input series to be cleaned.
+        renaming: Optional mapping from raw labels to integer codes. Defaults to None.
 
     Returns:
         The series with cleaned entries and transformed dtype.
@@ -280,10 +286,15 @@ def object_to_int(series: pd.Series) -> pd.Series:
     fail_if_series_cannot_be_transformed(
         series=series,
         expected_sr_dtype="object",
-        input_expected_types=[[series, "pandas.core.series.Series"]],
+        input_expected_types=[
+            [series, "pandas.core.series.Series"],
+            [renaming, "dict" if renaming is not None else "None"],
+        ],
         entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = replace_missing_codes_with_na(series)
+    if renaming:
+        sr_relevant_values_only = sr_relevant_values_only.replace(renaming)
     return apply_smallest_int_dtype(sr_relevant_values_only)
 
 
@@ -324,51 +335,6 @@ def object_to_bool_categorical(
         ordered=ordered,
     )
     return sr_bool.astype(raw_cat_dtype)
-
-
-def object_to_int_categorical(
-    series: pd.Series,
-    renaming: dict | None = None,
-    ordered: bool = False,  # noqa: FBT002
-) -> pd.Series:
-    """Transform a mixed object Series to a categorical integer Series.
-
-    Parameters:
-        series: The input series to be cleaned.
-        renaming: A dictionary to rename the categories.
-         Defaults to None.
-        ordered: Whether the categories should be returned as ordered.
-         Defaults to False.
-
-    Returns:
-        The series with cleaned entries and transformed dtype.
-    """
-    fail_if_series_cannot_be_transformed(
-        series=series,
-        expected_sr_dtype="object",
-        input_expected_types=[
-            [series, "pandas.core.series.Series"],
-            [renaming, "dict" if renaming is not None else "None"],
-            [ordered, "bool"],
-        ],
-        entries_expected_types=[series.unique(), ("float", "int", "str")],
-    )
-    sr_relevant_values_only = replace_missing_codes_with_na(series)
-    if renaming:
-        sr_renamed = sr_relevant_values_only.replace(renaming)
-        sr_int = apply_smallest_int_dtype(sr_renamed)
-        categories = apply_smallest_int_dtype(
-            pd.Series(
-                data=pd.Series(renaming).unique(),
-                dtype=apply_smallest_int_dtype(sr_int).dtype,
-            ),
-        )
-    else:
-        sr_int = apply_smallest_int_dtype(sr_relevant_values_only)
-        categories = apply_smallest_int_dtype(_get_sorted_not_na_unique_values(sr_int))
-
-    raw_cat_dtype = CategoricalDtype(categories=categories, ordered=ordered)
-    return sr_int.astype(raw_cat_dtype)
 
 
 def object_to_str_categorical(
@@ -481,3 +447,19 @@ def combined_categorical(
     fail_if_series_is_empty(series_2)
     combined = series_1.combine_first(series_2)
     return convert_to_categorical(combined, ordered=ordered)
+
+
+def combined_int(series_1: pd.Series, series_2: pd.Series) -> pd.Series:
+    """Combine two integer series, preferring the first, as a plain integer Series.
+
+    Args:
+        series_1: The first series; its values win where both are present.
+        series_2: The second series; fills in where the first is missing.
+
+    Returns:
+        The combined `int[pyarrow]` series, so missings display as `<NA>`.
+    """
+    fail_if_series_is_empty(series_1)
+    fail_if_series_is_empty(series_2)
+    combined = series_1.combine_first(series_2)
+    return apply_smallest_int_dtype(combined)

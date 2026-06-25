@@ -60,3 +60,20 @@ def test_object_to_int_assert_remove_missing_float():
     sr = pd.Series([1, 2, -0.1], dtype=object)
     actual = object_to_int(sr)
     pd.testing.assert_series_equal(actual, expected)
+
+
+def test_object_to_int_with_renaming_remaps_labels_to_codes():
+    expected = pd.Series([2, 1, 0], dtype="int8[pyarrow]")
+    sr = pd.Series(["[1] Stark", "[2] Ein wenig", "[3] Gar nicht"], dtype=object)
+    actual = object_to_int(
+        sr,
+        renaming={"[1] Stark": 2, "[2] Ein wenig": 1, "[3] Gar nicht": 0},
+    )
+    pd.testing.assert_series_equal(actual, expected)
+
+
+def test_object_to_int_with_renaming_keeps_missing_as_arrow_na():
+    expected = pd.Series([1, pd.NA], dtype="int8[pyarrow]")
+    sr = pd.Series(["[1] January", "[-1] Missing"], dtype=object)
+    actual = object_to_int(sr, renaming={"[1] January": 1})
+    pd.testing.assert_series_equal(actual, expected)
