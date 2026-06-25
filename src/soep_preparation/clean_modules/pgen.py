@@ -301,12 +301,11 @@ def _in_education(
     occupation: pd.Series[pd.Categorical],
 ) -> pd.Series[pd.Categorical]:
     in_education = [
-        "Aspiranten (1990 Ost)",
         "Auszubildende (1984-1999), Lehrlinge (1990 Ost)",
         "Auszubildende, gewerblich-technisch (ab 2000)",
         "Auszubildende, kaufmännisch (ab 2000)",
         "NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
-        "Volontäre, Praktikanten",
+        "Volontär*innen, Praktikant*innen",
     ]
     out = create_dummy(series=employment, value_for_comparison="In education/training")
     # Set in_education to missing if out of the labor force -- could mean anything.
@@ -411,7 +410,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["total_unemployment_experience"] = object_to_float(raw_data["pgexpue"])
     out["tenure"] = object_to_float(raw_data["pgerwzeit"])
     out["retired"] = create_dummy(
-        series=out["occupation_status"], value_for_comparison="NE: Rentner/Rentnerin"
+        series=out["occupation_status"], value_for_comparison="NE: in Rentenbezug"
     )
     out["in_education"] = _in_education(
         employment=out["employment_status"],
@@ -451,20 +450,20 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["irregularly_or_marginally_employed"] = create_dummy(
         series=out["employment_status"],
-        value_for_comparison="Unregelmässig, geringfügig erwerbstät.",
+        value_for_comparison="Irregularly/marginally employed",
     )
     out["werkstatt_für_behinderte"] = create_dummy(
         series=out["employment_status"],
-        value_for_comparison="Werkstatt für behinderte Menschen (seit 1998)",
+        value_for_comparison="Werkstatt für behinderte Menschen (1998-2020)",
     )
     out["civil_servant"] = create_dummy(
         series=out["occupation_status"],
-        value_for_comparison="Beamte",
+        value_for_comparison="Beamt*innen",
         comparison_type="startswith",
     )
     out["mutterschutz_elternzeit"] = create_dummy(
         series=out["labor_force_status"],
-        value_for_comparison="NE: Mutterschutz/Elternzeit (seit 1991)",
+        value_for_comparison="NE: maternity/parental leave (since 1991)",
     )
 
     # individual work information
