@@ -1,8 +1,12 @@
-"""First statutory-pension receipt year from pequiv + pkal.
+"""Derived variables that join pequiv and pkal.
 
 Despite the generic `pequiv_pkal` module name (combine modules are named by the
-two modules they join), this produces exactly one derived variable:
-`first_pension_receipt_year`. It is not a general pequiv x pkal merge.
+two modules they join), this produces two specific derived variables rather than a
+general pequiv x pkal merge:
+
+- `first_pension_receipt_year`: earliest year of statutory pension receipt.
+- `received_unemployment_benefits_last_year`: whether the person drew any
+  unemployment benefit in the previous calendar year.
 """
 
 import pandas as pd
@@ -11,33 +15,50 @@ from soep_preparation.utilities.data_manipulator import apply_smallest_int_dtype
 
 
 def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
-    """Derive `first_pension_receipt_year` only.
+    """Derive pension-receipt timing and last-year unemployment-benefit receipt.
 
-    The earliest year in which a person either reports positive annual statutory
-    pension income (`gesetzliche_rente_y`, pequiv, dated at `survey_year - 1`
-    because CNEF annual incomes refer to the previous calendar year) or any
-    retirement month in the calendar of the previous year
+    `first_pension_receipt_year` is the earliest year in which a person either reports
+    positive annual statutory pension income (`gesetzliche_rente_y`, pequiv, dated at
+    `survey_year - 1` because CNEF annual incomes refer to the previous calendar year)
+    or any retirement month in the calendar of the previous year
     (`number_of_months_in_retirement_last_year`, pkal, dated at `survey_year - 1`
     because that calendar item refers to the year before the survey). The consuming
-    project turns it into a claiming age with the birth year.
+    project turns it into a claiming age with the birth year. The pkal branch is a
+    labour-market-*status* proxy (raw label "Rente, Pension, Vorruhestand"), not
+    validated statutory receipt: it can flag early exit / Vorruhestand that is not
+    statutory pension claiming. It is kept as a fallback signal with its correct
+    reference year, but whether such a status should feed "first statutory pension
+    receipt" at all is flagged for maintainer review (see clean_modules/pkal.py).
 
-    The pkal retirement-calendar branch is a labour-market-*status* proxy (raw label
-    "Rente, Pension, Vorruhestand"), not validated statutory-benefit receipt: it can
-    flag early exit / Vorruhestand that is not statutory pension claiming. It is kept
-    here as a fallback signal with its correct reference year, but whether such a
-    status should feed "first statutory pension receipt" at all is flagged for
-    maintainer review (see clean_modules/pkal.py docstring on the same item).
+    `received_unemployment_benefits_last_year` unifies three previous-calendar-year
+    signals (see `_received_unemployment_benefits_last_year`).
 
     Args:
-        pequiv: Cleaned pequiv module (statutory pension income).
-        pkal: Cleaned pkal module (previous-year retirement calendar).
+        pequiv: Cleaned pequiv module (pension income, unemployment-benefit amounts).
+        pkal: Cleaned pkal module (previous-year retirement and unemployment calendar).
 
     Returns:
-        Person-year frame carrying the (time-invariant) first pension-receipt year.
+        Person-year frame with `first_pension_receipt_year` and
+        `received_unemployment_benefits_last_year`.
     """
     merged = pd.merge(
-        pequiv[["p_id", "survey_year", "gesetzliche_rente_y"]],
-        pkal[["p_id", "survey_year", "number_of_months_in_retirement_last_year"]],
+        pequiv[
+            [
+                "p_id",
+                "survey_year",
+                "gesetzliche_rente_y",
+                "arbeitslosengeld_y",
+                "arbeitslosenhilfe_y",
+            ]
+        ],
+        pkal[
+            [
+                "p_id",
+                "survey_year",
+                "number_of_months_in_retirement_last_year",
+                "unemployment_benefits_number_of_months",
+            ]
+        ],
         on=["p_id", "survey_year"],
         how="outer",
     )
@@ -75,4 +96,58 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     out["first_pension_receipt_year"] = apply_smallest_int_dtype(
         merged["p_id"].map(first_receipt_year)
     )
+    out["received_unemployment_benefits_last_year"] = (
+        _received_unemployment_benefits_last_year(
+            unemployment_benefits_number_of_months=merged[
+                "unemployment_benefits_number_of_months"
+            ],
+            arbeitslosengeld_y=merged["arbeitslosengeld_y"],
+            arbeitslosenhilfe_y=merged["arbeitslosenhilfe_y"],
+        )
+    )
     return out
+
+
+def _received_unemployment_benefits_last_year(
+    unemployment_benefits_number_of_months: pd.Series,
+    arbeitslosengeld_y: pd.Series,
+    arbeitslosenhilfe_y: pd.Series,
+) -> pd.Series:
+    """Flag any unemployment-benefit receipt in the previous calendar year.
+
+    The issue motivating this variable claims pequiv `iunay` imputes missing pkal
+    `kal2f02`. That premise does not hold literally: `kal2f02`
+    (`unemployment_benefits_number_of_months`) counts months of Arbeitslosengeld,
+    whereas `iunay` (`arbeitslosenhilfe_y`) is an annual euro amount of the distinct,
+    means-tested Arbeitslosenhilfe (available 1984 through 2005). The unit (months
+    vs euros) and the programme (Arbeitslosengeld vs Arbeitslosenhilfe) both differ,
+    so one cannot directly impute the other.
+
+    What is defensible is a single receipt indicator over the previous calendar year,
+    the common reference period of all three inputs:
+
+    - `unemployment_benefits_number_of_months` (pkal `kal2f02`): months of
+      Arbeitslosengeld; positive ⇒ receipt.
+    - `arbeitslosengeld_y` (pequiv `iunby`): annual Arbeitslosengeld amount; the
+      amount-side counterpart of the pkal month count; positive ⇒ receipt.
+    - `arbeitslosenhilfe_y` (pequiv `iunay`): annual Arbeitslosenhilfe amount;
+      positive ⇒ receipt of that distinct benefit.
+
+    Missing inputs are read as no receipt (`fillna(0)`), so the indicator is `True`
+    only when at least one signal is positive and `False` otherwise. The amount
+    signals fill gaps where the pkal month count is missing or zero.
+
+    Args:
+        unemployment_benefits_number_of_months: Months of Arbeitslosengeld (pkal).
+        arbeitslosengeld_y: Annual Arbeitslosengeld amount in euros (pequiv).
+        arbeitslosenhilfe_y: Annual Arbeitslosenhilfe amount in euros (pequiv).
+
+    Returns:
+        Boolean Series, `True` where any signal indicates benefit receipt.
+    """
+    received = (
+        (unemployment_benefits_number_of_months.fillna(value=0) > 0)
+        | (arbeitslosengeld_y.fillna(value=0) > 0)
+        | (arbeitslosenhilfe_y.fillna(value=0) > 0)
+    )
+    return received.astype("bool[pyarrow]")
