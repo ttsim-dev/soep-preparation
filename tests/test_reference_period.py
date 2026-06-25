@@ -74,6 +74,30 @@ def test_previous_month_without_interview_month_raises():
         )
 
 
+def test_previous_month_with_missing_interview_month_falls_back_to_year():
+    """When the interview month is unknown, the year stands and the month is missing."""
+    result = add_reference_columns(
+        survey_year=pd.Series([2020]),
+        reference=ReferencePeriod.PREVIOUS_MONTH,
+        interview_month=pd.Series([pd.NA], dtype="int64[pyarrow]"),
+    )
+    assert result["ryear"].tolist() == [2020]
+    assert result["rmonth"].isna().all()
+
+
+@pytest.mark.parametrize("invalid_month", [0, 13])
+def test_previous_month_rejects_out_of_range_interview_month(
+    invalid_month: int,
+) -> None:
+    """An interview month outside 1-12 fails loudly rather than fabricating a date."""
+    with pytest.raises(ValueError, match="must be in 1-12"):
+        add_reference_columns(
+            survey_year=pd.Series([2020]),
+            reference=ReferencePeriod.PREVIOUS_MONTH,
+            interview_month=pd.Series([invalid_month]),
+        )
+
+
 def test_string_reference_is_accepted():
     """The reference may be passed as its string value, not only the enum."""
     result = add_reference_columns(

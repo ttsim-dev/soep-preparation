@@ -1,19 +1,21 @@
-"""Guard: every `create_dummy` comparison in pgen targets a real category.
+"""Guard: every static `create_dummy` comparison targets a real category.
 
-A dummy built with `create_dummy` compares a categorical against a literal. If the
-categorical's labels are translated to English (or kept under a German allow-list
-label) but the literal is not updated in lockstep, the dummy silently becomes
-all-`False`/NA: no exception, and — because the output stays boolean — no change to
-the metadata inventory, so the pipeline gate cannot catch it.
+`create_dummy(series, value_for_comparison, comparison_type)` builds a boolean column
+by comparing a categorical against a literal. If the categorical's labels and the
+comparison literal drift apart — a label translated to English while the literal stays
+German, a renamed parenthetical — the dummy silently becomes all-`False`/NA: no
+exception, and (because the output stays boolean) no change to the metadata catalogue,
+so the pipeline gate cannot catch it.
 
-This test reads the comparison literals straight from the source and checks each
-against the category set of the series it compares:
-- translated columns (`employment_status`, `labor_force_status`, `first_nationality`)
-  against the English values of their translation dicts;
-- the kept-German `occupation_status` against the committed metadata inventory.
+This data-free guard scans every cleaning and combine module, resolves each
+`create_dummy`'s series to an `out["col"]` output column (directly or through a helper
+parameter), and checks the comparison literal against that column's category set in the
+committed metadata catalogue. Both keyword and positional call forms are handled.
 
-Comparisons whose value is computed at runtime (e.g. `_self_employed_occupations`)
-are skipped — they cannot be resolved statically.
+Comparisons whose series cannot be resolved to a categorical output column, or whose
+value is computed at runtime (e.g. `_self_employed_occupations(...)`), are skipped — a
+static scan cannot check them. A runtime fail-closed check inside `create_dummy` would
+close that remaining gap.
 """
 
 import ast
@@ -22,19 +24,21 @@ from pathlib import Path
 import yaml
 
 _SRC = Path(__file__).parent.parent / "src" / "soep_preparation"
-_PGEN = _SRC / "clean_modules" / "pgen.py"
 _MAPPING = _SRC / "create_metadata" / "variable_to_metadata_mapping.yaml"
+_MODULE_DIRS = ("clean_modules", "combine_modules")
+_CATEGORY_COMPARISONS = ("equal", "neq", "isin", "startswith")
 
-# Translated column -> the module-level dict whose English values are its categories.
-_TRANSLATED_COLUMN_DICTS = {
-    "employment_status": "_EMPLOYMENT_STATUS_EN",
-    "labor_force_status": "_LABOR_FORCE_STATUS_EN",
-    "first_nationality": "_FIRST_NATIONALITY_EN",
-}
+
+def _module_files() -> list[Path]:
+    return [
+        path
+        for module_dir in _MODULE_DIRS
+        for path in sorted((_SRC / module_dir).glob("*.py"))
+        if path.name not in ("__init__.py", "task.py")
+    ]
 
 
 def _find_categories(node: object) -> set[str] | None:
-    """Return the first `categories` list found anywhere in a metadata entry."""
     if isinstance(node, dict):
         categories = node.get("categories")
         if isinstance(categories, list):
@@ -46,21 +50,15 @@ def _find_categories(node: object) -> set[str] | None:
     return None
 
 
-def _occupation_status_categories() -> set[str]:
+def _categorical_categories() -> dict[str, set[str]]:
+    """Map every categorical final variable to its category set, from the catalogue."""
     mapping = yaml.safe_load(_MAPPING.read_text())
-    categories = _find_categories(mapping["occupation_status"])
-    if categories is None:
-        msg = "occupation_status has no categories in the metadata inventory."
-        raise AssertionError(msg)
-    return categories
-
-
-def _dict_value_strings(dict_node: ast.Dict) -> set[str]:
-    return {
-        value.value
-        for value in dict_node.values
-        if isinstance(value, ast.Constant) and isinstance(value.value, str)
-    }
+    out: dict[str, set[str]] = {}
+    for variable, metadata in mapping.items():
+        categories = _find_categories(metadata)
+        if categories is not None:
+            out[variable] = categories
+    return out
 
 
 def _out_column(node: ast.expr) -> str | None:
@@ -76,27 +74,8 @@ def _out_column(node: ast.expr) -> str | None:
     return None
 
 
-def _allowed_categories(tree: ast.Module) -> dict[str, set[str]]:
-    """Map each checkable column to its allowed category labels."""
-    dict_values: dict[str, set[str]] = {}
-    for node in tree.body:
-        if (
-            isinstance(node, ast.Assign)
-            and len(node.targets) == 1
-            and isinstance(node.targets[0], ast.Name)
-            and isinstance(node.value, ast.Dict)
-        ):
-            dict_values[node.targets[0].id] = _dict_value_strings(node.value)
-    allowed = {
-        column: dict_values[dict_name]
-        for column, dict_name in _TRANSLATED_COLUMN_DICTS.items()
-    }
-    allowed["occupation_status"] = _occupation_status_categories()
-    return allowed
-
-
 def _helper_param_columns(tree: ast.Module) -> dict[str, dict[str, str]]:
-    """Map `func_name -> {param: column}` from calls passing `out["col"]` by keyword."""
+    """Map `func_name -> {param: column}` from calls passing `out["col"]` arguments."""
     param_columns: dict[str, dict[str, str]] = {}
     for node in ast.walk(tree):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
@@ -153,63 +132,81 @@ def _local_string_lists(func: ast.FunctionDef) -> dict[str, list[str]]:
     return lists
 
 
-def _call_kwargs(call: ast.Call) -> dict[str, ast.expr]:
-    return {keyword.arg: keyword.value for keyword in call.keywords if keyword.arg}
+def _create_dummy_arguments(
+    call: ast.Call,
+) -> tuple[ast.expr | None, ast.expr | None, str]:
+    """Return (series, value, comparison_type) for keyword or positional calls."""
+    kwargs = {keyword.arg: keyword.value for keyword in call.keywords if keyword.arg}
+    series = kwargs.get("series")
+    if series is None and len(call.args) >= 1:
+        series = call.args[0]
+    value = kwargs.get("value_for_comparison")
+    if value is None and len(call.args) >= 2:
+        value = call.args[1]
+    type_node = kwargs.get("comparison_type")
+    if type_node is None and len(call.args) >= 3:
+        type_node = call.args[2]
+    comparison_type = (
+        type_node.value
+        if isinstance(type_node, ast.Constant) and isinstance(type_node.value, str)
+        else "equal"
+    )
+    return series, value, comparison_type
 
 
 def _invalid_comparisons_for_call(
     call: ast.Call,
     func: ast.FunctionDef,
-    allowed: dict[str, set[str]],
+    categories_by_column: dict[str, set[str]],
     param_columns: dict[str, dict[str, str]],
     local_lists: dict[str, list[str]],
 ) -> list[str]:
-    kwargs = _call_kwargs(call)
-    series_node = kwargs.get("series")
-    value_node = kwargs.get("value_for_comparison")
+    series_node, value_node, comparison_type = _create_dummy_arguments(call)
     if series_node is None or value_node is None:
         return []
+    if comparison_type not in _CATEGORY_COMPARISONS:
+        return []
     column = _resolve_series_column(series_node, func, param_columns)
-    if column not in allowed:
+    if column not in categories_by_column:
         return []
     literals = _resolve_literals(value_node, local_lists)
     if literals is None:
         return []
-    type_node = kwargs.get("comparison_type")
-    comparison_type = (
-        type_node.value if isinstance(type_node, ast.Constant) else "equal"
-    )
-    categories = allowed[column]
+    categories = categories_by_column[column]
     problems: list[str] = []
     for literal in literals:
         if comparison_type == "startswith" and not any(
             category.startswith(literal) for category in categories
         ):
             problems.append(f"{column}: no category starts with {literal!r}")
-        elif comparison_type in ("equal", "neq", "isin") and literal not in categories:
+        elif comparison_type != "startswith" and literal not in categories:
             problems.append(f"{column}: {literal!r} is not a category")
     return problems
 
 
 def collect_invalid_comparisons() -> list[str]:
     """List `create_dummy` comparisons whose literal is not a real category."""
-    tree = ast.parse(_PGEN.read_text())
-    allowed = _allowed_categories(tree)
-    param_columns = _helper_param_columns(tree)
-
+    categories_by_column = _categorical_categories()
     problems: list[str] = []
-    for func in (node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)):
-        local_lists = _local_string_lists(func)
-        for call in (node for node in ast.walk(func) if isinstance(node, ast.Call)):
-            if isinstance(call.func, ast.Name) and call.func.id == "create_dummy":
-                problems.extend(
-                    _invalid_comparisons_for_call(
-                        call, func, allowed, param_columns, local_lists
+    for path in _module_files():
+        tree = ast.parse(path.read_text())
+        param_columns = _helper_param_columns(tree)
+        for func in (n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)):
+            local_lists = _local_string_lists(func)
+            for call in (n for n in ast.walk(func) if isinstance(n, ast.Call)):
+                if isinstance(call.func, ast.Name) and call.func.id == "create_dummy":
+                    problems.extend(
+                        _invalid_comparisons_for_call(
+                            call,
+                            func,
+                            categories_by_column,
+                            param_columns,
+                            local_lists,
+                        )
                     )
-                )
     return problems
 
 
-def test_pgen_dummy_comparisons_target_existing_categories() -> None:
-    """Every static `create_dummy` literal in pgen matches a real category label."""
+def test_dummy_comparisons_target_existing_categories() -> None:
+    """Every static `create_dummy` literal matches a real category label."""
     assert collect_invalid_comparisons() == []

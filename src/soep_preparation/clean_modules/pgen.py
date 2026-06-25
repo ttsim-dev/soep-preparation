@@ -338,6 +338,21 @@ def _weekly_working_hours_fill_non_working(
     return out.where(employment_status != "Not employed", 0)
 
 
+def _fail_if_value_outside_window(
+    flag: pd.Series,
+    in_window: pd.Series,
+    label: str,
+) -> None:
+    """Fail if a windowed indicator is ever positive outside its collection window."""
+    outside_window = flag.fillna(value=False) & ~in_window
+    if outside_window.any():
+        msg = (
+            f"{label!r} is coded for observations outside its assumed collection "
+            "window, so the masking window is wrong."
+        )
+        raise ValueError(msg)
+
+
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned variables from the pgen module.
 
@@ -454,11 +469,22 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     # The sheltered-workshop response option existed in pgemplst only from 1998 to
     # 2020 (per the SOEP category label). Outside that window the distinction was not
-    # collected, so the indicator is NA there rather than a misleading False.
-    out["werkstatt_für_behinderte"] = create_dummy(
+    # collected, so the indicator is NA there rather than a misleading False. Fail
+    # closed if the data ever carries a positive outside that window: the masking
+    # assumption would then be wrong and silently erasing those rows is unsafe.
+    is_sheltered_workshop = create_dummy(
         series=out["employment_status"],
         value_for_comparison="Werkstatt für behinderte Menschen (1998-2020)",
-    ).where(out["survey_year"].between(1998, 2020), other=pd.NA)
+    )
+    in_window = out["survey_year"].between(1998, 2020)
+    _fail_if_value_outside_window(
+        flag=is_sheltered_workshop,
+        in_window=in_window,
+        label="Werkstatt für behinderte Menschen (1998-2020)",
+    )
+    out["werkstatt_für_behinderte"] = is_sheltered_workshop.where(
+        in_window, other=pd.NA
+    )
     out["civil_servant"] = create_dummy(
         series=out["occupation_status"],
         value_for_comparison="Beamt*innen",

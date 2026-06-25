@@ -46,11 +46,14 @@ def add_reference_columns(
     Returns:
         A frame with nullable-integer `ryear` and `rmonth` columns aligned to
         `survey_year`'s index. `rmonth` is `pd.NA` for every reference except
-        `previous_month`; both are `pd.NA` for `time_invariant`.
+        `previous_month`; both are `pd.NA` for `time_invariant`. For
+        `previous_month` rows whose `interview_month` is `pd.NA`, `ryear` stays at
+        the survey year and `rmonth` is `pd.NA`.
 
     Raises:
-        ValueError: If `reference` is unknown, or `previous_month` is requested
-            without `interview_month`.
+        ValueError: If `reference` is unknown, `previous_month` is requested
+            without `interview_month`, or an observed `interview_month` lies
+            outside 1-12.
     """
     reference = _coerce_reference(reference)
     index = survey_year.index
@@ -68,12 +71,29 @@ def add_reference_columns(
                 "`rmonth`."
             )
             raise ValueError(msg)
-        rolls_back = interview_month == 1
+        _fail_if_interview_month_out_of_range(interview_month)
+        # A missing month leaves `rolls_back` False, so `ryear` stays at the survey
+        # year (a year-level fallback) while `rmonth` is set NA below.
+        rolls_back = (interview_month == 1).fillna(value=False)
         ryear = survey_year.where(~rolls_back, survey_year - 1).astype(_INT)
-        rmonth = interview_month.where(~rolls_back, 13).sub(1).astype(_INT)
+        rmonth = (
+            interview_month.where(~rolls_back, 13)
+            .sub(1)
+            .where(interview_month.notna(), pd.NA)
+            .astype(_INT)
+        )
     # TIME_INVARIANT leaves both columns NA.
 
     return pd.DataFrame({"ryear": ryear, "rmonth": rmonth})
+
+
+def _fail_if_interview_month_out_of_range(interview_month: pd.Series) -> None:
+    observed = interview_month.dropna()
+    if not observed.between(1, 12).all():
+        msg = (
+            "`interview_month` must be in 1-12 (or NA); got values outside that range."
+        )
+        raise ValueError(msg)
 
 
 def _coerce_reference(reference: ReferencePeriod | str) -> ReferencePeriod:

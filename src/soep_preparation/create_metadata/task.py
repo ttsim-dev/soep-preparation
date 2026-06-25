@@ -305,6 +305,14 @@ def _fail_if_mapping_changed(
     existing_mapping: dict[str, Any],
     new_mapping_path: Path,
 ) -> None:
+    """Fail if the regenerated metadata catalogue differs from the committed one.
+
+    This is a **schema** gate: it compares each variable's module, dtype, category
+    set and order, and survey-year support. It does not see column *values*, so a
+    silent value regression that preserves the schema (an all-False dummy, a sign
+    flip, a one-year date shift) passes unchanged. Value-level correctness must be
+    pinned by targeted unit tests, not by this gate.
+    """
     # Collect error messages for all variables with issues
     variables_with_errors: dict[str, dict[str, Any]] = {}
 

@@ -14,7 +14,8 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     """Derive `first_pension_receipt_year` only.
 
     The earliest year in which a person either reports positive annual statutory
-    pension income (`gesetzliche_rente_y`, pequiv, dated at its survey year) or any
+    pension income (`gesetzliche_rente_y`, pequiv, dated at `survey_year - 1`
+    because CNEF annual incomes refer to the previous calendar year) or any
     retirement month in the calendar of the previous year
     (`number_of_months_in_retirement_last_year`, pkal, dated at `survey_year - 1`
     because that calendar item refers to the year before the survey). The consuming
@@ -41,10 +42,14 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
         how="outer",
     )
 
-    # Statutory pension income refers to the survey year itself.
+    # CNEF annual pension income (`igrv1`) refers to the previous calendar year, so a
+    # positive value in wave `t` means receipt in `t - 1`.
     has_pension_income = merged["gesetzliche_rente_y"].fillna(value=0) > 0
     income_receipt_year = (
-        merged.loc[has_pension_income].groupby("p_id")["survey_year"].min()
+        merged.loc[has_pension_income, "survey_year"]
+        .sub(1)
+        .groupby(merged["p_id"])
+        .min()
     )
 
     # The pkal retirement calendar refers to the *previous* year, so its candidate

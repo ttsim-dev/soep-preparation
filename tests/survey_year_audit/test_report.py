@@ -46,22 +46,48 @@ def test_small_year_cell_is_suppressed():
 
 
 def test_categorical_variable_reports_category_shares():
-    """A categorical variable's per-year category shares are reported."""
+    """Shares are reported for categories that each clear the minimum count."""
     data = {
         "status": pd.DataFrame(
             {
-                "survey_year": [2019] * 40,
-                "p_id": range(40),
+                "survey_year": [2019] * 80,
+                "p_id": range(80),
                 "employment_status": pd.Series(
-                    ["employed"] * 30 + ["unemployed"] * 10, dtype="category"
+                    ["employed"] * 50 + ["unemployed"] * 30, dtype="category"
                 ),
             }
         )
     }
     report = build_alignment_report(modules=data, min_cell=30)
     shares = report["employment_status"]["by_survey_year"][2019]["shares"]
-    assert shares["employed"] == 0.75
-    assert shares["unemployed"] == 0.25
+    assert shares["employed"] == 0.625
+    assert shares["unemployed"] == 0.375
+
+
+def test_rare_category_within_large_cell_is_suppressed():
+    """A category below the minimum count is not disclosed even inside a large cell.
+
+    `rare` has one observation; suppressing it alone would let an attacker recover it
+    from the total and the published shares, so the smallest safe category is folded
+    in with it (complementary suppression).
+    """
+    data = {
+        "status": pd.DataFrame(
+            {
+                "survey_year": [2019] * 91,
+                "p_id": range(91),
+                "employment_status": pd.Series(
+                    ["a"] * 50 + ["b"] * 40 + ["rare"], dtype="category"
+                ),
+            }
+        )
+    }
+    report = build_alignment_report(modules=data, min_cell=30)
+    cell = report["employment_status"]["by_survey_year"][2019]
+    assert "rare" not in cell["shares"]
+    assert "b" not in cell["shares"]
+    assert cell["shares"]["a"] == round(50 / 91, 4)
+    assert cell["n_categories_suppressed"] == 2
 
 
 def test_index_variables_are_excluded():

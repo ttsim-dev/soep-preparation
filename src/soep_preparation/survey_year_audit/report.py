@@ -3,8 +3,14 @@
 For every variable that carries `survey_year`, summarize its value distribution per
 survey year. Comparing the year-over-year movement against the questionnaire and
 external benchmarks reveals whether a variable is aligned to the survey year or to the
-previous year, so its reference period can be assigned. Only year-cells with at least
-`min_cell` non-missing observations are described; smaller cells are suppressed.
+previous year, so its reference period can be assigned.
+
+Two suppression levels keep small cells from being disclosed: a year-cell with fewer
+than `min_cell` non-missing observations is suppressed whole, and within a described
+cell any single category below `min_cell` is suppressed (with complementary suppression
+so its count cannot be recovered by subtraction). Numeric summaries (mean, quartiles)
+are not further protected, so treat the artifact as low-cell-count-safe rather than a
+formally disclosure-controlled release.
 """
 
 from collections.abc import Mapping
@@ -69,23 +75,45 @@ def _summaries_by_survey_year(
         if count < min_cell:
             summaries[year_key] = {"n": count, "suppressed": True}
         else:
-            summaries[year_key] = _summarize_values(group["value"], count)
+            summaries[year_key] = _summarize_values(group["value"], count, min_cell)
     return summaries
 
 
-def _summarize_values(values: pd.Series, count: int) -> dict:
+def _summarize_values(values: pd.Series, count: int, min_cell: int) -> dict:
     if _is_categorical(values):
-        shares = values.value_counts(normalize=True)
-        return {
-            "n": count,
-            "shares": {
-                str(category): round(share, 4) for category, share in shares.items()
-            },
-        }
+        return _summarize_categorical(values, count, min_cell)
     numeric = values.astype("float64")
     summary = {"n": count, "mean": round(float(numeric.mean()), 4)}
     for quantile, label in zip(_QUANTILES, ("p25", "median", "p75"), strict=True):
         summary[label] = round(float(numeric.quantile(quantile)), 4)
+    return summary
+
+
+def _summarize_categorical(values: pd.Series, count: int, min_cell: int) -> dict:
+    """Report shares only for categories that each clear `min_cell`.
+
+    A category below `min_cell` is suppressed. A single suppressed category is
+    recoverable from the total and the published shares, so the smallest surviving
+    category is folded in with it (complementary suppression); the suppressed set is
+    reported only as a count, never as shares or per-category totals.
+    """
+    counts = values.value_counts()
+    counts = counts[counts > 0]
+    safe = counts[counts >= min_cell]
+    n_suppressed = int((counts < min_cell).sum())
+    if n_suppressed == 1 and len(safe) > 0:
+        smallest_safe = safe.index[-1]
+        safe = safe.drop(index=smallest_safe)
+        n_suppressed += 1
+    summary: dict = {
+        "n": count,
+        "shares": {
+            str(category): round(category_count / count, 4)
+            for category, category_count in safe.items()
+        },
+    }
+    if n_suppressed:
+        summary["n_categories_suppressed"] = n_suppressed
     return summary
 
 
