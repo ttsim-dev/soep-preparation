@@ -2567,192 +2567,192 @@ country_of_birth:
     categorical:
       categories:
         - Afghanistan
-        - Albanien
-        - Algerien
-        - Amerikanisch-Samoa
+        - Albania
+        - Algeria
+        - American Samoa
         - Angola
-        - Antarktis
-        - Argentinien
-        - Armenien
+        - Antarctica
+        - Argentina
+        - Armenia
         - Aruba
-        - Aserbaidschan
-        - Australien
+        - Australia
+        - Austria
+        - Azerbaijan
         - Bahamas
         - Bahrain
-        - Bangladesch
+        - Bangladesh
         - Barbados
-        - Belgien
+        - Belarus
+        - Belgium
         - Benin
-        - Bolivien
-        - Bosnien und Herzegowina
-        - Botsuana
-        - Brasilien
-        - Britische Jungferninseln
-        - Britisches Territorium im Indischen Ozean
-        - Bulgarien
+        - Bolivia
+        - Bosnia and Herzegovina
+        - Botswana
+        - Brazil
+        - British Indian Ocean Territory
+        - British Virgin Islands
+        - Bulgaria
         - Burkina Faso
         - Burundi
         - Cabo Verde
+        - Cambodia
+        - Cameroon
+        - Canada
+        - Central African Republic
+        - Chad
         - Chile
         - China
+        - Colombia
+        - Comoros
+        - Congo
+        - Congo, Democratic Republic
         - Costa Rica
-        - Côte d’Ivoire
-        - Deutschland
+        - Cote d'Ivoire
+        - Croatia
+        - Cuba
+        - Cyprus
+        - Czechia
+        - Denmark
+        - Djibouti
         - Dominica
-        - Dominikanische Republik
-        - Dschibuti
-        - Dänemark
+        - Dominican Republic
         - Ecuador
+        - Egypt
         - El Salvador
+        - Equatorial Guinea
         - Eritrea
-        - Estland
-        - Fidschi
-        - Finnland
-        - Frankreich
-        - Gabun
+        - Estonia
+        - Ethiopia
+        - Fiji
+        - Finland
+        - France
+        - Gabon
         - Gambia
-        - Georgien
+        - Georgia
+        - Germany
         - Ghana
+        - Greece
         - Grenada
-        - Griechenland
         - Guatemala
         - Guernsey
         - Guinea
         - Guinea-Bissau
         - Guyana
         - Haiti
-        - Heard und McDonaldinseln
+        - Heard and McDonald Islands
         - Honduras
-        - Hongkong
-        - Indien
-        - Indonesien
-        - Irak
+        - Hong Kong
+        - Hungary
+        - Iceland
+        - India
+        - Indonesia
         - Iran
-        - Irland
-        - Island
+        - Iraq
+        - Ireland
         - Israel
-        - Italien
-        - Jamaika
+        - Italy
+        - Jamaica
         - Japan
-        - Jemen
-        - Jordanien
-        - Kambodscha
-        - Kamerun
-        - Kanada
-        - Kasachstan
-        - Katar
-        - Kenia
-        - Kirgistan
-        - Kleinere Amerikanische Überseeinseln
-        - Kolumbien
-        - Komoren
-        - Kongo
-        - Kongo, Demokratische Republik
-        - Korea, Demokratische Volksrepublik
-        - Korea, Republik
+        - Jordan
+        - Kazakhstan
+        - Kenya
+        - Korea, Democratic People's Republic
+        - Korea, Republic
         - Kosovo
-        - Kroatien
-        - Kuba
         - Kuwait
+        - Kyrgyzstan
         - Laos
+        - Latvia
+        - Lebanon
         - Lesotho
-        - Lettland
-        - Libanon
         - Liberia
-        - Libyen
-        - Litauen
-        - Luxemburg
+        - Libya
+        - Lithuania
+        - Luxembourg
         - Macau
-        - Madagaskar
+        - Madagascar
         - Malawi
         - Malaysia
-        - Malediven
+        - Maldives
         - Mali
         - Malta
-        - Marokko
-        - Mauretanien
+        - Mauritania
         - Mauritius
-        - Mexiko
-        - Moldau
+        - Mexico
+        - Moldova
         - Monaco
-        - Mongolei
+        - Mongolia
         - Montenegro
-        - Mosambik
+        - Morocco
+        - Mozambique
         - Myanmar
         - Namibia
         - Nepal
-        - Neuseeland
+        - Netherlands
+        - New Zealand
         - Nicaragua
-        - Niederlande
         - Niger
         - Nigeria
-        - Nordmazedonien
-        - Norwegen
+        - North Macedonia
+        - Norway
         - Oman
         - Pakistan
-        - Palästina
+        - Palestine
         - Panama
-        - Papua-Neuguinea
+        - Papua New Guinea
         - Paraguay
         - Peru
-        - Philippinen
-        - Polen
+        - Philippines
+        - Poland
         - Portugal
         - Puerto Rico
-        - Ruanda
-        - Rumänien
-        - Russische Föderation
-        - Salomonen
-        - Sambia
+        - Qatar
+        - Romania
+        - Russian Federation
+        - Rwanda
         - Samoa
-        - Saudi-Arabien
-        - Schweden
-        - Schweiz
+        - Saudi Arabia
         - Senegal
-        - Serbien
+        - Serbia
         - Sierra Leone
-        - Simbabwe
-        - Singapur
-        - Slowakei
-        - Slowenien
+        - Singapore
+        - Slovakia
+        - Slovenia
+        - Solomon Islands
         - Somalia
-        - Spanien
+        - South Africa
+        - South Sudan
+        - Spain
         - Sri Lanka
-        - St. Kitts und Nevis
+        - St. Kitts and Nevis
         - Sudan
         - Suriname
-        - Syrien
-        - Südafrika
-        - Südsudan
-        - Tadschikistan
+        - Sweden
+        - Switzerland
+        - Syria
         - Taiwan
-        - Tansania
+        - Tajikistan
+        - Tanzania
         - Thailand
         - Togo
         - Tonga
-        - Trinidad und Tobago
-        - Tschad
-        - Tschechien
-        - Tunesien
+        - Trinidad and Tobago
+        - Tunisia
+        - Turkey
         - Turkmenistan
-        - Türkei
         - Uganda
         - Ukraine
-        - Ungarn
+        - United Arab Emirates
+        - United Kingdom
+        - United States
+        - United States Minor Outlying Islands
         - Uruguay
-        - Usbekistan
+        - Uzbekistan
         - Venezuela
-        - Vereinigte Arabische Emirate
-        - Vereinigte Staaten
-        - Vereinigtes Königreich
         - Vietnam
-        - Weißrussland
-        - Zentralafrikanische Republik
-        - Zypern
-        - Ägypten
-        - Äquatorialguinea
-        - Äthiopien
-        - Österreich
+        - Yemen
+        - Zambia
+        - Zimbabwe
       categories_dtype: string
       ordered: false
   module: ppathl
@@ -4050,156 +4050,156 @@ first_nationality:
   dtype:
     categorical:
       categories:
-        - Aegypten
         - Afghanistan
-        - Afrika
-        - Albanien
-        - Algerien
+        - Africa
+        - Albania
+        - Algeria
         - Angola
-        - Argentinien
-        - Armenien
-        - Aserbaidschan
-        - Australien
+        - Argentina
+        - Armenia
+        - Australia
+        - Austria
+        - Azerbaijan
         - Bahamas
-        - Bangladesch
-        - Belgien
+        - Bangladesh
+        - Belarus
+        - Belgium
         - Benelux
         - Benin
-        - Bolivien
-        - Bosnien/Herzegowina
+        - Bolivia
+        - Bosnia/Herzegovina
         - Botswana
-        - Brasilien
-        - Bulgarien
+        - Brazil
+        - Bulgaria
         - Burkina Faso
-        - Cap Verde
+        - Cambodia
+        - Cameroon
+        - Canada
+        - Cape Verde
+        - Caucasus
+        - Chad
+        - Chechnya
         - Chile
         - China
+        - Colombia
+        - Congo
         - Costa Rica
-        - Deutschland
-        - Dominikanische Republik
-        - Dänemark
+        - Cote d'Ivoire
+        - Croatia
+        - Cuba
+        - Czechia
+        - Denmark
+        - Dominican Republic
         - Ecuador
+        - Egypt
         - El Salvador
-        - Elfenbeinkueste
         - Eritrea
-        - Estland
-        - Ethnische Minderheiten (z.B. Jesiden, Roma)
-        - Finnland
-        - Frankreich
+        - Estonia
+        - Ethiopia
+        - Ethnic minorities (e.g. Yazidis, Roma)
+        - Finland
+        - France
         - Gambia
-        - Georgien
+        - Georgia
+        - Germany
         - Ghana
-        - Griechenland
-        - Grobritannien
+        - Great Britain
+        - Greece
         - Guinea
-        - Holland
         - Honduras
-        - Indien
-        - Indonesien
-        - Inguschetien
-        - Irak
+        - Hungary
+        - India
+        - Indonesia
+        - Ingushetia
         - Iran
-        - Irland
+        - Iraq
+        - Ireland
         - Israel
-        - Italien
-        - Jamaika
+        - Italy
+        - Jamaica
         - Japan
-        - Jemen
-        - Jordanien
-        - Jugoslawien/MontenegroSerbien
-        - Kabardino-Balkarien
-        - Kambodscha
-        - Kamerun
-        - Kanada
-        - Kasachstan
-        - Kaukasus
-        - Kenia
-        - Kirgistan
-        - Kolumbien
-        - Kongo
+        - Jordan
+        - Kabardino-Balkaria
+        - Kazakhstan
+        - Kenya
         - Korea
         - Kosovo
-        - Kosovo-Albaner
-        - Kroatien
-        - Kuba
+        - Kosovo Albanians
         - Kurdistan
-        - Lettland
-        - Libanon
-        - Libyen
-        - Litauen
-        - Luxemburg
-        - Madagaskar
-        - Makedonien
+        - Kyrgyzstan
+        - Latvia
+        - Lebanon
+        - Libya
+        - Lithuania
+        - Luxembourg
+        - Macedonia
+        - Madagascar
         - Malaysia
         - Mali
-        - Marokko
         - Mauritius
-        - Mexiko
-        - Mocambique
-        - Moldawien
-        - Mongolei
+        - Mexico
+        - Moldova
+        - Mongolia
         - Montenegro
+        - Morocco
+        - Mozambique
         - Myanmar
         - Namibia
         - Nepal
-        - Neuseeland
+        - Netherlands
+        - New Zealand
         - Nicaragua
         - Niger
         - Nigeria
-        - Norwegen
-        - Oesterreich
+        - Norway
         - Pakistan
-        - Palstina
-        - Paraquay
+        - Palestine
+        - Paraguay
         - Peru
-        - Philippinen
-        - Polen
+        - Philippines
+        - Poland
         - Portugal
-        - Ruanda
-        - Rumänien
-        - Russland
-        - Sambia
+        - Romania
+        - Russia
+        - Rwanda
         - Samoa
-        - Saudi Arabien
-        - Schweden
-        - Schweiz
+        - Saudi Arabia
         - Senegal
-        - Serbien
-        - Seychellen
+        - Serbia
+        - Seychelles
         - Sierra Leone
-        - Simbabwe
-        - Singapur
-        - Slowakei
-        - Slowenien
+        - Singapore
+        - Slovakia
+        - Slovenia
         - Somalia
-        - Spanien
+        - South Africa
+        - Spain
         - Sri Lanka
         - St. Lucia
-        - Staatenlos
+        - Stateless
         - Sudan
-        - Suedafrika
-        - Syrien
-        - Tadschikistan
+        - Sweden
+        - Switzerland
+        - Syria
         - Taiwan
-        - Tansania
+        - Tajikistan
+        - Tanzania
         - Thailand
         - Togo
-        - Tschad
-        - Tschechien
-        - Tschetschenien
-        - Tuerkei
-        - Tunesien
+        - Tunisia
+        - Turkey
         - Turkmenistan
-        - USA
         - Uganda
         - Ukraine
-        - Ungarn
+        - United States
         - Uruguay
-        - Usbekistan
+        - Uzbekistan
         - Venezuela
         - Vietnam
-        - Weissruland
-        - Äthiopien
+        - Yemen
+        - Yugoslavia/Montenegro-Serbia
+        - Zambia
+        - Zimbabwe
       categories_dtype: string
       ordered: false
   module: pgen

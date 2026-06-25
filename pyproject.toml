@@ -92,6 +92,9 @@ extend-ignore = [
   "FIX002", # Line contains TODO (rely on TD area for spotting)
   "ISC001", # Avoid conflict with ruff-format
   "PD015",  # pd.merge fine because of inherent symmetry
+  "RUF001", # Ambiguous unicode in strings (raw SOEP labels carry them verbatim)
+  "RUF002", # Ambiguous unicode in docstrings
+  "RUF003", # Ambiguous unicode in comments
   "S101",   # Use of `assert` detected
   "TC001",  # Move application import into a type-checking block
   "TC002",  # Move third-party import into a type-checking block
