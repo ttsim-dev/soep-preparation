@@ -188,6 +188,40 @@ def test_run_imputation_draws_the_residual_with_a_signed_pmm_model():
     assert result.summary["residual_model"] == "signed_pmm"
 
 
+def test_run_imputation_reports_the_donor_pool_mean_residual():
+    """The summary reports the donor-pool mean residual, not a recipient contribution.
+
+    The residual is drawn by recipient-score matching, which reweights donors, so the
+    realised mean contribution differs from the donor-pool mean. The summary exposes the
+    donor-pool mean under an honest name and no longer claims it is the contribution.
+    """
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
+    assert "donor_pool_mean_residual" in result.summary
+    assert "mean_residual" not in result.summary
+
+
+def test_training_residual_drops_rows_with_a_missing_modelled_component():
+    """A row missing any modelled component is dropped, not zero-filled, from training.
+
+    Zero-filling a missing modelled component would push that component's full mass into
+    the residual outcome, biasing the residual donor pool. Such rows are excluded so the
+    residual is trained only on complete component vectors.
+    """
+    training = pd.DataFrame(
+        {
+            "survey_year": [2012, 2012],
+            "hh_vehicles_value_a": [10000.0, np.nan],
+            _OFFICIAL_TOTAL_COLUMN: [30000.0, 5000.0],
+        }
+    )
+    have_total, residual = _training_residual(
+        training, [CanonicalComponent.VEHICLES], target_year=2022
+    )
+    assert len(have_total) == 1
+    factor = RESIDUAL_INDEX[2022] / RESIDUAL_INDEX[2012]
+    np.testing.assert_allclose(residual, np.array([20000.0]) * factor)
+
+
 def test_training_residual_deflates_to_the_target_wave():
     """The signed residual to the official total is brought into target-wave terms."""
     training = pd.DataFrame(
@@ -219,9 +253,10 @@ def test_all_missing_target_is_excluded_from_observed_truth(
 ):
     """A household whose every modelled component is missing is not scored as zero.
 
-    The backtest truth roster must hold only genuinely observed households. A household
-    with all components missing carries no observed wealth, so recoding it to zero would
-    inflate the zero mass and the household count of the comparison target.
+    The backtest truth roster must hold only households with a complete observed
+    component vector. A household with all components missing carries no observed
+    wealth, so recoding it to zero would inflate the zero mass and the household count
+    of the comparison target.
     """
     heads = pd.DataFrame(
         {
@@ -241,18 +276,24 @@ def test_all_missing_target_is_excluded_from_observed_truth(
     assert 20 not in out["hh_id"].tolist()
 
 
-def test_observed_total_keeps_partially_observed_household(
+def test_partially_observed_household_is_excluded_from_observed_truth(
     monkeypatch: pytest.MonkeyPatch,
 ):
-    """Keep a household with at least one observed component, summing that value."""
+    """A household missing any modelled component is dropped from the truth roster.
+
+    The backtest truth must compare like with like: a partial component vector
+    zero-filled to a "total" is a completed-component sum, not an observed total, so a
+    household lacking even one component carries no comparable observed wealth and is
+    excluded.
+    """
     heads = pd.DataFrame(
         {
             "p_id": [1],
             "hh_id": [21],
             "survey_year": [2017],
-            _HW_PROPERTY_GROSS: [np.nan],
+            _HW_PROPERTY_GROSS: [100.0],
             _HW_MORTGAGE: [np.nan],
-            _HW_FINANCIAL: [40000.0],
+            _HW_FINANCIAL: [np.nan],
             _HW_VEHICLES: [np.nan],
             "hh_private_insurances_value_a": [np.nan],
             "hh_consumer_debt_value_a": [np.nan],
@@ -260,8 +301,31 @@ def test_observed_total_keeps_partially_observed_household(
     )
     monkeypatch.setattr(impute, "_household_heads", lambda *_: heads)
     out = observed_component_total({}, 2017)
-    value = out.loc[out["hh_id"] == 21, "observed_total"].iloc[0]
-    np.testing.assert_allclose(value, 40000.0)
+    assert out.empty
+
+
+def test_fully_observed_household_enters_observed_truth(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """A household with all modelled components observed is kept with the signed sum."""
+    heads = pd.DataFrame(
+        {
+            "p_id": [1],
+            "hh_id": [22],
+            "survey_year": [2017],
+            _HW_PROPERTY_GROSS: [300000.0],
+            _HW_MORTGAGE: [50000.0],
+            _HW_FINANCIAL: [40000.0],
+            _HW_VEHICLES: [12000.0],
+            "hh_private_insurances_value_a": [20000.0],
+            "hh_consumer_debt_value_a": [8000.0],
+        }
+    )
+    monkeypatch.setattr(impute, "_household_heads", lambda *_: heads)
+    out = observed_component_total({}, 2017)
+    value = out.loc[out["hh_id"] == 22, "observed_total"].iloc[0]
+    expected = 300000.0 - 50000.0 + 40000.0 + 12000.0 + 20000.0 - 8000.0
+    np.testing.assert_allclose(value, expected)
 
 
 def test_person_direct_all_missing_group_is_not_summed_to_zero():

@@ -153,6 +153,26 @@ def test_pmm_draw_rejects_fractional_exclusion_index():
         )
 
 
+def test_pmm_draw_reweights_donors_so_pool_mean_is_not_the_drawn_mean():
+    """Recipient-score matching makes the drawn mean differ from the raw donor mean.
+
+    With all recipients scored at the far donor, every draw returns that donor's value,
+    so the realised mean is that value -- not the unweighted mean of the donor pool.
+    """
+    donor_scores = np.array([0.0, 10.0])
+    donor_residuals = np.array([-100.0, 1_000.0])
+    recipient_scores = np.full(100, 10.0)
+    result = pmm_draw(
+        recipient_scores,
+        donor_scores,
+        donor_residuals,
+        k=1,
+        rng=np.random.default_rng(0),
+    )
+    assert result.values.mean() == 1_000.0
+    assert donor_residuals.mean() == 450.0
+
+
 def test_pmm_draw_rejects_boolean_exclusion_index():
     rng = np.random.default_rng(seed=0)
     with pytest.raises(ValueError, match="not booleans"):

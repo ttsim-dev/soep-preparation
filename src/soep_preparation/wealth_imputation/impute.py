@@ -253,7 +253,7 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
     )
     residual_config = None
     residual_model_kind = "none"
-    mean_residual = 0.0
+    donor_pool_mean_residual = 0.0
     if len(have_total) >= _MIN_TRAINING_ROWS:
         residual_design = encode_features(
             have_total, continuous_columns=continuous_columns, encoder=encoder
@@ -266,9 +266,10 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
             k=min(k, residual.size),
         )
         residual_model_kind = "signed_pmm"
-        # The drawn residual comes from this donor pool, so its mean is the
-        # representative contribution (the matching score itself is not in euros).
-        mean_residual = float(np.mean(residual))
+        # Unweighted mean of the residual donor pool. PMM reweights donors by recipient
+        # score, so the mean residual actually drawn across recipients differs from this
+        # pool mean; this is a donor-pool diagnostic, not the realised contribution.
+        donor_pool_mean_residual = float(np.mean(residual))
 
     draws = simulate_household_total_draws(
         recipient_keys,
@@ -286,7 +287,7 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "residual_model": residual_model_kind,
         "residual_is_sensitivity": True,
         "uses_observed_2022_answers": False,
-        "mean_residual": mean_residual,
+        "donor_pool_mean_residual": donor_pool_mean_residual,
         "n_draws": n_draws,
         "k": k,
         "level": level,
@@ -300,27 +301,29 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
 def observed_component_total(
     modules: Mapping[str, pd.DataFrame], wave: int
 ) -> pd.DataFrame:
-    """Return the observed signed component sum for genuinely observed households.
+    """Return the signed completed-component sum for fully observed households.
 
     This is the comparison target for the out-of-fold backtest: the same six components
     the imputation models (property gross, mortgage, financial, vehicles, pension,
     consumer debt), signed and summed per household from the actual `wave` data, with no
-    residual. Only households with **at least one** non-missing modelled component are
-    kept -- a household whose every component is missing carries no observed wealth and
-    would otherwise be scored as an "observed zero", inflating both the zero mass
-    and the household count of the backtest truth.
+    residual. Only households whose **every** modelled component is non-missing enter
+    the roster -- a household missing any component has no comparable observed total,
+    since zero-filling the missing cells would turn a partial vector into a fake
+    observed sum (deflating its level and inflating both the zero mass and the household
+    count of the backtest truth).
 
-    Missing cells within an otherwise-observed household are treated as a structural
-    zero (the household *is* in the wealth wave and answered at least one component), so
-    a partially observed household keeps the sum of its observed components.
+    The kept quantity is the *completed-component* sum: the signed total over the six
+    modelled components for households that observed all of them. It is not the
+    household's official net total and carries no residual.
 
     Args:
         modules: Cleaned `MODULES` frames.
-        wave: The survey year whose observed component sum to return.
+        wave: The survey year whose completed-component sum to return.
 
     Returns:
-        Columns `hh_id`, `survey_year`, `observed_total` (float64); one row per
-        genuinely-observed household.
+        Columns `hh_id`, `survey_year`, `observed_total` (float64); one row per fully
+        observed household. The fraction of `wave` households dropped for an incomplete
+        component vector is the support loss this restriction costs.
     """
     heads = _household_heads(modules)
     wave_heads = heads[heads["survey_year"] == wave]
@@ -328,12 +331,12 @@ def observed_component_total(
     numeric = wave_heads[component_columns].apply(
         lambda column: pd.to_numeric(column, errors="coerce")
     )
-    any_observed = numeric.notna().any(axis=1).to_numpy()
-    observed = wave_heads.loc[any_observed].reset_index(drop=True)
-    numeric = numeric.loc[any_observed].reset_index(drop=True)
+    fully_observed = numeric.notna().all(axis=1).to_numpy()
+    observed = wave_heads.loc[fully_observed].reset_index(drop=True)
+    numeric = numeric.loc[fully_observed].reset_index(drop=True)
     total = np.zeros(len(observed), dtype="float64")
     for component, column in _COMPONENT_COLUMNS.items():
-        values = numeric[column].fillna(0.0).to_numpy(dtype="float64")
+        values = numeric[column].to_numpy(dtype="float64")
         total += component_sign(component) * values
     return observed[_HH_KEYS].assign(observed_total=total)
 
@@ -381,6 +384,10 @@ def _household_person_direct(pwealth: pd.DataFrame) -> pd.DataFrame:
     unpredictably in the residual. A proper fix needs an eligible-adult roster and
     component-level PUNR completion.
     """
+    # REVIEW (sample-frame / PUNR): the member sum omits unrepresented eligible adults,
+    # so person-direct totals are biased under partial unit nonresponse. A faithful fix
+    # needs an eligible-adult roster and component-level PUNR completion; left for human
+    # decision.
     source_to_target = {
         source: target for target, source in _PERSON_DIRECT_SOURCE.items()
     }
@@ -405,20 +412,25 @@ def _training_residual(
     exceeds the official total). It is deflated from each household's wave into
     `target_year` terms by `RESIDUAL_INDEX` -- a property/equity blend standing in for
     the unmodelled business and other-real-estate mass -- so the time component is
-    explicit rather than absorbed into the OLS coefficients. Rows whose residual is
-    non-finite are dropped so the frame and the residual array stay aligned for
+    explicit rather than absorbed into the OLS coefficients.
+
+    Only rows with an official total *and* a complete used-component vector enter the
+    residual donor pool: a missing modelled component is dropped, not zero-filled, since
+    zero-filling would push that component's full mass into the residual outcome and
+    bias the donor pool. The fraction of `official-total` rows dropped for an incomplete
+    component vector is the support loss this restriction costs. Rows whose residual is
+    non-finite are also dropped so the frame and the residual array stay aligned for
     `ResidualModel.fit`.
     """
-    have_total = training.dropna(subset=[_OFFICIAL_TOTAL_COLUMN])
+    used_columns = [_COMPONENT_COLUMNS[component] for component in used]
+    have_total = training.dropna(subset=[_OFFICIAL_TOTAL_COLUMN, *used_columns])
     if have_total.empty:
         return have_total, np.empty(0, dtype="float64")
     modelled = np.zeros(len(have_total), dtype="float64")
     for component in used:
-        values = (
-            pd.to_numeric(have_total[_COMPONENT_COLUMNS[component]], errors="coerce")
-            .fillna(0.0)
-            .to_numpy(dtype="float64")
-        )
+        values = pd.to_numeric(
+            have_total[_COMPONENT_COLUMNS[component]], errors="coerce"
+        ).to_numpy(dtype="float64")
         modelled += component_sign(component) * values
     official = pd.to_numeric(
         have_total[_OFFICIAL_TOTAL_COLUMN], errors="coerce"

@@ -93,5 +93,12 @@ if RUN_WEALTH_IMPUTATION:
         report["n_training_heads"] = int(result.summary["n_training_heads"])
         report["holdout_wave"] = _HOLDOUT_WAVE
         report["training_waves"] = list(_TRAINING_WAVES)
+        # Support loss from the complete-component-vector restriction on the truth
+        # roster: households imputed in the holdout wave but excluded from the observed
+        # truth because they did not observe every modelled component.
+        report["n_fully_observed_truth"] = len(observed)
+        report["n_truth_dropped_incomplete"] = int(
+            result.summary["n_recipients"] - len(observed)
+        )
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
