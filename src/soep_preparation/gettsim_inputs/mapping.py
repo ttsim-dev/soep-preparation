@@ -50,7 +50,7 @@ SOEP_TO_GETTSIM: Final[MappingProxyType[str, str | None]] = MappingProxyType(
         "wohngeld__mietstufe_hh": None,
         # Family (`familie__*`).
         "familie__alleinerziehend": None,
-        "familie__p_id_ehepartner": "partner_p_id",
+        "familie__p_id_ehepartner": "ehepartner_p_id",
         "familie__p_id_elternteil_1": "mother_p_id",
         "familie__p_id_elternteil_2": None,
         # Income (`einnahmen__*`).
@@ -142,8 +142,8 @@ SOEP_TO_GETTSIM: Final[MappingProxyType[str, str | None]] = MappingProxyType(
         # Citizen's income / basic income support
         # (`bürgergeld__*`, `arbeitslosengeld_2__*`).
         "bürgergeld__bezug_im_vorjahr": None,
-        "bürgergeld__p_id_einstandspartner": None,
-        "arbeitslosengeld_2__p_id_einstandspartner": None,
+        "bürgergeld__p_id_einstandspartner": "partner_p_id",
+        "arbeitslosengeld_2__p_id_einstandspartner": "partner_p_id",
         # Evaluation date (set by GETTSIM at call time, not from data).
         "evaluation_day": None,
         "evaluation_month": None,
@@ -237,9 +237,5 @@ GAP_NOTES: Final[MappingProxyType[str, str]] = MappingProxyType(
         "kindergeld__p_id_empfänger": "No recipient pointer in SOEP.",
         "unterhalt__anspruch_m": "No entitlement amount in SOEP.",
         "bürgergeld__bezug_im_vorjahr": "Derive from prior-year Bürgergeld receipt.",
-        "bürgergeld__p_id_einstandspartner": "No Einstandspartner pointer in SOEP.",
-        "arbeitslosengeld_2__p_id_einstandspartner": (
-            "No Einstandspartner pointer in SOEP (pre-2023 SGB II)."
-        ),
     }
 )

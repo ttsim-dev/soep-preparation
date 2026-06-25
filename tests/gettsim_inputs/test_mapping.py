@@ -48,6 +48,23 @@ def test_steuerklasse_has_no_soep_source() -> None:
     assert SOEP_TO_GETTSIM["lohnsteuer__steuerklasse"] is None
 
 
+def test_ehepartner_maps_to_marriage_restricted_pointer() -> None:
+    """The spouse pointer uses `ehepartner_p_id`, not the generic partner pointer."""
+    assert SOEP_TO_GETTSIM["familie__p_id_ehepartner"] == "ehepartner_p_id"
+
+
+@pytest.mark.parametrize(
+    "gettsim_qname",
+    [
+        "bürgergeld__p_id_einstandspartner",
+        "arbeitslosengeld_2__p_id_einstandspartner",
+    ],
+)
+def test_einstandspartner_maps_to_generic_partner_pointer(gettsim_qname: str) -> None:
+    """The Einstandspartner uses the generic `partner_p_id`, including unmarried."""
+    assert SOEP_TO_GETTSIM[gettsim_qname] == "partner_p_id"
+
+
 def test_all_keys_are_gettsim_qnames_not_soep_names() -> None:
     """GETTSIM-input keys must not collide with SOEP final variable names."""
     soep_named_keys = set(SOEP_TO_GETTSIM) & set(METADATA)
