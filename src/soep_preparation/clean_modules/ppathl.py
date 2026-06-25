@@ -4,8 +4,8 @@ import pandas as pd
 
 from soep_preparation.utilities import month_mapping
 from soep_preparation.utilities.data_manipulator import (
-    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    convert_to_float,
     object_to_int,
     object_to_int_categorical,
     object_to_str_categorical,
@@ -269,16 +269,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # individual staying probabilities and weighting factors
-    out["individual_staying_probability"] = apply_smallest_float_dtype(
-        raw_data["pbleib"]
-    )
-    out["individual_weighting_factor"] = apply_smallest_float_dtype(raw_data["phrf"])
-    out["individual_weighting_factor_new_only"] = apply_smallest_float_dtype(
-        raw_data["phrf0"]
-    )
-    out["individual_weighting_factor_without_new"] = apply_smallest_float_dtype(
-        raw_data["phrf1"]
-    )
+    out["individual_staying_probability"] = convert_to_float(raw_data["pbleib"])
+    out["individual_weighting_factor"] = convert_to_float(raw_data["phrf"])
+    out["individual_weighting_factor_new_only"] = convert_to_float(raw_data["phrf0"])
+    out["individual_weighting_factor_without_new"] = convert_to_float(raw_data["phrf1"])
 
     # SOEP-RV record-linkage identifier (`ID SUF Rentenversicherung`): the bridge
     # to the FDZ-RV pension records, populated for respondents who consented to

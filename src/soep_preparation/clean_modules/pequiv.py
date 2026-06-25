@@ -3,8 +3,8 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    convert_to_float,
     create_dummy,
     object_to_bool_categorical,
     object_to_float,
@@ -16,7 +16,7 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
-    return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
+    return convert_to_float(frailty_inputs.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -37,7 +37,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # Consumer Price Index (CNEF y11101), for deflating nominal values to real
     # terms. A year-level series; constant within each survey year.
-    out["cpi"] = apply_smallest_float_dtype(object_to_float(raw_data["y11101"]))
+    out["cpi"] = convert_to_float(object_to_float(raw_data["y11101"]))
 
     # hh characteristics
     out["number_of_persons_hh"] = apply_smallest_int_dtype(raw_data["d11106"])
@@ -73,9 +73,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["kindergeld_y_hh_pequiv"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["chspt"], value=0)
     )
-    out["kindergeld_m_hh_pequiv"] = apply_smallest_float_dtype(
-        out["kindergeld_y_hh_pequiv"] / 12
-    )
+    out["kindergeld_m_hh_pequiv"] = convert_to_float(out["kindergeld_y_hh_pequiv"] / 12)
     out["mutterschaftsgeld_received_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["imaty"], value=0)
     )
@@ -87,15 +85,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["kinderzuschlag_y_hh_pequiv"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["adchb"], value=0)
     )
-    out["kinderzuschlag_m_hh_pequiv"] = apply_smallest_float_dtype(
+    out["kinderzuschlag_m_hh_pequiv"] = convert_to_float(
         out["kinderzuschlag_y_hh_pequiv"] / 12
     )
     out["wohngeld_y_hh_pequiv"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["house"], value=0)
     )
-    out["wohngeld_m_hh_pequiv"] = apply_smallest_float_dtype(
-        out["wohngeld_y_hh_pequiv"] / 12
-    )
+    out["wohngeld_m_hh_pequiv"] = convert_to_float(out["wohngeld_y_hh_pequiv"] / 12)
 
     # individual social benefits
     out["arbeitslosengeld_y"] = object_to_float(
@@ -108,7 +104,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["alg2"], value=0)
     )
-    out["arbeitslosengeld_2_m_hh_pequiv"] = apply_smallest_float_dtype(
+    out["arbeitslosengeld_2_m_hh_pequiv"] = convert_to_float(
         out["arbeitslosengeld_2_y_hh_pequiv"] / 12
     )
 
@@ -365,7 +361,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["med_height_pequiv"] = object_to_float(raw_data["m11122"])
     out["med_weight_pequiv"] = object_to_float(raw_data["m11123"])
 
-    out["bmi_pequiv"] = apply_smallest_float_dtype(
+    out["bmi_pequiv"] = convert_to_float(
         out["med_weight_pequiv"] / ((out["med_height_pequiv"] / 100) ** 2),
     )
     out["obese_pequiv"] = create_dummy(

@@ -102,16 +102,19 @@ def replace_missing_codes_with_na(series: pd.Series) -> pd.Series:
     return series.replace(values_to_remove, pd.NA)
 
 
-def apply_smallest_float_dtype(series: pd.Series) -> pd.Series:
-    """Apply the smallest bit-size float dtype to a series.
+def convert_to_float(series: pd.Series) -> pd.Series:
+    """Convert a numeric or numeric-like series to 64-bit pyarrow float.
+
+    Float columns are always stored as `float64[pyarrow]`; unlike integers, floats
+    are not downcast to the smallest dtype.
 
     Args:
         series: The series to convert.
 
     Returns:
-        The series with the smallest float dtype applied.
+        The series as `float64[pyarrow]`.
     """
-    return pd.to_numeric(series, downcast="float", dtype_backend="pyarrow")
+    return pd.to_numeric(series, dtype_backend="pyarrow").astype("float64[pyarrow]")
 
 
 def apply_smallest_int_dtype(
@@ -262,7 +265,7 @@ def object_to_float(series: pd.Series) -> pd.Series:
         entries_expected_types=[series.unique(), ("float", "int", "str")],
     )
     sr_relevant_values_only = replace_missing_codes_with_na(series)
-    return apply_smallest_float_dtype(sr_relevant_values_only)
+    return convert_to_float(sr_relevant_values_only)
 
 
 def object_to_int(series: pd.Series) -> pd.Series:

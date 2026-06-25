@@ -3,8 +3,8 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    convert_to_float,
     create_dummy,
     object_to_bool_categorical,
     object_to_float,
@@ -51,11 +51,11 @@ def _private_rente_beitrag_m(private_rente_data: pd.DataFrame) -> pd.Series:
 
     data = pd.concat([private_rente_data["p_id"], combined_years], axis=1)
     out = data.groupby("p_id")["private_rente_contribution_m"].ffill()
-    return apply_smallest_float_dtype(out)
+    return convert_to_float(out)
 
 
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
-    return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
+    return convert_to_float(frailty_inputs.mean(axis=1))
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915

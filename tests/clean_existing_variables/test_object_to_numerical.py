@@ -7,28 +7,28 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def test_object_to_float_assert_dtype():
-    expected = pd.Series([0.1, 0.2], dtype="float[pyarrow]").dtype
+    expected = pd.Series([0.1, 0.2], dtype="double[pyarrow]").dtype
     sr = pd.Series([0.1, 0.2], dtype=object)
     actual = object_to_float(sr).dtype
     assert actual == expected
 
 
 def test_object_to_float_assert_remove_missing_str():
-    expected = pd.Series([0.1, 0.2, pd.NA], dtype="float[pyarrow]")
+    expected = pd.Series([0.1, 0.2, pd.NA], dtype="double[pyarrow]")
     sr = pd.Series([0.1, 0.2, "[-1] Missing"], dtype=object)
     actual = object_to_float(sr)
     pd.testing.assert_series_equal(actual, expected)
 
 
 def test_object_to_float_assert_remove_missing_int():
-    expected = pd.Series([0.1, 0.2, pd.NA], dtype="float[pyarrow]")
+    expected = pd.Series([0.1, 0.2, pd.NA], dtype="double[pyarrow]")
     sr = pd.Series([0.1, 0.2, -1], dtype=object)
     actual = object_to_float(sr)
     pd.testing.assert_series_equal(actual, expected)
 
 
 def test_object_to_float_assert_remove_missing_float():
-    expected = pd.Series([0.1, 0.2, pd.NA], dtype="float[pyarrow]")
+    expected = pd.Series([0.1, 0.2, pd.NA], dtype="double[pyarrow]")
     sr = pd.Series([0.1, 0.2, -0.1], dtype=object)
     actual = object_to_float(sr)
     pd.testing.assert_series_equal(actual, expected)
