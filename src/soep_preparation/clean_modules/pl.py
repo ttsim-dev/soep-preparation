@@ -101,6 +101,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
+    # Self-assessed likelihood of future (re-)employment, SOEP `plb0417_v2`
+    # ("Zukuenftige Erwerbstaetigkeit beabsichtigt"), asked only of the currently
+    # non-employed. Codes ascend with the intention to work.
+    out["future_employment_intention_low_to_high"] = object_to_int(
+        series=raw_data["plb0417_v2"],
+        renaming={
+            "[1] Nein ganz sicher nicht": 1,
+            "[2] Eher unwahrscheinlich": 2,
+            "[3] Wahrscheinlich": 3,
+            "[4] Ganz sicher": 4,
+        },
+    )
     out["altersteilzeit_type"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plb0471_h"], value=0)
