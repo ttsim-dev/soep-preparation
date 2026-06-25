@@ -5,13 +5,22 @@ person-component values to a household net total, and the spread of those totals
 across draws becomes the band. Summing within each draw before taking the spread is
 the correct way to aggregate -- component band endpoints are never summed.
 
-The resulting bands are **conditional donor-randomisation spreads**, not calibrated
-predictive intervals: given the fitted models and covariates, the components are drawn
-independently (the only cross-component dependence is through shared covariates, not a
-modelled component covariance), and the draws hold the fitted models and the chosen
-implicate fixed -- the residual *model* is fixed but its donor value is redrawn each
-draw. One shared RNG threads all draws so a fixed seed reproduces the whole simulation.
+The total is an **independent conditional recombination (sensitivity)**, not a coherent
+joint draw: each component and the accounting residual are drawn independently given the
+covariates, so the only cross-component dependence carried into the total is through
+shared covariates -- the empirical co-movement of the components within a real household
+is not reproduced, and the household accounting law that ties the components to the
+official total is not enforced draw by draw. The resulting bands are therefore
+**conditional donor-randomisation spreads**, not calibrated predictive intervals: they
+hold the fitted models and the chosen implicate fixed (the residual *model* is fixed but
+its donor value is redrawn each draw). One shared RNG threads all draws so a fixed seed
+reproduces the whole simulation.
 """
+
+# REVIEW (F4): components and the accounting residual are drawn independently, so the
+# joint accounting law and the empirical component co-movement are not preserved. A
+# coherent fix draws a whole donor bundle (all components of one observed household)
+# together rather than recombining marginals; left for human decision.
 
 from collections.abc import Sequence
 from dataclasses import dataclass

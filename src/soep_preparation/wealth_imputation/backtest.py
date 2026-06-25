@@ -51,8 +51,13 @@ def backtest_report(comparison: pd.DataFrame, *, n_groups: int = 5) -> dict:
         A dict with the observed and imputed distribution summaries, the quintile
         confusion counts (rows = observed quintile, columns = predicted quintile), exact
         quintile accuracy, mean absolute quintile error, the rank correlation, the band
-        coverage (fraction of observed values inside the imputed band), and the median
-        absolute level error. No row-level value is included.
+        coverage, and the median absolute level error. No row-level value is included.
+
+        `band_coverage` is the fraction of observed completed-component totals that fall
+        inside the imputed donor-spread band. The band is a conditional donor-spread
+        quantile, not a calibrated predictive interval, so a high coverage is *not*
+        evidence of predictive calibration -- it only says the conditional donor spread
+        happens to bracket the observed values at this rate.
 
     Raises:
         ValueError: On missing columns or a non-finite comparison column.
