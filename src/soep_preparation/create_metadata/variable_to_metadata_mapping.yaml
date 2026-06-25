@@ -1,101 +1,4 @@
 ---
-ehepartner_p_id:
-  dtype: int32[pyarrow]
-  module: ppathl_pgen
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-place_of_residence_1989:
-  dtype:
-    categorical:
-      categories:
-        - Abroad (Ausland)
-        - East Germany (DDR) incl. East Berlin
-        - West Germany (FRG) incl. West Berlin
-      categories_dtype: string
-      ordered: false
-  module: ppathl
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 active_work_search_last_four_weeks:
   dtype:
     categorical:
@@ -105,7 +8,54 @@ active_work_search_last_four_weeks:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
+  reference: previous_month
   survey_years:
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+actual_working_hours_w:
+  dtype: double[pyarrow]
+  module: pgen
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
     - 1999
     - 2000
     - 2001
@@ -135,96 +85,7 @@ active_work_search_last_four_weeks:
 age:
   dtype: int8[pyarrow]
   module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-received_unemployment_benefits_last_year:
-  dtype: bool[pyarrow]
-  module: pequiv_pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-sozialhilfe_general_y_hh:
-  dtype: float[pyarrow]
-  module: pequiv
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -268,8 +129,9 @@ sozialhilfe_general_y_hh:
     - 2023
     - 2024
 alterssicherung_landwirte_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -313,8 +175,9 @@ alterssicherung_landwirte_survivor_y:
     - 2023
     - 2024
 alterssicherung_landwirte_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -366,6 +229,7 @@ altersteilzeit:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2002
     - 2003
@@ -389,6 +253,7 @@ altersteilzeit_2001:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2001
 altersteilzeit_type:
@@ -400,6 +265,7 @@ altersteilzeit_type:
       categories_dtype: string
       ordered: false
   module: pl
+  reference: current
   survey_years:
     - 2002
     - 2003
@@ -414,9 +280,41 @@ altersteilzeit_type:
     - 2012
     - 2013
     - 2014
-other_pension_survivor_y:
-  dtype: float[pyarrow]
-  module: pequiv
+arbeitslosengeld_2_currently_received_hh:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: hl
+  reference: current
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+arbeitslosengeld_2_m_hh:
+  dtype: double[pyarrow]
+  module: pequiv_hl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -459,32 +357,11 @@ other_pension_survivor_y:
     - 2022
     - 2023
     - 2024
-other_pension_y:
-  dtype: float[pyarrow]
-  module: pequiv
+arbeitslosengeld_2_m_hh_hl:
+  dtype: double[pyarrow]
+  module: hl
+  reference: previous_year
   survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
     - 2006
     - 2007
     - 2008
@@ -504,9 +381,10 @@ other_pension_y:
     - 2022
     - 2023
     - 2024
-registered_unemployed:
-  dtype: bool[pyarrow]
-  module: pgen
+arbeitslosengeld_2_m_hh_pequiv:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -552,120 +430,8 @@ registered_unemployed:
 arbeitslosengeld_2_number_of_months_hh:
   dtype: int8[pyarrow]
   module: hl
+  reference: previous_year
   survey_years:
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-arbeitslosengeld_2_m_hh:
-  dtype: float[pyarrow]
-  module: pequiv_hl
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-arbeitslosengeld_2_m_hh_hl:
-  dtype: float[pyarrow]
-  module: hl
-  survey_years:
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-arbeitslosengeld_2_m_hh_pequiv:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
     - 2006
     - 2007
     - 2008
@@ -686,8 +452,9 @@ arbeitslosengeld_2_m_hh_pequiv:
     - 2023
     - 2024
 arbeitslosengeld_2_y_hh_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -730,9 +497,63 @@ arbeitslosengeld_2_y_hh_pequiv:
     - 2022
     - 2023
     - 2024
+arbeitslosengeld_received_last_month:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: previous_month
+  survey_years:
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+arbeitslosengeld_received_months_3_to_5:
+  dtype:
+    categorical:
+      categories:
+        - true
+        - false
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: previous_month
+  survey_years:
+    - 2019
+    - 2020
 arbeitslosengeld_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -776,8 +597,9 @@ arbeitslosengeld_y:
     - 2023
     - 2024
 arbeitslosenhilfe_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -821,98 +643,9 @@ arbeitslosenhilfe_y:
     - 2023
     - 2024
 bafög_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-beamtenpension_survivor_y:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-beamtenpension_y:
-  dtype: float[pyarrow]
-  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -956,8 +689,9 @@ beamtenpension_y:
     - 2023
     - 2024
 beamtenpension_supplementary_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -1001,8 +735,9 @@ beamtenpension_supplementary_survivor_y:
     - 2023
     - 2024
 beamtenpension_supplementary_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -1045,9 +780,10 @@ beamtenpension_supplementary_y:
     - 2022
     - 2023
     - 2024
-civil_servant:
-  dtype: bool[pyarrow]
-  module: pgen
+beamtenpension_survivor_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -1090,15 +826,18 @@ civil_servant:
     - 2022
     - 2023
     - 2024
-employment_ended_business_closure:
-  dtype:
-    categorical:
-      categories:
-        - Betriebsstillegung
-      categories_dtype: string
-      ordered: false
-  module: pl
+beamtenpension_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
   survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
     - 1991
     - 1992
     - 1993
@@ -1107,22 +846,8 @@ employment_ended_business_closure:
     - 1996
     - 1997
     - 1998
-employment_ended_reason_pl:
-  dtype:
-    categorical:
-      categories:
-        - Aufgabe der selbstaendigen Taetigkeit
-        - Befristete Beschaeftigung war beendet
-        - Beurlaubung/Mutterschutz/Elternzeit
-        - Durch Aufloesungsvertrag
-        - Durch Kuendigung des Arbeitgebers
-        - Durch eigene Kuendigung
-        - Erreichen der Altersgrenze
-        - Wegen Betriebsstilllegung
-      categories_dtype: string
-      ordered: false
-  module: pl
-  survey_years:
+    - 1999
+    - 2000
     - 2001
     - 2002
     - 2003
@@ -1147,26 +872,10 @@ employment_ended_reason_pl:
     - 2022
     - 2023
     - 2024
-employment_ended_reason_1999_pl:
-  dtype:
-    categorical:
-      categories:
-        - Aufloesungsvertrag
-        - Beurlaubung
-        - Eigene Kuendigung
-        - Ende Befristung
-        - Geschaeftsaufgabe, Selbstaendige
-        - Kuendigung Arbeitgeber
-        - Verrentung,Pensionierung
-      categories_dtype: string
-      ordered: false
-  module: pl
-  survey_years:
-    - 1999
-    - 2000
 berufsständische_altersvorsorge_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -1210,8 +919,9 @@ berufsständische_altersvorsorge_survivor_y:
     - 2023
     - 2024
 berufsständische_altersvorsorge_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -1255,8 +965,9 @@ berufsständische_altersvorsorge_y:
     - 2023
     - 2024
 betreuungsgeld_y_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -1300,8 +1011,9 @@ betreuungsgeld_y_hh:
     - 2023
     - 2024
 betriebliche_altersversorgung_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -1345,8 +1057,9 @@ betriebliche_altersversorgung_survivor_y:
     - 2023
     - 2024
 betriebliche_altersversorgung_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -1389,18 +1102,25 @@ betriebliche_altersversorgung_y:
     - 2022
     - 2023
     - 2024
-firm_size:
-  dtype:
-    categorical:
-      categories:
-        - GE 20 LT 200
-        - GE 200 LT 2000
-        - GE 2000
-        - LT 20
-        - Selbstaendig, ohne Mitarbeitende
-      categories_dtype: string
-      ordered: false
-  module: pgen
+birth_month:
+  dtype: int8[pyarrow]
+  module: ppathl_bioedu
+  reference: time_invariant
+  survey_years: null
+birth_month_bioedu:
+  dtype: int8[pyarrow]
+  module: bioedu
+  reference: time_invariant
+  survey_years: null
+birth_month_child:
+  dtype: int8[pyarrow]
+  module: biobirth
+  reference: time_invariant
+  survey_years: null
+birth_month_ppathl:
+  dtype: int8[pyarrow]
+  module: ppathl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -1413,540 +1133,6 @@ firm_size:
     - 1992
     - 1993
     - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-firm_size_detailed_but_inconsistent_categories:
-  dtype:
-    categorical:
-      categories:
-        - 100 bis unter 200
-        - 11 bis unter 20
-        - 20 bis unter 100
-        - 200 bis unter 2000
-        - 2000 und mehr
-        - 5 bis 10
-        - '91 bis 04: 5 bis unter 20'
-        - Selbstaendig-ohne Mitarb.
-        - Unter 5
-        - 'bis 90: unter 20'
-        - 'bis 98: 20 bis unter 200'
-      categories_dtype: string
-      ordered: false
-  module: pgen
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-arbeitslosengeld_2_currently_received_hh:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: hl
-  survey_years:
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-hilfe_zum_lebensunterhalt_received_hh:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: hl
-  survey_years:
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-kindergeld_received_hh:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: hl
-  survey_years:
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-kinderzuschlag_currently_received_hh:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: hl
-  survey_years:
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-wohngeld_received_hh:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: hl
-  survey_years:
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-receives_own_pension:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-arbeitslosengeld_received_last_month:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-arbeitslosengeld_received_months_3_to_5:
-  dtype:
-    categorical:
-      categories:
-        - true
-        - false
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2019
-    - 2020
-kinderzuschlag_received_last_year_hh:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: hl
-  survey_years:
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-mutterschaftsgeld_received:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool
-      ordered: false
-  module: pl_pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-mutterschaftsgeld_received_last_month:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: false
-  module: pl
-  survey_years:
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-mutterschaftsgeld_received_pkal:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-mutterschaftsgeld_received_pl:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: false
-  module: pl
-  survey_years:
     - 1995
     - 1996
     - 1997
@@ -2000,127 +1186,7 @@ birth_state:
       categories_dtype: string
       ordered: false
   module: ppathl
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-birth_month:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-        - 11
-        - 12
-      categories_dtype: int64
-      ordered: false
-  module: ppathl_bioedu
-  survey_years: null
-birth_month_bioedu:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-        - 11
-        - 12
-      categories_dtype: int8[pyarrow]
-      ordered: true
-  module: bioedu
-  survey_years: null
-birth_month_child:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-        - 11
-        - 12
-      categories_dtype: int8[pyarrow]
-      ordered: true
-  module: biobirth
-  survey_years: null
-birth_month_ppathl:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-        - 11
-        - 12
-      categories_dtype: int8[pyarrow]
-      ordered: true
-  module: ppathl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -2166,6 +1232,7 @@ birth_month_ppathl:
 birth_year:
   dtype: int16[pyarrow]
   module: pbrutto
+  reference: time_invariant
   survey_years:
     - 1985
     - 1986
@@ -2210,6 +1277,7 @@ birth_year:
 birth_year_child:
   dtype: int16[pyarrow]
   module: biobirth
+  reference: time_invariant
   survey_years: null
 birthplace:
   dtype:
@@ -2220,6 +1288,7 @@ birthplace:
       categories_dtype: string
       ordered: false
   module: biol
+  reference: time_invariant
   survey_years:
     - 1996
     - 1997
@@ -2253,6 +1322,7 @@ birthplace_germany_father:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: biol
+  reference: time_invariant
   survey_years:
     - 2006
     - 2007
@@ -2276,6 +1346,7 @@ birthplace_germany_mother:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: biol
+  reference: time_invariant
   survey_years:
     - 2006
     - 2007
@@ -2291,8 +1362,9 @@ birthplace_germany_mother:
     - 2017
     - 2018
 bmi:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv_pl
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -2316,8 +1388,9 @@ bmi:
     - 2023
     - 2024
 bmi_health:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -2361,8 +1434,9 @@ bmi_health:
     - 2023
     - 2024
 bmi_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -2386,8 +1460,9 @@ bmi_pequiv:
     - 2023
     - 2024
 bmi_pl:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -2410,6 +1485,7 @@ born_in_germany:
       categories_dtype: string
       ordered: false
   module: ppathl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -2455,6 +1531,7 @@ born_in_germany:
 building_year_hh_max:
   dtype: int16[pyarrow]
   module: hgen
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -2500,6 +1577,7 @@ building_year_hh_max:
 building_year_hh_min:
   dtype: int16[pyarrow]
   module: hgen
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -2545,10 +1623,12 @@ building_year_hh_min:
 child_number:
   dtype: int64
   module: biobirth
+  reference: time_invariant
   survey_years: null
 children_care_facility_costs_m:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: kidlong
+  reference: current
   survey_years:
     - 2010
     - 2011
@@ -2559,6 +1639,98 @@ children_care_facility_costs_m:
     - 2019
     - 2021
     - 2023
+christmas_bonus_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+civil_servant:
+  dtype: bool[pyarrow]
+  module: pgen
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 confession:
   dtype:
     categorical:
@@ -2570,6 +1742,7 @@ confession:
       categories_dtype: string
       ordered: false
   module: pl
+  reference: current
   survey_years:
     - 2013
     - 2016
@@ -2596,6 +1769,7 @@ confession_specific:
       categories_dtype: string
       ordered: false
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1991
@@ -2613,45 +1787,96 @@ confession_specific:
     - 2021
     - 2023
 consumer_debt_value_a:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 consumer_debt_value_b:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 consumer_debt_value_c:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 consumer_debt_value_d:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 consumer_debt_value_e:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
+contractual_working_hours_w:
+  dtype: double[pyarrow]
+  module: pgen
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 country_of_birth:
   dtype:
     categorical:
@@ -2846,6 +2071,7 @@ country_of_birth:
       categories_dtype: string
       ordered: false
   module: ppathl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -2889,8 +2115,9 @@ country_of_birth:
     - 2023
     - 2024
 cpi:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -2936,6 +2163,7 @@ cpi:
 disability_degree:
   dtype: int8[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -2978,6 +2206,191 @@ disability_degree:
 early_retirement_number_of_months_last_year:
   dtype: int8[pyarrow]
   module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+earnings_from_first_job_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+earnings_from_second_job_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+earnings_from_self_employment_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+earnings_from_work_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -3037,6 +2450,7 @@ education_casmin:
       categories_dtype: string
       ordered: false
   module: pgen
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -3082,6 +2496,7 @@ education_casmin:
 education_casmin_cat:
   dtype: int8[pyarrow]
   module: pgen
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -3140,6 +2555,7 @@ education_isced:
       categories_dtype: string
       ordered: false
   module: pgen
+  reference: time_invariant
   survey_years:
     - 2010
     - 2011
@@ -3170,10 +2586,12 @@ education_isced_97:
       categories_dtype: string
       ordered: false
   module: pgen
+  reference: time_invariant
   survey_years: []
 education_isced_cat:
   dtype: int8[pyarrow]
   module: pgen
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -3217,8 +2635,55 @@ education_isced_cat:
     - 2023
     - 2024
 ehegattenunterhalt_received_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+ehepartner_p_id:
+  dtype: int32[pyarrow]
+  module: ppathl_pgen
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -3262,98 +2727,9 @@ ehegattenunterhalt_received_y:
     - 2023
     - 2024
 eigenheimzulage_y_hh:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-income_from_rental_leasing_y_hh:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-income_from_interest_dividends_y_hh:
   dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -3396,9 +2772,10 @@ income_from_interest_dividends_y_hh:
     - 2022
     - 2023
     - 2024
-income_after_tax_y_hh:
-  dtype: float[pyarrow]
-  module: pequiv
+employed:
+  dtype: bool[pyarrow]
+  module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -3441,189 +2818,10 @@ income_after_tax_y_hh:
     - 2022
     - 2023
     - 2024
-income_before_tax_y_hh:
-  dtype: double[pyarrow]
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-earnings_from_work_y:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-earnings_from_first_job_y:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-earnings_from_self_employment_y:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-earnings_from_second_job_y:
-  dtype: float[pyarrow]
-  module: pequiv
+employed_full_time:
+  dtype: bool[pyarrow]
+  module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -3669,6 +2867,53 @@ earnings_from_second_job_y:
 employed_in_at_least_one_month:
   dtype: bool[pyarrow]
   module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+employed_part_time:
+  dtype: bool[pyarrow]
+  module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -3714,6 +2959,7 @@ employed_in_at_least_one_month:
 employed_y:
   dtype: bool[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -3756,6 +3002,150 @@ employed_y:
     - 2022
     - 2023
     - 2024
+employment_ended_business_closure:
+  dtype:
+    categorical:
+      categories:
+        - Betriebsstillegung
+      categories_dtype: string
+      ordered: false
+  module: pl
+  reference: current
+  survey_years:
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+employment_ended_reason_1999_pl:
+  dtype:
+    categorical:
+      categories:
+        - Aufloesungsvertrag
+        - Beurlaubung
+        - Eigene Kuendigung
+        - Ende Befristung
+        - Geschaeftsaufgabe, Selbstaendige
+        - Kuendigung Arbeitgeber
+        - Verrentung,Pensionierung
+      categories_dtype: string
+      ordered: false
+  module: pl
+  reference: current
+  survey_years:
+    - 1999
+    - 2000
+employment_ended_reason_pgen:
+  dtype:
+    categorical:
+      categories:
+        - Apprenticeship ended (1985-1998)
+        - Business closure (1991-1998, since 2001)
+        - Dismissal by employer
+        - Early-retirement scheme (1987-1998)
+        - Fixed-term employment (1985-1998)
+        - Fixed-term employment / apprenticeship ended (since 1999)
+        - Gave up own business
+        - Leave of absence, maternity/parental leave (1991-1998, since 2011)
+        - Leave of absence, released (1999-2010)
+        - Mutual termination / termination agreement (1985-1990, since 1999)
+        - Other incl. closure, pension, leave, release (1987-1990)
+        - Other incl. early retirement, closure, pension, leave, release (1985-1986)
+        - Other incl. mutual termination/termination agreement (1991-1998)
+        - Own resignation
+        - Retired / went into pension (since 1991)
+        - Transfer at own request (1985-1998)
+        - Transfer by employer (1985-1998)
+        - Work permit not renewed (since 2019)
+      categories_dtype: string
+      ordered: false
+  module: pgen
+  reference: current
+  survey_years:
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+employment_ended_reason_pl:
+  dtype:
+    categorical:
+      categories:
+        - Aufgabe der selbstaendigen Taetigkeit
+        - Befristete Beschaeftigung war beendet
+        - Beurlaubung/Mutterschutz/Elternzeit
+        - Durch Aufloesungsvertrag
+        - Durch Kuendigung des Arbeitgebers
+        - Durch eigene Kuendigung
+        - Erreichen der Altersgrenze
+        - Wegen Betriebsstilllegung
+      categories_dtype: string
+      ordered: false
+  module: pl
+  reference: current
+  survey_years:
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 employment_level:
   dtype:
     categorical:
@@ -3766,6 +3156,7 @@ employment_level:
       categories_dtype: string
       ordered: false
   module: pequiv
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -3822,173 +3213,7 @@ employment_status:
       categories_dtype: string
       ordered: false
   module: pgen
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-mutterschaftsgeld_received_last_month_m:
-  dtype: float[pyarrow]
-  module: pl
-  survey_years:
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-mutterschaftsgeld_received_m:
-  dtype: float[pyarrow]
-  module: pl
-  survey_years:
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-reduced_earning_capacity_or_severely_disabled:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1991
-    - 1992
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-employed:
-  dtype: bool[pyarrow]
-  module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -4054,6 +3279,7 @@ federal_state_of_residence:
       categories_dtype: string
       ordered: false
   module: pequiv
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -4097,45 +3323,166 @@ federal_state_of_residence:
     - 2023
     - 2024
 financial_assets_value_a:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 financial_assets_value_b:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 financial_assets_value_c:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 financial_assets_value_d:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 financial_assets_value_e:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
+firm_size:
+  dtype:
+    categorical:
+      categories:
+        - GE 20 LT 200
+        - GE 200 LT 2000
+        - GE 2000
+        - LT 20
+        - Selbstaendig, ohne Mitarbeitende
+      categories_dtype: string
+      ordered: false
+  module: pgen
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+firm_size_detailed_but_inconsistent_categories:
+  dtype:
+    categorical:
+      categories:
+        - 100 bis unter 200
+        - 11 bis unter 20
+        - 20 bis unter 100
+        - 200 bis unter 2000
+        - 2000 und mehr
+        - 5 bis 10
+        - '91 bis 04: 5 bis unter 20'
+        - Selbstaendig-ohne Mitarb.
+        - Unter 5
+        - 'bis 90: unter 20'
+        - 'bis 98: 20 bis unter 200'
+      categories_dtype: string
+      ordered: false
+  module: pgen
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 first_nationality:
   dtype:
     categorical:
@@ -4293,6 +3640,7 @@ first_nationality:
       categories_dtype: string
       ordered: false
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -4334,6 +3682,7 @@ first_nationality:
 first_pension_receipt_year:
   dtype: int16[pyarrow]
   module: pequiv_pkal
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -4377,8 +3726,9 @@ first_pension_receipt_year:
     - 2023
     - 2024
 frailty:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv_pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -4422,8 +3772,9 @@ frailty:
     - 2023
     - 2024
 frailty_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -4467,8 +3818,9 @@ frailty_pequiv:
     - 2023
     - 2024
 frailty_pl:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1992
     - 1994
@@ -4511,6 +3863,7 @@ full_time_employed_m_1:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4562,6 +3915,7 @@ full_time_employed_m_10:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4613,6 +3967,7 @@ full_time_employed_m_11:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4664,6 +4019,7 @@ full_time_employed_m_12:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4715,6 +4071,7 @@ full_time_employed_m_2:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4766,6 +4123,7 @@ full_time_employed_m_3:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4817,6 +4175,7 @@ full_time_employed_m_4:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4868,6 +4227,7 @@ full_time_employed_m_5:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4919,6 +4279,7 @@ full_time_employed_m_6:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -4970,6 +4331,7 @@ full_time_employed_m_7:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5021,6 +4383,7 @@ full_time_employed_m_8:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5072,6 +4435,7 @@ full_time_employed_m_9:
       categories_dtype: str
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5123,6 +4487,7 @@ gender:
       categories_dtype: string
       ordered: false
   module: pequiv
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -5176,6 +4541,7 @@ general_trust:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2003
     - 2008
@@ -5185,6 +4551,7 @@ general_trust:
 german:
   dtype: bool[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -5224,8 +4591,9 @@ german:
     - 2019
     - 2020
 gesetzliche_rente_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5269,8 +4637,9 @@ gesetzliche_rente_survivor_y:
     - 2023
     - 2024
 gesetzliche_rente_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5314,8 +4683,9 @@ gesetzliche_rente_y:
     - 2023
     - 2024
 gesetzliche_unfallversicherung_rente_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5359,53 +4729,9 @@ gesetzliche_unfallversicherung_rente_survivor_y:
     - 2023
     - 2024
 gesetzliche_unfallversicherung_rente_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-profit_sharing_y:
-  dtype: float[pyarrow]
-  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5449,8 +4775,9 @@ profit_sharing_y:
     - 2023
     - 2024
 gross_labor_income_previous_month_m:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pgen
+  reference: previous_month
   survey_years:
     - 1984
     - 1985
@@ -5496,6 +4823,7 @@ gross_labor_income_previous_month_m:
 gross_overall_wealth_a:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5504,6 +4832,7 @@ gross_overall_wealth_a:
 gross_overall_wealth_b:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5512,6 +4841,7 @@ gross_overall_wealth_b:
 gross_overall_wealth_c:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5520,6 +4850,7 @@ gross_overall_wealth_c:
 gross_overall_wealth_d:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5528,6 +4859,7 @@ gross_overall_wealth_d:
 gross_overall_wealth_e:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5536,97 +4868,37 @@ gross_overall_wealth_e:
 gross_overall_wealth_including_vehicles_a:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 gross_overall_wealth_including_vehicles_b:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 gross_overall_wealth_including_vehicles_c:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 gross_overall_wealth_including_vehicles_d:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 gross_overall_wealth_including_vehicles_e:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
-employment_ended_reason_pgen:
-  dtype:
-    categorical:
-      categories:
-        - Apprenticeship ended (1985-1998)
-        - Business closure (1991-1998, since 2001)
-        - Dismissal by employer
-        - Early-retirement scheme (1987-1998)
-        - Fixed-term employment (1985-1998)
-        - Fixed-term employment / apprenticeship ended (since 1999)
-        - Gave up own business
-        - Leave of absence, maternity/parental leave (1991-1998, since 2011)
-        - Leave of absence, released (1999-2010)
-        - Mutual termination / termination agreement (1985-1990, since 1999)
-        - Other incl. closure, pension, leave, release (1987-1990)
-        - Other incl. early retirement, closure, pension, leave, release (1985-1986)
-        - Other incl. mutual termination/termination agreement (1991-1998)
-        - Own resignation
-        - Retired / went into pension (since 1991)
-        - Transfer at own request (1985-1998)
-        - Transfer by employer (1985-1998)
-        - Work permit not renewed (since 2019)
-      categories_dtype: string
-      ordered: false
-  module: pgen
-  survey_years:
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 grundsicherung_im_alter_currently_received_m_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hl
+  reference: current
   survey_years:
     - 2005
     - 2006
@@ -5649,8 +4921,9 @@ grundsicherung_im_alter_currently_received_m_hh:
     - 2023
     - 2024
 grundsicherung_im_alter_y_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5694,8 +4967,9 @@ grundsicherung_im_alter_y_hh:
     - 2023
     - 2024
 grundsicherung_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -5739,8 +5013,9 @@ grundsicherung_y:
     - 2023
     - 2024
 heating_costs_m_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hgen
+  reference: current
   survey_years:
     - 1986
     - 1987
@@ -5790,6 +5065,7 @@ heating_costs_reason_missing:
       categories_dtype: string
       ordered: false
   module: hgen
+  reference: current
   survey_years:
     - 2014
     - 2016
@@ -5804,6 +5080,7 @@ heating_costs_reason_missing:
 hh_financial_assets_value_a:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5812,6 +5089,7 @@ hh_financial_assets_value_a:
 hh_financial_assets_value_b:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5820,6 +5098,7 @@ hh_financial_assets_value_b:
 hh_financial_assets_value_c:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5828,6 +5107,7 @@ hh_financial_assets_value_c:
 hh_financial_assets_value_d:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5836,6 +5116,7 @@ hh_financial_assets_value_d:
 hh_financial_assets_value_e:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5844,6 +5125,7 @@ hh_financial_assets_value_e:
 hh_gross_overall_wealth_a:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5852,6 +5134,7 @@ hh_gross_overall_wealth_a:
 hh_gross_overall_wealth_b:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5860,6 +5143,7 @@ hh_gross_overall_wealth_b:
 hh_gross_overall_wealth_c:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5868,6 +5152,7 @@ hh_gross_overall_wealth_c:
 hh_gross_overall_wealth_d:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5876,6 +5161,7 @@ hh_gross_overall_wealth_d:
 hh_gross_overall_wealth_e:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5884,31 +5170,37 @@ hh_gross_overall_wealth_e:
 hh_gross_overall_wealth_including_vehicles_a:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_gross_overall_wealth_including_vehicles_b:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_gross_overall_wealth_including_vehicles_c:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_gross_overall_wealth_including_vehicles_d:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_gross_overall_wealth_including_vehicles_e:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_net_overall_wealth_a:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5917,6 +5209,7 @@ hh_net_overall_wealth_a:
 hh_net_overall_wealth_b:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5925,6 +5218,7 @@ hh_net_overall_wealth_b:
 hh_net_overall_wealth_c:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5933,6 +5227,7 @@ hh_net_overall_wealth_c:
 hh_net_overall_wealth_d:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5941,6 +5236,7 @@ hh_net_overall_wealth_d:
 hh_net_overall_wealth_e:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5949,31 +5245,37 @@ hh_net_overall_wealth_e:
 hh_net_overall_wealth_including_vehicles_and_student_loans_a:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_net_overall_wealth_including_vehicles_and_student_loans_b:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_net_overall_wealth_including_vehicles_and_student_loans_c:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_net_overall_wealth_including_vehicles_and_student_loans_d:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_net_overall_wealth_including_vehicles_and_student_loans_e:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_net_property_value_primary_residence_a:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5982,6 +5284,7 @@ hh_net_property_value_primary_residence_a:
 hh_net_property_value_primary_residence_b:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5990,6 +5293,7 @@ hh_net_property_value_primary_residence_b:
 hh_net_property_value_primary_residence_c:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -5998,6 +5302,7 @@ hh_net_property_value_primary_residence_c:
 hh_net_property_value_primary_residence_d:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -6006,6 +5311,7 @@ hh_net_property_value_primary_residence_d:
 hh_net_property_value_primary_residence_e:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -6014,6 +5320,7 @@ hh_net_property_value_primary_residence_e:
 hh_property_value_primary_residence_a:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -6022,6 +5329,7 @@ hh_property_value_primary_residence_a:
 hh_property_value_primary_residence_b:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -6030,6 +5338,7 @@ hh_property_value_primary_residence_b:
 hh_property_value_primary_residence_c:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -6038,6 +5347,7 @@ hh_property_value_primary_residence_c:
 hh_property_value_primary_residence_d:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -6046,6 +5356,7 @@ hh_property_value_primary_residence_d:
 hh_property_value_primary_residence_e:
   dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -6054,6 +5365,7 @@ hh_property_value_primary_residence_e:
 hh_random_group:
   dtype: int8[pyarrow]
   module: design
+  reference: current
   survey_years: null
 hh_soep_sample:
   dtype:
@@ -6094,6 +5406,7 @@ hh_soep_sample:
       categories_dtype: str
       ordered: false
   module: hpathl_design
+  reference: current
   survey_years: null
 hh_soep_sample_design:
   dtype:
@@ -6134,6 +5447,7 @@ hh_soep_sample_design:
       categories_dtype: string
       ordered: false
   module: design
+  reference: current
   survey_years: null
 hh_soep_sample_hpathl:
   dtype:
@@ -6174,6 +5488,7 @@ hh_soep_sample_hpathl:
       categories_dtype: string
       ordered: false
   module: hpathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6217,8 +5532,9 @@ hh_soep_sample_hpathl:
     - 2023
     - 2024
 hh_staying_probability:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hpathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6264,6 +5580,7 @@ hh_staying_probability:
 hh_strat:
   dtype: int16[pyarrow]
   module: design
+  reference: current
   survey_years: null
 hh_type_one_digit:
   dtype:
@@ -6280,6 +5597,7 @@ hh_type_one_digit:
       categories_dtype: string
       ordered: false
   module: hgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6352,6 +5670,7 @@ hh_type_two_digits:
       categories_dtype: string
       ordered: false
   module: hgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6395,33 +5714,39 @@ hh_type_two_digits:
     - 2023
     - 2024
 hh_vehicles_value_a:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_vehicles_value_b:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_vehicles_value_c:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_vehicles_value_d:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_vehicles_value_e:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 hh_weighting_factor:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hpathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6465,8 +5790,9 @@ hh_weighting_factor:
     - 2023
     - 2024
 hh_weighting_factor_new_only:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hpathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6510,8 +5836,9 @@ hh_weighting_factor_new_only:
     - 2023
     - 2024
 hh_weighting_factor_without_new:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hpathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6564,6 +5891,94 @@ highest_education:
       categories_dtype: string
       ordered: true
   module: pgen
+  reference: time_invariant
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+hilfe_zum_lebensunterhalt_received_hh:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: hl
+  reference: previous_year
+  survey_years:
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+holiday_bonus_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -6607,8 +6022,9 @@ highest_education:
     - 2023
     - 2024
 hourly_wage_current:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2017
     - 2018
@@ -6618,8 +6034,9 @@ hourly_wage_current:
     - 2022
     - 2023
 hours_care_sat:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2001
     - 2003
@@ -6634,8 +6051,9 @@ hours_care_sat:
     - 2019
     - 2021
 hours_care_sun:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2001
     - 2003
@@ -6650,8 +6068,9 @@ hours_care_sun:
     - 2019
     - 2021
 hours_care_workday:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2001
     - 2002
@@ -6678,8 +6097,9 @@ hours_care_workday:
     - 2023
     - 2024
 hours_childcare_sat:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1993
@@ -6699,8 +6119,9 @@ hours_childcare_sat:
     - 2019
     - 2021
 hours_childcare_sun:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -6726,8 +6147,9 @@ hours_childcare_sun:
     - 2019
     - 2021
 hours_childcare_workday:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -6770,8 +6192,9 @@ hours_childcare_workday:
     - 2023
     - 2024
 hours_errands_sat:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1993
@@ -6791,8 +6214,9 @@ hours_errands_sat:
     - 2019
     - 2021
 hours_errands_sun:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1992
@@ -6813,8 +6237,9 @@ hours_errands_sun:
     - 2019
     - 2021
 hours_errands_workday:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1991
@@ -6850,8 +6275,9 @@ hours_errands_workday:
     - 2021
     - 2022
 hours_hobbies_sat:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1993
@@ -6871,8 +6297,9 @@ hours_hobbies_sat:
     - 2019
     - 2021
 hours_hobbies_sun:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6899,8 +6326,9 @@ hours_hobbies_sun:
     - 2019
     - 2021
 hours_hobbies_workday:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6942,8 +6370,9 @@ hours_hobbies_workday:
     - 2021
     - 2022
 hours_housework_sat:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1993
@@ -6963,8 +6392,9 @@ hours_housework_sat:
     - 2019
     - 2021
 hours_housework_sun:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -6991,8 +6421,9 @@ hours_housework_sun:
     - 2019
     - 2021
 hours_housework_workday:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -7036,8 +6467,9 @@ hours_housework_workday:
     - 2023
     - 2024
 hours_repairs_sat:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1993
@@ -7057,8 +6489,9 @@ hours_repairs_sat:
     - 2019
     - 2021
 hours_repairs_sun:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1992
     - 1993
@@ -7077,8 +6510,9 @@ hours_repairs_sun:
     - 2019
     - 2021
 hours_repairs_workday:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -7120,8 +6554,9 @@ hours_repairs_workday:
     - 2021
     - 2022
 hours_sleep_weekend:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2008
     - 2009
@@ -7136,8 +6571,9 @@ hours_sleep_weekend:
     - 2021
     - 2022
 hours_sleep_workday:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2008
     - 2009
@@ -7152,8 +6588,9 @@ hours_sleep_workday:
     - 2021
     - 2022
 hours_work_sat:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1993
@@ -7173,8 +6610,9 @@ hours_work_sat:
     - 2019
     - 2021
 hours_work_sun:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -7201,8 +6639,9 @@ hours_work_sun:
     - 2019
     - 2021
 hours_work_workday:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -7245,59 +6684,9 @@ hours_work_workday:
     - 2022
     - 2023
 hours_worked_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-in_public_service:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pgen
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7351,6 +6740,7 @@ importance_faith:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2013
     - 2017
@@ -7369,6 +6759,7 @@ importance_faith_v2:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2016
 imputation_flag_hh_net_overall_wealth_including_vehicles_and_student_loans:
@@ -7381,6 +6772,7 @@ imputation_flag_hh_net_overall_wealth_including_vehicles_and_student_loans:
       categories_dtype: string
       ordered: true
   module: hwealth
+  reference: current
   survey_years:
     - 2017
 imputation_flag_net_overall_wealth_including_vehicles_and_student_loans:
@@ -7393,11 +6785,13 @@ imputation_flag_net_overall_wealth_including_vehicles_and_student_loans:
       categories_dtype: string
       ordered: true
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 in_education:
   dtype: bool[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -7440,7 +6834,7 @@ in_education:
     - 2022
     - 2023
     - 2024
-paid_into_private_rente:
+in_public_service:
   dtype:
     categorical:
       categories:
@@ -7448,19 +6842,54 @@ paid_into_private_rente:
         - true
       categories_dtype: bool[pyarrow]
       ordered: true
-  module: pl
+  module: pgen
+  reference: current
   survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
     - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
     - 2018
-private_rente_number_of_months_paid_in:
-  dtype: int8[pyarrow]
-  module: pl
-  survey_years:
-    - 2013
-    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 in_retirement_in_at_least_one_month_last_year:
   dtype: bool[pyarrow]
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7511,6 +6940,7 @@ in_retirement_m_10_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7561,6 +6991,7 @@ in_retirement_m_11_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7611,6 +7042,7 @@ in_retirement_m_12_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7661,6 +7093,7 @@ in_retirement_m_1_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7711,6 +7144,7 @@ in_retirement_m_2_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7761,6 +7195,7 @@ in_retirement_m_3_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7811,6 +7246,7 @@ in_retirement_m_4_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7861,6 +7297,7 @@ in_retirement_m_5_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7911,6 +7348,7 @@ in_retirement_m_6_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -7961,6 +7399,7 @@ in_retirement_m_7_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8011,6 +7450,7 @@ in_retirement_m_8_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8061,6 +7501,7 @@ in_retirement_m_9_last_year:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8103,9 +7544,148 @@ in_retirement_m_9_last_year:
     - 2022
     - 2023
     - 2024
-employed_part_time:
-  dtype: bool[pyarrow]
-  module: pgen
+income_after_tax_y_hh:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+income_before_tax_y_hh:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+income_from_interest_dividends_y_hh:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+income_from_rental_leasing_y_hh:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8149,8 +7729,9 @@ employed_part_time:
     - 2023
     - 2024
 individual_staying_probability:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: ppathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -8194,8 +7775,9 @@ individual_staying_probability:
     - 2023
     - 2024
 individual_weighting_factor:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: ppathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -8239,8 +7821,9 @@ individual_weighting_factor:
     - 2023
     - 2024
 individual_weighting_factor_new_only:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: ppathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -8284,8 +7867,9 @@ individual_weighting_factor_new_only:
     - 2023
     - 2024
 individual_weighting_factor_without_new:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: ppathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -8345,6 +7929,7 @@ interview_result_one_digit:
       categories_dtype: string
       ordered: false
   module: pbrutto
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -8420,6 +8005,7 @@ interview_result_two_digits:
       categories_dtype: string
       ordered: false
   module: pbrutto
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -8479,6 +8065,7 @@ interview_status:
       categories_dtype: string
       ordered: false
   module: pbrutto
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -8520,9 +8107,56 @@ interview_status:
     - 2022
     - 2023
     - 2024
+irregularly_or_marginally_employed:
+  dtype: bool[pyarrow]
+  module: pgen
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 kindergeld_currently_received_m_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -8566,8 +8200,9 @@ kindergeld_currently_received_m_hh:
     - 2023
     - 2024
 kindergeld_m_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv_hl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -8611,8 +8246,9 @@ kindergeld_m_hh:
     - 2023
     - 2024
 kindergeld_m_hh_hl:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hl
+  reference: previous_year
   survey_years:
     - 1985
     - 1986
@@ -8655,8 +8291,9 @@ kindergeld_m_hh_hl:
     - 2023
     - 2024
 kindergeld_m_hh_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8669,6 +8306,47 @@ kindergeld_m_hh_pequiv:
     - 1992
     - 1993
     - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+kindergeld_received_hh:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: hl
+  reference: previous_year
+  survey_years:
     - 1995
     - 1996
     - 1997
@@ -8700,8 +8378,9 @@ kindergeld_m_hh_pequiv:
     - 2023
     - 2024
 kindergeld_y_hh_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8744,9 +8423,37 @@ kindergeld_y_hh_pequiv:
     - 2022
     - 2023
     - 2024
-kinderzuschlag_currently_received_m_hh:
-  dtype: float[pyarrow]
+kinderzuschlag_currently_received_hh:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
   module: hl
+  reference: current
+  survey_years:
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+kinderzuschlag_currently_received_m_hh:
+  dtype: double[pyarrow]
+  module: hl
+  reference: current
   survey_years:
     - 2009
     - 2010
@@ -8765,8 +8472,9 @@ kinderzuschlag_currently_received_m_hh:
     - 2023
     - 2024
 kinderzuschlag_m_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv_hl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -8810,8 +8518,9 @@ kinderzuschlag_m_hh:
     - 2023
     - 2024
 kinderzuschlag_m_hh_hl:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hl
+  reference: previous_year
   survey_years:
     - 2009
     - 2010
@@ -8830,8 +8539,9 @@ kinderzuschlag_m_hh_hl:
     - 2023
     - 2024
 kinderzuschlag_m_hh_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8874,9 +8584,37 @@ kinderzuschlag_m_hh_pequiv:
     - 2022
     - 2023
     - 2024
+kinderzuschlag_received_last_year_hh:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: hl
+  reference: previous_year
+  survey_years:
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 kinderzuschlag_y_hh_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8920,8 +8658,9 @@ kinderzuschlag_y_hh_pequiv:
     - 2023
     - 2024
 kindesunterhalt_received_m:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv_pl
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -8965,8 +8704,9 @@ kindesunterhalt_received_m:
     - 2023
     - 2024
 kindesunterhalt_received_m_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -9010,8 +8750,9 @@ kindesunterhalt_received_m_pequiv:
     - 2023
     - 2024
 kindesunterhalt_received_m_pl:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2010
     - 2011
@@ -9020,8 +8761,9 @@ kindesunterhalt_received_m_pl:
     - 2014
     - 2015
 kindesunterhalt_received_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -9065,8 +8807,9 @@ kindesunterhalt_received_y:
     - 2023
     - 2024
 knappschaftliche_rente_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -9110,8 +8853,9 @@ knappschaftliche_rente_survivor_y:
     - 2023
     - 2024
 knappschaftliche_rente_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -9155,8 +8899,9 @@ knappschaftliche_rente_y:
     - 2023
     - 2024
 kriegsopferversorgung_rente_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -9200,8 +8945,9 @@ kriegsopferversorgung_rente_survivor_y:
     - 2023
     - 2024
 kriegsopferversorgung_rente_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -9264,6 +9010,7 @@ labor_force_status:
       categories_dtype: string
       ordered: false
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -9307,23 +9054,9 @@ labor_force_status:
     - 2023
     - 2024
 life_satisfaction_low_to_high:
-  dtype:
-    categorical:
-      categories:
-        - 0
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-      categories_dtype: int8[pyarrow]
-      ordered: true
+  dtype: int8[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -9367,8 +9100,9 @@ life_satisfaction_low_to_high:
     - 2023
     - 2024
 living_space_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -9427,6 +9161,7 @@ marital_status:
       categories_dtype: string
       ordered: false
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -9477,6 +9212,7 @@ med_asthma_pl:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2009
     - 2011
@@ -9486,181 +9222,7 @@ med_asthma_pl:
     - 2019
     - 2021
     - 2023
-med_hypertension:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool
-      ordered: true
-  module: pequiv_pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_hypertension_pequiv:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pequiv
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_hypertension_pl:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_dementia_pl:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_depression_pl:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_diabetes:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool
-      ordered: true
-  module: pequiv_pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_diabetes_pequiv:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pequiv
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_diabetes_pl:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_joint_disease:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool
-      ordered: true
-  module: pequiv_pl
-  survey_years:
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_joint_disease_pequiv:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pequiv
-  survey_years:
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_joint_disease_pl:
+med_back_pl:
   dtype:
     categorical:
       categories:
@@ -9668,6 +9230,7 @@ med_joint_disease_pl:
       categories_dtype: bool[pyarrow]
       ordered: false
   module: pl
+  reference: current
   survey_years:
     - 2011
     - 2013
@@ -9676,240 +9239,6 @@ med_joint_disease_pl:
     - 2019
     - 2021
     - 2023
-med_weight:
-  dtype: float[pyarrow]
-  module: pequiv_pl
-  survey_years:
-    - 2002
-    - 2004
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-med_weight_pequiv:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 2002
-    - 2004
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-med_weight_pl:
-  dtype: float[pyarrow]
-  module: pl
-  survey_years:
-    - 2002
-    - 2004
-    - 2006
-    - 2008
-    - 2010
-    - 2012
-    - 2014
-    - 2016
-    - 2018
-    - 2020
-    - 2022
-    - 2024
-med_height:
-  dtype: float[pyarrow]
-  module: pequiv_pl
-  survey_years:
-    - 2002
-    - 2004
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-med_height_pequiv:
-  dtype: float[pyarrow]
-  module: pequiv
-  survey_years:
-    - 2002
-    - 2004
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-med_height_pl:
-  dtype: float[pyarrow]
-  module: pl
-  survey_years:
-    - 2002
-    - 2004
-    - 2006
-    - 2008
-    - 2010
-    - 2012
-    - 2014
-    - 2016
-    - 2018
-    - 2020
-    - 2022
-    - 2024
-med_heart_disease:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool
-      ordered: true
-  module: pequiv_pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_heart_disease_pequiv:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pequiv
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_heart_disease_pl:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_hospital_pequiv:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1991
-    - 1992
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 med_cancer:
   dtype:
     categorical:
@@ -9919,6 +9248,7 @@ med_cancer:
       categories_dtype: bool
       ordered: true
   module: pequiv_pl
+  reference: current
   survey_years:
     - 2009
     - 2011
@@ -9937,6 +9267,7 @@ med_cancer_pequiv:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pequiv
+  reference: current
   survey_years:
     - 2009
     - 2011
@@ -9954,6 +9285,7 @@ med_cancer_pl:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2009
     - 2011
@@ -9963,7 +9295,7 @@ med_cancer_pl:
     - 2019
     - 2021
     - 2023
-med_migraine_pl:
+med_dementia_pl:
   dtype:
     categorical:
       categories:
@@ -9971,6 +9303,7 @@ med_migraine_pl:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2009
     - 2011
@@ -9980,7 +9313,44 @@ med_migraine_pl:
     - 2019
     - 2021
     - 2023
-med_mental_illness_pequiv:
+med_depression_pl:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_diabetes:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool
+      ordered: true
+  module: pequiv_pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_diabetes_pequiv:
   dtype:
     categorical:
       categories:
@@ -9989,6 +9359,7 @@ med_mental_illness_pequiv:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pequiv
+  reference: current
   survey_years:
     - 2009
     - 2011
@@ -9998,15 +9369,35 @@ med_mental_illness_pequiv:
     - 2019
     - 2021
     - 2023
-med_smoker_pl:
+med_diabetes_pl:
   dtype:
     categorical:
       categories:
-        - false
         - true
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_difficulty_demanding_activities_pl:
+  dtype:
+    categorical:
+      categories:
+        - Not at all
+        - A little
+        - A lot
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -10016,95 +9407,14 @@ med_smoker_pl:
     - 2012
     - 2014
     - 2016
+    - 2017
     - 2018
+    - 2019
     - 2020
     - 2021
     - 2022
-med_back_pl:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: false
-  module: pl
-  survey_years:
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
     - 2023
-med_sleep_disorder_pl:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_stroke:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool
-      ordered: true
-  module: pequiv_pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_stroke_pequiv:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pequiv
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
-med_stroke_pl:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2009
-    - 2011
-    - 2013
-    - 2015
-    - 2017
-    - 2019
-    - 2021
-    - 2023
+    - 2024
 med_difficulty_dressing_pequiv:
   dtype:
     categorical:
@@ -10114,6 +9424,7 @@ med_difficulty_dressing_pequiv:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pequiv
+  reference: current
   survey_years:
     - 1991
     - 1992
@@ -10158,56 +9469,7 @@ med_difficulty_getting_out_of_bed:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pequiv
-  survey_years:
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-med_difficulty_shopping:
-  dtype:
-    categorical:
-      categories:
-        - false
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pequiv
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -10258,6 +9520,7 @@ med_difficulty_housework:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pequiv
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -10299,24 +9562,48 @@ med_difficulty_housework:
     - 2022
     - 2023
     - 2024
-med_difficulty_demanding_activities_pl:
+med_difficulty_shopping:
   dtype:
     categorical:
       categories:
-        - Not at all
-        - A little
-        - A lot
-      categories_dtype: string
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
       ordered: true
-  module: pl
+  module: pequiv
+  reference: current
   survey_years:
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
     - 2002
+    - 2003
     - 2004
+    - 2005
     - 2006
+    - 2007
     - 2008
+    - 2009
     - 2010
+    - 2011
     - 2012
+    - 2013
     - 2014
+    - 2015
     - 2016
     - 2017
     - 2018
@@ -10335,6 +9622,7 @@ med_difficulty_stairs:
       categories_dtype: bool
       ordered: true
   module: pequiv_pl
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -10361,6 +9649,7 @@ med_difficulty_stairs_pequiv:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pequiv
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -10388,6 +9677,7 @@ med_difficulty_stairs_pl:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -10405,6 +9695,373 @@ med_difficulty_stairs_pl:
     - 2022
     - 2023
     - 2024
+med_health_satisfaction_pequiv:
+  dtype: int8[pyarrow]
+  module: pequiv
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+med_heart_disease:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool
+      ordered: true
+  module: pequiv_pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_heart_disease_pequiv:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pequiv
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_heart_disease_pl:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_height:
+  dtype: double[pyarrow]
+  module: pequiv_pl
+  reference: current
+  survey_years:
+    - 2002
+    - 2004
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+med_height_pequiv:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: current
+  survey_years:
+    - 2002
+    - 2004
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+med_height_pl:
+  dtype: double[pyarrow]
+  module: pl
+  reference: current
+  survey_years:
+    - 2002
+    - 2004
+    - 2006
+    - 2008
+    - 2010
+    - 2012
+    - 2014
+    - 2016
+    - 2018
+    - 2020
+    - 2022
+    - 2024
+med_hospital_pequiv:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pequiv
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1991
+    - 1992
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+med_hypertension:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool
+      ordered: true
+  module: pequiv_pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_hypertension_pequiv:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pequiv
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_hypertension_pl:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_joint_disease:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool
+      ordered: true
+  module: pequiv_pl
+  reference: current
+  survey_years:
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_joint_disease_pequiv:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pequiv
+  reference: current
+  survey_years:
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_joint_disease_pl:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: false
+  module: pl
+  reference: current
+  survey_years:
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_mental_illness_pequiv:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pequiv
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_migraine_pl:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
 med_other_pl:
   dtype:
     categorical:
@@ -10413,6 +10070,103 @@ med_other_pl:
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_sleep_disorder_pl:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_smoker_pl:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2002
+    - 2004
+    - 2006
+    - 2008
+    - 2010
+    - 2012
+    - 2014
+    - 2016
+    - 2018
+    - 2020
+    - 2021
+    - 2022
+med_stroke:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool
+      ordered: true
+  module: pequiv_pl
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_stroke_pequiv:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pequiv
+  reference: current
+  survey_years:
+    - 2009
+    - 2011
+    - 2013
+    - 2015
+    - 2017
+    - 2019
+    - 2021
+    - 2023
+med_stroke_pl:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
   survey_years:
     - 2009
     - 2011
@@ -10434,6 +10188,7 @@ med_subjective_status:
       categories_dtype: str
       ordered: true
   module: pequiv_pl
+  reference: current
   survey_years:
     - 1992
     - 1994
@@ -10479,6 +10234,7 @@ med_subjective_status_pequiv:
       categories_dtype: string
       ordered: true
   module: pequiv
+  reference: current
   survey_years:
     - 1992
     - 1994
@@ -10524,6 +10280,7 @@ med_subjective_status_pl:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 1992
     - 1994
@@ -10557,47 +10314,13 @@ med_subjective_status_pl:
     - 2022
     - 2023
     - 2024
-med_health_satisfaction_pequiv:
-  dtype:
-    categorical:
-      categories:
-        - 0
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-      categories_dtype: int8[pyarrow]
-      ordered: false
-  module: pequiv
+med_weight:
+  dtype: double[pyarrow]
+  module: pequiv_pl
+  reference: current
   survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
     - 2002
-    - 2003
     - 2004
-    - 2005
     - 2006
     - 2007
     - 2008
@@ -10616,6 +10339,49 @@ med_health_satisfaction_pequiv:
     - 2021
     - 2022
     - 2023
+    - 2024
+med_weight_pequiv:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: current
+  survey_years:
+    - 2002
+    - 2004
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+med_weight_pl:
+  dtype: double[pyarrow]
+  module: pl
+  reference: current
+  survey_years:
+    - 2002
+    - 2004
+    - 2006
+    - 2008
+    - 2010
+    - 2012
+    - 2014
+    - 2016
+    - 2018
+    - 2020
+    - 2022
     - 2024
 migration_background:
   dtype:
@@ -10627,6 +10393,7 @@ migration_background:
       categories_dtype: string
       ordered: false
   module: ppathl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -10672,6 +10439,7 @@ migration_background:
 military:
   dtype: bool[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -10723,6 +10491,7 @@ minijob_employed_m_1:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10753,6 +10522,7 @@ minijob_employed_m_10:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10783,6 +10553,7 @@ minijob_employed_m_11:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10813,6 +10584,7 @@ minijob_employed_m_12:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10843,6 +10615,7 @@ minijob_employed_m_2:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10873,6 +10646,7 @@ minijob_employed_m_3:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10903,6 +10677,7 @@ minijob_employed_m_4:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10933,6 +10708,7 @@ minijob_employed_m_5:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10963,6 +10739,7 @@ minijob_employed_m_6:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -10993,6 +10770,7 @@ minijob_employed_m_7:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -11023,6 +10801,7 @@ minijob_employed_m_8:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -11053,6 +10832,7 @@ minijob_employed_m_9:
       categories_dtype: string
       ordered: false
   module: pkal
+  reference: previous_year
   survey_years:
     - 2005
     - 2006
@@ -11075,24 +10855,9 @@ minijob_employed_m_9:
     - 2023
     - 2024
 month_interview:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-        - 11
-        - 12
-      categories_dtype: int8[pyarrow]
-      ordered: true
+  dtype: int8[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -11136,9 +10901,56 @@ month_interview:
     - 2023
     - 2024
 months_worked_last_job:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: time_invariant
   survey_years:
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+mother_p_id:
+  dtype: int32[pyarrow]
+  module: kidlong
+  reference: time_invariant
+  survey_years:
+    - 1984
     - 1985
     - 1986
     - 1987
@@ -11182,6 +10994,7 @@ months_worked_last_job:
 motor_disability:
   dtype: bool[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -11227,6 +11040,7 @@ motor_disability:
 mutterschaftsgeld_number_of_months:
   dtype: int8[pyarrow]
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -11269,9 +11083,270 @@ mutterschaftsgeld_number_of_months:
     - 2022
     - 2023
     - 2024
+mutterschaftsgeld_received:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool
+      ordered: false
+  module: pl_pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+mutterschaftsgeld_received_last_month:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: false
+  module: pl
+  reference: previous_month
+  survey_years:
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+mutterschaftsgeld_received_last_month_m:
+  dtype: double[pyarrow]
+  module: pl
+  reference: previous_month
+  survey_years:
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+mutterschaftsgeld_received_m:
+  dtype: double[pyarrow]
+  module: pl
+  reference: current
+  survey_years:
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+mutterschaftsgeld_received_pkal:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+mutterschaftsgeld_received_pl:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: false
+  module: pl
+  reference: previous_year
+  survey_years:
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 mutterschaftsgeld_received_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -11317,6 +11392,7 @@ mutterschaftsgeld_received_y:
 mutterschutz_elternzeit:
   dtype: bool[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -11362,6 +11438,7 @@ mutterschutz_elternzeit:
 net_labor_income_m_average:
   dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1991
@@ -11399,8 +11476,9 @@ net_labor_income_m_average:
     - 2023
     - 2024
 net_labor_income_previous_month_m:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pgen
+  reference: previous_month
   survey_years:
     - 1984
     - 1985
@@ -11446,6 +11524,7 @@ net_labor_income_previous_month_m:
 net_overall_wealth_a:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -11454,6 +11533,7 @@ net_overall_wealth_a:
 net_overall_wealth_b:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -11462,6 +11542,7 @@ net_overall_wealth_b:
 net_overall_wealth_c:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -11470,6 +11551,7 @@ net_overall_wealth_c:
 net_overall_wealth_d:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -11478,6 +11560,7 @@ net_overall_wealth_d:
 net_overall_wealth_e:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
@@ -11486,71 +11569,218 @@ net_overall_wealth_e:
 net_overall_wealth_including_vehicles_and_student_loans_a:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 net_overall_wealth_including_vehicles_and_student_loans_b:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 net_overall_wealth_including_vehicles_and_student_loans_c:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 net_overall_wealth_including_vehicles_and_student_loans_d:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 net_overall_wealth_including_vehicles_and_student_loans_e:
   dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 net_property_value_primary_residence_a:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 net_property_value_primary_residence_b:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 net_property_value_primary_residence_c:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 net_property_value_primary_residence_d:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 net_property_value_primary_residence_e:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
+norm_career_mothers_same_warmth:
+  dtype:
+    categorical:
+      categories:
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2012
+norm_child_suffers_father_career:
+  dtype:
+    categorical:
+      categories:
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2012
+norm_child_suffers_under_3:
+  dtype:
+    categorical:
+      categories:
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2012
+norm_child_suffers_under_3_low_to_high_2018:
+  dtype: int8[pyarrow]
+  module: pl
+  reference: current
+  survey_years:
+    - 2018
+norm_child_suffers_under_6:
+  dtype:
+    categorical:
+      categories:
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2012
+norm_child_suffers_under_6_low_to_high_2018:
+  dtype: int8[pyarrow]
+  module: pl
+  reference: current
+  survey_years:
+    - 2018
+norm_genders_similar:
+  dtype:
+    categorical:
+      categories:
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2012
+norm_genders_similar_low_to_high_2018:
+  dtype: int8[pyarrow]
+  module: pl
+  reference: current
+  survey_years:
+    - 2018
+norm_marry_when_together:
+  dtype:
+    categorical:
+      categories:
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2012
+norm_marry_when_together_low_to_high_2018:
+  dtype: int8[pyarrow]
+  module: pl
+  reference: current
+  survey_years:
+    - 2018
+norm_men_chores:
+  dtype:
+    categorical:
+      categories:
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2012
+norm_women_family_priority:
+  dtype:
+    categorical:
+      categories:
+        - Strongly agree
+        - Somewhat agree
+        - Somewhat disagree
+        - Strongly disagree
+      categories_dtype: string
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2012
 not_employed:
   dtype: bool[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -11593,181 +11823,15 @@ not_employed:
     - 2022
     - 2023
     - 2024
-norm_career_mothers_same_warmth:
-  dtype:
-    categorical:
-      categories:
-        - Strongly agree
-        - Somewhat agree
-        - Somewhat disagree
-        - Strongly disagree
-      categories_dtype: string
-      ordered: true
-  module: pl
-  survey_years:
-    - 2012
-norm_child_suffers_father_career:
-  dtype:
-    categorical:
-      categories:
-        - Strongly agree
-        - Somewhat agree
-        - Somewhat disagree
-        - Strongly disagree
-      categories_dtype: string
-      ordered: true
-  module: pl
-  survey_years:
-    - 2012
-norm_child_suffers_under_3:
-  dtype:
-    categorical:
-      categories:
-        - Strongly agree
-        - Somewhat agree
-        - Somewhat disagree
-        - Strongly disagree
-      categories_dtype: string
-      ordered: true
-  module: pl
-  survey_years:
-    - 2012
-norm_child_suffers_under_3_low_to_high_2018:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-      categories_dtype: int8[pyarrow]
-      ordered: false
-  module: pl
-  survey_years:
-    - 2018
-norm_child_suffers_under_6:
-  dtype:
-    categorical:
-      categories:
-        - Strongly agree
-        - Somewhat agree
-        - Somewhat disagree
-        - Strongly disagree
-      categories_dtype: string
-      ordered: true
-  module: pl
-  survey_years:
-    - 2012
-norm_child_suffers_under_6_low_to_high_2018:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-      categories_dtype: int8[pyarrow]
-      ordered: true
-  module: pl
-  survey_years:
-    - 2018
-norm_genders_similar:
-  dtype:
-    categorical:
-      categories:
-        - Strongly agree
-        - Somewhat agree
-        - Somewhat disagree
-        - Strongly disagree
-      categories_dtype: string
-      ordered: true
-  module: pl
-  survey_years:
-    - 2012
-norm_genders_similar_low_to_high_2018:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-      categories_dtype: int8[pyarrow]
-      ordered: false
-  module: pl
-  survey_years:
-    - 2018
-norm_marry_when_together:
-  dtype:
-    categorical:
-      categories:
-        - Strongly agree
-        - Somewhat agree
-        - Somewhat disagree
-        - Strongly disagree
-      categories_dtype: string
-      ordered: true
-  module: pl
-  survey_years:
-    - 2012
-norm_marry_when_together_low_to_high_2018:
-  dtype:
-    categorical:
-      categories:
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-      categories_dtype: int8[pyarrow]
-      ordered: false
-  module: pl
-  survey_years:
-    - 2018
-norm_men_chores:
-  dtype:
-    categorical:
-      categories:
-        - Strongly agree
-        - Somewhat agree
-        - Somewhat disagree
-        - Strongly disagree
-      categories_dtype: string
-      ordered: true
-  module: pl
-  survey_years:
-    - 2012
-norm_women_family_priority:
-  dtype:
-    categorical:
-      categories:
-        - Strongly agree
-        - Somewhat agree
-        - Somewhat disagree
-        - Strongly disagree
-      categories_dtype: string
-      ordered: true
-  module: pl
-  survey_years:
-    - 2012
 number_of_children:
   dtype: int8[pyarrow]
   module: biobirth
+  reference: time_invariant
   survey_years: null
 number_of_children_living_in_hh:
   dtype: int8[pyarrow]
   module: pequiv
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -11813,6 +11877,7 @@ number_of_children_living_in_hh:
 number_of_months_employed:
   dtype: int8[pyarrow]
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -11858,6 +11923,7 @@ number_of_months_employed:
 number_of_months_in_retirement_last_year:
   dtype: int8[pyarrow]
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -11903,6 +11969,7 @@ number_of_months_in_retirement_last_year:
 number_of_persons_hh:
   dtype: int8[pyarrow]
   module: pequiv
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -11948,6 +12015,7 @@ number_of_persons_hh:
 obese:
   dtype: bool[pyarrow]
   module: pequiv_pl
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -11973,6 +12041,7 @@ obese:
 obese_pequiv:
   dtype: bool[pyarrow]
   module: pequiv
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -11998,6 +12067,7 @@ obese_pequiv:
 obese_pl:
   dtype: bool[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -12068,6 +12138,7 @@ occupation_status:
       categories_dtype: string
       ordered: false
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12111,8 +12182,9 @@ occupation_status:
     - 2023
     - 2024
 operation_maintenance_costs_y_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -12155,26 +12227,862 @@ operation_maintenance_costs_y_hh:
     - 2022
     - 2023
     - 2024
+other_bonuses_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+other_pension_survivor_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+other_pension_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+own_pension_gross_m:
+  dtype: double[pyarrow]
+  module: pl
+  reference: current
+  survey_years:
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 p_id_child:
   dtype: int32[pyarrow]
   module: biobirth
+  reference: time_invariant
   survey_years: null
 p_id_father_1:
   dtype: int32[pyarrow]
   module: bioparen
+  reference: time_invariant
   survey_years: null
 p_id_father_2:
   dtype: int32[pyarrow]
   module: bioparen
+  reference: time_invariant
   survey_years: null
 p_id_mother_1:
   dtype: int32[pyarrow]
   module: bioparen
+  reference: time_invariant
   survey_years: null
 p_id_mother_2:
   dtype: int32[pyarrow]
   module: bioparen
+  reference: time_invariant
   survey_years: null
+paid_into_private_rente:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
+  survey_years:
+    - 2013
+    - 2018
+part_time_employed_m_1:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_10:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+part_time_employed_m_11:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_12:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_2:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_3:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_4:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_5:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_6:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_7:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_8:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_m_9:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+partner_p_id:
+  dtype: int32[pyarrow]
+  module: ppathl
+  reference: time_invariant
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 partnership_status:
   dtype:
     categorical:
@@ -12188,6 +13096,7 @@ partnership_status:
       categories_dtype: string
       ordered: false
   module: ppathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12267,6 +13176,7 @@ party_affiliation:
       categories_dtype: string
       ordered: false
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12312,6 +13222,7 @@ party_affiliation:
 party_affiliation_dummy:
   dtype: bool[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12366,6 +13277,7 @@ party_affiliation_intensity:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12411,6 +13323,7 @@ party_affiliation_intensity:
 person_number_surveyed:
   dtype: int8[pyarrow]
   module: pl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -12450,8 +13363,62 @@ person_number_surveyed:
     - 2019
     - 2020
 pflegegeld_y_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+place_of_residence_1989:
+  dtype:
+    categorical:
+      categories:
+        - Abroad (Ausland)
+        - East Germany (DDR) incl. East Berlin
+        - West Germany (FRG) incl. West Berlin
+      categories_dtype: string
+      ordered: false
+  module: ppathl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -12503,96 +13470,7 @@ place_of_residence_current:
       categories_dtype: string
       ordered: false
   module: ppathl
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-mother_p_id:
-  dtype: int32[pyarrow]
-  module: kidlong
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-partner_p_id:
-  dtype: int32[pyarrow]
-  module: ppathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12646,6 +13524,7 @@ political_interest:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -12688,23 +13567,9 @@ political_interest:
     - 2023
     - 2024
 political_spectrum_left_to_right:
-  dtype:
-    categorical:
-      categories:
-        - 0
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-      categories_dtype: int8[pyarrow]
-      ordered: true
+  dtype: int8[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2005
     - 2009
@@ -12712,8 +13577,9 @@ political_spectrum_left_to_right:
     - 2019
     - 2024
 private_altersvorsorge_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -12757,8 +13623,9 @@ private_altersvorsorge_survivor_y:
     - 2023
     - 2024
 private_altersvorsorge_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -12802,48 +13669,54 @@ private_altersvorsorge_y:
     - 2023
     - 2024
 private_insurances_value_a:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 private_insurances_value_b:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 private_insurances_value_c:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 private_insurances_value_d:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 private_insurances_value_e:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 private_rente_contribution_m:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12889,6 +13762,7 @@ private_rente_contribution_m:
 private_rente_contribution_m_2013:
   dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12934,6 +13808,7 @@ private_rente_contribution_m_2013:
 private_rente_contribution_m_2018:
   dtype: double[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -12976,9 +13851,63 @@ private_rente_contribution_m_2018:
     - 2022
     - 2023
     - 2024
+private_rente_number_of_months_paid_in:
+  dtype: int8[pyarrow]
+  module: pl
+  reference: previous_year
+  survey_years:
+    - 2013
+    - 2018
 private_transfers_received_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+profit_sharing_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -13022,54 +13951,54 @@ private_transfers_received_y:
     - 2023
     - 2024
 property_value_primary_residence_a:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 property_value_primary_residence_b:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 property_value_primary_residence_c:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 property_value_primary_residence_d:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
 property_value_primary_residence_e:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2002
     - 2007
     - 2012
     - 2017
-part_time_employed_m_1:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
+received_unemployment_benefits_last_year:
+  dtype: bool[pyarrow]
+  module: pequiv_pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -13112,60 +14041,17 @@ part_time_employed_m_1:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_10:
+receives_own_pension:
   dtype:
     categorical:
       categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
   survey_years:
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-part_time_employed_m_11:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
     - 1995
     - 1996
     - 1997
@@ -13196,15 +14082,16 @@ part_time_employed_m_11:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_12:
+reduced_earning_capacity_or_severely_disabled:
   dtype:
     categorical:
       categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -13212,418 +14099,8 @@ part_time_employed_m_12:
     - 1987
     - 1988
     - 1989
-    - 1990
     - 1991
     - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_2:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_3:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_4:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_5:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_6:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_7:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_8:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_9:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
     - 1994
     - 1995
     - 1996
@@ -13667,9 +14144,56 @@ refugee_status:
       categories_dtype: string
       ordered: false
   module: pgen
+  reference: current
   survey_years:
     - 2016
     - 2017
+registered_unemployed:
+  dtype: bool[pyarrow]
+  module: pgen
+  reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 relationship_to_head_of_hh:
   dtype:
     categorical:
@@ -13683,6 +14207,7 @@ relationship_to_head_of_hh:
       categories_dtype: string
       ordered: false
   module: pbrutto
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -13766,6 +14291,7 @@ relationship_to_hh:
       categories_dtype: string
       ordered: false
   module: pbrutto
+  reference: current
   survey_years:
     - 1985
     - 1986
@@ -13812,6 +14338,7 @@ relevance_career:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1992
@@ -13833,6 +14360,7 @@ relevance_children:
       categories_dtype: string
       ordered: true
   module: pl
+  reference: current
   survey_years:
     - 1990
     - 1992
@@ -13856,6 +14384,7 @@ religion_father:
       categories_dtype: string
       ordered: false
   module: biol
+  reference: time_invariant
   survey_years:
     - 2003
     - 2004
@@ -13892,6 +14421,7 @@ religion_mother:
       categories_dtype: string
       ordered: false
   module: biol
+  reference: time_invariant
   survey_years:
     - 2003
     - 2004
@@ -13916,8 +14446,9 @@ religion_mother:
     - 2023
     - 2024
 rent_minus_heating_costs_m_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -13960,33 +14491,6 @@ rent_minus_heating_costs_m_hh:
     - 2022
     - 2023
     - 2024
-own_pension_gross_m:
-  dtype: float[pyarrow]
-  module: pl
-  survey_years:
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 rented_or_owned:
   dtype:
     categorical:
@@ -13999,6 +14503,7 @@ rented_or_owned:
       categories_dtype: string
       ordered: false
   module: hgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14052,6 +14557,7 @@ residence_childhood:
       categories_dtype: string
       ordered: true
   module: biol
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -14097,6 +14603,7 @@ residence_childhood:
 retired:
   dtype: bool[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14142,10 +14649,12 @@ retired:
 rgroup20:
   dtype: int8[pyarrow]
   module: cirdef
+  reference: current
   survey_years: null
 riester_rente_survivor_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -14189,8 +14698,9 @@ riester_rente_survivor_y:
     - 2023
     - 2024
 riester_rente_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -14236,6 +14746,7 @@ riester_rente_y:
 rv_id:
   dtype: int32[pyarrow]
   module: ppathl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -14279,8 +14790,9 @@ rv_id:
     - 2023
     - 2024
 school_costs_m:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: kidlong
+  reference: current
   survey_years:
     - 2013
     - 2015
@@ -14292,6 +14804,7 @@ school_costs_m:
 self_employed:
   dtype: bool[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14344,6 +14857,7 @@ sexual_orientation:
       categories_dtype: string
       ordered: false
   module: ppathl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14387,8 +14901,9 @@ sexual_orientation:
     - 2023
     - 2024
 sf12_bodily_pain_nbs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14407,8 +14922,9 @@ sf12_bodily_pain_nbs:
     - 2023
     - 2024
 sf12_general_health_nbs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14427,8 +14943,9 @@ sf12_general_health_nbs:
     - 2023
     - 2024
 sf12_mcs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14447,8 +14964,9 @@ sf12_mcs:
     - 2023
     - 2024
 sf12_mental_health_nbs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14467,8 +14985,9 @@ sf12_mental_health_nbs:
     - 2023
     - 2024
 sf12_pcs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14487,8 +15006,9 @@ sf12_pcs:
     - 2023
     - 2024
 sf12_physical_functioning_nbs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14507,8 +15027,9 @@ sf12_physical_functioning_nbs:
     - 2023
     - 2024
 sf12_role_emotional_nbs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14527,8 +15048,9 @@ sf12_role_emotional_nbs:
     - 2023
     - 2024
 sf12_role_physical_nbs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14547,8 +15069,9 @@ sf12_role_physical_nbs:
     - 2023
     - 2024
 sf12_social_functioning_nbs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14569,6 +15092,7 @@ sf12_social_functioning_nbs:
 sf12_valid:
   dtype: bool[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14612,8 +15136,9 @@ sf12_valid:
     - 2023
     - 2024
 sf12_vitality_nbs:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: health
+  reference: current
   survey_years:
     - 2002
     - 2004
@@ -14631,9 +15156,10 @@ sf12_vitality_nbs:
     - 2022
     - 2023
     - 2024
-other_bonuses_y:
-  dtype: float[pyarrow]
+sozialhilfe_general_y_hh:
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -14677,8 +15203,9 @@ other_bonuses_y:
     - 2023
     - 2024
 sozialhilfe_other_y_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -14758,51 +15285,7 @@ survey_status_current:
       categories_dtype: string
       ordered: false
   module: ppathl
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-actual_working_hours_w:
-  dtype: float[pyarrow]
-  module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14848,10 +15331,12 @@ actual_working_hours_w:
 teaching_sample:
   dtype: bool[pyarrow]
   module: cirdef
+  reference: current
   survey_years: null
 tenure:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14895,8 +15380,9 @@ tenure:
     - 2023
     - 2024
 total_full_time_working_experience:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14940,8 +15426,9 @@ total_full_time_working_experience:
     - 2023
     - 2024
 total_part_time_working_experience:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -14985,8 +15472,9 @@ total_part_time_working_experience:
     - 2023
     - 2024
 total_unemployment_experience:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -15030,43 +15518,15 @@ total_unemployment_experience:
     - 2023
     - 2024
 trust_government_low_to_high:
-  dtype:
-    categorical:
-      categories:
-        - 0
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-      categories_dtype: int8[pyarrow]
-      ordered: true
+  dtype: int8[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2018
 trust_public_admin_low_to_high:
-  dtype:
-    categorical:
-      categories:
-        - 0
-        - 1
-        - 2
-        - 3
-        - 4
-        - 5
-        - 6
-        - 7
-        - 8
-        - 9
-        - 10
-      categories_dtype: int8[pyarrow]
-      ordered: true
+  dtype: int8[pyarrow]
   module: pl
+  reference: current
   survey_years:
     - 2018
 type_of_health_insurance_1999_to_2020:
@@ -15079,6 +15539,7 @@ type_of_health_insurance_1999_to_2020:
       categories_dtype: string
       ordered: false
   module: pl
+  reference: current
   survey_years:
     - 1999
     - 2000
@@ -15111,12 +15572,14 @@ type_of_health_insurance_2022:
       categories_dtype: string
       ordered: false
   module: pl
+  reference: current
   survey_years:
     - 2022
     - 2024
 unemployed_number_of_months:
   dtype: int8[pyarrow]
   module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15162,51 +15625,7 @@ unemployed_number_of_months:
 unemployment_benefits_number_of_months:
   dtype: double[pyarrow]
   module: pkal
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-irregularly_or_marginally_employed:
-  dtype: bool[pyarrow]
-  module: pgen
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15250,8 +15669,9 @@ irregularly_or_marginally_employed:
     - 2023
     - 2024
 unterhalt_received_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15295,53 +15715,9 @@ unterhalt_received_y:
     - 2023
     - 2024
 unterhaltsvorschuss_received_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-holiday_bonus_y:
-  dtype: float[pyarrow]
-  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15385,168 +15761,39 @@ holiday_bonus_y:
     - 2023
     - 2024
 vehicles_value_a:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 vehicles_value_b:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 vehicles_value_c:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 vehicles_value_d:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
 vehicles_value_e:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pwealth
+  reference: current
   survey_years:
     - 2017
-contractual_working_hours_w:
-  dtype: float[pyarrow]
-  module: pgen
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-employed_full_time:
-  dtype: bool[pyarrow]
-  module: pgen
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 vorruhestandsgeld_y:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-christmas_bonus_y:
-  dtype: float[pyarrow]
-  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15592,6 +15839,7 @@ christmas_bonus_y:
 werkstatt_für_behinderte:
   dtype: bool[pyarrow]
   module: pgen
+  reference: current
   survey_years:
     - 1998
     - 1999
@@ -15627,6 +15875,7 @@ willingness_to_participate:
       categories_dtype: string
       ordered: true
   module: pbrutto
+  reference: current
   survey_years:
     - 2002
     - 2003
@@ -15634,8 +15883,9 @@ willingness_to_participate:
     - 2005
     - 2006
 wohngeld_m_hh:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv_hl
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -15679,8 +15929,9 @@ wohngeld_m_hh:
     - 2023
     - 2024
 wohngeld_m_hh_hl:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: hl
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15724,8 +15975,9 @@ wohngeld_m_hh_hl:
     - 2023
     - 2024
 wohngeld_m_hh_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15768,9 +16020,51 @@ wohngeld_m_hh_pequiv:
     - 2022
     - 2023
     - 2024
+wohngeld_received_hh:
+  dtype:
+    categorical:
+      categories:
+        - false
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: hl
+  reference: previous_year
+  survey_years:
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 wohngeld_y_hh_pequiv:
-  dtype: float[pyarrow]
+  dtype: double[pyarrow]
   module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15816,6 +16110,7 @@ wohngeld_y_hh_pequiv:
 year_moved_in:
   dtype: int16[pyarrow]
   module: hgen
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -15861,6 +16156,7 @@ year_moved_in:
 year_of_immigration:
   dtype: int16[pyarrow]
   module: ppathl
+  reference: time_invariant
   survey_years:
     - 1984
     - 1985
@@ -15906,6 +16202,7 @@ year_of_immigration:
 years_worked_last_job:
   dtype: int8[pyarrow]
   module: pl
+  reference: time_invariant
   survey_years:
     - 1985
     - 1986
