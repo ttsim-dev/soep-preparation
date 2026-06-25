@@ -3722,13 +3722,13 @@ employment_status:
   dtype:
     categorical:
       categories:
-        - Ausbildung, Lehre
-        - Nicht erwerbstätig
-        - Teilzeitbeschäftigung
-        - Unregelmässig, geringfügig erwerbstät.
-        - Voll erwerbstätig
+        - Full-time employed
+        - In education/training
+        - Irregularly/marginally employed
+        - Not employed
+        - On short-time work (2021-2023)
+        - Part-time employed
         - Werkstatt für behinderte Menschen (1998-2020)
-        - in Kurzarbeit (2021-2023)
       categories_dtype: string
       ordered: false
   module: pgen
@@ -5472,24 +5472,24 @@ reason_employment_ended:
   dtype:
     categorical:
       categories:
-        - Arbeitserlaubnis nicht verlängert (seit 2019)
-        - Arbeitsverhältnis befristet (1985-1998)
-        - Arbeitsverhältnis befristet, Ausbildungsverhältnis beendet (seit 1999)
-        - Aufgabe eigenes Geschäfts
-        - Ausbildungsverhältnis beendet (1985-1998)
-        - Betriebsstilllegung (1991-1998, seit 2001)
-        - Beurlaubung, Mutterschutz, Elternzeit (1991-1998, seit 2011)
-        - Beurlaubung, freigstellt (1999-2010)
-        - Eigene Kündigung
-        - Einvernehmliche Auflösung, Auflösungsvertrag (1985-1990, seit 1999)
-        - Kündigung durch Arbeitgeber
-        - Sonst. inkl. Stilllegung, Rente/Pension, beurlaubt, freigestellt (1987-1990)
-        - Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig. (1985-1986)
-        - Sonst. inkl. einvernehm. Auflösung/Auflösungsvertrag (1991-1998)
-        - Versetzung durch Betrieb (1985-1998)
-        - Versetzung eigener Wunsch (1985-1998)
-        - Vorruhestandsregelung (1987-1998)
-        - in Rente, Pension gegangen (seit 1991)
+        - Apprenticeship ended (1985-1998)
+        - Business closure (1991-1998, since 2001)
+        - Dismissal by employer
+        - Early-retirement scheme (1987-1998)
+        - Fixed-term employment (1985-1998)
+        - Fixed-term employment / apprenticeship ended (since 1999)
+        - Gave up own business
+        - Leave of absence, maternity/parental leave (1991-1998, since 2011)
+        - Leave of absence, released (1999-2010)
+        - Mutual termination / termination agreement (1985-1990, since 1999)
+        - Other incl. closure, pension, leave, release (1987-1990)
+        - Other incl. early retirement, closure, pension, leave, release (1985-1986)
+        - Other incl. mutual termination/termination agreement (1991-1998)
+        - Own resignation
+        - Retired / went into pension (since 1991)
+        - Transfer at own request (1985-1998)
+        - Transfer by employer (1985-1998)
+        - Work permit not renewed (since 2019)
       categories_dtype: string
       ordered: false
   module: pgen
@@ -9158,19 +9158,19 @@ labor_force_status:
   dtype:
     categorical:
       categories:
-        - Erwerbstätig
-        - Erwerbstätig, aber inaktiv in den letzten 7 Tagen (seit 2000)
-        - 'NE: 65 Jahre und älter'
-        - 'NE: Altersteilzeit mit Arbeitszeit Null'
-        - 'NE: Mutterschutz/Elternzeit (seit 1991)'
-        - 'NE: aber bezahlte Arbeit in den letzten 7 Tagen (seit 1999)'
-        - 'NE: aber bezahlte Nebentätigkeit (seit 2017)'
-        - 'NE: aber gelegentliche Nebentätigkeit (1985-2016)'
-        - 'NE: aber regelmäßig bezahlte Nebentätigkeit (1985-2016)'
-        - 'NE: arbeitslos registriert'
-        - 'NE: derzeit in Ausbildung'
-        - 'NE: im Militär-/Zivildienst'
-        - 'Nicht erwerbstätig (NE): keine weitere Angabe'
+        - Employed
+        - Employed but inactive in the last 7 days (since 2000)
+        - NE: 65 years and older
+        - NE: but occasional secondary job (1985-2016)
+        - NE: but paid secondary job (since 2017)
+        - NE: but paid work in the last 7 days (since 1999)
+        - NE: but regularly paid secondary job (1985-2016)
+        - NE: currently in education/training
+        - NE: in military/civilian service
+        - NE: maternity/parental leave (since 1991)
+        - NE: partial retirement with zero working hours
+        - NE: registered unemployed
+        - Not employed (NE): no further information
       categories_dtype: string
       ordered: false
   module: pgen
@@ -15016,8 +15016,8 @@ type_of_health_insurance_2022:
   dtype:
     categorical:
       categories:
-        - Ausschließlich privat versichert
-        - In einer gesetzlichen Krankenversicherung
+        - In statutory health insurance
+        - Privately insured only
       categories_dtype: string
       ordered: false
   module: pl

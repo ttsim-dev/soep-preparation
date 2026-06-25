@@ -184,7 +184,12 @@ def _violations(name: str) -> list[str]:
 
 # German category-label outputs intentionally kept (named institutions / programmes
 # with no faithful one-word English equivalent), mirroring the variable-name allow-list.
-_ALLOWED_GERMAN_CATEGORY_VALUES = frozenset({"Werkstatt für behinderte Menschen"})
+_ALLOWED_GERMAN_CATEGORY_VALUES = frozenset(
+    {
+        "Werkstatt für behinderte Menschen",
+        "Werkstatt für behinderte Menschen (1998-2020)",
+    }
+)
 
 # German category labels translated to English. The keys of the renaming maps are raw
 # SOEP value labels and stay verbatim; only these output labels are translated.

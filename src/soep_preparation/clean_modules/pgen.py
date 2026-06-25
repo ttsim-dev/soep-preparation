@@ -13,7 +13,94 @@ from soep_preparation.utilities.data_manipulator import (
     object_to_int_categorical,
     object_to_str_categorical,
     replace_not_applicable_answer,
+    translate_categories,
 )
+
+# `Werkstatt für behinderte Menschen` is the SGB-IX sheltered-employment institution and
+# stays German (on the naming allow-list); every other label is translated to English.
+_EMPLOYMENT_STATUS_EN = {
+    "Ausbildung, Lehre": "In education/training",
+    "Nicht erwerbstätig": "Not employed",
+    "Teilzeitbeschäftigung": "Part-time employed",
+    "Unregelmässig, geringfügig erwerbstät.": "Irregularly/marginally employed",
+    "Voll erwerbstätig": "Full-time employed",
+    "Werkstatt für behinderte Menschen (1998-2020)": (
+        "Werkstatt für behinderte Menschen (1998-2020)"
+    ),
+    "in Kurzarbeit (2021-2023)": "On short-time work (2021-2023)",
+}
+
+# `NE` = nicht erwerbstätig (not employed); kept as the SOEP code prefix.
+_LABOR_FORCE_STATUS_EN = {
+    "Erwerbstätig": "Employed",
+    "Erwerbstätig, aber inaktiv in den letzten 7 Tagen (seit 2000)": (
+        "Employed but inactive in the last 7 days (since 2000)"
+    ),
+    "NE: 65 Jahre und älter": "NE: 65 years and older",
+    "NE: Altersteilzeit mit Arbeitszeit Null": (
+        "NE: partial retirement with zero working hours"
+    ),
+    "NE: Mutterschutz/Elternzeit (seit 1991)": (
+        "NE: maternity/parental leave (since 1991)"
+    ),
+    "NE: aber bezahlte Arbeit in den letzten 7 Tagen (seit 1999)": (
+        "NE: but paid work in the last 7 days (since 1999)"
+    ),
+    "NE: aber bezahlte Nebentätigkeit (seit 2017)": (
+        "NE: but paid secondary job (since 2017)"
+    ),
+    "NE: aber gelegentliche Nebentätigkeit (1985-2016)": (
+        "NE: but occasional secondary job (1985-2016)"
+    ),
+    "NE: aber regelmäßig bezahlte Nebentätigkeit (1985-2016)": (
+        "NE: but regularly paid secondary job (1985-2016)"
+    ),
+    "NE: arbeitslos registriert": "NE: registered unemployed",
+    "NE: derzeit in Ausbildung": "NE: currently in education/training",
+    "NE: im Militär-/Zivildienst": "NE: in military/civilian service",
+    "Nicht erwerbstätig (NE): keine weitere Angabe": (
+        "Not employed (NE): no further information"
+    ),
+}
+
+_REASON_EMPLOYMENT_ENDED_EN = {
+    "Arbeitserlaubnis nicht verlängert (seit 2019)": (
+        "Work permit not renewed (since 2019)"
+    ),
+    "Arbeitsverhältnis befristet (1985-1998)": "Fixed-term employment (1985-1998)",
+    "Arbeitsverhältnis befristet, Ausbildungsverhältnis beendet (seit 1999)": (
+        "Fixed-term employment / apprenticeship ended (since 1999)"
+    ),
+    "Aufgabe eigenes Geschäfts": "Gave up own business",
+    "Ausbildungsverhältnis beendet (1985-1998)": "Apprenticeship ended (1985-1998)",
+    "Betriebsstilllegung (1991-1998, seit 2001)": (
+        "Business closure (1991-1998, since 2001)"
+    ),
+    "Beurlaubung, Mutterschutz, Elternzeit (1991-1998, seit 2011)": (
+        "Leave of absence, maternity/parental leave (1991-1998, since 2011)"
+    ),
+    "Beurlaubung, freigstellt (1999-2010)": "Leave of absence, released (1999-2010)",
+    "Eigene Kündigung": "Own resignation",
+    "Einvernehmliche Auflösung, Auflösungsvertrag (1985-1990, seit 1999)": (
+        "Mutual termination / termination agreement (1985-1990, since 1999)"
+    ),
+    "Kündigung durch Arbeitgeber": "Dismissal by employer",
+    "Sonst. inkl. Stilllegung, Rente/Pension, beurlaubt, freigestellt (1987-1990)": (
+        "Other incl. closure, pension, leave, release (1987-1990)"
+    ),
+    "Sonst. inkl. Vorruhestand, Stilllegung, Rente/Pension, beurl., freig. (1985-1986)": (  # noqa: E501
+        "Other incl. early retirement, closure, pension, leave, release (1985-1986)"
+    ),
+    "Sonst. inkl. einvernehm. Auflösung/Auflösungsvertrag (1991-1998)": (
+        "Other incl. mutual termination/termination agreement (1991-1998)"
+    ),
+    "Versetzung durch Betrieb (1985-1998)": "Transfer by employer (1985-1998)",
+    "Versetzung eigener Wunsch (1985-1998)": "Transfer at own request (1985-1998)",
+    "Vorruhestandsregelung (1987-1998)": "Early-retirement scheme (1987-1998)",
+    "in Rente, Pension gegangen (seit 1991)": (
+        "Retired / went into pension (since 1991)"
+    ),
+}
 
 
 def _education(
@@ -64,9 +151,9 @@ def _in_education(
         "NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
         "Volontäre, Praktikanten",
     ]
-    out = create_dummy(series=employment, value_for_comparison="Ausbildung, Lehre")
+    out = create_dummy(series=employment, value_for_comparison="In education/training")
     # Set in_education to missing if out of the labor force -- could mean anything.
-    out = out.where(employment != "Nicht erwerbstätig", pd.NA)
+    out = out.where(employment != "Not employed", pd.NA)
     return out.fillna(
         create_dummy(
             series=occupation, value_for_comparison=in_education, comparison_type="isin"
@@ -92,7 +179,7 @@ def _weekly_working_hours_fill_non_working(
     employment_status: pd.Series,
 ) -> pd.Series:
     out = object_to_float(working_hours)
-    return out.where(employment_status != "Nicht erwerbstätig", 0)
+    return out.where(employment_status != "Not employed", 0)
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -153,9 +240,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["refugee_status"] = object_to_str_categorical(raw_data["pgstatus_refu"])
     out["marital_status"] = object_to_str_categorical(raw_data["pgfamstd"])
-    out["labor_force_status"] = object_to_str_categorical(raw_data["pglfs"])
+    out["labor_force_status"] = translate_categories(
+        object_to_str_categorical(raw_data["pglfs"]), _LABOR_FORCE_STATUS_EN
+    )
     out["occupation_status"] = object_to_str_categorical(raw_data["pgstib"])
-    out["employment_status"] = object_to_str_categorical(raw_data["pgemplst"])
+    out["employment_status"] = translate_categories(
+        object_to_str_categorical(raw_data["pgemplst"]), _EMPLOYMENT_STATUS_EN
+    )
     out["total_full_time_working_experience"] = object_to_float(raw_data["pgexpft"])
     out["total_part_time_working_experience"] = object_to_float(raw_data["pgexppt"])
     out["total_unemployment_experience"] = object_to_float(raw_data["pgexpue"])
@@ -180,24 +271,24 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["employed"] = (
         create_dummy(
             series=out["employment_status"],
-            value_for_comparison="Nicht erwerbstätig",
+            value_for_comparison="Not employed",
             comparison_type="neq",
         )
     ) & (~out["in_education"])
 
     out["not_employed"] = create_dummy(
         series=out["employment_status"],
-        value_for_comparison="Nicht erwerbstätig",
+        value_for_comparison="Not employed",
     )
     out["registered_unemployed"] = create_dummy(
         series=out["occupation_status"],
         value_for_comparison="NE: arbeitslos gemeldet",
     )
     out["employed_full_time"] = create_dummy(
-        series=out["employment_status"], value_for_comparison="Voll erwerbstätig"
+        series=out["employment_status"], value_for_comparison="Full-time employed"
     )
     out["employed_part_time"] = create_dummy(
-        series=out["employment_status"], value_for_comparison="Teilzeitbeschäftigung"
+        series=out["employment_status"], value_for_comparison="Part-time employed"
     )
     out["irregularly_or_marginally_employed"] = create_dummy(
         series=out["employment_status"],
@@ -243,8 +334,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             {-5: "[-5] in Fragebogenversion nicht enthalten"},
         ),
     )
-    out["reason_employment_ended"] = object_to_str_categorical(
-        raw_data["pgjobend"],
+    out["reason_employment_ended"] = translate_categories(
+        object_to_str_categorical(raw_data["pgjobend"]),
+        _REASON_EMPLOYMENT_ENDED_EN,
     )
 
     return out

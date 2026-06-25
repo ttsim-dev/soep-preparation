@@ -1,6 +1,7 @@
 """Utilities for manipulating data."""
 
 import re
+from collections.abc import Mapping
 
 import pandas as pd
 from pandas.api.types import CategoricalDtype
@@ -416,6 +417,46 @@ def object_to_str_categorical(
         ordered=ordered,
     )
     return sr_str.astype(raw_cat_dtype)
+
+
+def translate_categories(
+    series: pd.Series,
+    translations: Mapping[str, str],
+) -> pd.Series:
+    """Relabel a categorical Series' categories from German to English.
+
+    Every current category must be a key in `translations`, so an unmapped or newly
+    appearing category fails loudly instead of silently staying German (`translations`
+    may over-cover with keys absent from the data). The result keeps pyarrow-string
+    categories, re-sorted English-alphabetically for a stable, consistent order.
+
+    Args:
+        series: A categorical Series whose categories are the German labels.
+        translations: Map from each German category to its English label.
+
+    Returns:
+        The Series with English categories.
+
+    Raises:
+        ValueError: If any current category is missing from `translations`.
+    """
+    _fail_if_categories_not_translated(series, translations)
+    relabelled = series.astype("string[pyarrow]").replace(dict(translations))
+    categories = _get_sorted_not_na_unique_values(relabelled).astype("string[pyarrow]")
+    raw_cat_dtype = CategoricalDtype(categories=categories, ordered=series.cat.ordered)
+    return relabelled.astype(raw_cat_dtype)
+
+
+def _fail_if_categories_not_translated(
+    series: pd.Series,
+    translations: Mapping[str, str],
+) -> None:
+    missing = [
+        category for category in series.cat.categories if category not in translations
+    ]
+    if missing:
+        msg = f"categories missing from the translation map: {missing}"
+        raise ValueError(msg)
 
 
 def combined_categorical(

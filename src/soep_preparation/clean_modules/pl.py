@@ -12,7 +12,13 @@ from soep_preparation.utilities.data_manipulator import (
     object_to_int_categorical,
     object_to_str_categorical,
     replace_not_applicable_answer,
+    translate_categories,
 )
+
+_HEALTH_INSURANCE_2022_EN = {
+    "Ausschließlich privat versichert": "Privately insured only",
+    "In einer gesetzlichen Krankenversicherung": "In statutory health insurance",
+}
 
 
 def _private_rente_beitrag_m_ein_umfragejahr(
@@ -180,8 +186,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         raw_data["ple0097_v1"]
     )
     # there is no information on the type of health insurance in 2021
-    out["type_of_health_insurance_2022"] = object_to_str_categorical(
-        raw_data["ple0097_v2"]
+    out["type_of_health_insurance_2022"] = translate_categories(
+        object_to_str_categorical(raw_data["ple0097_v2"]), _HEALTH_INSURANCE_2022_EN
     )
     out["motor_disability"] = create_dummy(
         series=raw_data["plj0582"],
