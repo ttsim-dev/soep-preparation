@@ -101,13 +101,23 @@ def select_household_heads(frame: pd.DataFrame) -> pd.DataFrame:
     row per household without summing jointly-held amounts across members (which would
     double-count, since SOEP-Core omits the person-level ownership shares).
 
+    A member whose age is missing carries no evidence of being oldest, so it never
+    outranks a member with a known age: missing ages sort to the front and the greatest
+    known age wins. Equal ages resolve to the lowest `p_id`, so the choice is
+    deterministic and independent of input order.
+
     Args:
         frame: Rows with `p_id`, `hh_id`, `survey_year`, and `age`.
 
     Returns:
-        One row per `(hh_id, survey_year)`, the member with the greatest `age`.
+        One row per `(hh_id, survey_year)`, the member with the greatest known `age`
+        (lowest `p_id` on a tie).
     """
-    ordered = frame.sort_values(["hh_id", "survey_year", "age"])
+    ordered = frame.sort_values(
+        ["hh_id", "survey_year", "age", "p_id"],
+        ascending=[True, True, True, False],
+        na_position="first",
+    )
     return ordered.drop_duplicates(
         subset=["hh_id", "survey_year"], keep="last"
     ).reset_index(drop=True)

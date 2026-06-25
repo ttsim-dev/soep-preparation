@@ -12,6 +12,7 @@ from soep_preparation.wealth_imputation.features import (
     fit_categorical_encoder,
     lagged_wealth,
     required_columns_by_module,
+    select_household_heads,
 )
 
 
@@ -172,6 +173,38 @@ def test_fail_if_features_missing_raises_on_absent_module():
     }
     with pytest.raises(ValueError, match="ppathl"):
         fail_if_features_missing(modules)
+
+
+def test_select_household_heads_picks_oldest_when_a_member_age_is_missing():
+    """The oldest member with a known age wins over a member whose age is missing.
+
+    A member with no recorded age carries no evidence of being oldest, so it must never
+    win the household-head slot over a member with a known age.
+    """
+    frame = pd.DataFrame(
+        {
+            "p_id": [1, 2],
+            "hh_id": [10, 10],
+            "survey_year": [2022, 2022],
+            "age": [70.0, np.nan],
+        }
+    )
+    selected = select_household_heads(frame)
+    assert selected["p_id"].tolist() == [1]
+
+
+def test_select_household_heads_breaks_age_ties_deterministically():
+    """Two members of equal age resolve to the lowest `p_id`, whatever the row order."""
+    frame = pd.DataFrame(
+        {
+            "p_id": [5, 2],
+            "hh_id": [10, 10],
+            "survey_year": [2022, 2022],
+            "age": [50.0, 50.0],
+        }
+    )
+    selected = select_household_heads(frame)
+    assert selected["p_id"].tolist() == [2]
 
 
 def test_feature_specs_homeownership_is_a_household_predictor():
