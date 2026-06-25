@@ -22,13 +22,13 @@ def task_create_soep_dataset(
     variables: Annotated[list[str], ["birth_year", "bmi"]],
     survey_years: Annotated[list[int], [1988, 1990, 1992, 1994]],
     pbrutto: Annotated[pd.DataFrame, MODULES["pbrutto"]],
-    pl_pequiv: Annotated[pd.DataFrame, MODULES["pl_pequiv"]],
+    pequiv_pl: Annotated[pd.DataFrame, MODULES["pequiv_pl"]],
 ) -> Annotated[pd.DataFrame, Path.cwd() / "soep_dataset.pkl"]:
     """Merge the requested variables into one dataset."""
     return create_final_dataset(
         variables=variables,
         survey_years=survey_years,
-        modules={"pbrutto": pbrutto, "pl_pequiv": pl_pequiv},
+        modules={"pbrutto": pbrutto, "pequiv_pl": pequiv_pl},
     )
 ```
 

@@ -30,7 +30,8 @@ SOEP module names combine a unit prefix with a content suffix:
 | `…equiv` | cross-nationally equivalent file (CNEF), income reference = previous year |
 | `…kal` | activity calendar (Kalendarium) for the previous year |
 
-The modules in this pipeline, by that scheme:
+The modules in this pipeline. Most follow the affix scheme above; `cirdef`, `design`,
+and `health` are standalone files that do not:
 
 | Module | Contents |
 |---|---|
@@ -43,6 +44,9 @@ The modules in this pipeline, by that scheme:
 | `pwealth` / `hwealth` | person / household wealth (multiply imputed) |
 | `biobirth`, `bioparen`, `bioedu`, `biol` | fertility, parental, education, life-history biographies |
 | `kidlong` | child-level information across waves |
+| `cirdef` | household random-group / SOEP teaching-sample membership |
+| `design` | survey sampling design (random group, stratum, sample) |
+| `health` | derived SF-12 health module (physical / mental component summaries) |
 
 For the full contents of any module or variable, see the online SOEP documentation; URLs
 follow `https://paneldata.org/soep-core/datasets/{module}/{variable}`. The "Codebook

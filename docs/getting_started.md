@@ -18,8 +18,9 @@ $ pixi run pytask
 ```
 
 pytask resolves the dependency graph and runs every stage: convert Stata → clean modules
-→ combine modules → build the metadata catalogue. On success the example merged dataset
-is written to the project root.
+→ combine modules → build the metadata catalogue. All outputs are written under `bld/`.
+Building a merged analysis dataset is a separate step you drive yourself — see
+[Creating a dataset](creating_a_dataset.md).
 
 ## Test
 

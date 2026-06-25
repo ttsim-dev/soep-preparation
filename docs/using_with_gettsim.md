@@ -25,7 +25,7 @@ Frauen) drop their inputs from later policy dates, so the mapping is a superset 
 single date's requirements. The mapping is deliberately conservative — only 1:1 or
 obviously derivable matches carry a value. Every non-`None` value is a real key in
 `create_metadata/variable_to_metadata_mapping.yaml`, asserted by a test. Anything
-uncertain stays `None` with a `# TODO:` note describing the gap.
+uncertain stays `None`, with an entry in `mapping.GAP_NOTES` describing the gap.
 
 ## Current coverage
 
