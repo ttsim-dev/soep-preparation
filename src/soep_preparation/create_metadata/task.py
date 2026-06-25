@@ -17,6 +17,9 @@ from soep_preparation.config import (
     POTENTIAL_INDEX_VARIABLES,
     SRC,
 )
+from soep_preparation.create_metadata.reference_assignment import (
+    REFERENCE_BY_VARIABLE,
+)
 
 _METADATA_CATALOG = DataCatalog(name="metadata")
 
@@ -135,11 +138,16 @@ def _get_variable_metadata(
         module: The data containing the variables.
 
     Returns:
-        Metadata for each variable, including dtype and survey year availability.
+        Metadata for each variable, including dtype, survey year availability, and the
+        reference period its value refers to.
+
+    Raises:
+        KeyError: If a variable has no reference-period assignment.
     """
     columns = module.columns.tolist()
     survey_year_in_columns = "survey_year" in columns
     variables = [col for col in columns if col not in POTENTIAL_INDEX_VARIABLES]
+    _fail_if_variable_has_no_reference(variables)
 
     metadata = {}
     # for each variable/column in data
@@ -164,9 +172,29 @@ def _get_variable_metadata(
         metadata[variable] = {
             "dtype": serialized_variable_dtype,
             "survey_years": variable_survey_years,
+            "reference": str(REFERENCE_BY_VARIABLE[variable]),
         }
 
     return metadata
+
+
+def _fail_if_variable_has_no_reference(variables: list[str]) -> None:
+    """Abort if any variable lacks a reference-period assignment.
+
+    Args:
+        variables: Non-index variable names of a single module.
+
+    Raises:
+        KeyError: If a variable is missing from `REFERENCE_BY_VARIABLE`.
+    """
+    unassigned = [name for name in variables if name not in REFERENCE_BY_VARIABLE]
+    if unassigned:
+        msg = (
+            "The following variables have no reference-period assignment in "
+            f"create_metadata/reference_assignment.py: {unassigned}. Add each to the "
+            "appropriate group in REFERENCE_BY_VARIABLE."
+        )
+        raise KeyError(msg)
 
 
 def _fail_if_variable_in_multiple_modules(

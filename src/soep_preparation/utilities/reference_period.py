@@ -6,12 +6,12 @@ This converts `survey_year` (the interview wave `t`) into the year and month the
 actually describes, with the January->December rollover for previous-month references.
 """
 
-from enum import Enum
+from enum import StrEnum
 
 import pandas as pd
 
 
-class ReferencePeriod(Enum):
+class ReferencePeriod(StrEnum):
     """The period a SOEP value describes, relative to the interview wave `t`."""
 
     CURRENT = "current"
