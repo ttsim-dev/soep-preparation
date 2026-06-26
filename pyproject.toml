@@ -40,17 +40,19 @@ Repository = "https://github.com/OpenSourceEconomics/soep-preparation"
 Tracker = "https://github.com/OpenSourceEconomics/soep-preparation/issues"
 
 [tool.hatch]
+version.source = "vcs"
+metadata.allow-direct-references = true
 build.hooks.vcs.version-file = "src/soep_preparation/_version.py"
 build.targets.sdist.exclude = [ "tests" ]
 build.targets.sdist.only-packages = true
 build.targets.wheel.only-include = [ "src" ]
 build.targets.wheel.sources = [ "src" ]
-metadata.allow-direct-references = true
-version.source = "vcs"
 
 [tool.pixi.dependencies]
 deepdiff = "*"
+jupyter-book = ">=2"
 jupyterlab = "*"
+mystmd = "*"
 prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
@@ -72,6 +74,9 @@ kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
 [tool.pixi.tasks]
 wealth = { cmd = "pytask", env = { SOEP_WEALTH_IMPUTATION = "1" } }
+generate-variables = { cmd = "python _generate_variables.py", cwd = "docs" }
+build-docs = { cmd = "python _generate_variables.py && jupyter book build --html", cwd = "docs" }
+view-docs = { cmd = "python _generate_variables.py && jupyter book start", cwd = "docs" }
 [tool.pixi.workspace]
 channels = [ "conda-forge" ]
 platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
@@ -89,6 +94,9 @@ extend-ignore = [
   "FIX002", # Line contains TODO (rely on TD area for spotting)
   "ISC001", # Avoid conflict with ruff-format
   "PD015",  # pd.merge fine because of inherent symmetry
+  "RUF001", # Ambiguous unicode in strings (raw SOEP labels carry them verbatim)
+  "RUF002", # Ambiguous unicode in docstrings
+  "RUF003", # Ambiguous unicode in comments
   "S101",   # Use of `assert` detected
   "TC001",  # Move application import into a type-checking block
   "TC002",  # Move third-party import into a type-checking block
@@ -98,6 +106,9 @@ extend-ignore = [
 per-file-ignores."**/task*.py" = [
   "ANN",    # Type annotations (pytask signatures use Annotated[Path, Product])
   "ARG001", # Source-file dependencies are declared as parameters for cache invalidation
+]
+per-file-ignores."docs/*" = [
+  "INP001", # Implicit namespace packages
 ]
 per-file-ignores."sandbox/*" = [
   "INP001", # Implicit namespace packages
@@ -152,9 +163,9 @@ rules.unused-awaitable = "error"
 rules.unused-ignore-comment = "error"
 
 [tool.pytest]
+ini_options.norecursedirs = [ "docs" ]
 ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
 ini_options.filterwarnings = []
-ini_options.norecursedirs = [ "docs" ]
 
 [tool.yamlfix]
 line_length = 88

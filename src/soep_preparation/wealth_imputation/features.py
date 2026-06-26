@@ -40,7 +40,7 @@ FEATURE_SPECS: tuple[FeatureSpec, ...] = (
     FeatureSpec("number_of_persons_hh", "pequiv", "person", "continuous"),
     FeatureSpec("number_of_children_living_in_hh", "pequiv", "person", "continuous"),
     FeatureSpec("federal_state_of_residence", "pequiv", "person", "categorical"),
-    FeatureSpec("einkommen_nach_steuern_y_hh", "pequiv", "person", "continuous"),
+    FeatureSpec("income_after_tax_y_hh", "pequiv", "person", "continuous"),
     FeatureSpec("education_isced", "pgen", "person", "categorical"),
     FeatureSpec("employment_status", "pgen", "person", "categorical"),
     FeatureSpec("marital_status", "pgen", "person", "categorical"),

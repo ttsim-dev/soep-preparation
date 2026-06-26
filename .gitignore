@@ -1,6 +1,11 @@
 # Claude Code
 .claude/
 
+# External Pro-review artifacts (local only)
+pro-audit-*/
+pro-audit-*.zip
+report.md
+
 # Data (ignore except for .gitkeep files)
 data/**
 !data/**/
@@ -12,6 +17,8 @@ data/**
 # Documentation
 docs/_build/
 docs/superpowers/
+# Generated at build time by docs/_generate_variables.py
+docs/variables.md
 
 # Distribution / packaging
 *.egg

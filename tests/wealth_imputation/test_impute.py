@@ -36,7 +36,7 @@ def _feature_frame(p_ids: list[int], year: int) -> pd.DataFrame:
             "number_of_persons_hh": [2] * n,
             "number_of_children_living_in_hh": [1] * n,
             "federal_state_of_residence": ["BY"] * n,
-            "einkommen_nach_steuern_y_hh": np.linspace(20000, 90000, n),
+            "income_after_tax_y_hh": np.linspace(20000, 90000, n),
         }
     )
 

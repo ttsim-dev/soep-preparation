@@ -1,11 +1,15 @@
 """Behavior of the wealth-model feature registry."""
 
+import ast
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from soep_preparation.wealth_imputation.features import (
     FEATURE_SPECS,
+    FeatureSpec,
     assemble_feature_matrix,
     encode_features,
     fail_if_features_missing,
@@ -14,6 +18,34 @@ from soep_preparation.wealth_imputation.features import (
     required_columns_by_module,
     select_household_heads,
 )
+
+_SRC = Path(__file__).parent.parent.parent / "src" / "soep_preparation"
+_MODULE_DIRS = ("clean_modules", "combine_modules")
+
+
+def _emitted_columns(module_name: str) -> set[str]:
+    """String-literal keys assigned to `out[...]` by a module's clean/combine script."""
+    for directory in _MODULE_DIRS:
+        path = _SRC / directory / f"{module_name}.py"
+        if path.exists():
+            tree = ast.parse(path.read_text(encoding="utf-8"))
+            return {
+                node.slice.value
+                for node in ast.walk(tree)
+                if isinstance(node, ast.Subscript)
+                and isinstance(node.value, ast.Name)
+                and node.value.id == "out"
+                and isinstance(node.slice, ast.Constant)
+                and isinstance(node.slice.value, str)
+            }
+    msg = f"No clean/combine module file found for {module_name!r}."
+    raise AssertionError(msg)
+
+
+@pytest.mark.parametrize("spec", FEATURE_SPECS, ids=lambda spec: spec.column)
+def test_feature_column_is_emitted_by_its_source_module(spec: FeatureSpec):
+    """Every `FeatureSpec` column is produced by the module it names (data-free)."""
+    assert spec.column in _emitted_columns(spec.source_module)
 
 
 def test_fit_categorical_encoder_captures_sorted_training_categories():
