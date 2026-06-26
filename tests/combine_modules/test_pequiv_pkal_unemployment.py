@@ -14,7 +14,10 @@ to the previous calendar year:
 
 import pandas as pd
 
-from soep_preparation.combine_modules.pequiv_pkal import combine
+from soep_preparation.combine_modules.pequiv_pkal import (
+    _received_unemployment_benefits_last_year,
+    combine,
+)
 
 
 def _pequiv(
@@ -115,3 +118,30 @@ def test_received_unemployment_benefits_na_amount_does_not_imply_receipt():
         pkal=_pkal(unemployment_benefits_number_of_months=0),
     )
     assert out["received_unemployment_benefits_last_year"].tolist() == [False]
+
+
+def test_received_unemployment_benefits_all_missing_is_na():
+    """When all three source signals are missing, receipt is `NA`, not `False`.
+
+    `fillna(0)` would turn "no source observed" into a definitive "did not receive",
+    which is a different claim. With every input `NA` the indicator must stay `NA`.
+    """
+    missing = pd.Series([pd.NA], dtype="float64[pyarrow]")
+    result = _received_unemployment_benefits_last_year(
+        unemployment_benefits_number_of_months=missing,
+        arbeitslosengeld_y=missing,
+        arbeitslosenhilfe_y=missing,
+    )
+    assert result.isna().all()
+
+
+def test_received_unemployment_benefits_positive_signal_is_true_despite_missing():
+    """A positive signal yields `True` even when the other sources are missing."""
+    missing = pd.Series([pd.NA], dtype="float64[pyarrow]")
+    months = pd.Series([3], dtype="float64[pyarrow]")
+    result = _received_unemployment_benefits_last_year(
+        unemployment_benefits_number_of_months=months,
+        arbeitslosengeld_y=missing,
+        arbeitslosenhilfe_y=missing,
+    )
+    assert result.tolist() == [True]

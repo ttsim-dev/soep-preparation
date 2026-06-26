@@ -133,9 +133,12 @@ def _received_unemployment_benefits_last_year(
     - `arbeitslosenhilfe_y` (pequiv `iunay`): annual Arbeitslosenhilfe amount;
       positive ⇒ receipt of that distinct benefit.
 
-    Missing inputs are read as no receipt (`fillna(0)`), so the indicator is `True`
-    only when at least one signal is positive and `False` otherwise. The amount
-    signals fill gaps where the pkal month count is missing or zero.
+    The indicator is tri-state:
+
+    - `True` if any of the three signals is positive;
+    - `False` if at least one signal is observed and none is positive;
+    - `pd.NA` if all three signals are missing, so "no source observed" is not
+      silently turned into a definitive "did not receive".
 
     Args:
         unemployment_benefits_number_of_months: Months of Arbeitslosengeld (pkal).
@@ -143,11 +146,18 @@ def _received_unemployment_benefits_last_year(
         arbeitslosenhilfe_y: Annual Arbeitslosenhilfe amount in euros (pequiv).
 
     Returns:
-        Boolean Series, `True` where any signal indicates benefit receipt.
+        Nullable boolean Series: `True`/`False` where any signal is observed, `pd.NA`
+        where every signal is missing.
     """
-    received = (
+    positive = (
         (unemployment_benefits_number_of_months.fillna(value=0) > 0)
         | (arbeitslosengeld_y.fillna(value=0) > 0)
         | (arbeitslosenhilfe_y.fillna(value=0) > 0)
     )
+    any_observed = (
+        unemployment_benefits_number_of_months.notna()
+        | arbeitslosengeld_y.notna()
+        | arbeitslosenhilfe_y.notna()
+    )
+    received = positive.astype("bool[pyarrow]").where(any_observed, other=pd.NA)
     return received.astype("bool[pyarrow]")

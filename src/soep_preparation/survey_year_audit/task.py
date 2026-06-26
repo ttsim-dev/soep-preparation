@@ -1,4 +1,4 @@
-"""Task: write the disclosure-safe survey-year alignment report (issue #44)."""
+"""Task: write the low-cell-count-screened survey-year alignment report (issue #44)."""
 
 import json
 from pathlib import Path
@@ -19,8 +19,9 @@ def task_survey_year_alignment_report(
 ) -> None:
     """Build and write the per-variable, per-survey-year distribution report.
 
-    Reads every cleaned module and emits a disclosure-safe summary that an analyst uses
-    to decide each variable's reference period (survey year vs previous year, #44).
+    Reads every cleaned module and emits a low-cell-count-screened summary that an
+    analyst uses to decide each variable's reference period (survey year vs previous
+    year, #44).
 
     Args:
         modules: All cleaned modules, keyed by module name.

@@ -47,8 +47,11 @@ def add_reference_columns(
         A frame with nullable-integer `ryear` and `rmonth` columns aligned to
         `survey_year`'s index. `rmonth` is `pd.NA` for every reference except
         `previous_month`; both are `pd.NA` for `time_invariant`. For
-        `previous_month` rows whose `interview_month` is `pd.NA`, `ryear` stays at
-        the survey year and `rmonth` is `pd.NA`.
+        `previous_month` rows whose `interview_month` is `pd.NA`, **both** `ryear`
+        and `rmonth` are `pd.NA`: the reference year depends on the month (a January
+        interview rolls back a year), so an unknown month leaves the year
+        unidentifiable, and it is fail-closed rather than assumed to be the survey
+        year.
 
     Raises:
         ValueError: If `reference` is unknown, `previous_month` is requested
@@ -72,10 +75,15 @@ def add_reference_columns(
             )
             raise ValueError(msg)
         _fail_if_interview_month_out_of_range(interview_month)
-        # A missing month leaves `rolls_back` False, so `ryear` stays at the survey
-        # year (a year-level fallback) while `rmonth` is set NA below.
+        # A January interview refers to December of the prior year; every other
+        # month refers to the previous month in the survey year. With the month
+        # unknown the year is unidentifiable, so both columns are left NA below.
         rolls_back = (interview_month == 1).fillna(value=False)
-        ryear = survey_year.where(~rolls_back, survey_year - 1).astype(_INT)
+        ryear = (
+            survey_year.where(~rolls_back, survey_year - 1)
+            .where(interview_month.notna(), pd.NA)
+            .astype(_INT)
+        )
         rmonth = (
             interview_month.where(~rolls_back, 13)
             .sub(1)

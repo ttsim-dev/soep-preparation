@@ -94,7 +94,7 @@ SOEP_TO_GETTSIM: Final[MappingProxyType[str, str | None]] = MappingProxyType(
         "sozialversicherung__rente__grundrente__gesamteinnahmen_aus_renten_vorjahr_m": None,  # noqa: E501
         "sozialversicherung__rente__grundrente__grundrentenzeiten_monate": None,
         "sozialversicherung__rente__grundrente__mean_entgeltpunkte": None,
-        "sozialversicherung__rente__jahr_renteneintritt": "first_pension_receipt_year",
+        "sozialversicherung__rente__jahr_renteneintritt": None,
         "sozialversicherung__rente__kinderberücksichtigungszeiten_monate": None,
         "sozialversicherung__rente__krankheitszeiten_ab_16_bis_24_monate": None,
         "sozialversicherung__rente__monat_renteneintritt": None,
@@ -213,6 +213,13 @@ GAP_NOTES: Final[MappingProxyType[str, str]] = MappingProxyType(
         ),
         "sozialversicherung__rente__entgeltpunkte_west": (
             "Not in SOEP; needs FDZ-RV linkage (`rv_id`)."
+        ),
+        "sozialversicherung__rente__jahr_renteneintritt": (
+            "No statutory pension-claim start event in SOEP. "
+            "`first_pension_receipt_year` is the first year of positive statutory "
+            "pension income (or a retirement-calendar status proxy): left-censored "
+            "by late panel entry and includes non-statutory states, so it is not the "
+            "actual entry year."
         ),
         "sozialversicherung__rente__monat_renteneintritt": (
             "SOEP only resolves the year of first pension receipt."

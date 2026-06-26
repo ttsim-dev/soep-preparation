@@ -3,7 +3,7 @@
 The report helps resolve whether each variable's recorded values are aligned to the
 survey year or to the previous year (issue #44): an analyst compares the year-over-year
 movement against the questionnaire and external benchmarks. The summaries are
-disclosure-safe — only year-cells with enough observations are described.
+low-cell-count-screened — only year-cells with enough observations are described.
 """
 
 import pandas as pd

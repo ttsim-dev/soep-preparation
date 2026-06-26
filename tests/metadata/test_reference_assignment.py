@@ -48,3 +48,20 @@ def test_all_assigned_values_are_valid_reference_periods() -> None:
         if not isinstance(reference, ReferencePeriod)
     )
     assert invalid == []
+
+
+def test_wave_varying_dwelling_and_partner_variables_are_current() -> None:
+    """Dwelling attributes and partnership pointers vary by wave, so are `current`.
+
+    Building year, year-moved-in, and the (Ehe-)partner pointers describe the
+    household/relationship *at the interview*; they can change across waves and so
+    must not be marked `time_invariant` (which would mislead any period-aware merge).
+    """
+    for variable in (
+        "building_year_hh_min",
+        "building_year_hh_max",
+        "year_moved_in",
+        "partner_p_id",
+        "ehepartner_p_id",
+    ):
+        assert REFERENCE_BY_VARIABLE[variable] is ReferencePeriod.CURRENT

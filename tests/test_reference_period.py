@@ -74,14 +74,20 @@ def test_previous_month_without_interview_month_raises():
         )
 
 
-def test_previous_month_with_missing_interview_month_falls_back_to_year():
-    """When the interview month is unknown, the year stands and the month is missing."""
+def test_previous_month_with_missing_interview_month_is_fully_unknown():
+    """An unknown interview month leaves both the reference year and month unknown.
+
+    For a previous-month reference the year depends on the month: a January
+    interview rolls back to the prior year, every other month stays in the survey
+    year. With the month unknown the year is unidentifiable, so it is fail-closed to
+    `NA` rather than silently assuming the survey year (which is wrong for January).
+    """
     result = add_reference_columns(
         survey_year=pd.Series([2020]),
         reference=ReferencePeriod.PREVIOUS_MONTH,
         interview_month=pd.Series([pd.NA], dtype="int64[pyarrow]"),
     )
-    assert result["ryear"].tolist() == [2020]
+    assert result["ryear"].isna().all()
     assert result["rmonth"].isna().all()
 
 

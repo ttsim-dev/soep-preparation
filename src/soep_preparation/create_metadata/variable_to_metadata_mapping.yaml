@@ -1531,7 +1531,7 @@ born_in_germany:
 building_year_hh_max:
   dtype: int16[pyarrow]
   module: hgen
-  reference: time_invariant
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -1577,7 +1577,7 @@ building_year_hh_max:
 building_year_hh_min:
   dtype: int16[pyarrow]
   module: hgen
-  reference: time_invariant
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -2683,7 +2683,7 @@ ehegattenunterhalt_received_y:
 ehepartner_p_id:
   dtype: int32[pyarrow]
   module: ppathl_pgen
-  reference: time_invariant
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -13040,7 +13040,7 @@ part_time_employed_m_9:
 partner_p_id:
   dtype: int32[pyarrow]
   module: ppathl
-  reference: time_invariant
+  reference: current
   survey_years:
     - 1984
     - 1985
@@ -16110,7 +16110,7 @@ wohngeld_y_hh_pequiv:
 year_moved_in:
   dtype: int16[pyarrow]
   module: hgen
-  reference: time_invariant
+  reference: current
   survey_years:
     - 1984
     - 1985

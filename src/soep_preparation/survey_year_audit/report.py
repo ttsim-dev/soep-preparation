@@ -1,4 +1,4 @@
-"""Build a disclosure-safe survey-year alignment report (issue #44).
+"""Build a low-cell-count-screened survey-year alignment report (issue #44).
 
 For every variable that carries `survey_year`, summarize its value distribution per
 survey year. Comparing the year-over-year movement against the questionnaire and

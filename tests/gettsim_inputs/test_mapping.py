@@ -8,7 +8,7 @@ names.
 import pytest
 
 from soep_preparation.config import METADATA, POTENTIAL_INDEX_VARIABLES
-from soep_preparation.gettsim_inputs.mapping import SOEP_TO_GETTSIM
+from soep_preparation.gettsim_inputs.mapping import GAP_NOTES, SOEP_TO_GETTSIM
 
 _VALID_SOEP_TARGETS = set(METADATA) | set(POTENTIAL_INDEX_VARIABLES)
 
@@ -35,12 +35,20 @@ def test_living_space_maps_to_gettsim_living_area() -> None:
     assert SOEP_TO_GETTSIM["wohnen__wohnfläche_hh"] == "living_space_hh"
 
 
-def test_pension_year_maps_to_first_receipt_year() -> None:
-    """`sozialversicherung__rente__jahr_renteneintritt` uses first pension receipt."""
-    assert (
-        SOEP_TO_GETTSIM["sozialversicherung__rente__jahr_renteneintritt"]
-        == "first_pension_receipt_year"
-    )
+def test_pension_entry_year_is_unmapped() -> None:
+    """The statutory pension-entry year stays unmapped: SOEP has no claim-start event.
+
+    `first_pension_receipt_year` is the first year with positive statutory-pension
+    income (or a retirement-calendar status proxy), which is left-censored by late
+    panel entry and includes non-statutory states — not the actual
+    `jahr_renteneintritt`. Mapping it would change pension calculations.
+    """
+    assert SOEP_TO_GETTSIM["sozialversicherung__rente__jahr_renteneintritt"] is None
+
+
+def test_pension_entry_year_gap_is_documented() -> None:
+    """The unmapped pension-entry year is recorded in `GAP_NOTES`."""
+    assert "sozialversicherung__rente__jahr_renteneintritt" in GAP_NOTES
 
 
 def test_steuerklasse_has_no_soep_source() -> None:
