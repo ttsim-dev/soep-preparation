@@ -4478,8 +4478,16 @@ full_time_employed_m_9:
     - 2022
     - 2023
     - 2024
-future_employment_intention_low_to_high:
-  dtype: int8[pyarrow]
+future_employment_intention:
+  dtype:
+    categorical:
+      categories:
+        - Certainly not
+        - Rather unlikely
+        - Likely
+        - Certainly
+      categories_dtype: string
+      ordered: true
   module: pl
   reference: current
   survey_years:
