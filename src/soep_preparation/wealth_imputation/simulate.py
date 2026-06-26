@@ -94,12 +94,16 @@ def simulate_household_total_draws(
         configs: One `ComponentDrawConfig` per modelled component.
         n_draws: Number of complete joint draws (>= 1).
         rng: NumPy random generator threaded through all draws.
-        residual_config: If given, the signed unmodelled-components residual is drawn by
-            PMM each draw and added to the total, so its spread enters the draws.
+        residual_config: If given, the signed reconciliation residual is drawn by PMM
+            each draw and reported as a separate `residual_inclusive_total_draw` column;
+            the primary `household_total_draw` stays component-only.
 
     Returns:
-        Columns `hh_id`, `survey_year`, `household_total_draw` (float64); `n_draws` rows
-        per household, one per complete draw. Draw membership is the within-household
+        Columns `hh_id`, `survey_year`, `household_total_draw` (float64), the
+        component-only total; `n_draws` rows per household, one per complete draw. When
+        `residual_config` is given, an extra `residual_inclusive_total_draw` column adds
+        the per-draw signed residual to the component-only total (the same draw, so the
+        two totals are household-consistent). Draw membership is the within-household
         row order, as `distribution_across_draws` expects.
 
     Raises:
@@ -147,7 +151,10 @@ def simulate_household_total_draws(
             totals = totals.merge(
                 residual_frame, on=["hh_id", "survey_year"], how="left"
             )
-            totals["household_total_draw"] = (
+            # `household_total_draw` stays component-only (the primary,
+            # backtest-validated total). The residual-inclusive total is a separate
+            # scenario column on the same draw, so the two stay household-consistent.
+            totals["residual_inclusive_total_draw"] = (
                 totals["household_total_draw"] + totals["residual_draw"]
             )
             totals = totals.drop(columns="residual_draw")

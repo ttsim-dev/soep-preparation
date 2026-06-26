@@ -200,6 +200,37 @@ def test_run_imputation_reports_the_donor_pool_mean_residual():
     assert "mean_residual" not in result.summary
 
 
+def test_run_imputation_marks_component_only_as_the_primary_total():
+    """The headline `intervals` are the component-only total, not residual-inclusive."""
+    result = run_imputation(_synthetic_modules(), n_draws=50, seed=0, k=3)
+    assert result.summary["primary_total"] == "component_only"
+
+
+def test_run_imputation_publishes_a_residual_inclusive_scenario():
+    """The residual-inclusive total is a separate scenario, one row per household."""
+    result = run_imputation(_synthetic_modules(), n_draws=50, seed=0, k=3)
+    scenario = result.residual_inclusive_intervals
+    assert scenario is not None
+    assert len(scenario) == len(result.intervals)
+
+
+def test_residual_inclusive_total_exceeds_the_component_only_total():
+    """The positive synthetic residual lifts the scenario above the primary total."""
+    result = run_imputation(_synthetic_modules(), n_draws=200, seed=0, k=3)
+    scenario_intervals = result.residual_inclusive_intervals
+    assert scenario_intervals is not None
+    primary = result.intervals["point_estimate"].mean()
+    scenario = scenario_intervals["point_estimate"].mean()
+    assert scenario > primary
+
+
+def test_run_imputation_summary_carries_the_residual_inclusive_distribution():
+    """The summary exposes a separate across-draw distribution for the scenario."""
+    result = run_imputation(_synthetic_modules(), n_draws=50, seed=0, k=3)
+    distribution = result.summary["residual_inclusive_distribution_across_draws"]
+    assert {"gini", "zero_share", "negative_share", "p50"} <= set(distribution)
+
+
 def test_training_residual_drops_rows_with_a_missing_modelled_component():
     """A row missing any modelled component is dropped, not zero-filled, from training.
 

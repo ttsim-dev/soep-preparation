@@ -8,6 +8,7 @@ from soep_preparation.wealth_imputation.components import CanonicalComponent
 from soep_preparation.wealth_imputation.simulate import (
     ComponentDrawConfig,
     ResidualDrawConfig,
+    simulate_household_total_draws,
     simulate_household_totals,
 )
 
@@ -41,22 +42,43 @@ def test_simulate_household_totals_point_estimate_equals_sole_donor_value():
     np.testing.assert_allclose(result["point_estimate"].to_numpy(), [100.0], atol=1e-6)
 
 
-def test_simulate_household_totals_adds_the_drawn_residual():
-    """A residual config whose sole donor holds 500 shifts every total by 500."""
-    residual = ResidualDrawConfig(
+def _residual_500() -> ResidualDrawConfig:
+    return ResidualDrawConfig(
         recipient_predicted=np.array([500.0]),
         donor_predicted=np.array([500.0]),
         donor_observed=np.array([500.0]),
         k=1,
     )
-    result = simulate_household_totals(
+
+
+def test_simulate_draws_keep_the_primary_total_component_only_with_a_residual():
+    """With a residual config the primary total stays component-only."""
+    draws = simulate_household_total_draws(
         _one_person_household(),
         [_financial_config()],
         n_draws=3,
         rng=np.random.default_rng(seed=0),
-        residual_config=residual,
+        residual_config=_residual_500(),
     )
-    np.testing.assert_allclose(result["point_estimate"].to_numpy(), [600.0], atol=1e-6)
+    np.testing.assert_allclose(
+        draws["household_total_draw"].to_numpy(), [100.0, 100.0, 100.0], atol=1e-6
+    )
+
+
+def test_simulate_draws_residual_inclusive_total_adds_the_drawn_residual():
+    """The residual-inclusive column adds the sole donor's residual of 500 per draw."""
+    draws = simulate_household_total_draws(
+        _one_person_household(),
+        [_financial_config()],
+        n_draws=3,
+        rng=np.random.default_rng(seed=0),
+        residual_config=_residual_500(),
+    )
+    np.testing.assert_allclose(
+        draws["residual_inclusive_total_draw"].to_numpy(),
+        [600.0, 600.0, 600.0],
+        atol=1e-6,
+    )
 
 
 def _two_person_household() -> pd.DataFrame:

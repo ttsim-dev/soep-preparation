@@ -137,6 +137,16 @@ _OFFICIAL_TOTAL_COLUMN = "hh_net_overall_wealth_including_vehicles_and_student_l
 class ImputationResult:
     """The 2022 household-wealth point estimates with donor-spread bands and a summary.
 
+    Two totals are reported side by side (#66-style honesty about what is validated):
+
+    - `intervals` is the **component-only** total -- the sum of the modelled components.
+      It is the primary output because it is what the out-of-fold backtest validates
+      (the backtest compares it against the observed completed-component sum).
+    - `residual_inclusive_intervals` adds the signed reconciliation residual to the
+      official total. It is the more complete economic object but rests on a single-wave
+      (2017-only) residual fit that no backtest can validate, so it is a **scenario**,
+      not the headline. `None` when no residual model could be fit.
+
     The `lower`/`upper` bounds are **conditional donor-randomisation spreads**, not
     calibrated predictive intervals: they reflect ownership/PMM draw variability only,
     holding the fitted models and the single wealth implicate fixed -- the residual
@@ -145,11 +155,15 @@ class ImputationResult:
     """
 
     intervals: pd.DataFrame
-    """Columns `hh_id`, `survey_year`, `point_estimate`, `lower`, `upper`."""
+    """Component-only total. Columns `hh_id`, `survey_year`, `point_estimate`, `lower`,
+    `upper`. This is the primary, backtest-validated output."""
     summary: dict
-    """Counts and choices for the run, plus `distribution_across_draws` -- the
-    predictive distribution taken across complete draws, not from the per-household
-    medians in `intervals` (no row-level data)."""
+    """Counts and choices for the run, plus `distribution_across_draws` (the component-
+    only predictive distribution across complete draws, not the per-household medians in
+    `intervals`) and `residual_inclusive_distribution_across_draws` (the scenario)."""
+    residual_inclusive_intervals: pd.DataFrame | None
+    """Residual-inclusive scenario total, same columns as `intervals`; `None` when no
+    residual model was fit."""
 
 
 def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest waves
@@ -280,12 +294,28 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         rng=np.random.default_rng(seed),
         residual_config=residual_config,
     )
+    # Component-only is the primary output (the backtest validates it). The residual-
+    # inclusive scenario lives on the same draws (`residual_inclusive_total_draw`), so
+    # both totals are household-consistent.
     intervals = household_total_intervals(draws, level=level)
+    residual_inclusive_intervals = None
+    residual_inclusive_distribution = None
+    if "residual_inclusive_total_draw" in draws.columns:
+        scenario_draws = draws[["hh_id", "survey_year"]].assign(
+            household_total_draw=draws["residual_inclusive_total_draw"]
+        )
+        residual_inclusive_intervals = household_total_intervals(
+            scenario_draws, level=level
+        )
+        residual_inclusive_distribution = distribution_across_draws(
+            scenario_draws, level=level
+        )
     summary = {
         "n_recipients": len(recipient_keys),
         "n_training_heads": len(training),
         "components_used": [component.value for component in used],
         "components_skipped": skipped,
+        "primary_total": "component_only",
         "residual_model": residual_model_kind,
         "residual_is_sensitivity": True,
         "uses_observed_2022_answers": False,
@@ -294,10 +324,17 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "k": k,
         "level": level,
         # Predictive distribution computed WITHIN each complete draw then summarised
-        # across draws -- the per-household medians in `intervals` are not this.
+        # across draws -- the per-household medians in `intervals` are not this. The
+        # primary distribution is component-only; the residual scenario is reported
+        # separately (None when no residual model was fit).
         "distribution_across_draws": distribution_across_draws(draws, level=level),
+        "residual_inclusive_distribution_across_draws": residual_inclusive_distribution,
     }
-    return ImputationResult(intervals=intervals, summary=summary)
+    return ImputationResult(
+        intervals=intervals,
+        summary=summary,
+        residual_inclusive_intervals=residual_inclusive_intervals,
+    )
 
 
 def observed_component_total(

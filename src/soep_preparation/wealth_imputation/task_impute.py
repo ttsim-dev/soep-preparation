@@ -59,16 +59,24 @@ if RUN_WEALTH_IMPUTATION:
         intervals_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
         / "household_wealth_2022.arrow",
+        residual_inclusive_path: Annotated[Path, Product] = BLD
+        / "wealth_imputation"
+        / "household_wealth_2022_residual_inclusive.arrow",
         summary_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
         / "imputation_summary.json",
     ) -> None:
         """Run the provisional 2022 wealth imputation and write its outputs.
 
+        Writes the primary component-only intervals, the residual-inclusive scenario
+        intervals (the more complete but unvalidatable total), and the run summary.
+
         Args:
             modules: Injected cleaned `MODULES` frames (declared dependencies).
             source_dependencies: First-party modules whose edits re-run the task.
-            intervals_path: Output Feather file of per-household 2022 intervals.
+            intervals_path: Output Feather file of the primary component-only intervals.
+            residual_inclusive_path: Output Feather file of the residual-inclusive
+                scenario intervals.
             summary_path: Output JSON of the disclosure-safe run summary.
         """
         result = run_imputation(
@@ -76,4 +84,10 @@ if RUN_WEALTH_IMPUTATION:
         )
         intervals_path.parent.mkdir(parents=True, exist_ok=True)
         result.intervals.reset_index(drop=True).to_feather(intervals_path)
+        scenario = (
+            result.residual_inclusive_intervals
+            if result.residual_inclusive_intervals is not None
+            else result.intervals.iloc[0:0]
+        )
+        scenario.reset_index(drop=True).to_feather(residual_inclusive_path)
         summary_path.write_text(json.dumps(result.summary, indent=2), encoding="utf-8")
