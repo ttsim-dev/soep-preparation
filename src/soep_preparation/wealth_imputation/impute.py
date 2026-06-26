@@ -25,11 +25,13 @@ The pipeline composes the tested blocks:
    deflated to 2022 terms by asset-class indices (MSCI -> financial, BIS house prices
    -> property, REX bonds -> insurances);
 4. simulate joint draws into household net-total bands; within each draw the signed
-   unmodelled-components residual (business / other real estate, net of omitted
-   liabilities) is drawn by PMM from observed donor residuals, matched on a signed
-   asinh score, so it preserves sign and the empirical distribution and contributes
-   spread to the band rather than a deterministic shift. The residual is provisional
-   (a single-wave fit) and flagged as a sensitivity term in the summary.
+   reconciliation residual (official total minus the fitted component vector --
+   dominated by business / other real estate but also absorbing omitted liabilities,
+   editing/measurement discrepancies, and model-definition mismatch) is drawn by PMM
+   from observed donor residuals, matched on a signed asinh score, so it preserves sign
+   and the empirical distribution and contributes spread to the band rather than a
+   deterministic shift. The residual is provisional (a single-wave fit) and flagged as
+   a sensitivity term in the summary.
 
 Documented approximations: vehicles, mortgage, and consumer-debt donors are not
 deflated (nominal / no asset index); the residual is deflated to 2022 by a
@@ -409,9 +411,11 @@ def _training_residual(
 
     The residual is `official_net_total - sum(component_sign * modelled_component)`
     over the fitted components, kept in euros and signed (negative when modelled wealth
-    exceeds the official total). It is deflated from each household's wave into
-    `target_year` terms by `RESIDUAL_INDEX` -- a property/equity blend standing in for
-    the unmodelled business and other-real-estate mass -- so the time component is
+    exceeds the official total). This reconciliation residual is dominated by the
+    unmodelled business and other-real-estate mass but also absorbs omitted
+    liabilities, editing/measurement discrepancies, and model-definition mismatch. It
+    is deflated from each household's wave into `target_year` terms by `RESIDUAL_INDEX`
+    -- a property/equity blend keyed to that dominant mass -- so the time component is
     explicit rather than absorbed into the OLS coefficients.
 
     Only rows with an official total *and* a complete used-component vector enter the

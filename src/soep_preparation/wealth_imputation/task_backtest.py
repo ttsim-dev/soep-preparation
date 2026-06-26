@@ -2,11 +2,13 @@
 
 Opt-in like the imputation (`SOEP_WEALTH_IMPUTATION`, or `pixi run wealth`). It fits the
 component models on the pre-2017 wealth waves, imputes 2017 out of fold, and compares
-the imputed 2017 household component totals with the observed 2017 totals, writing a
-disclosure-safe JSON of distribution, rank, and coverage metrics. This is the validation
-the proxy otherwise lacks: it measures how well the donor models reproduce a real wealth
-wave. The residual layer is not backtested -- the augmented official total exists only
-from 2017, so there is no earlier outcome wave to fit it on.
+the imputed 2017 household component totals with the held-out wave's completed-component
+totals (the six-component sum where every component is present, not raw-observed truth),
+writing a disclosure-safe JSON of distribution, rank, and coverage metrics. This is the
+validation the proxy otherwise lacks: it measures how well the donor models reproduce a
+real wealth wave's completed components. The residual layer is not backtested -- the
+augmented official total exists only from 2017, so there is no earlier outcome wave to
+fit it on.
 """
 
 import json

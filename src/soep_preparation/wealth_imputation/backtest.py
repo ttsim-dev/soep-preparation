@@ -2,14 +2,16 @@
 
 The proxy is validated by holding out the latest observed wealth wave (2017): fit on the
 earlier waves, impute 2017 as if it were the target, and compare the imputed 2017
-household totals with the observed 2017 totals. All outputs are disclosure-safe
-aggregates -- distribution summaries, a quintile confusion matrix, rank accuracy, and
-band coverage -- never a row-level value.
+household totals with the held-out wave's completed-component totals. The target is the
+six-component sum kept only where every component is present -- a completed-component
+fidelity check, not raw-observed truth. All outputs are disclosure-safe aggregates --
+distribution summaries, a quintile confusion matrix, rank accuracy, and band coverage --
+never a row-level value.
 
 Only the modelled component sum is backtested. The residual to the official total cannot
 be validated this way: the augmented official total (`n011h`) exists only from 2017, so
 there is no earlier outcome wave to fit a residual on, and the comparison target is the
-observed component sum, not the official total.
+completed component sum, not the official total.
 """
 
 import numpy as np

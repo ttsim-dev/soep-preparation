@@ -122,7 +122,8 @@ HOUSE_PRICE_INDEX: MappingProxyType[int, float] = MappingProxyType(
     }
 )
 
-# The residual to the official total is chiefly business assets and other real estate.
+# The reconciliation residual to the official total is dominated by business assets and
+# other real estate (it also absorbs omitted liabilities and editing discrepancies).
 # Lacking a separate series for either, deflate it by an equal-weight blend of the
 # property and equity indices (other real estate ~ house prices; business ~ equities),
 # each rebased to a common base year so the 50/50 weighting is economic, not an artefact

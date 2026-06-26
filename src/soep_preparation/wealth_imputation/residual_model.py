@@ -1,9 +1,11 @@
-"""Residual model: a signed matching score for the unmodelled-components residual.
+"""Residual model: a signed matching score for the reconciliation residual.
 
-The residual to the official total -- chiefly business and other real estate, net of any
-omitted liabilities -- is *signed* (negative where modelled wealth meets or exceeds the
-total) and concentrated. This fits an asinh-scaled linear regression on the signed
-residual to produce a matching score. The residual itself is not plugged in
+The residual is the official total minus the fitted component vector: a signed
+*reconciliation* residual, dominated by business and other real estate but also
+absorbing omitted liabilities, editing/measurement discrepancies, implicate noise, and
+model-definition mismatch. It is *signed* (negative where modelled wealth meets or
+exceeds the total) and concentrated. This fits an asinh-scaled linear regression on the
+signed residual to produce a matching score. The residual itself is not plugged in
 deterministically; it is drawn by predictive mean matching from observed donor residuals
 in the simulation (`simulate_household_totals`), which preserves the sign and the
 empirical distribution, avoids retransformation bias, and lets the residual contribute
