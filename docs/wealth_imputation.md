@@ -142,7 +142,11 @@ pixi run wealth        # equivalent to SOEP_WEALTH_IMPUTATION=1 pixi run pytask
 
 Outputs land in `bld/wealth_imputation/`:
 
-- `household_wealth_2022.arrow` — primary component-only intervals.
+- `household_wealth_2022_component_only.arrow` — primary component-only intervals.
+  This is the **modelled-component** net-wealth proxy (the six modelled components); it
+  omits business assets and other real estate, so it is *not* total household net
+  wealth. The residual-inclusive scenario below is the more complete (but unvalidated)
+  object.
 - `household_wealth_2022_residual_inclusive.arrow` — residual-inclusive scenario
   intervals.
 - `imputation_summary.json` — run settings, component counts, and the across-draw

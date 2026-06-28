@@ -58,7 +58,7 @@ if RUN_WEALTH_IMPUTATION:
         source_dependencies: tuple[Path, ...] = _SOURCE_DEPENDENCIES,
         intervals_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
-        / "household_wealth_2022.arrow",
+        / "household_wealth_2022_component_only.arrow",
         residual_inclusive_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
         / "household_wealth_2022_residual_inclusive.arrow",

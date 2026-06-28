@@ -48,7 +48,9 @@ _SOURCE_DEPENDENCIES: tuple[Path, ...] = (
     _WEALTH_SRC / "wealth_dynamics.py",
     _WEALTH_SRC / "task_wealth_dynamics.py",
 )
-_IMPUTED_INTERVALS = BLD / "wealth_imputation" / "household_wealth_2022.arrow"
+_IMPUTED_INTERVALS = (
+    BLD / "wealth_imputation" / "household_wealth_2022_component_only.arrow"
+)
 _IMPUTED_SUMMARY = BLD / "wealth_imputation" / "imputation_summary.json"
 
 

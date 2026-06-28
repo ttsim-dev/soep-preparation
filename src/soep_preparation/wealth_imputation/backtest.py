@@ -17,6 +17,7 @@ completed component sum, not the official total.
 import numpy as np
 import pandas as pd
 
+from soep_preparation.wealth_imputation.intervals import distribution_across_draws
 from soep_preparation.wealth_imputation.wealth_dynamics import (
     quintile_ranks,
     transition_counts,
@@ -24,6 +25,7 @@ from soep_preparation.wealth_imputation.wealth_dynamics import (
 )
 
 _COMPARISON_COLUMNS = ("observed_total", "point_estimate", "lower", "upper")
+_HH_KEYS = ["hh_id", "survey_year"]
 
 
 def rank_correlation(observed: np.ndarray, predicted: np.ndarray) -> float:
@@ -41,25 +43,51 @@ def rank_correlation(observed: np.ndarray, predicted: np.ndarray) -> float:
     return float(np.corrcoef(observed_rank, predicted_rank)[0, 1])
 
 
-def backtest_report(comparison: pd.DataFrame, *, n_groups: int = 5) -> dict:
-    """Score imputed household totals against observed totals, disclosure-safe.
+def backtest_report(
+    comparison: pd.DataFrame,
+    *,
+    imputed_draws: pd.DataFrame | None = None,
+    level: float = 0.9,
+    n_groups: int = 5,
+) -> dict:
+    """Score imputed household totals against the completed-component truth.
+
+    Two imputed-distribution summaries are reported, because they answer different
+    questions and are *not* interchangeable:
+
+    - `imputed_distribution` is the cross-section of per-household **median** point
+      estimates. It is the right basis for rank/quintile accuracy, but a household's
+      median is rarely negative even when many of its draws are, so its negative/zero
+      shares understate the predictive mass.
+    - `imputed_distribution_across_draws` (only when `imputed_draws` is given) is the
+      **draw-level** distribution over the same households, computed within each
+      complete draw then averaged across draws. This is the apples-to-apples counterpart
+      of the production `distribution_across_draws`; use it (not the median
+      cross-section) to compare negative/zero shares and tails against a production run.
 
     Args:
-        comparison: Columns `observed_total`, `point_estimate`, `lower`, `upper`; one
-            row per household in the held-out wave.
+        comparison: Columns `observed_total`, `point_estimate`, `lower`, `upper`, plus
+            `hh_id`, `survey_year`; one row per household in the held-out wave. The
+            target is the **completed six-component sum**, not raw-observed truth.
+        imputed_draws: Optional component-only draw table (`hh_id`, `survey_year`,
+            `household_total_draw`) for the held-out wave. Restricted to the households
+            in `comparison` to form the draw-level imputed distribution.
+        level: Central level for the across-draw spread of each draw-level statistic.
         n_groups: Number of mobility groups for the rank comparison (5 for quintiles).
 
     Returns:
-        A dict with the observed and imputed distribution summaries, the quintile
-        confusion counts (rows = observed quintile, columns = predicted quintile), exact
-        quintile accuracy, mean absolute quintile error, the rank correlation, the band
-        coverage, and the median absolute level error. No row-level value is included.
+        A dict with the observed and imputed (median) distribution summaries, the
+        draw-level imputed distribution (`imputed_distribution_across_draws`, `None` if
+        `imputed_draws` is not given), the quintile confusion counts (rows = observed
+        quintile, columns = predicted quintile), exact quintile accuracy, mean absolute
+        quintile error, the rank correlation, the band coverage, and the median absolute
+        level error. No row-level value is included.
 
-        `band_coverage` is the fraction of observed completed-component totals that fall
-        inside the imputed donor-spread band. The band is a conditional donor-spread
-        quantile, not a calibrated predictive interval, so a high coverage is *not*
-        evidence of predictive calibration -- it only says the conditional donor spread
-        happens to bracket the observed values at this rate.
+        `band_coverage` is the fraction of completed-component totals that fall inside
+        the imputed donor-spread band. The band is a conditional donor-spread quantile,
+        not a calibrated predictive interval, so a high coverage is *not* evidence of
+        predictive calibration -- it only says the conditional donor spread happens to
+        bracket the values at this rate.
 
     Raises:
         ValueError: On missing columns or a non-finite comparison column.
@@ -91,6 +119,9 @@ def backtest_report(comparison: pd.DataFrame, *, n_groups: int = 5) -> dict:
         "n": len(comparison),
         "observed_distribution": wave_distribution_summary(observed),
         "imputed_distribution": wave_distribution_summary(predicted),
+        "imputed_distribution_across_draws": _draw_level_distribution(
+            comparison, imputed_draws, level=level
+        ),
         "confusion_counts": confusion.tolist(),
         "exact_quintile_accuracy": float(
             (observed_rank.to_numpy() == predicted_rank.to_numpy()).mean()
@@ -100,3 +131,22 @@ def backtest_report(comparison: pd.DataFrame, *, n_groups: int = 5) -> dict:
         "band_coverage": float(within_band.mean()),
         "median_abs_error": float(np.median(np.abs(observed - predicted))),
     }
+
+
+def _draw_level_distribution(
+    comparison: pd.DataFrame,
+    imputed_draws: pd.DataFrame | None,
+    *,
+    level: float,
+) -> dict | None:
+    """Draw-level imputed distribution over the comparison households, or `None`.
+
+    Restricts `imputed_draws` to the households scored in `comparison` (the
+    completed-component truth set) so the draw-level statistics cover the same
+    households as `observed_distribution`.
+    """
+    if imputed_draws is None:
+        return None
+    keys = comparison[_HH_KEYS].drop_duplicates()
+    restricted = imputed_draws.merge(keys, on=_HH_KEYS, how="inner")
+    return distribution_across_draws(restricted, level=level)

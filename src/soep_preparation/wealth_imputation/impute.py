@@ -164,6 +164,11 @@ class ImputationResult:
     residual_inclusive_intervals: pd.DataFrame | None
     """Residual-inclusive scenario total, same columns as `intervals`; `None` when no
     residual model was fit."""
+    component_only_draws: pd.DataFrame | None
+    """The component-only draw table (`hh_id`, `survey_year`, `household_total_draw`),
+    one row per household per draw. Populated only when `run_imputation` is called with
+    `keep_draws=True` (the backtest needs it for a draw-level distribution); else
+    `None`."""
 
 
 def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest waves
@@ -175,6 +180,7 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
     level: float = 0.9,
     prediction_wave: int = _PREDICTION_WAVE,
     training_waves: Sequence[int] = _WEALTH_WAVES,
+    keep_draws: bool = False,
 ) -> ImputationResult:
     """Impute household net wealth for `prediction_wave` as point estimates with bands.
 
@@ -190,6 +196,8 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
             for an out-of-fold backtest).
         training_waves: The wealth waves to fit on (the prediction wave is always
             excluded so a backtest stays out of fold).
+        keep_draws: If `True`, attach the component-only draw table to the result as
+            `component_only_draws` (the backtest needs it for a draw-level summary).
 
     Returns:
         An `ImputationResult` with the prediction-wave intervals and a run summary.
@@ -264,6 +272,21 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         msg = "No wealth component could be fit on the historical waves."
         raise ValueError(msg)
 
+    config_by_component = dict(zip(used, configs, strict=True))
+    mortgage_config = config_by_component.get(
+        CanonicalComponent.OWNER_OCCUPIED_MORTGAGE
+    )
+    property_config = config_by_component.get(
+        CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS
+    )
+    mortgage_without_property_share = (
+        _mortgage_without_property_share(
+            mortgage_config.ownership_prob, property_config.ownership_prob
+        )
+        if mortgage_config is not None and property_config is not None
+        else None
+    )
+
     have_total, residual = _training_residual(
         training, used, target_year=prediction_wave
     )
@@ -318,8 +341,15 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "primary_total": "component_only",
         "residual_model": residual_model_kind,
         "residual_is_sensitivity": True,
+        "residual_validated_out_of_sample": False,
         "uses_observed_2022_answers": False,
+        "uses_support_gate": False,
         "donor_pool_mean_residual": donor_pool_mean_residual,
+        # Coherence diagnostic for the independent component draws (F2): the expected
+        # share of recipients drawn as a mortgage holder but a non-property-owner -- an
+        # incoherent balance sheet no donor household has, a lower bound on the
+        # recombination artefact in the left tail.
+        "mortgage_without_property_expected_share": mortgage_without_property_share,
         "n_draws": n_draws,
         "k": k,
         "level": level,
@@ -330,11 +360,30 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "distribution_across_draws": distribution_across_draws(draws, level=level),
         "residual_inclusive_distribution_across_draws": residual_inclusive_distribution,
     }
+    component_only_draws = (
+        draws[["hh_id", "survey_year", "household_total_draw"]] if keep_draws else None
+    )
     return ImputationResult(
         intervals=intervals,
         summary=summary,
         residual_inclusive_intervals=residual_inclusive_intervals,
+        component_only_draws=component_only_draws,
     )
+
+
+def _mortgage_without_property_share(
+    mortgage_ownership_prob: np.ndarray,
+    property_ownership_prob: np.ndarray,
+) -> float:
+    """Expected share of recipients drawn as a mortgage holder but a non-property-owner.
+
+    Because the mortgage and gross-property components are drawn independently given the
+    covariates, a recipient can be assigned a mortgage with no owner-occupied
+    property -- a balance sheet no donor household exhibits. Per recipient that is
+    `P(mortgage) * (1 - P(property))`; the mean over recipients is a lower bound on the
+    independent-recombination incoherence behind the component-only left tail.
+    """
+    return float(np.mean(mortgage_ownership_prob * (1.0 - property_ownership_prob)))
 
 
 def observed_component_total(

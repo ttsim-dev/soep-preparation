@@ -85,12 +85,15 @@ if RUN_WEALTH_IMPUTATION:
             level=_LEVEL,
             prediction_wave=_HOLDOUT_WAVE,
             training_waves=_TRAINING_WAVES,
+            keep_draws=True,
         )
         observed = observed_component_total(modules, _HOLDOUT_WAVE)
         comparison = result.intervals.merge(
             observed, on=_HH_KEYS, how="inner", validate="one_to_one"
         )
-        report = backtest_report(comparison)
+        report = backtest_report(
+            comparison, imputed_draws=result.component_only_draws, level=_LEVEL
+        )
         report["n_recipients"] = int(result.summary["n_recipients"])
         report["n_training_heads"] = int(result.summary["n_training_heads"])
         report["holdout_wave"] = _HOLDOUT_WAVE

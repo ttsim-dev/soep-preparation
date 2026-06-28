@@ -13,6 +13,7 @@ from soep_preparation.wealth_imputation.impute import (
     _HW_VEHICLES,
     _OFFICIAL_TOTAL_COLUMN,
     _household_person_direct,
+    _mortgage_without_property_share,
     _training_residual,
     observed_component_total,
     run_imputation,
@@ -198,6 +199,21 @@ def test_run_imputation_reports_the_donor_pool_mean_residual():
     result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
     assert "donor_pool_mean_residual" in result.summary
     assert "mean_residual" not in result.summary
+
+
+def test_mortgage_without_property_share_is_the_independent_incoherence_rate():
+    """The diagnostic is the mean of P(mortgage) * (1 - P(property)) over recipients."""
+    mortgage_prob = np.array([0.5, 0.5])
+    property_prob = np.array([1.0, 0.0])
+    # row 0: 0.5 * 0 = 0; row 1: 0.5 * 1 = 0.5; mean = 0.25.
+    assert _mortgage_without_property_share(mortgage_prob, property_prob) == 0.25
+
+
+def test_run_imputation_reports_the_mortgage_without_property_diagnostic():
+    """The summary quantifies how often an independent mortgage lands on a non-owner."""
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
+    share = result.summary["mortgage_without_property_expected_share"]
+    assert 0.0 <= share <= 1.0
 
 
 def test_run_imputation_marks_component_only_as_the_primary_total():

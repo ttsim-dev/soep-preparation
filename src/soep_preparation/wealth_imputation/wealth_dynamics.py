@@ -298,7 +298,11 @@ def build_dynamics_report(  # noqa: PLR0913 -- keyword-only report knobs
     }
     return {
         "metadata": {
-            "wealth_concept": "household net overall wealth",
+            "wealth_concept": (
+                "observed waves: household net overall wealth (w011h); imputed wave: "
+                "component-only modelled net wealth (six modelled components, omitting "
+                "business and other real estate)"
+            ),
             "unit_distribution": "household",
             "unit_transitions": "person (assigned household net wealth)",
             "weighted": False,
@@ -312,10 +316,11 @@ def build_dynamics_report(  # noqa: PLR0913 -- keyword-only report knobs
                 "by wave",
                 "the imputed wave is a proxy; transitions into it are attenuated by "
                 "regression to the mean",
-                "concept-mixed: observed waves use w011h (net overall wealth excl. "
-                "the augmented concept); the imputed wave targets the augmented n011h. "
-                "Levels are not strictly comparable near zero, so treat the series as "
-                "rank discrimination, not tail-calibrated levels",
+                "concept-mixed: observed waves use w011h (net overall wealth); the "
+                "imputed wave is the component-only modelled sum, which omits business "
+                "and other real estate (the official total carries these via the "
+                "separate residual scenario). Levels are not strictly comparable, so "
+                "treat the series as rank discrimination, not tail-calibrated levels",
             ],
         },
         "distribution": distribution,
