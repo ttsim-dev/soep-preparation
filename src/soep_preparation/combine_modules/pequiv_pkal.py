@@ -4,7 +4,8 @@ Despite the generic `pequiv_pkal` module name (combine modules are named by the
 two modules they join), this produces two specific derived variables rather than a
 general pequiv x pkal merge:
 
-- `first_pension_receipt_year`: earliest year of statutory pension receipt.
+- `first_pension_receipt_year`: first observed year of pension income or a
+  retirement-status proxy, not validated statutory pension receipt.
 - `received_unemployment_benefits_last_year`: whether the person drew any
   unemployment benefit in the previous calendar year.
 """
@@ -17,18 +18,19 @@ from soep_preparation.utilities.data_manipulator import apply_smallest_int_dtype
 def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     """Derive pension-receipt timing and last-year unemployment-benefit receipt.
 
-    `first_pension_receipt_year` is the earliest year in which a person either reports
-    positive annual statutory pension income (`gesetzliche_rente_y`, pequiv, dated at
-    `survey_year - 1` because CNEF annual incomes refer to the previous calendar year)
-    or any retirement month in the calendar of the previous year
-    (`number_of_months_in_retirement_last_year`, pkal, dated at `survey_year - 1`
-    because that calendar item refers to the year before the survey). The consuming
-    project turns it into a claiming age with the birth year. The pkal branch is a
-    labour-market-*status* proxy (raw label "Rente, Pension, Vorruhestand"), not
-    validated statutory receipt: it can flag early exit / Vorruhestand that is not
-    statutory pension claiming. It is kept as a fallback signal with its correct
-    reference year, but whether such a status should feed "first statutory pension
-    receipt" at all is flagged for maintainer review (see clean_modules/pkal.py).
+    `first_pension_receipt_year` is a *first observed pension-income or
+    retirement-status proxy year*, not validated statutory pension receipt. It is the
+    earliest year in which a person either reports positive annual pension income
+    (`gesetzliche_rente_y`, pequiv, dated at `survey_year - 1` because CNEF annual
+    incomes refer to the previous calendar year) or any retirement month in the
+    calendar of the previous year (`number_of_months_in_retirement_last_year`, pkal,
+    dated at `survey_year - 1` because that calendar item refers to the year before the
+    survey). The consuming project turns it into a claiming age with the birth year.
+    The pkal branch is a labour-market-*status* proxy (raw label "Rente, Pension,
+    Vorruhestand"): it can flag early exit / Vorruhestand that is not statutory pension
+    claiming. It is kept as a fallback signal with its correct reference year, but
+    whether such a status should feed a statutory-receipt concept at all is flagged for
+    maintainer review (see clean_modules/pkal.py).
 
     `received_unemployment_benefits_last_year` unifies three previous-calendar-year
     signals (see `_received_unemployment_benefits_last_year`).
