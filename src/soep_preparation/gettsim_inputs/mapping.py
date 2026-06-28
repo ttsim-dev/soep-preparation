@@ -129,7 +129,7 @@ SOEP_TO_GETTSIM: Final[MappingProxyType[str, str | None]] = MappingProxyType(
         "kindergeld__p_id_empfänger": None,
         # Maintenance (`unterhalt__*`).
         "unterhalt__anspruch_m": None,
-        "unterhalt__tatsächlich_erhaltener_betrag_m": "kindesunterhalt_received_m",
+        "unterhalt__tatsächlich_erhaltener_betrag_m": None,
         # Parental benefits (`elterngeld__*`).
         "elterngeld__bisherige_bezugsmonate": None,
         "elterngeld__claimed": None,
@@ -243,6 +243,12 @@ GAP_NOTES: Final[MappingProxyType[str, str]] = MappingProxyType(
         "kindergeld__in_ausbildung": "Derive from an education/training variable.",
         "kindergeld__p_id_empfänger": "No recipient pointer in SOEP.",
         "unterhalt__anspruch_m": "No entitlement amount in SOEP.",
+        "unterhalt__tatsächlich_erhaltener_betrag_m": (
+            "SOEP only has child-specific maintenance received "
+            "(`kindesunterhalt_received_m`); mapping it to the generic GETTSIM input "
+            "would feed a narrower-than-intended amount. Revisit if a generic monthly "
+            "maintenance-received amount is constructed."
+        ),
         "bürgergeld__bezug_im_vorjahr": "Derive from prior-year Bürgergeld receipt.",
     }
 )

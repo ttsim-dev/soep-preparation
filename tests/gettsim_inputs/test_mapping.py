@@ -51,6 +51,22 @@ def test_pension_entry_year_gap_is_documented() -> None:
     assert "sozialversicherung__rente__jahr_renteneintritt" in GAP_NOTES
 
 
+def test_maintenance_received_is_unmapped() -> None:
+    """Generic maintenance received stays unmapped: SOEP only has child maintenance.
+
+    `unterhalt__tatsächlich_erhaltener_betrag_m` is generic maintenance actually
+    received (any kind), whereas the SOEP `kindesunterhalt_received_m` is child
+    maintenance specifically. Feeding the narrower child-only amount into the generic
+    input would understate maintenance, so it stays unmapped.
+    """
+    assert SOEP_TO_GETTSIM["unterhalt__tatsächlich_erhaltener_betrag_m"] is None
+
+
+def test_maintenance_received_gap_is_documented() -> None:
+    """The unmapped generic maintenance-received input is recorded in `GAP_NOTES`."""
+    assert "unterhalt__tatsächlich_erhaltener_betrag_m" in GAP_NOTES
+
+
 def test_steuerklasse_has_no_soep_source() -> None:
     """`lohnsteuer__steuerklasse` has no SOEP source and stays unmapped."""
     assert SOEP_TO_GETTSIM["lohnsteuer__steuerklasse"] is None
