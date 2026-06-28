@@ -163,7 +163,7 @@ rules.unused-awaitable = "error"
 rules.unused-ignore-comment = "error"
 
 [tool.pytest]
-ini_options.norecursedirs = [ "docs" ]
+ini_options.norecursedirs = [ "docs", "pro-audit-*" ]
 ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
 ini_options.filterwarnings = []
 
