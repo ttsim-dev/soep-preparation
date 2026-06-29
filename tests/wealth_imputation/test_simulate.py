@@ -12,6 +12,8 @@ from soep_preparation.wealth_imputation.simulate import (
     ComponentDrawConfig,
     ResidualDrawConfig,
     _draw_secured_housing,
+    collect_donor_wave_composition,
+    nearest_donor_distances,
     simulate_household_total_draws,
     simulate_household_totals,
 )
@@ -307,3 +309,70 @@ def test_simulate_household_totals_rejects_config_misaligned_with_recipients():
             n_draws=1,
             rng=np.random.default_rng(seed=0),
         )
+
+
+def test_nearest_donor_distances_are_the_min_score_distance_per_recipient():
+    """Each recipient's component distance is the minimum to any donor score."""
+    config = ComponentDrawConfig(
+        component=CanonicalComponent.FINANCIAL_ASSETS,
+        ownership_prob=np.array([1.0, 1.0]),
+        ownership_share=np.array([1.0, 1.0]),
+        recipient_predicted=np.array([10.0, 100.0]),
+        donor_predicted=np.array([12.0, 50.0]),  # nearest to 10 is 12; to 100 is 50
+        donor_observed=np.array([1.0, 2.0]),
+        scale=100.0,
+        k=1,
+    )
+    distances = nearest_donor_distances([config])
+    np.testing.assert_allclose(distances["financial_assets"], [2.0, 50.0], atol=1e-6)
+
+
+def test_collect_donor_wave_composition_attributes_draws_to_donor_waves():
+    """Drawn donors are attributed to their wave, summing to 1 per component.
+
+    With one certain owner and a single donor from wave 2012, every draw sources its
+    donor from 2012, so the composition is `{2012: 1.0}`.
+    """
+    config = ComponentDrawConfig(
+        component=CanonicalComponent.FINANCIAL_ASSETS,
+        ownership_prob=np.array([1.0]),
+        ownership_share=np.array([1.0]),
+        recipient_predicted=np.array([100.0]),
+        donor_predicted=np.array([100.0]),
+        donor_observed=np.array([100.0]),
+        scale=100.0,
+        k=1,
+        donor_year=np.array([2012]),
+    )
+    composition = collect_donor_wave_composition(
+        _one_person_household(),
+        [config],
+        n_draws=5,
+        rng=np.random.default_rng(seed=0),
+    )
+    assert composition["financial_assets"] == {2012: 1.0}
+
+
+def test_collect_donor_wave_composition_splits_across_two_waves():
+    """Two equally-near donors from distinct waves split the draws across both waves."""
+    config = ComponentDrawConfig(
+        component=CanonicalComponent.FINANCIAL_ASSETS,
+        ownership_prob=np.array([1.0]),
+        ownership_share=np.array([1.0]),
+        recipient_predicted=np.array([0.0]),
+        donor_predicted=np.array([0.0, 0.0]),  # both donors at distance 0
+        donor_observed=np.array([10.0, 20.0]),
+        scale=100.0,
+        k=2,
+        donor_year=np.array([2007, 2017]),
+    )
+    composition = collect_donor_wave_composition(
+        _one_person_household(),
+        [config],
+        n_draws=200,
+        rng=np.random.default_rng(seed=0),
+    )
+    shares = composition["financial_assets"]
+    assert set(shares) == {2007, 2017}
+    assert np.isclose(shares[2007] + shares[2017], 1.0, atol=1e-9)
+    assert np.isclose(shares[2007], 0.5, atol=0.15)

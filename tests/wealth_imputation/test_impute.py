@@ -14,11 +14,13 @@ from soep_preparation.wealth_imputation.impute import (
     _OFFICIAL_TOTAL_COLUMN,
     _household_person_direct,
     _mortgage_without_property_share,
+    _out_of_support_summary,
     _training_residual,
     observed_component_total,
     run_imputation,
 )
 from soep_preparation.wealth_imputation.market_indices import RESIDUAL_INDEX
+from soep_preparation.wealth_imputation.simulate import ComponentDrawConfig
 
 _TRAIN_IDS = list(range(1, 11))  # ten 2017 training households (one person each)
 _RECIPIENT_IDS = [101, 102, 103]  # three 2022 recipient households
@@ -470,6 +472,97 @@ def test_person_direct_all_missing_group_is_not_summed_to_zero():
     )
     out = _household_person_direct(pwealth)
     assert pd.isna(out.loc[out["hh_id"] == 50, "hh_private_insurances_value_a"].iloc[0])
+
+
+def _support_probe_config() -> ComponentDrawConfig:
+    """Four recipients at scores 0, 1, 2, 10 against donors at 0 and 1."""
+    return ComponentDrawConfig(
+        component=CanonicalComponent.FINANCIAL_ASSETS,
+        ownership_prob=np.ones(4),
+        ownership_share=np.ones(4),
+        recipient_predicted=np.array([0.0, 1.0, 2.0, 10.0]),
+        donor_predicted=np.array([0.0, 1.0]),
+        donor_observed=np.array([100.0, 200.0]),
+        scale=1.0,
+        k=1,
+    )
+
+
+def test_out_of_support_summary_share_counts_recipients_beyond_the_caliper():
+    """The out-of-support share is the fraction of recipients beyond the caliper.
+
+    The four recipients (scores 0, 1, 2, 10) have nearest-donor distances 0, 0, 1, 9.
+    With `caliper = 1.5` only the recipient at distance 9 exceeds it, so the share is
+    1 / 4 = 0.25.
+    """
+    summary = _out_of_support_summary([_support_probe_config()], caliper=1.5)
+    assert summary["financial_assets"]["out_of_support_share"] == 0.25
+
+
+def test_out_of_support_summary_share_is_none_without_a_caliper():
+    """With no caliper there is no threshold, so the share is None."""
+    summary = _out_of_support_summary([_support_probe_config()], caliper=None)
+    assert summary["financial_assets"]["out_of_support_share"] is None
+
+
+def test_run_imputation_reports_out_of_support_distance_quantiles_per_component():
+    """The summary reports nearest-donor distance quantiles for each used component."""
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
+    out_of_support = result.summary["out_of_support"]
+    assert set(out_of_support) == set(result.summary["components_used"])
+    financial = out_of_support["financial_assets"]
+    assert {"median", "p90", "p99", "out_of_support_share"} <= set(financial)
+    assert financial["median"] <= financial["p90"] <= financial["p99"]
+
+
+def test_run_imputation_out_of_support_share_is_none_when_caliper_off():
+    """Without a caliper there is no threshold, so the out-of-support share is None."""
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
+    financial = result.summary["out_of_support"]["financial_assets"]
+    assert financial["out_of_support_share"] is None
+    assert result.summary["uses_support_gate"] is False
+
+
+def test_run_imputation_out_of_support_share_zero_when_caliper_admits_all_donors():
+    """A caliper above every nearest-donor distance leaves nobody out of support."""
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3, caliper=1e9)
+    financial = result.summary["out_of_support"]["financial_assets"]
+    assert financial["out_of_support_share"] == 0.0
+    assert result.summary["uses_support_gate"] is True
+
+
+def test_run_imputation_caliper_off_leaves_draws_byte_for_byte_unchanged():
+    """The default (caliper off) point estimates match a run that names caliper=None."""
+    modules = _synthetic_modules()
+    default_run = run_imputation(modules, n_draws=30, seed=0, k=3)
+    explicit_none = run_imputation(modules, n_draws=30, seed=0, k=3, caliper=None)
+    np.testing.assert_array_equal(
+        default_run.intervals["point_estimate"].to_numpy(),
+        explicit_none.intervals["point_estimate"].to_numpy(),
+    )
+
+
+def test_run_imputation_caliper_set_keeps_every_recipient_household():
+    """A caliper flags out-of-support recipients but never drops a household."""
+    modules = _synthetic_modules()
+    gated = run_imputation(modules, n_draws=20, seed=0, k=3, caliper=1e9)
+    assert set(gated.intervals["hh_id"]) == set(_RECIPIENT_IDS)
+
+
+def test_run_imputation_reports_donor_wave_composition_per_component():
+    """The summary reports drawn-donor wave shares from the training waves only.
+
+    All synthetic training donors are from 2017, so any drawn donor is attributed to
+    2017 and the per-component shares sum to one (an empty dict when no recipient was
+    drawn as an owner in this fixture).
+    """
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
+    composition = result.summary["donor_wave_composition"]
+    assert set(composition) == set(result.summary["components_used"])
+    for shares in composition.values():
+        assert set(shares) <= {2017}
+        if shares:
+            assert np.isclose(sum(shares.values()), 1.0, atol=1e-9)
 
 
 def test_run_imputation_raises_without_recipients():

@@ -72,7 +72,10 @@ from soep_preparation.wealth_imputation.market_indices import (
 )
 from soep_preparation.wealth_imputation.residual_model import ResidualModel
 from soep_preparation.wealth_imputation.simulate import (
+    ComponentDrawConfig,
     ResidualDrawConfig,
+    collect_donor_wave_composition,
+    nearest_donor_distances,
     simulate_household_total_draws,
 )
 from soep_preparation.wealth_imputation.training import (
@@ -182,6 +185,7 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
     prediction_wave: int = _PREDICTION_WAVE,
     training_waves: Sequence[int] = _WEALTH_WAVES,
     keep_draws: bool = False,
+    caliper: float | None = None,
 ) -> ImputationResult:
     """Impute household net wealth for `prediction_wave` as point estimates with bands.
 
@@ -199,13 +203,21 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
             excluded so a backtest stays out of fold).
         keep_draws: If `True`, attach the component-only draw table to the result as
             `component_only_draws` (the backtest needs it for a draw-level summary).
+        caliper: Optional maximum donor score distance per component draw. `None` (the
+            default) is diagnostics-only: the point estimate is unchanged, and the
+            `out_of_support` share is reported as `None` because there is no threshold.
+            When set, it becomes the support gate -- out-of-caliper recipients are
+            *flagged* in `out_of_support`, never dropped, so the household count and the
+            draw set are unchanged (dropping would bias the distribution). A recipient
+            with no donor within the caliper raises. This gates extrapolation; it does
+            not create target-wave information.
 
     Returns:
         An `ImputationResult` with the prediction-wave intervals and a run summary.
 
     Raises:
-        ValueError: If there are no recipients in the prediction wave or no component
-            can be fit.
+        ValueError: If there are no recipients in the prediction wave, no component can
+            be fit, or a recipient has no donor within `caliper`.
     """
     heads = _household_heads(modules)
     continuous_columns = [
@@ -262,6 +274,7 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         owner_mask = values > 0.0
         if component is CanonicalComponent.OWNER_OCCUPIED_MORTGAGE:
             mortgage_donor_pool_size = int(owner_mask.sum())
+        donor_year = trained["survey_year"].to_numpy()[owner_mask]
         configs.append(
             build_component_config(
                 component=component,
@@ -271,6 +284,7 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
                 donor_features=design[owner_mask],
                 donor_values=values[owner_mask],
                 k=min(k, owners),
+                donor_year=donor_year,
             )
         )
         used.append(component)
@@ -322,6 +336,17 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         n_draws=n_draws,
         rng=np.random.default_rng(seed),
         residual_config=residual_config,
+        caliper=caliper,
+    )
+    out_of_support = _out_of_support_summary(configs, caliper=caliper)
+    # A separate RNG keeps the main draws byte-for-byte identical: wave attribution is a
+    # diagnostic and must not perturb the point-estimate draw stream.
+    donor_wave_composition = collect_donor_wave_composition(
+        recipient_keys,
+        configs,
+        n_draws=n_draws,
+        rng=np.random.default_rng(seed),
+        caliper=caliper,
     )
     # Component-only is the primary output (the backtest validates it). The residual-
     # inclusive scenario lives on the same draws (`residual_inclusive_total_draw`), so
@@ -349,8 +374,17 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "residual_is_sensitivity": True,
         "residual_validated_out_of_sample": False,
         "uses_observed_2022_answers": False,
-        "uses_support_gate": False,
+        "uses_support_gate": caliper is not None,
         "donor_pool_mean_residual": donor_pool_mean_residual,
+        # Support transparency (F4): per-component nearest-donor score-distance
+        # quantiles and, when a caliper gates the run, the share of recipients whose
+        # nearest donor exceeds it. This quantifies the extrapolation the projection
+        # cannot avoid while the target wave has no anchoring wealth answers; it does
+        # not create that information. `out_of_support_share` is `None` with no caliper.
+        "out_of_support": out_of_support,
+        # Share of each component's drawn donors sourced from each historical wave, so
+        # the waves the target-wave draws lean on are visible.
+        "donor_wave_composition": donor_wave_composition,
         # Coherence diagnostic (F2): the expected share of recipients drawn as a
         # mortgage holder but a non-property-owner -- an incoherent balance sheet no
         # donor household has. The coupled property/mortgage draw zeros the mortgage for
@@ -379,6 +413,35 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         residual_inclusive_intervals=residual_inclusive_intervals,
         component_only_draws=component_only_draws,
     )
+
+
+def _out_of_support_summary(
+    configs: Sequence[ComponentDrawConfig],
+    *,
+    caliper: float | None,
+) -> dict[str, dict[str, float | None]]:
+    """Summarise each component's nearest-donor distances and out-of-support share.
+
+    For every component the recipients' nearest-donor score distances
+    (`nearest_donor_distances`) are reduced to their median, p90, and p99. When a
+    `caliper` gates the run, `out_of_support_share` is the share of recipients whose
+    nearest donor exceeds it -- the recipients flagged as extrapolations. Without a
+    caliper there is no threshold, so `out_of_support_share` is `None` while the
+    distance quantiles are still reported.
+    """
+    distances_by_component = nearest_donor_distances(configs)
+    summary: dict[str, dict[str, float | None]] = {}
+    for component, distances in distances_by_component.items():
+        share: float | None = (
+            float(np.mean(distances > caliper)) if caliper is not None else None
+        )
+        summary[component] = {
+            "median": float(np.quantile(distances, 0.5)),
+            "p90": float(np.quantile(distances, 0.9)),
+            "p99": float(np.quantile(distances, 0.99)),
+            "out_of_support_share": share,
+        }
+    return summary
 
 
 def _mortgage_without_property_share(

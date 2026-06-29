@@ -97,6 +97,7 @@ def build_component_config(  # noqa: PLR0913
     donor_features: np.ndarray,
     donor_values: np.ndarray,
     k: int,
+    donor_year: np.ndarray | None = None,
 ) -> ComponentDrawConfig:
     """Predict for recipients and donors and assemble a `ComponentDrawConfig`.
 
@@ -108,6 +109,9 @@ def build_component_config(  # noqa: PLR0913
         donor_features: Donor design matrix (observed owners).
         donor_values: Donor observed euro amounts.
         k: Number of nearest eligible donors to sample from.
+        donor_year: Survey year of each donor, aligned to `donor_values`; carried onto
+            the config for donor-wave composition diagnostics. `None` when wave
+            attribution is not needed.
 
     Returns:
         A `ComponentDrawConfig` ready for `simulate_household_totals`.
@@ -121,4 +125,5 @@ def build_component_config(  # noqa: PLR0913
         donor_observed=np.asarray(donor_values, dtype="float64"),
         scale=models.scale,
         k=k,
+        donor_year=(np.asarray(donor_year) if donor_year is not None else None),
     )

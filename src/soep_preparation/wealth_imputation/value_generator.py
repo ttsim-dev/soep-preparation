@@ -27,6 +27,14 @@ class ComponentDraw:
     """Bernoulli ownership decision per recipient as bool."""
     gross_amount: np.ndarray
     """Drawn gross (joint) amount per recipient as float64; zero for non-owners."""
+    distances: np.ndarray
+    """Score distance to the drawn donor per recipient as float64. `NaN` for non-owners,
+    who draw no donor. A support diagnostic: a large distance means the nearest eligible
+    donor is far from the recipient in predictive-score space."""
+    donor_indices: np.ndarray
+    """Index into this component's donor arrays of the drawn donor per recipient, as
+    `intp`. `-1` for non-owners, who draw no donor. Used to attribute draws to
+    historical donor waves."""
 
 
 def _fail_if_lengths_differ(
@@ -79,7 +87,9 @@ def draw_component(  # noqa: PLR0913
 
     Returns:
         A `ComponentDraw` with the share-resolved `person_value`, the `owns`
-        decision, and the drawn `gross_amount`.
+        decision, the drawn `gross_amount`, the per-recipient `distances` to the drawn
+        donor (`NaN` for non-owners), and the per-recipient `donor_indices` (`-1` for
+        non-owners).
 
     Raises:
         ValueError: On mismatched recipient lengths, probabilities outside `[0, 1]`,
@@ -91,6 +101,8 @@ def draw_component(  # noqa: PLR0913
     owns = rng.random(n_recipients) < ownership_prob
     gross_amount = np.zeros(n_recipients, dtype="float64")
     person_value = np.zeros(n_recipients, dtype="float64")
+    distances = np.full(n_recipients, np.nan, dtype="float64")
+    donor_indices = np.full(n_recipients, -1, dtype="intp")
     if owns.any():
         drawn = draw_amounts(
             recipient_predicted=recipient_predicted[owns],
@@ -102,10 +114,16 @@ def draw_component(  # noqa: PLR0913
             caliper=caliper,
         )
         gross_amount[owns] = drawn.values  # noqa: PD011 -- PmmResult attr, not pandas
+        distances[owns] = drawn.distances
+        donor_indices[owns] = drawn.donor_indices
         owner_value = resolve_person_amount(
             pd.Series(gross_amount[owns]), pd.Series(ownership_share[owns])
         )
         person_value[owns] = owner_value.to_numpy()
     return ComponentDraw(
-        person_value=person_value, owns=owns, gross_amount=gross_amount
+        person_value=person_value,
+        owns=owns,
+        gross_amount=gross_amount,
+        distances=distances,
+        donor_indices=donor_indices,
     )
