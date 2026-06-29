@@ -1,101 +1,148 @@
+---
+kernelspec:
+  name: python3
+  display_name: Python 3
+---
+
 # Using SOEP data with GETTSIM
 
 GETTSIM expects its data inputs as a flat table whose column labels are
 double-underscore qualified names (qnames), for example `wohnen__wohnfläche_hh` or
 `sozialversicherung__rente__jahr_renteneintritt`. The `soep_preparation.gettsim_inputs`
-package maps the project's cleaned SOEP final variables onto those inputs and emits a
+package maps the project's cleaned SOEP final variables onto GETTSIM nodes and emits a
 GETTSIM-ready dataset.
 
 ## The mapping
 
-`soep_preparation.gettsim_inputs.mapping.SOEP_TO_GETTSIM` is an immutable mapping keyed
-by GETTSIM input qname. Each value is either the name of the SOEP final variable that
-supplies it, or `None` where no SOEP source exists yet:
+A SOEP variable can stand in for two kinds of GETTSIM node:
 
-```python
-from soep_preparation.gettsim_inputs.mapping import SOEP_TO_GETTSIM
+- a **root input** — a node GETTSIM declares with `@policy_input()` and cannot compute,
+  so it must be supplied; and
+- an internally **computed** node — supplying data there *overrides* GETTSIM's own
+  calculation (see the caution below).
 
-SOEP_TO_GETTSIM["wohnen__wohnfläche_hh"]  # -> "living_space_hh"
-SOEP_TO_GETTSIM["lohnsteuer__steuerklasse"]  # -> None (no SOEP source)
+The mapping lists either kind: it pairs a GETTSIM qname with the SOEP final variable that
+reasonably approximates it, rather than restricting itself to root inputs.
+
+`soep_preparation.gettsim_inputs.mapping.BASE_MAPPING` is the date-invariant union of
+those pairings. Each value is the SOEP final variable that supplies the qname, or `None`
+where no clean source exists (with an entry in `mapping.GAP_NOTES`). The SOEP→qname
+pairing does not change with the policy date — GETTSIM's qname namespace is stable; nodes
+only activate and deactivate.
+
+What *does* change by policy date is **which** qnames are part of GETTSIM at all: rules
+expire (Erziehungsgeld before 2007, Altersrente für Frauen from 2018) and rules begin
+(Grundrente from 2021, Bürgergeld from 2023). `get_soep_to_gettsim(policy_date)` returns
+the slice of `BASE_MAPPING` whose qnames are in GETTSIM's policy environment at that date.
+The per-date scope is generated offline from GETTSIM and committed as
+`gettsim_input_scope.json`, so this package needs no GETTSIM dependency at runtime.
+
+## The mapping for a policy date
+
+Set `policy_date` below and run the cell to see exactly the mapping in force at that date
+— the qnames GETTSIM uses then, which SOEP variable supplies each, and why the rest are
+unmapped. Change the date and re-run.
+
+```{code-cell} python
+import datetime
+
+import pandas as pd
+
+from soep_preparation.gettsim_inputs.mapping import (
+    GAP_NOTES,
+    get_soep_to_gettsim,
+    period_for_date,
+)
+
+# Punch in a policy date:
+policy_date = datetime.date(2024, 1, 1)
+
+period = period_for_date(policy_date)
+mapping = get_soep_to_gettsim(policy_date)
+mapped = {q: v for q, v in mapping.items() if v is not None}
+
+caveat = (
+    " — low confidence (GETTSIM pre-2015 environments are incomplete)"
+    if period.low_confidence
+    else ""
+)
+print(
+    f"Policy date {policy_date.isoformat()}: period "
+    f"{period.start_date.isoformat()} to {period.end_date.isoformat()}{caveat}.\n"
+    f"{len(mapping)} qnames in scope; {len(mapped)} supplied from SOEP, "
+    f"{len(mapping) - len(mapped)} unmapped."
+)
 ```
 
-The keys cover the union of GETTSIM data inputs across the SOEP survey range. The set of
-required inputs is policy-date dependent: rules that expire (such as Altersrente für
-Frauen) drop their inputs from later policy dates, so the mapping is a superset of any
-single date's requirements. The mapping is deliberately conservative — only 1:1 or
-obviously derivable matches carry a value. Every non-`None` value is a real key in
-`create_metadata/variable_to_metadata_mapping.yaml`, asserted by a test. Anything
-uncertain stays `None`, with an entry in `mapping.GAP_NOTES` describing the gap.
+Supplied from SOEP at that date:
 
-## Current coverage
+```{code-cell} python
+pd.DataFrame(
+    sorted(mapped.items()), columns=["GETTSIM qname", "SOEP final variable"]
+)
+```
 
-Of the GETTSIM data inputs, the following are mapped (the two index variables `p_id` and
-`hh_id` are carried through verbatim rather than renamed):
+Unmapped at that date (no clean SOEP source), with the reason where one is recorded:
 
-| GETTSIM input qname | SOEP final variable |
-| --- | --- |
-| `p_id` | `p_id` |
-| `hh_id` | `hh_id` |
-| `geburtsjahr` | `birth_year` |
-| `arbeitsstunden_w` | `actual_working_hours_w` |
-| `behinderungsgrad` | `disability_degree` |
-| `wohnen__wohnfläche_hh` | `living_space_hh` |
-| `wohnen__heizkosten_m_hh` | `heating_costs_m_hh` |
-| `wohnen__bruttokaltmiete_m_hh` | `rent_minus_heating_costs_m_hh` |
-| `familie__p_id_ehepartner` | `partner_p_id` |
-| `familie__p_id_elternteil_1` | `mother_p_id` |
-| `einnahmen__bruttolohn_m` | `gross_labor_income_previous_month_m` |
-| `einkommensteuer__einkünfte__aus_selbstständiger_arbeit__betrag_y` | `earnings_from_self_employment_y` |
-| `unterhalt__tatsächlich_erhaltener_betrag_m` | `kindesunterhalt_received_m` |
-| `sozialversicherung__rente__jahr_renteneintritt` | `first_pension_receipt_year` |
+```{code-cell} python
+pd.DataFrame(
+    [
+        {"GETTSIM qname": q, "reason": GAP_NOTES.get(q, "")}
+        for q in sorted(q for q, v in mapping.items() if v is None)
+    ]
+)
+```
 
-## Known gaps
+## Overriding computed nodes — a caution
 
-The large majority of GETTSIM inputs are not yet supplied from SOEP and stay `None`.
-Notable groups:
-
-- **Pension biography** (`sozialversicherung__rente__entgeltpunkte*`,
-  `..._monate`, `grundrente__*`): not in the survey; these need the FDZ-RV record
-  linkage reachable via `rv_id`.
-- **Tax bracket** (`lohnsteuer__steuerklasse`) and joint-assessment status
-  (`einkommensteuer__gemeinsam_veranlagt`): no direct SOEP source.
-- **Unemployment-insurance history**
-  (`sozialversicherung__arbeitslosen__monate_*`): not assembled.
-- **Only a mother pointer in SOEP**: `familie__p_id_elternteil_1` maps to `mother_p_id`,
-  but there is no father pointer, so `familie__p_id_elternteil_2` stays `None`.
-- **Derivable but not yet wired**: `weiblich` (from `gender`), `wohnort_ost_hh` (from the
-  federal-state variable), `wohnen__bewohnt_eigentum_hh` (from `rented_or_owned`),
-  `sozialversicherung__pflege__beitrag__hat_kinder` (from a number-of-children variable).
-  Each carries an entry in `mapping.GAP_NOTES`.
-- **Unit/timing mismatches** kept honest as `None`: monthly private-pension inputs where
-  SOEP records annual amounts; household-level capital and rental income where GETTSIM
-  expects an individual figure.
+Supplying a column for a *computed* node (one GETTSIM would otherwise calculate) replaces
+that calculation and prunes its subtree; GETTSIM warns about the override via
+`functions_and_data_columns_overlap` unless you pass `include_warn_nodes=False`. That is
+sometimes what you want, but a crude survey proxy can be *worse* than GETTSIM's own
+computation. So do not hand GETTSIM every column the mapping can produce: prefer letting
+it compute a node unless the SOEP value is genuinely the better measure, and use the DAG
+to decide. This is why the computed-amount candidates (`kindergeld__betrag_m`,
+`wohngeld__betrag_m_wthh`, `unterhaltsvorschuss__betrag_m`, …) are listed but left `None`
+— the available SOEP amounts are at a different aggregation level or reference period than
+the node, so feeding them would degrade the result rather than improve it.
 
 ## The build helper
 
-`build_gettsim_inputs` takes a SOEP final dataset (single-underscore SOEP column names)
-and returns a flat frame with GETTSIM input qnames as column labels. It keeps the index
-variables (`p_id`, `hh_id`, `survey_year`) and renames every mapped SOEP column that is
-present; mapped inputs whose SOEP column is absent are skipped, so the result holds
-exactly the inputs the data can supply.
+`build_gettsim_inputs(final_dataset, mapping)` takes a SOEP final dataset
+(single-underscore SOEP column names) and a mapping — either
+`get_soep_to_gettsim(policy_date)` for a date-specific build or `BASE_MAPPING` for the
+date-invariant union — and returns a flat frame with GETTSIM qnames as column labels. It
+keeps the index variables (`p_id`, `hh_id`, `survey_year`) and renames every mapped SOEP
+column that is present; mapped qnames whose SOEP column is absent are skipped, so the
+result holds exactly the inputs the data can supply.
 
 ```python
-from soep_preparation.gettsim_inputs.build import build_gettsim_inputs
+import datetime
 
-gettsim_inputs = build_gettsim_inputs(final_dataset)
+from soep_preparation.gettsim_inputs.build import build_gettsim_inputs
+from soep_preparation.gettsim_inputs.mapping import get_soep_to_gettsim
+
+mapping = get_soep_to_gettsim(datetime.date(2024, 1, 1))
+gettsim_inputs = build_gettsim_inputs(final_dataset, mapping=mapping)
 ```
 
-`fail_if_required_inputs_missing(required_inputs, available_columns)` reports, against a
-concrete set of required GETTSIM inputs, which are unmapped or whose mapped SOEP column
-is absent — for visibility before handing data to GETTSIM.
+`fail_if_required_inputs_missing(required_inputs, available_columns, mapping)` reports,
+against a concrete set of required GETTSIM inputs, which are unmapped or whose mapped SOEP
+column is absent — for visibility before handing data to GETTSIM.
 
-## Regenerating the dataset
+## Regenerating
 
 The pytask task `task_build_gettsim_inputs` merges the mapped SOEP variables into a final
-dataset, renames them, and writes a GETTSIM-ready `bld/gettsim_inputs/gettsim_inputs.arrow`.
-`task_write_mapping_report` writes `bld/gettsim_inputs/mapping_report.json` with the
-mapped/unmapped counts and the full table. Run:
+dataset, renames them, and writes a GETTSIM-ready
+`bld/gettsim_inputs/gettsim_inputs.arrow`. `task_write_mapping_report` writes
+`bld/gettsim_inputs/mapping_report.json` with the union coverage and a per-period
+breakdown. Run:
 
 ```bash
 pixi run pytask
 ```
+
+The per-policy-date scope (`gettsim_input_scope.json`) is regenerated from GETTSIM by
+`_generate_input_scope.py`, run from the dev-gettsim workspace root where GETTSIM is
+importable. `tests/gettsim_inputs/test_input_scope.py` regenerates it and fails if it has
+drifted (skipped where GETTSIM is not installed).
