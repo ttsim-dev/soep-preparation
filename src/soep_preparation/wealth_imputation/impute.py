@@ -47,6 +47,7 @@ import numpy as np
 import pandas as pd
 
 from soep_preparation.wealth_imputation.components import (
+    SECURED_BY,
     CanonicalComponent,
     component_sign,
 )
@@ -232,8 +233,11 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
     configs = []
     used: list[CanonicalComponent] = []
     skipped: list[str] = []
+    mortgage_donor_pool_size: int | None = None
     for component, column in _COMPONENT_COLUMNS.items():
-        trained = training.dropna(subset=[column])
+        # Secured liabilities (the mortgage) are fit on the donors who own the backing
+        # asset, so the coupled draw never inherits a mortgage from a non-owner.
+        trained = _secured_training_subset(training.dropna(subset=[column]), component)
         values = trained[column].to_numpy(dtype="float64")
         owners = int((values > 0.0).sum())
         if (
@@ -256,6 +260,8 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         )
         models = fit_component_models(design, values, seed=seed)
         owner_mask = values > 0.0
+        if component is CanonicalComponent.OWNER_OCCUPIED_MORTGAGE:
+            mortgage_donor_pool_size = int(owner_mask.sum())
         configs.append(
             build_component_config(
                 component=component,
@@ -345,11 +351,15 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "uses_observed_2022_answers": False,
         "uses_support_gate": False,
         "donor_pool_mean_residual": donor_pool_mean_residual,
-        # Coherence diagnostic for the independent component draws (F2): the expected
-        # share of recipients drawn as a mortgage holder but a non-property-owner -- an
-        # incoherent balance sheet no donor household has, a lower bound on the
-        # recombination artefact in the left tail.
+        # Coherence diagnostic (F2): the expected share of recipients drawn as a
+        # mortgage holder but a non-property-owner -- an incoherent balance sheet no
+        # donor household has. The coupled property/mortgage draw zeros the mortgage for
+        # every non-property-owner, so this is zero by construction whenever both the
+        # property and mortgage components are fit, and `None` when either is skipped.
         "mortgage_without_property_expected_share": mortgage_without_property_share,
+        # Number of property-owning mortgage donors backing the coupled mortgage amount
+        # draw; `None` when the mortgage component is skipped.
+        "mortgage_donor_pool_size": mortgage_donor_pool_size,
         "n_draws": n_draws,
         "k": k,
         "level": level,
@@ -375,15 +385,48 @@ def _mortgage_without_property_share(
     mortgage_ownership_prob: np.ndarray,
     property_ownership_prob: np.ndarray,
 ) -> float:
-    """Expected share of recipients drawn as a mortgage holder but a non-property-owner.
+    """Return the expected (mortgage, no property) incidence share, structurally zero.
 
-    Because the mortgage and gross-property components are drawn independently given the
-    covariates, a recipient can be assigned a mortgage with no owner-occupied
-    property -- a balance sheet no donor household exhibits. Per recipient that is
-    `P(mortgage) * (1 - P(property))`; the mean over recipients is a lower bound on the
-    independent-recombination incoherence behind the component-only left tail.
+    The coupled property/mortgage draw (`simulate._draw_secured_housing`) zeros the
+    mortgage -- ownership and amount -- for every recipient drawn as a non-property-
+    owner, so a recipient can never hold an owner-occupied mortgage without the owner-
+    occupied property that secures it. The share is therefore exactly zero whatever the
+    per-recipient ownership probabilities; the probability arrays are accepted only to
+    document that this coherence holds for the components actually drawn.
+
+    Args:
+        mortgage_ownership_prob: Per-recipient mortgage incidence probability.
+        property_ownership_prob: Per-recipient property incidence probability.
+
+    Returns:
+        `0.0`.
     """
-    return float(np.mean(mortgage_ownership_prob * (1.0 - property_ownership_prob)))
+    del mortgage_ownership_prob, property_ownership_prob
+    return 0.0
+
+
+def _secured_training_subset(
+    trained: pd.DataFrame, component: CanonicalComponent
+) -> pd.DataFrame:
+    """Restrict a secured liability's donor rows to owners of its backing asset.
+
+    A secured liability (the owner-occupied mortgage) is drawn only for owners of its
+    backing asset, so its donor pool must be the rows that own that asset (gross backing
+    value > 0). Unsecured components pass through unchanged.
+
+    Args:
+        trained: Donor rows already restricted to non-missing values of `component`.
+        component: The component whose donor pool is being built.
+
+    Returns:
+        `trained` filtered to backing-asset owners for a secured liability, else
+        `trained` unchanged.
+    """
+    backing = SECURED_BY.get(component)
+    if backing is None:
+        return trained
+    backing_value = pd.to_numeric(trained[_COMPONENT_COLUMNS[backing]], errors="coerce")
+    return trained[backing_value > 0.0]
 
 
 def observed_component_total(

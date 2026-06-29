@@ -23,16 +23,22 @@ reproduces the whole simulation.
 # together rather than recombining marginals; left for human decision.
 
 from collections.abc import Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 import pandas as pd
 
 from soep_preparation.wealth_imputation.aggregate import household_net_total
-from soep_preparation.wealth_imputation.components import CanonicalComponent
+from soep_preparation.wealth_imputation.components import (
+    SECURED_BY,
+    CanonicalComponent,
+)
 from soep_preparation.wealth_imputation.donors import pmm_draw
 from soep_preparation.wealth_imputation.intervals import household_total_intervals
-from soep_preparation.wealth_imputation.value_generator import draw_component
+from soep_preparation.wealth_imputation.value_generator import (
+    ComponentDraw,
+    draw_component,
+)
 
 _RECIPIENT_KEYS = ("p_id", "hh_id", "survey_year")
 
@@ -114,24 +120,14 @@ def simulate_household_total_draws(
     keys = recipients[list(_RECIPIENT_KEYS)]
     draw_frames = []
     for _ in range(n_draws):
-        component_rows = []
-        for config in configs:
-            drawn = draw_component(
-                ownership_prob=config.ownership_prob,
-                ownership_share=config.ownership_share,
-                recipient_predicted=config.recipient_predicted,
-                donor_predicted=config.donor_predicted,
-                donor_observed=config.donor_observed,
-                scale=config.scale,
-                k=config.k,
-                rng=rng,
+        drawn_by_component = _draw_all_components(configs, rng)
+        component_rows = [
+            keys[["hh_id", "survey_year"]].assign(
+                component=component.value,
+                household_component_value=drawn.person_value,
             )
-            component_rows.append(
-                keys[["hh_id", "survey_year"]].assign(
-                    component=config.component.value,
-                    household_component_value=drawn.person_value,
-                )
-            )
+            for component, drawn in drawn_by_component.items()
+        ]
         per_draw = pd.concat(component_rows, ignore_index=True)
         totals = household_net_total(per_draw).rename(
             columns={"net_total": "household_total_draw"}
@@ -204,6 +200,92 @@ def simulate_household_totals(  # noqa: PLR0913 -- keyword-only simulation knobs
         residual_config=residual_config,
     )
     return household_total_intervals(draws, level=level)
+
+
+def _draw_all_components(
+    configs: Sequence[ComponentDrawConfig],
+    rng: np.random.Generator,
+) -> dict[CanonicalComponent, ComponentDraw]:
+    """Draw every component for one complete joint draw, coupling secured pairs.
+
+    A secured liability (a config whose component is in `SECURED_BY`) is drawn jointly
+    with its backing asset via `_draw_secured_housing`, so the liability is zero
+    wherever the asset is not owned. Every other component is drawn independently. When
+    a secured liability appears without its backing asset among the configs, it is drawn
+    independently -- the coupling needs both legs present.
+
+    Args:
+        configs: One `ComponentDrawConfig` per modelled component.
+        rng: NumPy random generator threaded through the draws.
+
+    Returns:
+        One `ComponentDraw` per config, keyed by its canonical component.
+    """
+    config_by_component = {config.component: config for config in configs}
+    drawn: dict[CanonicalComponent, ComponentDraw] = {}
+    for config in configs:
+        backing = SECURED_BY.get(config.component)
+        backing_config = (
+            config_by_component.get(backing) if backing is not None else None
+        )
+        if backing is not None and backing_config is not None:
+            asset_draw, liability_draw = _draw_secured_housing(
+                backing_config, config, rng
+            )
+            drawn[backing] = asset_draw
+            drawn[config.component] = liability_draw
+        elif config.component not in drawn:
+            drawn[config.component] = _draw_config(config, rng)
+    return drawn
+
+
+def _draw_config(
+    config: ComponentDrawConfig, rng: np.random.Generator
+) -> ComponentDraw:
+    """Draw one component independently from its config."""
+    return draw_component(
+        ownership_prob=config.ownership_prob,
+        ownership_share=config.ownership_share,
+        recipient_predicted=config.recipient_predicted,
+        donor_predicted=config.donor_predicted,
+        donor_observed=config.donor_observed,
+        scale=config.scale,
+        k=config.k,
+        rng=rng,
+    )
+
+
+def _draw_secured_housing(
+    property_config: ComponentDrawConfig,
+    mortgage_config: ComponentDrawConfig,
+    rng: np.random.Generator,
+) -> tuple[ComponentDraw, ComponentDraw]:
+    """Draw the property/mortgage pair coherently: no mortgage without property.
+
+    The gross property is drawn first; the mortgage is then drawn from its own config
+    but forced to zero -- ownership, gross amount, and person value -- for every
+    recipient drawn as a non-property-owner. A property owner keeps its independently
+    drawn mortgage. This guarantees a recipient never holds an owner-occupied mortgage
+    without the owner-occupied property that secures it.
+
+    Args:
+        property_config: The gross owner-occupied-property config (the backing asset).
+        mortgage_config: The owner-occupied-mortgage config (the secured liability).
+        rng: NumPy random generator; property is drawn before the mortgage.
+
+    Returns:
+        The property and mortgage `ComponentDraw`s, with the mortgage zeroed for
+        non-property-owners.
+    """
+    property_draw = _draw_config(property_config, rng)
+    mortgage_draw = _draw_config(mortgage_config, rng)
+    owns_property = property_draw.owns
+    return property_draw, replace(
+        mortgage_draw,
+        owns=mortgage_draw.owns & owns_property,
+        gross_amount=np.where(owns_property, mortgage_draw.gross_amount, 0.0),
+        person_value=np.where(owns_property, mortgage_draw.person_value, 0.0),
+    )
 
 
 def _fail_if_simulation_inputs_invalid(

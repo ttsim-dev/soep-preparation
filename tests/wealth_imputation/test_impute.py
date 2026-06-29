@@ -121,10 +121,17 @@ def _pwealth() -> pd.DataFrame:
 
 
 def _hwealth() -> pd.DataFrame:
-    """Household targets for the ten 2017 training households (owners + non-owners)."""
+    """Household targets for the ten 2017 training households (owners + non-owners).
+
+    Six households own gross property (300000). Four of them carry a mortgage (net
+    250000, so mortgage = gross - net = 50000); the other two own outright (net 300000,
+    mortgage 0). This gives the mortgage ownership model, fit on property owners only,
+    both an owner and a non-owner class.
+    """
     frame = pd.DataFrame({"hh_id": _TRAIN_IDS, "survey_year": [2017] * 10})
-    frame["hh_net_property_value_primary_residence_a"] = _owns_first(6, 250000.0, 10)
-    # Gross property exceeds net for owners, so mortgage = gross - net = 50000.
+    frame["hh_net_property_value_primary_residence_a"] = (
+        [250000.0] * 4 + [300000.0] * 2 + [0.0] * 4
+    )
     frame["hh_property_value_primary_residence_a"] = _owns_first(6, 300000.0, 10)
     frame["hh_financial_assets_value_a"] = _owns_first(7, 40000.0, 10)
     frame["hh_vehicles_value_a"] = _owns_first(8, 12000.0, 10)
@@ -201,19 +208,51 @@ def test_run_imputation_reports_the_donor_pool_mean_residual():
     assert "mean_residual" not in result.summary
 
 
-def test_mortgage_without_property_share_is_the_independent_incoherence_rate():
-    """The diagnostic is the mean of P(mortgage) * (1 - P(property)) over recipients."""
+def test_mortgage_without_property_share_is_structurally_zero():
+    """With coupled draws a mortgage can never land on a non-property-owner.
+
+    The property/mortgage coupling zeros the mortgage for every non-property-owner, so
+    the expected share of incoherent (mortgage, no property) balance sheets is exactly
+    zero by construction, whatever the per-recipient probabilities.
+    """
     mortgage_prob = np.array([0.5, 0.5])
     property_prob = np.array([1.0, 0.0])
-    # row 0: 0.5 * 0 = 0; row 1: 0.5 * 1 = 0.5; mean = 0.25.
-    assert _mortgage_without_property_share(mortgage_prob, property_prob) == 0.25
+    assert _mortgage_without_property_share(mortgage_prob, property_prob) == 0.0
 
 
-def test_run_imputation_reports_the_mortgage_without_property_diagnostic():
-    """The summary quantifies how often an independent mortgage lands on a non-owner."""
+def test_run_imputation_reports_zero_mortgage_without_property():
+    """The coupled draw makes a mortgage without property structurally impossible."""
     result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
-    share = result.summary["mortgage_without_property_expected_share"]
-    assert 0.0 <= share <= 1.0
+    assert result.summary["mortgage_without_property_expected_share"] == 0.0
+
+
+def test_mortgage_donor_pool_contains_only_property_owners():
+    """The mortgage amount model draws only from donors who own owner-occupied property.
+
+    A donor with a mortgage but no gross property would let a property owner inherit an
+    incoherent mortgage amount; restricting the pool to property-owning donors keeps the
+    coupled mortgage on the population that can hold one. The synthetic households with
+    positive gross property and a positive mortgage are exactly the donor pool, so no
+    non-property-owner donor enters it.
+    """
+    modules = _synthetic_modules()
+    n_property_owning_mortgage_donors = _count_property_owning_mortgage_donors(modules)
+    result = run_imputation(modules, n_draws=5, seed=0, k=3)
+    assert result.summary["mortgage_donor_pool_size"] == (
+        n_property_owning_mortgage_donors
+    )
+
+
+def _count_property_owning_mortgage_donors(
+    modules: dict[str, pd.DataFrame],
+) -> int:
+    hwealth = modules["hwealth"]
+    gross = pd.to_numeric(hwealth[_HW_PROPERTY_GROSS], errors="coerce")
+    net = pd.to_numeric(
+        hwealth["hh_net_property_value_primary_residence_a"], errors="coerce"
+    )
+    mortgage = (gross - net).clip(lower=0.0)
+    return int(((gross > 0.0) & (mortgage > 0.0)).sum())
 
 
 def test_run_imputation_marks_component_only_as_the_primary_total():

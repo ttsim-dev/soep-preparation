@@ -4,13 +4,163 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from soep_preparation.wealth_imputation.components import CanonicalComponent
+from soep_preparation.wealth_imputation.components import (
+    CanonicalComponent,
+    component_sign,
+)
 from soep_preparation.wealth_imputation.simulate import (
     ComponentDrawConfig,
     ResidualDrawConfig,
+    _draw_secured_housing,
     simulate_household_total_draws,
     simulate_household_totals,
 )
+from soep_preparation.wealth_imputation.value_generator import draw_component
+
+
+def _property_config(ownership_prob: np.ndarray) -> ComponentDrawConfig:
+    n = ownership_prob.shape[0]
+    return ComponentDrawConfig(
+        component=CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS,
+        ownership_prob=ownership_prob,
+        ownership_share=np.ones(n),
+        recipient_predicted=np.full(n, 300.0),
+        donor_predicted=np.array([300.0]),
+        donor_observed=np.array([300.0]),
+        scale=300.0,
+        k=1,
+    )
+
+
+def _mortgage_config(ownership_prob: np.ndarray) -> ComponentDrawConfig:
+    n = ownership_prob.shape[0]
+    return ComponentDrawConfig(
+        component=CanonicalComponent.OWNER_OCCUPIED_MORTGAGE,
+        ownership_prob=ownership_prob,
+        ownership_share=np.ones(n),
+        recipient_predicted=np.full(n, 50.0),
+        donor_predicted=np.array([50.0]),
+        donor_observed=np.array([50.0]),
+        scale=50.0,
+        k=1,
+    )
+
+
+def test_draw_secured_housing_zeros_mortgage_for_non_property_owners():
+    """A recipient drawn as a non-property-owner gets mortgage 0 (ownership and amount).
+
+    The mortgage incidence probability is 1, so independent draws would always assign a
+    mortgage; the property probability is 0, so no recipient owns property. Coupling
+    forces the mortgage to zero -- ownership `False`, gross amount `0`, person value `0`
+    -- in every draw.
+    """
+    property_draw, mortgage_draw = _draw_secured_housing(
+        _property_config(np.array([0.0])),
+        _mortgage_config(np.array([1.0])),
+        rng=np.random.default_rng(seed=0),
+    )
+    assert not property_draw.owns.any()
+    assert not mortgage_draw.owns.any()
+    np.testing.assert_array_equal(mortgage_draw.gross_amount, [0.0])
+    np.testing.assert_array_equal(mortgage_draw.person_value, [0.0])
+
+
+def test_draw_secured_housing_allows_a_mortgage_for_a_property_owner():
+    """A recipient drawn as a property owner may still receive its independent mortgage.
+
+    With property and mortgage incidence both certain, the property owner keeps its
+    coupled mortgage of 50, so coupling removes only incoherent mortgages, not coherent
+    ones.
+    """
+    property_draw, mortgage_draw = _draw_secured_housing(
+        _property_config(np.array([1.0])),
+        _mortgage_config(np.array([1.0])),
+        rng=np.random.default_rng(seed=0),
+    )
+    assert property_draw.owns.all()
+    assert mortgage_draw.owns.all()
+    np.testing.assert_allclose(mortgage_draw.gross_amount, [50.0], atol=1e-6)
+
+
+def test_coupling_removes_the_negative_left_tail_from_lone_mortgages():
+    """Coupling lifts the component-only negatives and p1 to the donor-supported range.
+
+    Property ownership is rare (0.1) but mortgage ownership is common (0.9): independent
+    draws manufacture households with a 50 mortgage and no property, a net total of -50
+    that no donor exhibits, so a large negative share and a deeply negative p1. The
+    coupled draw zeros those lone mortgages, so the only net totals are 0 (no property)
+    or +250 (property net of its mortgage); the negative share collapses and p1 rises to
+    the donor-supported 0.
+    """
+    recipients = pd.DataFrame({"p_id": [1], "hh_id": [10], "survey_year": [2017]})
+    coupled = simulate_household_total_draws(
+        recipients,
+        [_property_config(np.array([0.1])), _mortgage_config(np.array([0.9]))],
+        n_draws=2000,
+        rng=np.random.default_rng(seed=1),
+    )["household_total_draw"].to_numpy()
+    independent = _independent_property_mortgage_draws(
+        _property_config(np.array([0.1])),
+        _mortgage_config(np.array([0.9])),
+        n_draws=2000,
+        seed=1,
+    )
+    coupled_negative_share = float(np.mean(coupled < 0.0))
+    independent_negative_share = float(np.mean(independent < 0.0))
+    assert coupled_negative_share == 0.0
+    assert independent_negative_share > 0.5
+    assert np.percentile(coupled, 1) == 0.0
+    assert np.percentile(independent, 1) < 0.0
+
+
+def _independent_property_mortgage_draws(
+    property_config: ComponentDrawConfig,
+    mortgage_config: ComponentDrawConfig,
+    *,
+    n_draws: int,
+    seed: int,
+) -> np.ndarray:
+    """Draw property and mortgage independently (no coupling) as a regression baseline.
+
+    Each draws its own component without the secured-pair zeroing, so a recipient can
+    receive a mortgage with no property -- the artefact the coupling removes.
+    """
+    rng = np.random.default_rng(seed=seed)
+    totals = np.empty(n_draws, dtype="float64")
+    for draw in range(n_draws):
+        net = 0.0
+        for config in (property_config, mortgage_config):
+            drawn = draw_component(
+                ownership_prob=config.ownership_prob,
+                ownership_share=config.ownership_share,
+                recipient_predicted=config.recipient_predicted,
+                donor_predicted=config.donor_predicted,
+                donor_observed=config.donor_observed,
+                scale=config.scale,
+                k=config.k,
+                rng=rng,
+            )
+            net += component_sign(config.component) * float(drawn.person_value[0])
+        totals[draw] = net
+    return totals
+
+
+def test_simulate_never_assigns_a_mortgage_without_property_across_draws():
+    """No household carries a mortgage without owner-occupied property in any draw.
+
+    Property incidence is 0 and mortgage incidence is 1; the coupled draw must zero the
+    mortgage every draw, so the net total stays 0 and never goes negative.
+    """
+    recipients = pd.DataFrame({"p_id": [1], "hh_id": [10], "survey_year": [2017]})
+    draws = simulate_household_total_draws(
+        recipients,
+        [_property_config(np.array([0.0])), _mortgage_config(np.array([1.0]))],
+        n_draws=200,
+        rng=np.random.default_rng(seed=0),
+    )
+    np.testing.assert_array_equal(
+        draws["household_total_draw"].to_numpy(), np.zeros(200)
+    )
 
 
 def _one_person_household() -> pd.DataFrame:

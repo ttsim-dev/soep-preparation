@@ -1,6 +1,8 @@
 """Canonical wealth ontology and three-axis cell-provenance enums."""
 
+from collections.abc import Mapping
 from enum import Enum
+from types import MappingProxyType
 
 
 class CanonicalComponent(Enum):
@@ -56,6 +58,18 @@ LIABILITY_COMPONENTS: frozenset[CanonicalComponent] = frozenset(
     {
         CanonicalComponent.OWNER_OCCUPIED_MORTGAGE,
         CanonicalComponent.CONSUMER_DEBT,
+    }
+)
+
+# Secured liability -> the asset that backs it. A secured liability exists only for
+# owners of its backing asset and is drawn conditional on that asset's realised
+# ownership, so no recipient can hold the liability without the asset. Consumer debt is
+# unsecured and absent here. Drives the coupled property/mortgage draw in `simulate.py`.
+SECURED_BY: Mapping[CanonicalComponent, CanonicalComponent] = MappingProxyType(
+    {
+        CanonicalComponent.OWNER_OCCUPIED_MORTGAGE: (
+            CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS
+        ),
     }
 )
 

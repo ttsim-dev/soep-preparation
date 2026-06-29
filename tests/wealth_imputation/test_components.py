@@ -4,9 +4,23 @@ import pytest
 
 from soep_preparation.wealth_imputation.components import (
     LIABILITY_COMPONENTS,
+    SECURED_BY,
     CanonicalComponent,
     component_sign,
 )
+
+
+def test_mortgage_is_secured_by_owner_occupied_property() -> None:
+    """The mortgage is declared as secured by gross owner-occupied property."""
+    assert (
+        SECURED_BY[CanonicalComponent.OWNER_OCCUPIED_MORTGAGE]
+        == CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS
+    )
+
+
+def test_consumer_debt_is_not_a_secured_liability() -> None:
+    """Consumer debt is unsecured: it has no asset that backs it in `SECURED_BY`."""
+    assert CanonicalComponent.CONSUMER_DEBT not in SECURED_BY
 
 
 def test_component_sign_is_negative_for_liabilities_positive_for_assets() -> None:
