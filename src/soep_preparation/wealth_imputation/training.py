@@ -98,6 +98,7 @@ def build_component_config(  # noqa: PLR0913
     donor_values: np.ndarray,
     k: int,
     donor_year: np.ndarray | None = None,
+    paired_liability_values: np.ndarray | None = None,
 ) -> ComponentDrawConfig:
     """Predict for recipients and donors and assemble a `ComponentDrawConfig`.
 
@@ -112,6 +113,10 @@ def build_component_config(  # noqa: PLR0913
         donor_year: Survey year of each donor, aligned to `donor_values`; carried onto
             the config for donor-wave composition diagnostics. `None` when wave
             attribution is not needed.
+        paired_liability_values: Secured liability amount of each donor, aligned to
+            `donor_values`; set on a backing-asset config (owner-occupied property) so
+            its mortgage can be drawn from the same donor. `None` for unsecured
+            components.
 
     Returns:
         A `ComponentDrawConfig` ready for `simulate_household_totals`.
@@ -126,4 +131,9 @@ def build_component_config(  # noqa: PLR0913
         scale=models.scale,
         k=k,
         donor_year=(np.asarray(donor_year) if donor_year is not None else None),
+        paired_liability_observed=(
+            np.asarray(paired_liability_values, dtype="float64")
+            if paired_liability_values is not None
+            else None
+        ),
     )

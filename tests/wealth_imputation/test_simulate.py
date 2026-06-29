@@ -31,6 +31,9 @@ def _property_config(ownership_prob: np.ndarray) -> ComponentDrawConfig:
         donor_observed=np.array([300.0]),
         scale=300.0,
         k=1,
+        # The single property donor carries a 50 mortgage, so a coupled owner draws a
+        # mortgage of 50 from that donor.
+        paired_liability_observed=np.array([50.0]),
     )
 
 
@@ -51,10 +54,10 @@ def _mortgage_config(ownership_prob: np.ndarray) -> ComponentDrawConfig:
 def test_draw_secured_housing_zeros_mortgage_for_non_property_owners():
     """A recipient drawn as a non-property-owner gets mortgage 0 (ownership and amount).
 
-    The mortgage incidence probability is 1, so independent draws would always assign a
-    mortgage; the property probability is 0, so no recipient owns property. Coupling
-    forces the mortgage to zero -- ownership `False`, gross amount `0`, person value `0`
-    -- in every draw.
+    The property probability is 0, so no recipient owns property and no property donor
+    is matched; the mortgage rides along with that (absent) match, so it is zero --
+    ownership `False`, gross amount `0`, person value `0` -- in every draw, regardless
+    of the mortgage config's own incidence probability.
     """
     property_draw, mortgage_draw = _draw_secured_housing(
         _property_config(np.array([0.0])),
@@ -68,11 +71,10 @@ def test_draw_secured_housing_zeros_mortgage_for_non_property_owners():
 
 
 def test_draw_secured_housing_allows_a_mortgage_for_a_property_owner():
-    """A recipient drawn as a property owner may still receive its independent mortgage.
+    """A recipient drawn as a property owner receives its donor's mortgage.
 
-    With property and mortgage incidence both certain, the property owner keeps its
-    coupled mortgage of 50, so coupling removes only incoherent mortgages, not coherent
-    ones.
+    With property incidence certain, the property owner takes the matched donor's own
+    mortgage of 50, so coupling removes only incoherent mortgages, not coherent ones.
     """
     property_draw, mortgage_draw = _draw_secured_housing(
         _property_config(np.array([1.0])),
@@ -113,6 +115,78 @@ def test_coupling_removes_the_negative_left_tail_from_lone_mortgages():
     assert independent_negative_share > 0.5
     assert np.percentile(coupled, 1) == 0.0
     assert np.percentile(independent, 1) < 0.0
+
+
+def _bundle_property_config() -> ComponentDrawConfig:
+    """Property config with two donors whose paired mortgages make the bundle visible.
+
+    Donor 0 is `(property 100, mortgage 80)` and donor 1 is `(property 500, mortgage
+    480)` -- both donor pairs have positive net equity (+20). A recipient whose property
+    score is 0 matches donor 0, so a coherent draw must take donor 0's mortgage (80),
+    not an independently matched one.
+    """
+    return ComponentDrawConfig(
+        component=CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS,
+        ownership_prob=np.array([1.0]),
+        ownership_share=np.array([1.0]),
+        recipient_predicted=np.array([0.0]),
+        donor_predicted=np.array([0.0, 1.0]),
+        donor_observed=np.array([100.0, 500.0]),
+        scale=100.0,
+        k=1,
+        paired_liability_observed=np.array([80.0, 480.0]),
+    )
+
+
+def _bundle_mortgage_config() -> ComponentDrawConfig:
+    """Mortgage config whose own PMM would match the *high* (480) donor.
+
+    The recipient's mortgage score is 1, so an independent mortgage draw matches donor 1
+    (480) -- the recombination that pairs a low property (100) with a high mortgage
+    (480) and manufactures net equity of -380 that no donor exhibits.
+    """
+    return ComponentDrawConfig(
+        component=CanonicalComponent.OWNER_OCCUPIED_MORTGAGE,
+        ownership_prob=np.array([1.0]),
+        ownership_share=np.array([1.0]),
+        recipient_predicted=np.array([1.0]),
+        donor_predicted=np.array([0.0, 1.0]),
+        donor_observed=np.array([80.0, 480.0]),
+        scale=100.0,
+        k=1,
+    )
+
+
+def test_draw_secured_housing_sources_mortgage_from_the_matched_property_donor():
+    """The mortgage amount is the matched property donor's own mortgage.
+
+    The recipient matches property donor 0 (property 100), whose paired mortgage is 80.
+    The mortgage leg must take 80 -- the donor's own liability -- not the 480 an
+    independent mortgage match would pick.
+    """
+    _, mortgage_draw = _draw_secured_housing(
+        _bundle_property_config(),
+        _bundle_mortgage_config(),
+        rng=np.random.default_rng(seed=0),
+    )
+    np.testing.assert_allclose(mortgage_draw.gross_amount, [80.0])
+
+
+def test_secured_housing_equity_stays_within_donor_support():
+    """A property owner's net equity equals an observed donor pair's net.
+
+    Donor 0 is `(property 100, mortgage 80)`, net equity +20. The coherent bundle draw
+    yields a household net of +20, never the -380 an independent low-property/
+    high-mortgage recombination would produce.
+    """
+    recipients = pd.DataFrame({"p_id": [1], "hh_id": [10], "survey_year": [2017]})
+    draws = simulate_household_total_draws(
+        recipients,
+        [_bundle_property_config(), _bundle_mortgage_config()],
+        n_draws=1,
+        rng=np.random.default_rng(seed=0),
+    )
+    np.testing.assert_allclose(draws["household_total_draw"].to_numpy(), [20.0])
 
 
 def _independent_property_mortgage_draws(

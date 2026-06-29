@@ -136,6 +136,13 @@ _COMPONENT_INDEX: dict[CanonicalComponent, Mapping[int, float] | None] = {
 }
 _OFFICIAL_TOTAL_COLUMN = "hh_net_overall_wealth_including_vehicles_and_student_loans_a"
 
+# Inverse of SECURED_BY: the secured liability backed by each asset (property ->
+# mortgage). Used to attach each property donor's own mortgage to the property config so
+# the coupled draw takes an observed (property, mortgage) pair.
+_SECURED_LIABILITY_OF: dict[CanonicalComponent, CanonicalComponent] = {
+    asset: liability for liability, asset in SECURED_BY.items()
+}
+
 
 @dataclass(frozen=True)
 class ImputationResult:
@@ -274,17 +281,33 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         owner_mask = values > 0.0
         if component is CanonicalComponent.OWNER_OCCUPIED_MORTGAGE:
             mortgage_donor_pool_size = int(owner_mask.sum())
-        donor_year = trained["survey_year"].to_numpy()[owner_mask]
+        # A backing asset (owner-occupied property) carries each donor's own secured
+        # liability (the nominal mortgage) so the coupled draw takes an observed
+        # (property, mortgage) pair rather than recombining a low property with an
+        # unrelated high mortgage. A donor whose mortgage is unobserved cannot form a
+        # coherent pair and is dropped from the asset's donor pool.
+        liability = _SECURED_LIABILITY_OF.get(component)
+        if liability is not None:
+            paired_liability = pd.to_numeric(
+                trained[_COMPONENT_COLUMNS[liability]], errors="coerce"
+            ).to_numpy(dtype="float64")
+            donor_keep = owner_mask & np.isfinite(paired_liability)
+            paired_liability_values = paired_liability[donor_keep]
+        else:
+            donor_keep = owner_mask
+            paired_liability_values = None
+        donor_year = trained["survey_year"].to_numpy()[donor_keep]
         configs.append(
             build_component_config(
                 component=component,
                 models=models,
                 recipient_features=recipient_design,
                 recipient_shares=np.ones(len(recipient_keys), dtype="float64"),
-                donor_features=design[owner_mask],
-                donor_values=values[owner_mask],
-                k=min(k, owners),
+                donor_features=design[donor_keep],
+                donor_values=values[donor_keep],
+                k=min(k, int(donor_keep.sum())),
                 donor_year=donor_year,
+                paired_liability_values=paired_liability_values,
             )
         )
         used.append(component)

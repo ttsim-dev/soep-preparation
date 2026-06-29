@@ -5,25 +5,29 @@ person-component values to a household net total, and the spread of those totals
 across draws becomes the band. Summing within each draw before taking the spread is
 the correct way to aggregate -- component band endpoints are never summed.
 
-The total is an **independent conditional recombination (sensitivity)**, not a coherent
-joint draw: each component and the accounting residual are drawn independently given the
-covariates, so the only cross-component dependence carried into the total is through
-shared covariates -- the empirical co-movement of the components within a real household
-is not reproduced, and the household accounting law that ties the components to the
-official total is not enforced draw by draw. The resulting bands are therefore
-**conditional donor-randomisation spreads**, not calibrated predictive intervals: they
-hold the fitted models and the chosen implicate fixed (the residual *model* is fixed but
-its donor value is redrawn each draw). One shared RNG threads all draws so a fixed seed
-reproduces the whole simulation.
+The total is a **largely independent conditional recombination (sensitivity)**, not a
+fully coherent joint draw. The owner-occupied property and its mortgage are the one
+exception: they are drawn as a single donor bundle (`_draw_secured_housing`), so net
+home equity is always an observed pair's. Every other component and the accounting
+residual are still drawn independently given the covariates, so for those the only
+cross-component dependence carried into the total is through shared covariates -- the
+empirical co-movement of the unsecured components within a real household is not
+reproduced, and the household accounting law that ties the components to the official
+total is not enforced draw by draw. The resulting bands are therefore **conditional
+donor-randomisation spreads**, not calibrated predictive intervals: they hold the fitted
+models and the chosen implicate fixed (the residual *model* is fixed but its donor value
+is redrawn each draw). One shared RNG threads all draws so a fixed seed reproduces the
+whole simulation.
 """
 
-# REVIEW (F4): components and the accounting residual are drawn independently, so the
-# joint accounting law and the empirical component co-movement are not preserved. A
-# coherent fix draws a whole donor bundle (all components of one observed household)
-# together rather than recombining marginals; left for human decision.
+# REVIEW (F4): apart from the property/mortgage bundle (`_draw_secured_housing`), the
+# unsecured components and the accounting residual are still drawn independently, so the
+# household accounting law and the empirical co-movement of the unsecured components
+# are not preserved. Extending the bundle to all components of one observed household is
+# left for human decision.
 
 from collections.abc import Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
@@ -35,6 +39,7 @@ from soep_preparation.wealth_imputation.components import (
 )
 from soep_preparation.wealth_imputation.donors import pmm_draw
 from soep_preparation.wealth_imputation.intervals import household_total_intervals
+from soep_preparation.wealth_imputation.shares import resolve_person_amount
 from soep_preparation.wealth_imputation.value_generator import (
     ComponentDraw,
     draw_component,
@@ -85,6 +90,12 @@ class ComponentDrawConfig:
     donor_year: np.ndarray | None = None
     """Survey year of each donor, aligned to `donor_observed`. Set for donor-wave
     composition diagnostics; `None` when wave attribution is not needed."""
+    paired_liability_observed: np.ndarray | None = None
+    """Secured liability amount of each donor, aligned to `donor_observed`. Set on a
+    backing-asset config (owner-occupied property) so its secured liability (the
+    mortgage) can be drawn from the *same* donor household via `_draw_secured_housing`,
+    keeping each drawn (asset, liability) pair an observed one. `None` on every
+    unsecured component and on the liability's own config."""
 
 
 def simulate_household_total_draws(  # noqa: PLR0913 -- keyword-only simulation knobs
@@ -281,34 +292,72 @@ def _draw_secured_housing(
     *,
     caliper: float | None = None,
 ) -> tuple[ComponentDraw, ComponentDraw]:
-    """Draw the property/mortgage pair coherently: no mortgage without property.
+    """Draw the property/mortgage pair as one donor bundle: an observed pair always.
 
-    The gross property is drawn first; the mortgage is then drawn from its own config
-    but forced to zero -- ownership, gross amount, and person value -- for every
-    recipient drawn as a non-property-owner. A property owner keeps its independently
-    drawn mortgage. This guarantees a recipient never holds an owner-occupied mortgage
-    without the owner-occupied property that secures it.
+    The gross property is drawn first; the mortgage then rides along with the *same*
+    matched donor household -- its amount is that donor's own mortgage
+    (`property_config.paired_liability_observed`), zero when the donor has no mortgage
+    and zero for every recipient drawn as a non-property-owner. Because the (property,
+    mortgage) pair is copied from one observed household, the recipient's net home
+    equity can never fall outside the donor support: independently matching a
+    low-property donor to a high-mortgage donor -- the recombination that manufactures
+    unsupported negative
+    equity -- cannot happen.
+
+    The mortgage's own incidence and amount models are therefore not consulted for the
+    coupled draw; the mortgage config is still used for its ownership share and for the
+    marginal support diagnostics.
 
     Args:
         property_config: The gross owner-occupied-property config (the backing asset).
-        mortgage_config: The owner-occupied-mortgage config (the secured liability).
-        rng: NumPy random generator; property is drawn before the mortgage.
-        caliper: Optional maximum donor score distance, threaded to both legs'
-            `draw_component`.
+            Its `paired_liability_observed` carries each property donor's own mortgage,
+            aligned to `donor_observed`; required for the coupled draw.
+        mortgage_config: The owner-occupied-mortgage config (the secured liability); its
+            `ownership_share` resolves the drawn gross mortgage to a person value.
+        rng: NumPy random generator; the property leg draws the donor for both legs.
+        caliper: Optional maximum donor score distance, threaded to the property draw.
 
     Returns:
-        The property and mortgage `ComponentDraw`s, with the mortgage zeroed for
-        non-property-owners.
+        The property and mortgage `ComponentDraw`s; the mortgage amount is the matched
+        property donor's own mortgage, zero for non-owners and for owners whose donor
+        carries no mortgage.
+
+    Raises:
+        ValueError: If `property_config.paired_liability_observed` is `None`, since the
+            coupled draw cannot source a coherent mortgage without it.
     """
+    paired = property_config.paired_liability_observed
+    if paired is None:
+        msg = (
+            "property_config.paired_liability_observed is required to draw the secured "
+            "mortgage from the matched property donor."
+        )
+        raise ValueError(msg)
+    paired = np.asarray(paired, dtype="float64")
     property_draw = _draw_config(property_config, rng, caliper=caliper)
-    mortgage_draw = _draw_config(mortgage_config, rng, caliper=caliper)
     owns_property = property_draw.owns
-    return property_draw, replace(
-        mortgage_draw,
-        owns=mortgage_draw.owns & owns_property,
-        gross_amount=np.where(owns_property, mortgage_draw.gross_amount, 0.0),
-        person_value=np.where(owns_property, mortgage_draw.person_value, 0.0),
+
+    gross_amount = np.zeros_like(property_draw.gross_amount)
+    gross_amount[owns_property] = paired[property_draw.donor_indices[owns_property]]
+    owns_mortgage = owns_property & (gross_amount > 0.0)
+
+    person_value = np.zeros_like(gross_amount)
+    if owns_mortgage.any():
+        person_value[owns_mortgage] = resolve_person_amount(
+            pd.Series(gross_amount[owns_mortgage]),
+            pd.Series(mortgage_config.ownership_share[owns_mortgage]),
+        ).to_numpy()
+
+    mortgage_draw = ComponentDraw(
+        person_value=person_value,
+        owns=owns_mortgage,
+        gross_amount=gross_amount,
+        # The mortgage shares the property leg's donor, so it shares its match distance
+        # (NaN where no mortgage is drawn, matching the non-owner convention).
+        distances=np.where(owns_mortgage, property_draw.distances, np.nan),
+        donor_indices=np.where(owns_mortgage, property_draw.donor_indices, -1),
     )
+    return property_draw, mortgage_draw
 
 
 def nearest_donor_distances(
