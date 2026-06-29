@@ -535,6 +535,7 @@ def _training_residual(
     used: Sequence[CanonicalComponent],
     *,
     target_year: int,
+    subset: np.ndarray | None = None,
 ) -> tuple[pd.DataFrame, np.ndarray]:
     """Return training heads with an official total and their residual, in 2022 terms.
 
@@ -554,7 +555,20 @@ def _training_residual(
     component vector is the support loss this restriction costs. Rows whose residual is
     non-finite are also dropped so the frame and the residual array stay aligned for
     `ResidualModel.fit`.
+
+    Args:
+        training: The training heads frame.
+        used: The fitted components entering the residual.
+        target_year: The wave whose price level the residual is deflated into.
+        subset: Optional boolean mask over `training`'s rows; when given, only the
+            selected rows enter the residual. Used by the 2017 residual cross-fit to
+            restrict the donor pool to a single wave. `None` keeps every row.
+
+    Returns:
+        The residual-eligible heads frame and their signed, deflated residual array.
     """
+    if subset is not None:
+        training = training[np.asarray(subset, dtype=bool)]
     used_columns = [_COMPONENT_COLUMNS[component] for component in used]
     have_total = training.dropna(subset=[_OFFICIAL_TOTAL_COLUMN, *used_columns])
     if have_total.empty:
@@ -578,3 +592,96 @@ def _training_residual(
         target_year=target_year,
     )
     return have_total, deflated
+
+
+def _fittable_components(training: pd.DataFrame) -> list[CanonicalComponent]:
+    """Return the components that pass the production fit gate on `training`.
+
+    A component is kept when its training rows reach `_MIN_TRAINING_ROWS`, both
+    ownership classes are present, and at least `_MIN_OWNERS` rows own it. This mirrors
+    the gate in `run_imputation`, so the residual is defined over the same components
+    the production run models.
+    """
+    fittable: list[CanonicalComponent] = []
+    for component, column in _COMPONENT_COLUMNS.items():
+        trained = training.dropna(subset=[column])
+        values = trained[column].to_numpy(dtype="float64")
+        owners = int((values > 0.0).sum())
+        if (
+            len(trained) < _MIN_TRAINING_ROWS
+            or {int(value > 0.0) for value in values} != {0, 1}
+            or owners < _MIN_OWNERS
+        ):
+            continue
+        fittable.append(component)
+    return fittable
+
+
+def residual_cross_fit_inputs(
+    modules: Mapping[str, pd.DataFrame],
+    *,
+    wave: int = 2017,
+    target_year: int = _PREDICTION_WAVE,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Build the residual-eligible design, residual, and component total for one wave.
+
+    Assembles the household heads, restricts to the residual-eligible households in
+    `wave` (an official total and a complete modelled-component vector), encodes their
+    features, and returns the arrays the 2017 residual cross-fit consumes. The component
+    total and the residual are both brought into `target_year` price terms by
+    `RESIDUAL_INDEX`, so `component_total + residual` reconstructs the deflated official
+    total; within a single wave the deflation is one constant factor, so the two stay on
+    the same price basis.
+
+    Only the wave with the augmented official total `n011h` (2017) carries a residual,
+    so this validation is cross-sectional within that wave; it cannot test the
+    2017->2022 temporal transport the production residual scenario relies on.
+
+    Args:
+        modules: Cleaned `MODULES` frames.
+        wave: The residual-eligible wave (2017 in production).
+        target_year: The price level the residual and component total are deflated into.
+
+    Returns:
+        The encoded design matrix, the signed deflated residual, and the deflated
+        modelled component total, one row per residual-eligible household in `wave`.
+
+    Raises:
+        ValueError: If no component passes the fit gate or no residual-eligible
+            household exists in `wave`.
+    """
+    heads = _household_heads(modules)
+    continuous_columns = [
+        spec.column for spec in FEATURE_SPECS if spec.kind == "continuous"
+    ] + [f"lagged_{column}" for column in _LAG_SOURCE_COLUMNS]
+    categorical_columns = [
+        spec.column for spec in FEATURE_SPECS if spec.kind == "categorical"
+    ]
+    wave_heads = heads[heads["survey_year"] == wave].reset_index(drop=True)
+    used = _fittable_components(wave_heads)
+    if not used:
+        msg = f"No wealth component could be fit on wave {wave}."
+        raise ValueError(msg)
+    eligible, residual = _training_residual(wave_heads, used, target_year=target_year)
+    if eligible.empty:
+        msg = f"No residual-eligible household in wave {wave}."
+        raise ValueError(msg)
+    encoder = fit_categorical_encoder(
+        eligible, categorical_columns, continuous_columns=continuous_columns
+    )
+    design = encode_features(
+        eligible, continuous_columns=continuous_columns, encoder=encoder
+    )
+    modelled = np.zeros(len(eligible), dtype="float64")
+    for component in used:
+        values = pd.to_numeric(
+            eligible[_COMPONENT_COLUMNS[component]], errors="coerce"
+        ).to_numpy(dtype="float64")
+        modelled += component_sign(component) * values
+    component_total = deflate_donor_values(
+        modelled,
+        eligible["survey_year"].tolist(),
+        index_by_year=RESIDUAL_INDEX,
+        target_year=target_year,
+    )
+    return design, residual, component_total

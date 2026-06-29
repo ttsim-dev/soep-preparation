@@ -324,6 +324,45 @@ def test_training_residual_deflates_to_the_target_wave():
     np.testing.assert_allclose(residual, np.array([20000.0, 5000.0]) * factor)
 
 
+def test_training_residual_restricts_to_the_given_household_subset():
+    """A subset mask keeps only the selected rows before building the residual.
+
+    The residual cross-fit needs to restrict the donor pool to one wave; passing a
+    boolean subset over the training rows yields the residual on exactly those rows.
+    """
+    training = pd.DataFrame(
+        {
+            "survey_year": [2012, 2017],
+            "hh_vehicles_value_a": [10000.0, 8000.0],
+            _OFFICIAL_TOTAL_COLUMN: [30000.0, 18000.0],
+        }
+    )
+    have_total, residual = _training_residual(
+        training,
+        [CanonicalComponent.VEHICLES],
+        target_year=2022,
+        subset=np.array([False, True]),
+    )
+    factor = RESIDUAL_INDEX[2022] / RESIDUAL_INDEX[2017]
+    assert have_total["survey_year"].tolist() == [2017]
+    np.testing.assert_allclose(residual, np.array([10000.0]) * factor)
+
+
+def test_training_residual_subset_defaults_to_the_full_set():
+    """Omitting the subset keeps every training row (the existing callers' behavior)."""
+    training = pd.DataFrame(
+        {
+            "survey_year": [2012, 2012],
+            "hh_vehicles_value_a": [10000.0, 8000.0],
+            _OFFICIAL_TOTAL_COLUMN: [30000.0, 18000.0],
+        }
+    )
+    have_total, _ = _training_residual(
+        training, [CanonicalComponent.VEHICLES], target_year=2022
+    )
+    assert len(have_total) == 2
+
+
 def test_observed_component_total_signs_the_modelled_components():
     """The observed total nets gross property and debts across the six components."""
     observed = observed_component_total(_synthetic_modules(), _TRAIN_WAVE)
