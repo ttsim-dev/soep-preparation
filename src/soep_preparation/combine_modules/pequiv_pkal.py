@@ -4,7 +4,8 @@ Despite the generic `pequiv_pkal` module name (combine modules are named by the
 two modules they join), this produces two specific derived variables rather than a
 general pequiv x pkal merge:
 
-- `first_pension_receipt_year`: earliest year of statutory pension receipt.
+- `first_pension_receipt_year`: earliest year of observed statutory pension income
+  or a retirement-status proxy (see `combine` for the status-proxy caveat).
 - `received_unemployment_benefits_last_year`: whether the person drew any
   unemployment benefit in the previous calendar year.
 """
