@@ -27,3 +27,7 @@ site:
   template: book-theme
   options:
     logo_text: soep-preparation
+    # Serve a local favicon so the static HTML build never fetches the book-theme
+    # default from mystmd.org — that remote fetch is flaky and aborts the build on
+    # Read the Docs when it fails.
+    favicon: _static/favicon.svg
