@@ -176,8 +176,16 @@ def score_residual_cross_fit(
         A dict with the row count, Spearman rank correlation of the median predicted
         residual against the observed residual, sign accuracy, median absolute error,
         draw-band coverage of the observed residual, and the effect on the household
-        total (`total_with_drawn_residual` vs `total_with_observed_residual`
-        distribution summaries of mean and selected quantiles).
+        total. The household-total effect is reported two ways, which must not be
+        conflated:
+
+        - `total_with_median_predicted_residual`: the cross-section of each row's
+          median-across-draws residual added to its component total -- a
+          point-prediction summary that, like any per-row median, collapses tail mass.
+        - `total_with_drawn_residual_across_draws`: each statistic computed within a
+          draw across rows, then summarised across draws -- the residual-inclusive
+          *scenario* distribution, which preserves the draw-level tail.
+        - `total_with_observed_residual`: the observed-residual total, for reference.
 
     Raises:
         ValueError: On a length mismatch or non-finite inputs.
@@ -204,6 +212,7 @@ def score_residual_cross_fit(
     lower = np.quantile(predicted_draws, tail, axis=1)
     upper = np.quantile(predicted_draws, 1.0 - tail, axis=1)
     within_band = (observed >= lower) & (observed <= upper)
+    total_draws = totals[:, None] + predicted_draws
     return {
         "n": int(observed.size),
         "n_draws": int(predicted_draws.shape[1]),
@@ -211,8 +220,43 @@ def score_residual_cross_fit(
         "sign_accuracy": float(np.mean(np.sign(point) == np.sign(observed))),
         "median_abs_error": float(np.median(np.abs(point - observed))),
         "band_coverage": float(np.mean(within_band)),
-        "total_with_drawn_residual": _distribution(totals + point),
+        # Median-collapsed point summary: useful for rank/point accuracy, but it erases
+        # the draw-level sign/tail mass (see `total_with_drawn_residual_across_draws`).
+        "total_with_median_predicted_residual": _distribution(totals + point),
+        # Residual-inclusive scenario distribution: each statistic within a draw across
+        # rows, then summarised across draws, so the draw-level tail survives.
+        "total_with_drawn_residual_across_draws": _distribution_across_draws(
+            total_draws, level=level
+        ),
         "total_with_observed_residual": _distribution(totals + observed),
+    }
+
+
+def _distribution_across_draws(total_draws: np.ndarray, *, level: float) -> dict:
+    """Summarise each draw's household-total distribution, then across draws.
+
+    `total_draws` is `(n_rows, n_draws)`; each column is one draw's residual-inclusive
+    household totals. Every statistic is computed within a draw across households, then
+    summarised by its mean and central-`level` band across draws -- so the draw-level
+    residual tail (notably the negative share) is preserved, unlike the median-collapsed
+    point summary.
+    """
+    per_draw = {
+        "mean": np.mean(total_draws, axis=0),
+        "negative_share": np.mean(total_draws < 0.0, axis=0),
+        "p10": np.quantile(total_draws, 0.1, axis=0),
+        "p50": np.quantile(total_draws, 0.5, axis=0),
+        "p90": np.quantile(total_draws, 0.9, axis=0),
+        "p99": np.quantile(total_draws, 0.99, axis=0),
+    }
+    tail = (1.0 - level) / 2.0
+    return {
+        name: {
+            "mean": float(np.mean(values)),
+            "lower": float(np.quantile(values, tail)),
+            "upper": float(np.quantile(values, 1.0 - tail)),
+        }
+        for name, values in per_draw.items()
     }
 
 

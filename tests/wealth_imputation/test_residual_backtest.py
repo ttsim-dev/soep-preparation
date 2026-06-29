@@ -161,3 +161,43 @@ def test_score_median_abs_error_is_zero_when_prediction_equals_observation():
         observed_residual, draws, component_total, level=0.9
     )
     assert report["median_abs_error"] == pytest.approx(0.0)
+
+
+def _sign_cancelling_draws() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """A draw matrix whose per-row median erases a 0.4 draw-level negative share.
+
+    Every row carries the same 200 draws -- 80 of -100 and 120 of +100 -- so each row's
+    median is +100 (no negative mass after collapsing to the median), while 40% of the
+    draws are negative. Component totals are zero, so the residual is the whole total.
+    """
+    n_rows = 100
+    pattern = np.array([-100.0] * 80 + [100.0] * 120)
+    predicted_draws = np.tile(pattern, (n_rows, 1))
+    component_total = np.zeros(n_rows)
+    observed_residual = np.full(n_rows, 100.0)
+    return observed_residual, predicted_draws, component_total
+
+
+def test_score_renames_drawn_residual_total_to_median_point():
+    """The median-collapsed total is reported under an explicitly median-point name."""
+    observed_residual, predicted_draws, component_total = _sign_cancelling_draws()
+    report = score_residual_cross_fit(
+        observed_residual, predicted_draws, component_total, level=0.9
+    )
+    assert "total_with_drawn_residual" not in report
+    assert "total_with_median_predicted_residual" in report
+
+
+def test_score_draw_level_summary_preserves_the_negative_share_the_median_erases():
+    """The across-draws summary keeps the 0.4 negative share the median collapses to 0.
+
+    The median-point total has no negative mass (its p10 is +100), but the draw-level
+    summary computes the negative share within each draw, so it reports the 0.4 the
+    sign-cancelling draws actually carry.
+    """
+    observed_residual, predicted_draws, component_total = _sign_cancelling_draws()
+    report = score_residual_cross_fit(
+        observed_residual, predicted_draws, component_total, level=0.9
+    )
+    across = report["total_with_drawn_residual_across_draws"]
+    assert across["negative_share"]["mean"] == pytest.approx(0.4)

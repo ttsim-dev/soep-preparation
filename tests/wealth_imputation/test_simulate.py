@@ -427,6 +427,78 @@ def test_collect_donor_wave_composition_attributes_draws_to_donor_waves():
     assert composition["financial_assets"] == {2012: 1.0}
 
 
+def test_nearest_donor_distances_for_a_secured_mortgage_match_the_property():
+    """A secured mortgage shares the property's nearest-donor distance.
+
+    The mortgage rides the property match, so its support distance is the property's,
+    not the distance to its own (here far-off) marginal donor pool.
+    """
+    property_config = ComponentDrawConfig(
+        component=CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS,
+        ownership_prob=np.array([1.0]),
+        ownership_share=np.array([1.0]),
+        recipient_predicted=np.array([0.3]),
+        donor_predicted=np.array([0.0, 1.0]),
+        donor_observed=np.array([100.0, 500.0]),
+        scale=100.0,
+        k=1,
+        paired_liability_observed=np.array([80.0, 480.0]),
+    )
+    mortgage_config = ComponentDrawConfig(
+        component=CanonicalComponent.OWNER_OCCUPIED_MORTGAGE,
+        ownership_prob=np.array([1.0]),
+        ownership_share=np.array([1.0]),
+        recipient_predicted=np.array([5.5]),  # 0.5 from its own pool, ignored
+        donor_predicted=np.array([5.0, 6.0]),
+        donor_observed=np.array([80.0, 480.0]),
+        scale=100.0,
+        k=1,
+    )
+    distances = nearest_donor_distances([property_config, mortgage_config])
+    np.testing.assert_allclose(
+        distances["owner_occupied_mortgage"],
+        distances["owner_occupied_property_gross"],
+    )
+
+
+def test_donor_wave_composition_attributes_a_mortgage_to_its_property_donor_wave():
+    """A secured mortgage's drawn donors are attributed to the property donor's wave.
+
+    The mortgage rides the property donor, so its wave composition follows the matched
+    property donor's year (2002), never the mortgage pool's own (sentinel) year.
+    """
+    property_config = ComponentDrawConfig(
+        component=CanonicalComponent.OWNER_OCCUPIED_PROPERTY_GROSS,
+        ownership_prob=np.array([1.0]),
+        ownership_share=np.array([1.0]),
+        recipient_predicted=np.array([0.0]),
+        donor_predicted=np.array([0.0, 1.0]),
+        donor_observed=np.array([100.0, 500.0]),
+        scale=100.0,
+        k=1,
+        paired_liability_observed=np.array([80.0, 480.0]),
+        donor_year=np.array([2002, 2012]),
+    )
+    mortgage_config = ComponentDrawConfig(
+        component=CanonicalComponent.OWNER_OCCUPIED_MORTGAGE,
+        ownership_prob=np.array([1.0]),
+        ownership_share=np.array([1.0]),
+        recipient_predicted=np.array([1.0]),
+        donor_predicted=np.array([0.0, 1.0]),
+        donor_observed=np.array([80.0, 480.0]),
+        scale=100.0,
+        k=1,
+        donor_year=np.array([2099, 2099]),  # must not surface under the bundle
+    )
+    composition = collect_donor_wave_composition(
+        _one_person_household(),
+        [property_config, mortgage_config],
+        n_draws=5,
+        rng=np.random.default_rng(seed=0),
+    )
+    assert composition["owner_occupied_mortgage"] == {2002: 1.0}
+
+
 def test_collect_donor_wave_composition_splits_across_two_waves():
     """Two equally-near donors from distinct waves split the draws across both waves."""
     config = ComponentDrawConfig(

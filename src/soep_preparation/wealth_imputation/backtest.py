@@ -115,13 +115,13 @@ def backtest_report(
     confusion = transition_counts(observed_rank, predicted_rank, n_groups=n_groups)
     rank_difference = np.abs(observed_rank.to_numpy() - predicted_rank.to_numpy())
     within_band = (observed >= lower) & (observed <= upper)
+    observed_distribution = wave_distribution_summary(observed)
+    draw_level = _draw_level_distribution(comparison, imputed_draws, level=level)
     return {
         "n": len(comparison),
-        "observed_distribution": wave_distribution_summary(observed),
+        "observed_distribution": observed_distribution,
         "imputed_distribution": wave_distribution_summary(predicted),
-        "imputed_distribution_across_draws": _draw_level_distribution(
-            comparison, imputed_draws, level=level
-        ),
+        "imputed_distribution_across_draws": draw_level,
         "confusion_counts": confusion.tolist(),
         "exact_quintile_accuracy": float(
             (observed_rank.to_numpy() == predicted_rank.to_numpy()).mean()
@@ -130,7 +130,30 @@ def backtest_report(
         "rank_correlation": rank_correlation(observed, predicted),
         "band_coverage": float(within_band.mean()),
         "median_abs_error": float(np.median(np.abs(observed - predicted))),
+        # Whether the observed negative share falls inside the draw-level
+        # negative-share band. `False` means the component-only draws over- or
+        # under-state the negative mass, so the negative tail is not calibrated even
+        # where rank/coverage look good; `None` when no draw table is supplied (the
+        # median cross-section cannot assess tail calibration).
+        "negative_share_calibrated": _negative_share_calibrated(
+            observed_distribution, draw_level
+        ),
     }
+
+
+def _negative_share_calibrated(
+    observed_distribution: dict, draw_level: dict | None
+) -> bool | None:
+    """Whether the observed negative share lies within the draw-level negative band.
+
+    `None` when no draw-level distribution is available, since the median cross-section
+    understates negative mass and cannot judge tail calibration.
+    """
+    if draw_level is None:
+        return None
+    band = draw_level["negative_share"]
+    observed = observed_distribution["negative_share"]
+    return bool(band["lower"] <= observed <= band["upper"])
 
 
 def _draw_level_distribution(

@@ -372,6 +372,10 @@ def nearest_donor_distances(
     served by an out-of-support donor, the extrapolation that this projection cannot
     avoid while the target wave has no anchoring wealth answers.
 
+    A secured liability (the mortgage) rides its backing asset's match rather than
+    matching on its own score, so its support distance is the backing asset's distance,
+    not the distance to its own marginal donor pool.
+
     Args:
         configs: One `ComponentDrawConfig` per modelled component.
 
@@ -379,15 +383,35 @@ def nearest_donor_distances(
         A dict keyed by the component value (e.g. `"financial_assets"`), each mapping to
         a float64 array of per-recipient nearest-donor distances.
     """
-    return {
-        config.component.value: np.min(
+    config_by_component = {config.component: config for config in configs}
+    distances = {}
+    for config in configs:
+        source = _match_source_config(config.component, config_by_component)
+        distances[config.component.value] = np.min(
             np.abs(
-                config.recipient_predicted[:, None] - config.donor_predicted[None, :]
+                source.recipient_predicted[:, None] - source.donor_predicted[None, :]
             ),
             axis=1,
         ).astype("float64")
-        for config in configs
-    }
+    return distances
+
+
+def _match_source_config(
+    component: CanonicalComponent,
+    config_by_component: dict[CanonicalComponent, ComponentDrawConfig],
+) -> ComponentDrawConfig:
+    """Return the config whose donor match a component's draw rides.
+
+    A secured liability (the mortgage) rides its backing asset's match, so its drawn
+    donor -- and hence its `donor_indices`, support distance, and wave attribution --
+    refer to the backing asset's donor pool. Every other component, and a secured
+    liability whose backing asset is absent from the configs, rides its own match.
+    """
+    backing = SECURED_BY.get(component)
+    backing_config = config_by_component.get(backing) if backing is not None else None
+    if backing_config is not None:
+        return backing_config
+    return config_by_component[component]
 
 
 def collect_donor_wave_composition(
@@ -402,10 +426,14 @@ def collect_donor_wave_composition(
 
     Across all draws and recipients, every drawn donor is attributed to its survey year
     (`ComponentDrawConfig.donor_year`); the shares within a component sum to one. A
-    component whose config carries no `donor_year` is omitted, since its draws cannot be
-    attributed to a wave. This is a transparency diagnostic: it shows which historical
-    waves the target-wave draws lean on, not a fix for the absence of target-wave
-    answers.
+    component whose match-source config carries no `donor_year` is omitted, since its
+    draws cannot be attributed to a wave. This is a transparency diagnostic: it shows
+    which historical waves the target-wave draws lean on, not a fix for the absence of
+    target-wave answers.
+
+    The draws come from the coupled `_draw_all_components`, so a secured liability (the
+    mortgage) is attributed to the donor it actually rides -- its backing asset's donor
+    and wave -- not to its own marginal pool.
 
     Args:
         recipients: Columns `p_id`, `hh_id`, `survey_year`; one row per recipient.
@@ -425,29 +453,25 @@ def collect_donor_wave_composition(
             `caliper`.
     """
     _fail_if_simulation_inputs_invalid(recipients, configs, n_draws)
-    wave_counts: dict[str, dict[int, int]] = {
-        config.component.value: {}
+    config_by_component = {config.component: config for config in configs}
+    source_by_component = {
+        config.component: _match_source_config(config.component, config_by_component)
         for config in configs
-        if config.donor_year is not None
+    }
+    wave_counts: dict[str, dict[int, int]] = {
+        component.value: {}
+        for component, source in source_by_component.items()
+        if source.donor_year is not None
     }
     for _ in range(n_draws):
-        for config in configs:
-            drawn = draw_component(
-                ownership_prob=config.ownership_prob,
-                ownership_share=config.ownership_share,
-                recipient_predicted=config.recipient_predicted,
-                donor_predicted=config.donor_predicted,
-                donor_observed=config.donor_observed,
-                scale=config.scale,
-                k=config.k,
-                rng=rng,
-                caliper=caliper,
-            )
-            if config.donor_year is None:
+        drawn_by_component = _draw_all_components(configs, rng, caliper=caliper)
+        for component, drawn in drawn_by_component.items():
+            source = source_by_component[component]
+            if source.donor_year is None:
                 continue
             drawn_donors = drawn.donor_indices[drawn.owns]
-            drawn_waves = np.asarray(config.donor_year)[drawn_donors]
-            counts = wave_counts[config.component.value]
+            drawn_waves = np.asarray(source.donor_year)[drawn_donors]
+            counts = wave_counts[component.value]
             years, year_counts = np.unique(drawn_waves, return_counts=True)
             for year, count in zip(years, year_counts, strict=True):
                 counts[int(year)] = counts.get(int(year), 0) + int(count)
