@@ -15,6 +15,7 @@ from soep_preparation.wealth_imputation.impute import (
     _household_person_direct,
     _mortgage_without_property_share,
     _out_of_support_summary,
+    _single_wave_components,
     _training_residual,
     observed_component_total,
     run_imputation,
@@ -286,6 +287,31 @@ def test_run_imputation_summary_carries_the_residual_inclusive_distribution():
     result = run_imputation(_synthetic_modules(), n_draws=50, seed=0, k=3)
     distribution = result.summary["residual_inclusive_distribution_across_draws"]
     assert {"gini", "zero_share", "negative_share", "p50"} <= set(distribution)
+
+
+def test_run_imputation_marks_the_residual_scenario_temporally_unvalidated():
+    """The residual-inclusive scenario carries `temporal_transport_validated=False`.
+
+    The residual is fit on the 2017 wave only, so its 2017->2022 transport has no
+    out-of-sample evidence; the level and top-tail it adds are scenario-only.
+    """
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
+    assert result.summary["temporal_transport_validated"] is False
+
+
+def test_single_wave_components_flags_a_component_drawn_from_one_wave():
+    """A component whose drawn donors all come from one wave is flagged single-wave."""
+    composition = {
+        "vehicles": {2017: 1.0},
+        "financial_assets": {2002: 0.4, 2012: 0.35, 2017: 0.25},
+    }
+    assert _single_wave_components(composition) == ["vehicles"]
+
+
+def test_run_imputation_summary_lists_single_wave_components():
+    """The summary exposes the single-wave components as a list."""
+    result = run_imputation(_synthetic_modules(), n_draws=20, seed=0, k=3)
+    assert isinstance(result.summary["single_wave_components"], list)
 
 
 def test_training_residual_drops_rows_with_a_missing_modelled_component():

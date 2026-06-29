@@ -396,6 +396,10 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "residual_model": residual_model_kind,
         "residual_is_sensitivity": True,
         "residual_validated_out_of_sample": False,
+        # The residual is fit on the 2017 wave only, so its 2017->2022 transport has no
+        # out-of-sample evidence: every residual-inclusive level and top-tail figure is
+        # scenario-only, not validated. Stays False until a second outcome wave exists.
+        "temporal_transport_validated": False,
         "uses_observed_2022_answers": False,
         "uses_support_gate": caliper is not None,
         "donor_pool_mean_residual": donor_pool_mean_residual,
@@ -408,6 +412,10 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         # Share of each component's drawn donors sourced from each historical wave, so
         # the waves the target-wave draws lean on are visible.
         "donor_wave_composition": donor_wave_composition,
+        # Components whose draws rest almost entirely on a single historical wave (e.g.
+        # vehicles, observed only in 2017), so their projected level has no cross-wave
+        # support. Read alongside any tail/level statistic for these components.
+        "single_wave_components": _single_wave_components(donor_wave_composition),
         # Coherence diagnostic (F2): the expected share of recipients drawn as a
         # mortgage holder but a non-property-owner -- an incoherent balance sheet no
         # donor household has. The coupled property/mortgage draw zeros the mortgage for
@@ -465,6 +473,26 @@ def _out_of_support_summary(
             "out_of_support_share": share,
         }
     return summary
+
+
+def _single_wave_components(
+    donor_wave_composition: Mapping[str, Mapping[int, float]],
+    *,
+    threshold: float = 0.999,
+) -> list[str]:
+    """Return components whose drawn donors come almost entirely from one wave.
+
+    A component whose largest single-wave share reaches `threshold` (effectively one
+    wave, e.g. vehicles drawn only from 2017) is flagged: its target-wave projection
+    rests on a single historical wave, so it carries no cross-wave support and its level
+    cannot be cross-checked across waves. Returned sorted for a stable summary.
+    """
+    flagged = [
+        component
+        for component, shares in donor_wave_composition.items()
+        if shares and max(shares.values()) >= threshold
+    ]
+    return sorted(flagged)
 
 
 def _mortgage_without_property_share(

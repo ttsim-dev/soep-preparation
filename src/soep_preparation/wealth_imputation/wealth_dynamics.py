@@ -310,10 +310,18 @@ def build_dynamics_report(  # noqa: PLR0913 -- keyword-only report knobs
             "min_cell": min_cell,
             "waves": list(waves),
             "waves_without_data": without_data,
+            # The distribution uses the imputed wave's draw-level summary, but the
+            # transition matrices rank households by their point estimate, which
+            # collapses the draw-level dispersion -- so a transition into the imputed
+            # wave is point-imputed person exposure, not draw-level mobility.
+            "uses_point_estimates_for_imputed_transition": True,
             "caveats": [
                 "unweighted: no SOEP design/longitudinal weights applied",
                 "not a population trend: sample composition and refresh samples vary "
                 "by wave",
+                "transitions into the imputed wave rank households by their point "
+                "estimate, so they are point-imputed person exposure, not draw-level "
+                "mobility",
                 "the imputed wave is a proxy; transitions into it are attenuated by "
                 "regression to the mean",
                 "concept-mixed: observed waves use w011h (net overall wealth); the "
