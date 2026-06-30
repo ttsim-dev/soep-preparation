@@ -258,6 +258,23 @@ def _count_property_owning_mortgage_donors(
     return int(((gross > 0.0) & (mortgage > 0.0)).sum())
 
 
+def test_run_imputation_marks_the_distribution_as_uncalibrated():
+    """The component-only distribution is flagged as not calibrated to the backtest.
+
+    Its level, inequality, zero mass and negative tail are rank/covariate proxies, not
+    calibrated against the 2017 temporal backtest, so the summary records this as
+    `distribution_calibrated=False`.
+    """
+    result = run_imputation(_synthetic_modules(), n_draws=50, seed=0, k=3)
+    assert result.summary["distribution_calibrated"] is False
+
+
+def test_run_imputation_marks_the_residual_scenario_as_scenario_only():
+    """The residual-inclusive total is a scenario, never the headline number."""
+    result = run_imputation(_synthetic_modules(), n_draws=50, seed=0, k=3)
+    assert result.summary["scenario_only"] is True
+
+
 def test_run_imputation_marks_component_only_as_the_primary_total():
     """The headline `intervals` are the component-only total, not residual-inclusive."""
     result = run_imputation(_synthetic_modules(), n_draws=50, seed=0, k=3)

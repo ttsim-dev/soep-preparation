@@ -82,6 +82,26 @@ def test_build_dynamics_report_flags_point_estimate_transitions_into_the_imputed
     assert report["metadata"]["uses_point_estimates_for_imputed_transition"] is True
 
 
+def test_build_dynamics_report_flags_transitions_as_not_household_mobility():
+    """The metadata records that the transition table is not household mobility.
+
+    The table tracks unweighted point-imputed person exposure to household wealth,
+    which is neither household-level mobility nor validated transition dynamics.
+    """
+    households = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 3, 4],
+            "survey_year": [2017, 2017, 2022, 2022],
+            "net_wealth": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+    roster = households[["hh_id", "survey_year"]].assign(p_id=[1, 2, 3, 4])
+    report = build_dynamics_report(
+        households, roster, waves=(2017, 2022), n_groups=2, min_cell=1
+    )
+    assert report["metadata"]["not_household_mobility"] is True
+
+
 def test_gini_is_zero_for_perfect_equality():
     """An equal distribution has a Gini coefficient of zero."""
     assert gini(np.array([5.0, 5.0, 5.0, 5.0])) == pytest.approx(0.0)

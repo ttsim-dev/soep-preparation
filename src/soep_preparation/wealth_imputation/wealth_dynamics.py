@@ -315,6 +315,10 @@ def build_dynamics_report(  # noqa: PLR0913 -- keyword-only report knobs
             # collapses the draw-level dispersion -- so a transition into the imputed
             # wave is point-imputed person exposure, not draw-level mobility.
             "uses_point_estimates_for_imputed_transition": True,
+            # The transition table tracks unweighted point-imputed person exposure to
+            # household wealth -- not household-level mobility and not validated
+            # transition dynamics.
+            "not_household_mobility": True,
             "caveats": [
                 "unweighted: no SOEP design/longitudinal weights applied",
                 "not a population trend: sample composition and refresh samples vary "

@@ -211,13 +211,15 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         keep_draws: If `True`, attach the component-only draw table to the result as
             `component_only_draws` (the backtest needs it for a draw-level summary).
         caliper: Optional maximum donor score distance per component draw. `None` (the
-            default) is diagnostics-only: the point estimate is unchanged, and the
-            `out_of_support` share is reported as `None` because there is no threshold.
-            When set, it becomes the support gate -- out-of-caliper recipients are
-            *flagged* in `out_of_support`, never dropped, so the household count and the
-            draw set are unchanged (dropping would bias the distribution). A recipient
-            with no donor within the caliper raises. This gates extrapolation; it does
-            not create target-wave information.
+            default) is diagnostics-only: donor selection is ungated, and the
+            `out_of_support` summary reports nearest-donor score-distance quantiles with
+            `out_of_support_share = None` because there is no threshold. When set, it is
+            an *eligibility gate* (see `donors.pmm_draw`): for each recipient it filters
+            the donor candidates to those within the caliper *before* the nearest-`k`
+            are selected, so it changes which donors can be drawn -- and thus the drawn
+            value. A recipient with no donor within the caliper raises. Recipients are
+            never dropped from the output, but their donor set and drawn value can
+            change. This gates extrapolation; it does not create target-wave info.
 
     Returns:
         An `ImputationResult` with the prediction-wave intervals and a run summary.
@@ -395,12 +397,19 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         "primary_total": "component_only",
         "residual_model": residual_model_kind,
         "residual_is_sensitivity": True,
+        # The residual-inclusive total is a scenario only: it must never be reported as
+        # the primary/headline number, which is always the component-only total.
+        "scenario_only": True,
         "residual_validated_out_of_sample": False,
         # The residual is fit on the 2017 wave only, so its 2017->2022 transport has no
         # out-of-sample evidence: every residual-inclusive level and top-tail figure is
         # scenario-only, not validated. Stays False until a second outcome wave exists.
         "temporal_transport_validated": False,
         "uses_observed_2022_answers": False,
+        # The component-only distribution is a rank/covariate proxy: its level,
+        # inequality, zero mass and negative tail are NOT calibrated against the 2017
+        # temporal backtest.
+        "distribution_calibrated": False,
         "uses_support_gate": caliper is not None,
         "donor_pool_mean_residual": donor_pool_mean_residual,
         # Support transparency (F4): per-component nearest-donor score-distance
@@ -431,7 +440,11 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         # Predictive distribution computed WITHIN each complete draw then summarised
         # across draws -- the per-household medians in `intervals` are not this. The
         # primary distribution is component-only; the residual scenario is reported
-        # separately (None when no residual model was fit).
+        # separately (None when no residual model was fit). The across-draws band
+        # lower/upper are the dispersion of each statistic ACROSS the donor draws
+        # (Monte-Carlo donor-draw spread) -- NOT predictive intervals: they exclude
+        # model/parameter and single-implicate uncertainty and must not be read as
+        # calibration coverage.
         "distribution_across_draws": distribution_across_draws(draws, level=level),
         "residual_inclusive_distribution_across_draws": residual_inclusive_distribution,
     }

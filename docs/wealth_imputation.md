@@ -6,7 +6,11 @@ SOEP-Core households. It is an opt-in pipeline (it does not run as part of
 
 ```{warning}
 This is a **historical-model synthetic projection**, not an edit-and-impute of an
-observed 2022 wealth wave. DIW has not released the generated 2022 wealth module, so
+observed 2022 wealth wave. The release used here — SOEP-Core V41 (data through 2024) —
+contains **no 2022 wealth wave at all**: a row-count probe of `pwealth`/`hwealth` finds
+2017 fully populated (all five implicates) but **zero rows for 2022** (raw or imputed),
+and 2017 is the latest wealth wave present. The SOEP wealth module is fielded every five
+years, so a 2022 wealth file is expected only in a later SOEP release. Until then
 **there are no raw 2022 wealth cells to anchor on**: every 2022 household is predicted
 from the 2002–2017 wealth waves plus 2022 covariates, and no observed 2022 wealth value
 is preserved. `summary["uses_observed_2022_answers"]` is therefore `False`. Treat the
@@ -116,10 +120,34 @@ raw-observed truth, and it does not cover the residual (which has no earlier out
 wave). Metrics are low-cell-count-screened aggregates — distribution summaries, a
 quintile confusion matrix, rank accuracy, and band coverage.
 
+## Intended use and calibration status
+
+The component-only total is a **rank/covariate proxy** for downstream use (e.g. as a
+GETTSIM input), not a calibrated population estimate. The 2017 temporal backtest shows
+its **level** is off (imputed mean ~33% above observed), its **inequality** is
+understated (Gini below observed), and its **zero mass** and **negative tail** are not
+calibrated to observed. So 2022 levels, inequality, and tails must not be headlined as
+population estimates — only the proxy's relative/rank information is intended to carry.
+
+The across-draws bands are **draw dispersion** — Monte-Carlo spread over donor draws —
+**not** predictive intervals, so they do not measure calibration coverage. Keep the
+no-anchoring warning and the support diagnostics beside every 2022 level, tail, and
+mobility table.
+
+**Path to calibration (future, partly data-gated):** proper predictive intervals
+(bootstrap over model fits combined with the five a–e implicates), an all-wave `w011h`
+residual with a pseudo-out-of-fold backtest, and the raw 2022 wealth wave once SOEP
+releases it.
+
 ## Known limitations
 
-- **No raw 2022 anchoring** — there is no released 2022 wealth module, so no observed
-  2022 cell is used or preserved; every recipient receives a historical-model donor.
+- **No raw 2022 anchoring** — SOEP-Core V41 ships zero 2022 wealth rows (see the warning
+  above), so no observed 2022 cell exists to use or preserve; every recipient receives a
+  historical-model donor. This is not a code gap a caliper or support gate can close: it
+  is gated on a future SOEP release that ships the 2022 wealth wave. Until then the
+  operative regime is disclosure — donor-distance, donor-wave composition, single-wave
+  flags, and the asset-class-index sensitivity of the deflation — not observed-2022
+  anchoring.
 - **Person-direct sums require full representation** — summing person-direct insurances
   and consumer debt over members is unbiased only for households where every eligible
   adult's person-wealth row is present; partial-unit-nonresponse adults absent from
@@ -130,6 +158,17 @@ quintile confusion matrix, rank accuracy, and band coverage.
 - **Nominal debts** — mortgage, vehicle, and consumer-debt donors are not deflated.
 - **Single implicate** — implicate `a` is used as the representative value; multiple-
   implicate uncertainty is not propagated.
+
+Two distinct objects both involve donor score-distance and should not be conflated:
+
+- The **`out_of_support` diagnostic** is what production reports. It is an *ungated*
+  measurement: nearest-donor score-distance quantiles plus an `out_of_support_share`,
+  computed without altering any draw. It describes how far recipients sit from their
+  donors; it does not filter or change the drawn value.
+- An optional PMM **`caliper`** is an *eligibility gate*. It filters each recipient's
+  donor candidates to those within the caliper *before* nearest-k selection, so it
+  changes the drawn value and raises if no candidate survives. Production runs ungated
+  (`caliper=None`), so only the diagnostic is in effect.
 
 ## Running it
 
