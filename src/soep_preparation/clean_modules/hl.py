@@ -22,6 +22,17 @@ def _kindergeld_m_hh(
     )
 
 
+def _grundsicherung_im_alter_received(amount_m: pd.Series[float]) -> pd.Series:
+    """Receipt of Grundsicherung im Alter, inferred from a positive amount.
+
+    SOEP carries no separate receipt question for Grundsicherung im Alter — only
+    the monthly amount (`hlc0071`). A positive amount means the household
+    receives it; not-applicable amounts are cleaned to 0 upstream, so they map
+    to non-receipt. A genuinely missing amount yields a missing receipt flag.
+    """
+    return (amount_m > 0).astype("bool[pyarrow]")
+
+
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     """Create cleaned variables from the hl module.
 
@@ -93,5 +104,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     out["grundsicherung_im_alter_currently_received_m_hh"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["hlc0071"], value=0)
+    )
+    out["grundsicherung_im_alter_currently_received_hh"] = (
+        _grundsicherung_im_alter_received(
+            out["grundsicherung_im_alter_currently_received_m_hh"]
+        )
     )
     return out
