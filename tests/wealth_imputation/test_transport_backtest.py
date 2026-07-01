@@ -115,7 +115,8 @@ def test_transport_stability_counts_the_held_out_waves():
 
 
 _HH_IDS = list(range(1, 13))
-_WEALTH_WAVES = (2012, 2017)
+_WEALTH_WAVES = (2007, 2012, 2017)
+_HOLDOUT_WAVES = (2012, 2017)  # 2007 has no earlier training wave under rolling-origin
 _VEHICLE_WAVE = 2017  # vehicles are observed only from 2017, as in the real data
 
 
@@ -225,10 +226,10 @@ def _two_wave_modules() -> dict[str, pd.DataFrame]:
     }
 
 
-def _run_two_wave() -> dict:
+def _run_backtest() -> dict:
     return run_transport_backtest(
         _two_wave_modules(),
-        holdout_waves=_WEALTH_WAVES,
+        holdout_waves=_HOLDOUT_WAVES,
         all_waves=_WEALTH_WAVES,
         n_draws=20,
         seed=0,
@@ -238,24 +239,38 @@ def _run_two_wave() -> dict:
 
 
 def test_run_transport_backtest_scores_each_held_out_wave():
-    """Each held-out wave gets its own scorecard, even one lacking a component."""
-    report = _run_two_wave()
+    """Every held-out wave that has an earlier training wave gets a scorecard."""
+    report = _run_backtest()
     assert set(report["per_holdout_wave"]) == {"2012", "2017"}
 
 
-def test_run_transport_backtest_trains_on_the_other_waves():
-    """Holding out 2017 trains on the remaining wealth wave (2012), and vice versa."""
-    report = _run_two_wave()
-    assert report["per_holdout_wave"]["2017"]["training_waves"] == [2012]
+def test_run_transport_backtest_trains_on_earlier_waves_only():
+    """Rolling-origin: holding out 2012 trains on 2007 alone, not the later 2017."""
+    report = _run_backtest()
+    assert report["per_holdout_wave"]["2012"]["training_waves"] == [2007]
+
+
+def test_run_transport_backtest_raises_when_holdout_has_no_earlier_wave():
+    """A held-out wave with no earlier wave to train on is rejected, not run."""
+    with pytest.raises(ValueError, match="earlier"):
+        run_transport_backtest(
+            _two_wave_modules(),
+            holdout_waves=(2007,),
+            all_waves=_WEALTH_WAVES,
+            n_draws=20,
+            seed=0,
+            k=3,
+            n_groups=2,
+        )
 
 
 def test_run_transport_backtest_scores_against_the_official_total_on_rank():
     """Each held-out wave carries a rank comparison to the official `w011h` total."""
-    report = _run_two_wave()
+    report = _run_backtest()
     assert "rank_correlation" in report["per_holdout_wave"]["2012"]["vs_official_w011h"]
 
 
 def test_run_transport_backtest_summarises_stability_over_the_held_out_waves():
     """The stability summary spans exactly the held-out waves scored."""
-    report = _run_two_wave()
+    report = _run_backtest()
     assert report["transport_stability"]["n_waves"] == 2

@@ -1,12 +1,14 @@
-"""Transport backtest task: hold out each wealth wave, score temporal transport.
+"""Transport backtest task: predict each wealth wave from earlier waves.
 
 Opt-in like the imputation (`SOEP_WEALTH_IMPUTATION`, or `pixi run wealth`). Where the
-single-wave backtest holds out only 2017, this holds out each of 2007/2012/2017 in turn
-(training on the other wealth waves) and scores the imputed wave against both the
-completed-component truth and the official `w011h` total (rank only). It writes a
-disclosure-safe JSON whose `transport_stability` block shows how the headline metrics
-vary across held-out waves -- the evidence the single-wave backtest cannot give for
-whether the method transports temporally rather than fitting 2017 by accident.
+single-wave backtest holds out only 2017, this predicts each of 2007/2012/2017 from the
+waves before it (rolling origin — the same forward direction production uses for 2022)
+and scores the imputed component-only order against the official all-wave `w011h`
+total on rank. It writes a disclosure-safe JSON whose `transport_stability` block shows
+how the rank metrics vary across folds -- the evidence the single-wave backtest cannot
+give for whether the method transports forward rather than fitting 2017 by accident.
+Fewer draws than production suffice: the metric is the rank of the point estimate,
+robust to draw count.
 """
 
 import json
@@ -27,15 +29,18 @@ from soep_preparation.wealth_imputation.transport_backtest import run_transport_
 # Modules the backtest consumes (same as the imputation).
 _BACKTEST_MODULES = ("hwealth", "pwealth", "pequiv", "pgen", "ppathl", "hgen")
 
-# The observed wealth waves. Each wave in `_HOLDOUT_WAVES` is held out and imputed from
-# the others; 2002 stays a training anchor (predicting the earliest wave from only later
-# ones is the least informative direction). Holding out 2017 reproduces the single-wave
-# backtest's train/predict split exactly.
+# The observed wealth waves. Each wave in `_HOLDOUT_WAVES` is predicted from the waves
+# strictly before it: 2007 from {2002}, 2012 from {2002, 2007}, 2017 from {2002, 2007,
+# 2012}. 2002 is a training-only anchor (no earlier wave to predict it from). The 2017
+# fold reproduces the single-wave backtest's train/predict split and is the closest
+# analog to production (predict the newest wave from all earlier ones).
 _ALL_WAVES = (2002, 2007, 2012, 2017)
 _HOLDOUT_WAVES = (2007, 2012, 2017)
 
-# Run settings (kept explicit so a re-run is reproducible).
-_N_DRAWS = 200
+# Run settings (kept explicit so a re-run is reproducible). Draws are lighter than
+# production (200): the transport metric is the rank of the point estimate, robust to
+# draw count, so 50 draws keep the rolling-origin re-run cheap.
+_N_DRAWS = 50
 _SEED = 0
 _K = 10
 _LEVEL = 0.9

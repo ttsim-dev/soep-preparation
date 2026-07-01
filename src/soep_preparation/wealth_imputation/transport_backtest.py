@@ -1,4 +1,4 @@
-"""Leave-one-wave-out temporal-transport backtest against the official `w011h` total.
+"""Rolling-origin temporal-transport backtest against the official `w011h` total.
 
 The single-wave 2017 backtest scores the imputed component total against the observed
 completed-component sum. That truth exists only in 2017: vehicles (and the private
@@ -6,19 +6,28 @@ pension component) are observed in later waves only, so an earlier wave has no
 completed-component vector. The single-wave backtest therefore gives one transport data
 point and cannot say whether the method generalises across target years.
 
-This backtest uses the official all-wave net total **`w011h`**
-(`hh_net_overall_wealth_a`), populated in every wealth wave, as the cross-wave truth.
-For each held-out wave it fits the component models on the other wealth waves, imputes
-the held-out wave out of fold, and compares the imputed component-only total to the
-observed `w011h` on **rank**.
+This backtest predicts each wave from **earlier** waves only — the same forward
+direction production uses to impute 2022 from 2002/2007/2012/2017 — and scores the
+imputed component-only order against the official all-wave net total **`w011h`**
+(`hh_net_overall_wealth_a`, populated in every wealth wave) on **rank**. Predicting from
+earlier waves keeps the fold clean: every lagged-wealth predictor comes from a wave
+earlier than the one being predicted, so the held-out wave's wealth never enters model
+fitting. (A leave-one-wave-out design would train on later waves too, and a training row
+at wave `h + 5` carries wave `h`'s wealth as its lag — leaking the held-out wave into
+the fit.)
 
-Rank, not level: the component-only total omits the unmodelled residual (business, other
-real estate) that `w011h` carries, and includes vehicles only when a vehicle wave is in
-training, so the two levels are not comparable. But an ordinal / covariate use of the
-proxy relies on rank, and the cross-wave question is exactly whether the proxy orders
-households like the official total at *every* wave or only at 2017. A small spread of
-the rank metrics across held-out waves is the transport evidence the single-wave
-backtest cannot give.
+Rank, not level: the component-only total omits the unmodelled residual (business,
+other real estate) that `w011h` carries, so the two levels are not comparable. But an
+ordinal / covariate use of the proxy relies on rank, and the question is whether the
+proxy orders households like the official total at *every* target wave or only at 2017.
+A small spread of the rank metrics across the rolling-origin folds is the
+forward-transport evidence the single-wave backtest cannot give.
+
+Vehicles are never fit here: they are observed only in 2017, the latest wave, which is
+always a prediction target and never in an earlier-waves-only training set. The
+component-only vehicle contribution is therefore an inherently single-wave projection
+that no temporal backtest on this data can validate — a limitation of the data, surfaced
+in `single_wave_components`, not of this test.
 
 All outputs are disclosure-safe aggregates. No row-level value is returned.
 """
@@ -54,17 +63,20 @@ def run_transport_backtest(  # noqa: PLR0913 -- keyword-only run settings + wave
 ) -> dict:
     """Score each held-out wave against the official `w011h` total on rank.
 
-    For every wave in `holdout_waves` the component models are fit on the other wealth
-    waves, the held-out wave is imputed out of fold, and its imputed order is compared
-    to the observed `w011h` order. A `transport_stability` summary then reports how each
-    rank metric varies across the held-out waves -- a small spread is evidence the
-    method transports.
+    For every wave in `holdout_waves` the component models are fit on the **earlier**
+    wealth waves only (rolling origin), the held-out wave is imputed out of fold, and
+    its imputed order is compared to the observed `w011h` order. A `transport_stability`
+    summary then reports how each rank metric varies across the folds -- a small spread
+    is evidence the method transports forward. Training on earlier waves only keeps the
+    fold free of lagged-wealth leakage from the predicted wave.
 
     Args:
         modules: Cleaned `MODULES` frames (`hwealth`, `pwealth`, and the feature
             modules `run_imputation` needs).
-        holdout_waves: The wealth waves to hold out and score, one at a time.
-        all_waves: The full set of wealth waves; each held-out wave trains on the rest.
+        holdout_waves: The wealth waves to predict, each from the waves before it. A
+            wave with no earlier wave in `all_waves` raises `ValueError`.
+        all_waves: The full set of wealth waves; each held-out wave trains on those
+            strictly earlier than it.
         n_draws: Donor draws per imputation.
         seed: Seed for the draw RNG.
         k: Nearest-donor pool size for PMM.
@@ -76,10 +88,19 @@ def run_transport_backtest(  # noqa: PLR0913 -- keyword-only run settings + wave
         wave, each carrying the training waves, components used, and a
         `vs_official_w011h` rank block) and `transport_stability` (the spread of each
         rank metric across waves).
+
+    Raises:
+        ValueError: If a held-out wave has no earlier wave to train on.
     """
     per_wave = {}
     for wave in holdout_waves:
-        training = tuple(other for other in all_waves if other != wave)
+        training = tuple(earlier for earlier in all_waves if earlier < wave)
+        if not training:
+            msg = (
+                f"Rolling-origin holdout {wave} has no earlier training wave in "
+                f"{tuple(all_waves)}; exclude the earliest wave from `holdout_waves`."
+            )
+            raise ValueError(msg)
         result = run_imputation(
             modules,
             n_draws=n_draws,
@@ -99,7 +120,7 @@ def run_transport_backtest(  # noqa: PLR0913 -- keyword-only run settings + wave
             ),
         }
     return {
-        "method": "leave_one_wave_out",
+        "method": "rolling_origin",
         "truth": "official_w011h_rank",
         "holdout_waves": list(holdout_waves),
         "all_waves": list(all_waves),

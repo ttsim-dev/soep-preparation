@@ -86,9 +86,14 @@ editing/measurement discrepancies, implicate noise, and model-definition mismatc
 
 It is drawn by signed PMM (preserving the sign and empirical distribution of the donor
 residuals) and deflated to 2022 by a property/equity blend keyed to its dominant mass. It
-is **provisional**: its outcome (the augmented official total `n011h`) exists only from
-2017, so it is fit on a single wave and cannot be temporally validated. This is why the
-residual-inclusive total is a scenario, not the headline.
+is a **single-wave reconciliation scenario**: its outcome (the augmented official total
+`n011h`) exists only from 2017, so it is fit on one wave and its temporal transport to 2022
+cannot be validated on any data that exists (there is no second `n011h` wave, and V41 has
+no 2022 wealth). The one check the data admits — a within-2017 cross-fit — is weak in the
+tail (the drawn residual under-states the observed p99 even in sample), and the scenario
+roughly doubles the top-1 share and p99 relative to component-only. This is why the
+residual-inclusive total is always a labelled scenario, never quoted without these
+limitations, not the headline.
 
 ## Uncertainty: what the bands mean
 
@@ -112,22 +117,37 @@ Two summaries serve two jobs:
 
 ## Backtest
 
-The proxy is validated by holding out the latest observed wealth wave (2017): fit on the
-earlier waves, impute 2017 out of fold, and compare the imputed **component-only** total
-against the held-out wave's **completed-component** sum (the six-component sum kept only
-where every component is present). This is a completed-component fidelity check, not
-raw-observed truth, and it does not cover the residual (which has no earlier outcome
-wave). Metrics are low-cell-count-screened aggregates — distribution summaries, a
-quintile confusion matrix, rank accuracy, and band coverage.
+Two complementary checks, both low-cell-count-screened aggregates:
+
+- **Completed-component fidelity (single-wave).** Hold out the latest observed wealth
+  wave (2017), fit on the earlier waves, impute 2017 out of fold, and compare the imputed
+  **component-only** total against the held-out wave's **completed-component** sum (the
+  six-component sum kept only where every component is present). This is a
+  completed-component fidelity check, not raw-observed truth, and it does not cover the
+  residual (which has no earlier outcome wave). Metrics: distribution summaries, a quintile
+  confusion matrix, rank accuracy, and band coverage.
+- **Forward transport (rolling origin).** Predict each of 2007/2012/2017 from the waves
+  *before* it — the same forward direction production uses to impute 2022 — and score the
+  imputed component-only order against the official all-wave `w011h` total on **rank**
+  (`transport_backtest.py`). Training on earlier waves only keeps every fold free of
+  lagged-wealth leakage from the predicted wave. A small spread of the rank metrics across
+  folds is evidence the method transports forward rather than fitting 2017 by accident.
+  Rank only: `w011h` and the component-only total are on different levels, and rank is what
+  an ordinal/covariate use relies on. Vehicles are never fit here (observed only in 2017,
+  the latest wave, never in an earlier-only training set).
 
 ## Intended use and calibration status
 
-The component-only total is a **rank/covariate proxy** for downstream use (e.g. as a
-GETTSIM input), not a calibrated population estimate. The 2017 temporal backtest shows
-its **level** is off (imputed mean ~33% above observed), its **inequality** is
-understated (Gini below observed), and its **zero mass** and **negative tail** are not
-calibrated to observed. So 2022 levels, inequality, and tails must not be headlined as
-population estimates — only the proxy's relative/rank information is intended to carry.
+The component-only total is a **coarse rank/covariate proxy** for downstream use (e.g. as
+a GETTSIM input), not a calibrated population estimate. Rank discrimination is moderate,
+not precise: the rolling-origin rank correlation to the official total is around 0.74, but
+exact-quintile accuracy is well below half, so the proxy supports **broad** ranking and
+covariate adjustment — not exact quintile classification, bottom/top-group membership, or
+household-level mobility. The 2017 temporal backtest shows its **level** is off (imputed
+mean ~33% above observed), its **inequality** is understated (Gini below observed), and its
+**zero mass** and **negative tail** are not calibrated to observed. So 2022 levels,
+inequality, and tails must not be headlined as population estimates — only the proxy's
+broad relative/rank information is intended to carry.
 
 The across-draws bands are **draw dispersion** — Monte-Carlo spread over donor draws —
 **not** predictive intervals, so they do not measure calibration coverage. Keep the
@@ -158,6 +178,10 @@ releases it.
 - **Nominal debts** — mortgage, vehicle, and consumer-debt donors are not deflated.
 - **Single implicate** — implicate `a` is used as the representative value; multiple-
   implicate uncertainty is not propagated.
+- **Vehicles are single-wave** — vehicle holdings are observed only in 2017, so the 2022
+  vehicle contribution is a projection from a single wave (flagged in
+  `single_wave_components`). No temporal backtest can validate it: in the rolling-origin
+  transport check every training set predates 2017, so vehicles are never fit there.
 
 Two distinct objects both involve donor score-distance and should not be conflated:
 
