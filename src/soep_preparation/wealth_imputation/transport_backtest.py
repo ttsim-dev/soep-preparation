@@ -1,22 +1,24 @@
-"""Leave-one-wave-out temporal-transport backtest.
+"""Leave-one-wave-out temporal-transport backtest against the official `w011h` total.
 
-The single-wave 2017 backtest gives one transport data point (train on the earlier
-waves, predict 2017). It cannot say whether that fidelity is stable or a one-wave
-accident. This backtest holds out *each* observed wealth wave in turn, fits the
-component models on the other waves, imputes the held-out wave, and scores it -- so
-transport quality is read across several target years, not at one.
+The single-wave 2017 backtest scores the imputed component total against the observed
+completed-component sum. That truth exists only in 2017: vehicles (and the private
+pension component) are observed in later waves only, so an earlier wave has no
+completed-component vector. The single-wave backtest therefore gives one transport data
+point and cannot say whether the method generalises across target years.
 
-Two truths are scored per held-out wave:
+This backtest uses the official all-wave net total **`w011h`**
+(`hh_net_overall_wealth_a`), populated in every wealth wave, as the cross-wave truth.
+For each held-out wave it fits the component models on the other wealth waves, imputes
+the held-out wave out of fold, and compares the imputed component-only total to the
+observed `w011h` on **rank**.
 
-- the **completed-component sum** (apples-to-apples with the component-only total; the
-  same truth the single-wave backtest uses); and
-- the official all-wave net total **`w011h`** (`hh_net_overall_wealth_a`), which exists
-  in every wealth wave. Its *level* is not comparable to the component-only total -- it
-  excludes vehicles and carries the unmodelled business / other-real-estate residual --
-  so it is scored on **rank only** (Spearman correlation and quintile agreement). Rank
-  is exactly what a covariate / ordinal use of the proxy relies on, and `w011h` is the
-  only official total available before 2017, which is why it anchors the cross-wave
-  comparison.
+Rank, not level: the component-only total omits the unmodelled residual (business, other
+real estate) that `w011h` carries, and includes vehicles only when a vehicle wave is in
+training, so the two levels are not comparable. But an ordinal / covariate use of the
+proxy relies on rank, and the cross-wave question is exactly whether the proxy orders
+households like the official total at *every* wave or only at 2017. A small spread of
+the rank metrics across held-out waves is the transport evidence the single-wave
+backtest cannot give.
 
 All outputs are disclosure-safe aggregates. No row-level value is returned.
 """
@@ -26,23 +28,16 @@ from collections.abc import Mapping, Sequence
 import numpy as np
 import pandas as pd
 
-from soep_preparation.wealth_imputation.backtest import (
-    backtest_report,
-    rank_correlation,
-)
-from soep_preparation.wealth_imputation.impute import (
-    observed_component_total,
-    run_imputation,
-)
+from soep_preparation.wealth_imputation.backtest import rank_correlation
+from soep_preparation.wealth_imputation.impute import run_imputation
 from soep_preparation.wealth_imputation.wealth_dynamics import quintile_ranks
 
 _HH_KEYS = ["hh_id", "survey_year"]
 _OFFICIAL_W011H_COLUMN = "hh_net_overall_wealth_a"
-_STABILITY_METRICS = (
+_RANK_METRICS = (
     "rank_correlation",
     "exact_quintile_accuracy",
-    "band_coverage",
-    "median_abs_error",
+    "mean_abs_quintile_error",
 )
 
 
@@ -57,13 +52,13 @@ def run_transport_backtest(  # noqa: PLR0913 -- keyword-only run settings + wave
     level: float = 0.9,
     n_groups: int = 5,
 ) -> dict:
-    """Score the imputation on each held-out wave, fitting on the other waves.
+    """Score each held-out wave against the official `w011h` total on rank.
 
-    For every wave in `holdout_waves` the component models are fit on the remaining
-    `all_waves`, the held-out wave is imputed out of fold, and the result is scored
-    against both the completed-component truth and the official `w011h` total (rank
-    only). A transport-stability summary then reports how each headline metric varies
-    across the held-out waves -- a small spread is evidence the method transports.
+    For every wave in `holdout_waves` the component models are fit on the other wealth
+    waves, the held-out wave is imputed out of fold, and its imputed order is compared
+    to the observed `w011h` order. A `transport_stability` summary then reports how each
+    rank metric varies across the held-out waves -- a small spread is evidence the
+    method transports.
 
     Args:
         modules: Cleaned `MODULES` frames (`hwealth`, `pwealth`, and the feature
@@ -73,13 +68,14 @@ def run_transport_backtest(  # noqa: PLR0913 -- keyword-only run settings + wave
         n_draws: Donor draws per imputation.
         seed: Seed for the draw RNG.
         k: Nearest-donor pool size for PMM.
-        level: Central level for the donor-spread bands and draw-level statistics.
+        level: Central level for the donor-spread bands.
         n_groups: Number of rank groups (5 for quintiles).
 
     Returns:
         A disclosure-safe dict with `per_holdout_wave` (one scorecard per held-out
-        wave, each carrying the completed-component metrics plus a `vs_official_w011h`
-        rank block) and `transport_stability` (the spread of each metric across waves).
+        wave, each carrying the training waves, components used, and a
+        `vs_official_w011h` rank block) and `transport_stability` (the spread of each
+        rank metric across waves).
     """
     per_wave = {}
     for wave in holdout_waves:
@@ -92,27 +88,19 @@ def run_transport_backtest(  # noqa: PLR0913 -- keyword-only run settings + wave
             level=level,
             prediction_wave=wave,
             training_waves=training,
-            keep_draws=True,
         )
-        observed = observed_component_total(modules, wave)
-        comparison = result.intervals.merge(
-            observed, on=_HH_KEYS, how="inner", validate="one_to_one"
-        )
-        report = backtest_report(
-            comparison,
-            imputed_draws=result.component_only_draws,
-            level=level,
-            n_groups=n_groups,
-        )
-        report["vs_official_w011h"] = official_rank_comparison(
-            result.intervals, official_total_truth(modules, wave), n_groups=n_groups
-        )
-        report["holdout_wave"] = wave
-        report["training_waves"] = list(training)
-        report["n_recipients"] = int(result.summary["n_recipients"])
-        per_wave[str(wave)] = report
+        per_wave[str(wave)] = {
+            "holdout_wave": wave,
+            "training_waves": list(training),
+            "n_recipients": int(result.summary["n_recipients"]),
+            "components_used": list(result.summary["components_used"]),
+            "vs_official_w011h": official_rank_comparison(
+                result.intervals, official_total_truth(modules, wave), n_groups=n_groups
+            ),
+        }
     return {
         "method": "leave_one_wave_out",
+        "truth": "official_w011h_rank",
         "holdout_waves": list(holdout_waves),
         "all_waves": list(all_waves),
         "n_draws": n_draws,
@@ -157,7 +145,8 @@ def official_rank_comparison(
 
     The component-only point estimate and the official `w011h` total are on different
     levels, so only their ordering is comparable. This returns the Spearman rank
-    correlation and quintile agreement over the households present in both frames.
+    correlation and quintile agreement over the households present in both frames. With
+    no overlapping households it returns `n = 0` and NaN metrics rather than raising.
 
     Args:
         intervals: Imputed intervals with `hh_id`, `survey_year`, `point_estimate`.
@@ -171,6 +160,13 @@ def official_rank_comparison(
     merged = intervals.merge(
         official_truth, on=_HH_KEYS, how="inner", validate="one_to_one"
     )
+    if merged.empty:
+        return {
+            "n": 0,
+            "rank_correlation": float("nan"),
+            "exact_quintile_accuracy": float("nan"),
+            "mean_abs_quintile_error": float("nan"),
+        }
     observed = merged["official_total"].to_numpy(dtype="float64")
     predicted = merged["point_estimate"].to_numpy(dtype="float64")
     observed_rank = quintile_ranks(merged["official_total"], n_groups=n_groups)
@@ -187,22 +183,17 @@ def official_rank_comparison(
 
 
 def _transport_stability(per_wave: Mapping[str, dict]) -> dict:
-    """Summarise how each headline metric varies across the held-out waves.
+    """Summarise how each rank metric varies across the held-out waves.
 
     A small spread (max minus min) across waves is evidence the method transports
     temporally; a large spread says the single-wave result was wave-specific.
     """
     reports = list(per_wave.values())
     stability: dict = {"n_waves": len(reports)}
-    for metric in _STABILITY_METRICS:
-        stability[metric] = _spread([float(report[metric]) for report in reports])
-    for metric in ("rank_correlation", "exact_quintile_accuracy"):
-        stability[f"vs_official_w011h_{metric}"] = _spread(
+    for metric in _RANK_METRICS:
+        stability[metric] = _spread(
             [float(report["vs_official_w011h"][metric]) for report in reports]
         )
-    stability["negative_share_calibrated_count"] = sum(
-        report.get("negative_share_calibrated") is True for report in reports
-    )
     return stability
 
 
