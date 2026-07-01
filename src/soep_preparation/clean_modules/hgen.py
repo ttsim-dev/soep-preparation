@@ -17,7 +17,7 @@ def _bruttokaltmiete_m_hh(
     rented_or_owned: pd.Series[pd.Categorical],
 ) -> pd.Series[float]:
     out = object_to_float(miete)
-    return out.where(rented_or_owned != "Eigentümer", 0)
+    return out.where(rented_or_owned != "Owner", 0)
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -46,11 +46,13 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["rented_or_owned"] = object_to_str_categorical(
         series=raw_data["hgowner"],
         renaming={
-            "[1] Eigentuemer": "Eigentümer",
-            "[2] Hauptmieter": "Hauptmieter",
-            "[3] Untermieter": "Untermieter",
-            "[4] Mieter": "Mieter",
-            "[5] Heimbewohner oder Gemeinschaftsunterkunft": "Heimbewohner oder Gemeinschaftsunterkunft",  # noqa: E501
+            "[1] Eigentuemer": "Owner",
+            "[2] Hauptmieter": "Main tenant",
+            "[3] Untermieter": "Subtenant",
+            "[4] Mieter": "Tenant",
+            "[5] Heimbewohner oder Gemeinschaftsunterkunft": (
+                "Resident of a home or communal accommodation"
+            ),
         },
     )
     out["rent_minus_heating_costs_m_hh"] = _bruttokaltmiete_m_hh(
@@ -62,9 +64,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         series=raw_data["hgheatinfo"],
         ordered=False,
     )
-    out["hh_typ_one_digit"] = object_to_str_categorical(
+    out["hh_type_one_digit"] = object_to_str_categorical(
         series=raw_data["hgtyp1hh"],
         nr_identifiers=2,
     )
-    out["hh_typ_two_digits"] = object_to_str_categorical(raw_data["hgtyp2hh"])
+    out["hh_type_two_digits"] = object_to_str_categorical(raw_data["hgtyp2hh"])
     return out

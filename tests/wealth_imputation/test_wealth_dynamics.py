@@ -1,0 +1,233 @@
+"""Disclosure-safe wealth distribution and mobility summaries."""
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from soep_preparation.wealth_imputation.wealth_dynamics import (
+    apply_complementary_suppression,
+    build_dynamics_report,
+    gini,
+    mean_draw_distribution,
+    quintile_ranks,
+    top_share,
+    transition_counts,
+    transition_probabilities,
+    wave_distribution_summary,
+)
+
+
+def test_mean_draw_distribution_takes_the_across_draw_mean_of_each_statistic():
+    """Each statistic's across-draw mean lands in a wave-summary-shaped dict."""
+    distribution = {
+        "mean": {"mean": 10.0, "lower": 9.0, "upper": 11.0},
+        "gini": {"mean": 0.5, "lower": 0.4, "upper": 0.6},
+        "top10_share": {"mean": 0.3, "lower": 0.2, "upper": 0.4},
+        "top1_share": {"mean": 0.1, "lower": 0.05, "upper": 0.15},
+        "zero_share": {"mean": 0.2, "lower": 0.1, "upper": 0.3},
+        "negative_share": {"mean": 0.05, "lower": 0.0, "upper": 0.1},
+        **{
+            f"p{p}": {"mean": float(p), "lower": 0.0, "upper": 100.0}
+            for p in (1, 5, 10, 25, 50, 75, 90, 95, 99)
+        },
+    }
+    summary = mean_draw_distribution(distribution, n=42)
+    assert summary["n"] == 42
+    assert summary["gini"] == 0.5
+    assert summary["zero_share"] == 0.2
+    assert summary["quantiles"]["p50"] == 50.0
+
+
+def test_build_dynamics_report_uses_distribution_override_for_the_imputed_wave():
+    """A wave in `distribution_overrides` is reported as-is; others are computed."""
+    households = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 3, 4],
+            "survey_year": [2017, 2017, 2022, 2022],
+            "net_wealth": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+    roster = households[["hh_id", "survey_year"]].assign(p_id=[1, 2, 3, 4])
+    override = {"n": 999, "gini": 0.99}
+    report = build_dynamics_report(
+        households,
+        roster,
+        waves=(2017, 2022),
+        n_groups=2,
+        min_cell=1,
+        distribution_overrides={2022: override},
+    )
+    assert report["distribution"]["2022"] == override
+    assert report["distribution"]["2017"]["n"] == 2
+
+
+def test_build_dynamics_report_flags_point_estimate_transitions_into_the_imputed_wave():
+    """The metadata records that transitions use point estimates for the imputed wave.
+
+    The distribution uses the imputed wave's draw-level override, but the transition
+    matrices rank households by their point estimate, which collapses tail dispersion --
+    so the flag warns the reader not to read the mobility table as draw-level.
+    """
+    households = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 3, 4],
+            "survey_year": [2017, 2017, 2022, 2022],
+            "net_wealth": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+    roster = households[["hh_id", "survey_year"]].assign(p_id=[1, 2, 3, 4])
+    report = build_dynamics_report(
+        households, roster, waves=(2017, 2022), n_groups=2, min_cell=1
+    )
+    assert report["metadata"]["uses_point_estimates_for_imputed_transition"] is True
+
+
+def test_build_dynamics_report_flags_transitions_as_not_household_mobility():
+    """The metadata records that the transition table is not household mobility.
+
+    The table tracks unweighted point-imputed person exposure to household wealth,
+    which is neither household-level mobility nor validated transition dynamics.
+    """
+    households = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 3, 4],
+            "survey_year": [2017, 2017, 2022, 2022],
+            "net_wealth": [1.0, 2.0, 3.0, 4.0],
+        }
+    )
+    roster = households[["hh_id", "survey_year"]].assign(p_id=[1, 2, 3, 4])
+    report = build_dynamics_report(
+        households, roster, waves=(2017, 2022), n_groups=2, min_cell=1
+    )
+    assert report["metadata"]["not_household_mobility"] is True
+
+
+def test_gini_is_zero_for_perfect_equality():
+    """An equal distribution has a Gini coefficient of zero."""
+    assert gini(np.array([5.0, 5.0, 5.0, 5.0])) == pytest.approx(0.0)
+
+
+def test_gini_for_one_holder_is_n_minus_one_over_n():
+    """When one of four holds everything, the Gini is (n-1)/n = 0.75."""
+    assert gini(np.array([0.0, 0.0, 0.0, 100.0])) == pytest.approx(0.75)
+
+
+def test_gini_matches_the_hand_computed_value_for_a_small_ladder():
+    """The Gini of 1,2,3,4 is 0.25 by the mean-absolute-difference definition."""
+    assert gini(np.array([1.0, 2.0, 3.0, 4.0])) == pytest.approx(0.25)
+
+
+def test_top_share_returns_fraction_held_by_the_top_group():
+    """The top 10% of 1..10 is the single value 10, i.e. 10/55 of the total."""
+    values = np.arange(1.0, 11.0)
+    assert top_share(values, top_fraction=0.1) == pytest.approx(10.0 / 55.0)
+
+
+def test_quintile_ranks_assign_tied_values_the_same_rank_regardless_of_order():
+    """Equal wealth values get identical quintiles, so row order cannot move them."""
+    values = [0.0, 0.0, 0.0, 0.0, 5.0]
+    forward = quintile_ranks(pd.Series(values), n_groups=5)
+    reverse = quintile_ranks(pd.Series(values[::-1]), n_groups=5)
+    assert forward.tolist() == reverse.tolist()[::-1]
+
+
+def test_quintile_ranks_split_a_uniform_range_evenly():
+    """Ten evenly spaced values fall two-per-quintile, ranked 1..5."""
+    ranks = quintile_ranks(pd.Series(np.arange(1.0, 11.0)), n_groups=5)
+    assert ranks.tolist() == [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+
+
+def test_wave_distribution_summary_reports_the_median():
+    """The summary's 50th percentile is the median of the values."""
+    summary = wave_distribution_summary(np.array([10.0, 20.0, 30.0, 40.0]))
+    assert summary["quantiles"]["p50"] == pytest.approx(25.0)
+
+
+def test_transition_counts_place_each_mover_in_its_from_to_cell():
+    """A mover from quintile 1 to quintile 3 lands in row 1, column 3 (zero-based)."""
+    counts = transition_counts(pd.Series([1, 2]), pd.Series([3, 2]), n_groups=5)
+    assert counts[0, 2] == 1
+
+
+def test_transition_probabilities_normalise_each_row_to_one():
+    """Each origin-quintile row of the probability matrix sums to one."""
+    counts = np.array([[3, 1], [0, 4]], dtype="float64")
+    probabilities = transition_probabilities(counts)
+    np.testing.assert_allclose(probabilities.sum(axis=1), [1.0, 1.0])
+
+
+def test_complementary_suppression_hides_a_lone_cell_behind_a_second_one():
+    """A single suppressed cell in a row also suppresses one more cell in that row.
+
+    Releasing a count row with exactly one cell blanked leaks it: the row total minus
+    the visible cells recovers it. Suppressing a second cell in any row that has a
+    primary suppression makes the blanked cell unrecoverable from the released counts.
+    """
+    counts = np.array([[100.0, 5.0, 95.0], [50.0, 50.0, 50.0]])
+    primary = counts < 30.0  # only the lone (0, 1) cell
+    secondary = apply_complementary_suppression(counts, primary)
+    assert secondary[0].sum() >= 2  # the lone cell plus a complementary one
+    assert not secondary[1].any()  # an unsuppressed row is left intact
+
+
+def test_complementary_suppression_blanks_probabilities_for_suppressed_rows():
+    """A horizon row with any suppressed count releases no probabilities."""
+    households = pd.DataFrame(
+        {
+            "hh_id": list(range(1, 9)),
+            "survey_year": [2012] * 4 + [2017] * 4,
+            "net_wealth": [1.0, 2.0, 3.0, 4.0, 1.0, 2.0, 3.0, 100.0],
+        }
+    )
+    roster = households[["hh_id", "survey_year"]].assign(p_id=list(range(1, 9)))
+    report = build_dynamics_report(
+        households, roster, waves=(2012, 2017), n_groups=2, min_cell=2
+    )
+    horizon = report["transitions"]["2012->2017"]
+    for row_counts, row_probs in zip(
+        horizon["counts"], horizon["probabilities"], strict=True
+    ):
+        if any(cell is None for cell in row_counts):
+            assert all(cell is None for cell in row_probs)
+
+
+def test_build_dynamics_report_skips_waves_without_data():
+    """A wave with no households is recorded and omitted, not raised on."""
+    households = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 3, 4],
+            "survey_year": [2017, 2017, 2017, 2017],
+            "net_wealth": [10.0, 20.0, 30.0, 40.0],
+        }
+    )
+    roster = pd.DataFrame(
+        {"p_id": [1, 2, 3, 4], "hh_id": [1, 2, 3, 4], "survey_year": [2017] * 4}
+    )
+    report = build_dynamics_report(
+        households, roster, waves=(2012, 2017), n_groups=2, min_cell=1
+    )
+    assert report["metadata"]["waves_without_data"] == [2012]
+
+
+def test_build_dynamics_report_covers_every_wave_and_horizon():
+    """The report carries one distribution per wave and one transition per horizon."""
+    waves = (2012, 2017)
+    households = pd.DataFrame(
+        {
+            "hh_id": [1, 2, 3, 4, 1, 2, 3, 4],
+            "survey_year": [2012] * 4 + [2017] * 4,
+            "net_wealth": [10.0, 20.0, 30.0, 40.0, 15.0, 25.0, 35.0, 45.0],
+        }
+    )
+    roster = pd.DataFrame(
+        {
+            "p_id": [1, 2, 3, 4, 1, 2, 3, 4],
+            "hh_id": [1, 2, 3, 4, 1, 2, 3, 4],
+            "survey_year": [2012] * 4 + [2017] * 4,
+        }
+    )
+    report = build_dynamics_report(
+        households, roster, waves=waves, n_groups=2, min_cell=1
+    )
+    assert set(report["distribution"]) == {"2012", "2017"}
+    assert set(report["transitions"]) == {"2012->2017"}

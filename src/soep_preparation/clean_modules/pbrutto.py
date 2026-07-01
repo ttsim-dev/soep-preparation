@@ -6,7 +6,65 @@ from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     object_to_int,
     object_to_str_categorical,
+    translate_categories,
 )
+
+_INTERVIEW_RESULT_ONE_DIGIT_EN = {
+    "Realisiert": "Completed",
+    "Derzeit nicht durchfb.": "Currently not feasible",
+    "Derzeit z.Teiln.n.ber.": "Currently not willing to participate",
+    "Entgueltige Verweig.": "Final refusal",
+    "HHwechsel": "Household change",
+    "Haushalt aufgelöst (in anderen Panel-Haushalt verzogen)": (
+        "Household dissolved (moved into another panel household)"
+    ),
+    "Ins Ausland verzogen": "Moved abroad",
+    "Verstorben": "Deceased",
+    "endgueltig n.auffindbar": "Permanently untraceable",
+    "in Feldz.n.auffindbar": "Untraceable during fieldwork",
+}
+
+_INTERVIEW_RESULT_TWO_DIGITS_EN = {
+    "Realisiert": "Completed",
+    "Real. auch in Vorwelle": "Completed, also in previous wave",
+    "Realisiert nach Feldende": "Completed after fieldwork end",
+    "Teilgenommen mit Befragungslücke, Lückedaten nacherhoben": (
+        "Participated with gap, gap data collected later"
+    ),
+    "Teilgenommen mit Befragungslücke, ohne Lückedaten": (
+        "Participated with gap, without gap data"
+    ),
+    "Personeninterview, jedoch kein Haushaltsinterview": (
+        "Person interview, but no household interview"
+    ),
+    "Intv.HH-L.Vj.bl.off.": "Interview HH list previous year stayed open",
+    "Intv.HH-L.Vj.geschl.": "Interview HH list previous year closed",
+    "Derzeit nicht bereit": "Currently not willing to participate",
+    "Keine Zeit-Lust": "No time / not interested",
+    "Derzeit nicht durchführbar": "Currently not feasible",
+    "Ende Feldarbeit nicht erreicht": "Not reached by fieldwork end",
+    "Nicht erreichbar": "Not reachable",
+    "Krank bis Feldende": "Ill until fieldwork end",
+    "Alt und krank": "Old and ill",
+    "Sprachprobleme": "Language difficulties",
+    "Ausländer: Längere Zeit im Heimatland": (
+        "Foreigner: extended time in home country"
+    ),
+    "Endgültige Verweigerung": "Final refusal",
+    "Kein Fragebogen": "No questionnaire",
+    "Nicht auswertbar": "Not analysable",
+    "Endgültig .nicht verwertbar": "Permanently not usable",
+    "Sonstige unklare Fälle": "Other unclear cases",
+    "Sonstige": "Other",
+    "HHwechsel": "Household change",
+    "Haushalt aufgelöst (in anderen Panel-Haushalt verzogen)": (
+        "Household dissolved (moved into another panel household)"
+    ),
+    "Ins Ausland verzogen": "Moved abroad",
+    "Verstorben": "Deceased",
+    "Endgültig nicht auffindbar": "Permanently untraceable",
+    "Während der Feldzeit nicht auffindbar": "Untraceable during fieldwork",
+}
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
@@ -71,19 +129,23 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
 
     # interview related variables
     out["interview_status"] = object_to_str_categorical(raw_data["befstat_h"])
-    out["interview_result_one_digit"] = object_to_str_categorical(raw_data["perg"])
+    out["interview_result_one_digit"] = translate_categories(
+        object_to_str_categorical(raw_data["perg"]), _INTERVIEW_RESULT_ONE_DIGIT_EN
+    )
     # categories [29] and [39] have identical missing data labels
     # they are reduced to one
-    out["interview_result_two_digits"] = object_to_str_categorical(raw_data["pergz"])
+    out["interview_result_two_digits"] = translate_categories(
+        object_to_str_categorical(raw_data["pergz"]), _INTERVIEW_RESULT_TWO_DIGITS_EN
+    )
     # categories [19] and [39] have identical missing data labels
     # they are reduced to one
     out["willingness_to_participate"] = object_to_str_categorical(
         series=raw_data["ber"],
         renaming={
-            "[4] sehr schlecht": "sehr schlecht",
-            "[3] schlecht": "schlecht",
-            "[2] gut": "gut",
-            "[1] sehr gut": "sehr gut",
+            "[4] sehr schlecht": "very bad",
+            "[3] schlecht": "bad",
+            "[2] gut": "good",
+            "[1] sehr gut": "very good",
         },
         ordered=True,
     )

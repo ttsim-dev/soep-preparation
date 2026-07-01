@@ -50,10 +50,13 @@ build.targets.wheel.sources = [ "src" ]
 
 [tool.pixi.dependencies]
 deepdiff = "*"
+jupyter-book = ">=2"
 jupyterlab = "*"
+mystmd = "*"
 prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
+scikit-learn = ">=1.9.0,<2"
 [tool.pixi.environments]
 py314 = [ "py314", "tests" ]
 [tool.pixi.feature.py314]
@@ -69,6 +72,11 @@ tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 soep_preparation = { path = ".", editable = true }
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
+[tool.pixi.tasks]
+wealth = { cmd = "pytask", env = { SOEP_WEALTH_IMPUTATION = "1" } }
+generate-variables = { cmd = "python _generate_variables.py", cwd = "docs" }
+build-docs = { cmd = "python _generate_variables.py && jupyter book build --html", cwd = "docs" }
+view-docs = { cmd = "python _generate_variables.py && jupyter book start", cwd = "docs" }
 [tool.pixi.workspace]
 channels = [ "conda-forge" ]
 platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
@@ -86,14 +94,21 @@ extend-ignore = [
   "FIX002", # Line contains TODO (rely on TD area for spotting)
   "ISC001", # Avoid conflict with ruff-format
   "PD015",  # pd.merge fine because of inherent symmetry
+  "RUF001", # Ambiguous unicode in strings (raw SOEP labels carry them verbatim)
+  "RUF002", # Ambiguous unicode in docstrings
+  "RUF003", # Ambiguous unicode in comments
   "S101",   # Use of `assert` detected
   "TC001",  # Move application import into a type-checking block
   "TC002",  # Move third-party import into a type-checking block
   "TC003",  # Move standard library import into a type-checking block
   "TRY003", # Avoid specifying long messages outside the exception class
 ]
-per-file-ignores."**/task.py" = [
-  "ANN", # Type annotations (pytask signatures use Annotated[Path, Product])
+per-file-ignores."**/task*.py" = [
+  "ANN",    # Type annotations (pytask signatures use Annotated[Path, Product])
+  "ARG001", # Source-file dependencies are declared as parameters for cache invalidation
+]
+per-file-ignores."docs/*" = [
+  "INP001", # Implicit namespace packages
 ]
 per-file-ignores."sandbox/*" = [
   "INP001", # Implicit namespace packages
@@ -102,10 +117,11 @@ per-file-ignores."src/soep_preparation/config.py" = [
   "E402", # Module-level import not at top of file
 ]
 per-file-ignores."tests/*" = [
-  "ANN201", # Missing return type annotation for public function
-  "D",      # Docstrings
-  "INP001", # Implicit namespace packages
-  "PD011",  # Use of .values (false positives on non-pandas objects)
+  "ANN201",  # Missing return type annotation for public function
+  "D",       # Docstrings
+  "INP001",  # Implicit namespace packages
+  "PD011",   # Use of .values (false positives on non-pandas objects)
+  "PLR2004", # Magic value in comparison (expected results in assertions)
 ]
 per-file-ignores."tests/metadata/test_mapping_changed.py" = [
   "S108", # Hardcoded temporary file path
@@ -147,7 +163,7 @@ rules.unused-awaitable = "error"
 rules.unused-ignore-comment = "error"
 
 [tool.pytest]
-ini_options.norecursedirs = [ "docs" ]
+ini_options.norecursedirs = [ "docs", "pro-audit-*" ]
 ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
 ini_options.filterwarnings = []
 
