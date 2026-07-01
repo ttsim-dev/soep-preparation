@@ -71,6 +71,7 @@ _CURRENT = (
     "frailty",
     "frailty_pequiv",
     "frailty_pl",
+    "future_employment_intention",
     "gender",
     "general_trust",
     "german",

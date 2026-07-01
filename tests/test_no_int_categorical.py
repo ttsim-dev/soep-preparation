@@ -115,13 +115,13 @@ def test_no_module_codes_small_categorical_as_int() -> None:
 def test_detector_flags_small_meaningful_int_renaming() -> None:
     """A four-outcome label→int `object_to_int` renaming is flagged as a violation."""
     snippet = (
-        'out["future_employment_intention_low_to_high"] = object_to_int(\n'
-        '    series=raw_data["plb0417_v2"],\n'
+        'out["some_small_scale"] = object_to_int(\n'
+        '    series=raw_data["somevar"],\n'
         "    renaming={\n"
-        '        "[1] Nein ganz sicher nicht": 1,\n'
-        '        "[2] Eher unwahrscheinlich": 2,\n'
-        '        "[3] Wahrscheinlich": 3,\n'
-        '        "[4] Ganz sicher": 4,\n'
+        '        "[1] Label one": 1,\n'
+        '        "[2] Label two": 2,\n'
+        '        "[3] Label three": 3,\n'
+        '        "[4] Label four": 4,\n'
         "    },\n"
         ")\n"
     )
