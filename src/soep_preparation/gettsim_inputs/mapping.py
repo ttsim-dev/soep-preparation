@@ -114,9 +114,9 @@ _BASE: Final[dict[str, str | None]] = {
     "sozialversicherung__rente__freiwillige_beitragsmonate": None,
     "sozialversicherung__rente__grundrente__bewertungszeiten_monate": None,
     "sozialversicherung__rente__grundrente__bruttolohn_vorjahr_y": None,
-    "sozialversicherung__rente__grundrente__einnahmen_aus_kapitalvermögen_vorvorjahr_y": None,  # noqa: E501
+    "sozialversicherung__rente__grundrente__einnahmen_aus_kapitalvermögen_vorvorjahr_y": "income_from_interest_dividends_y_hh",  # noqa: E501
     "sozialversicherung__rente__grundrente__einnahmen_aus_selbstständiger_arbeit_vorvorjahr_y": None,  # noqa: E501
-    "sozialversicherung__rente__grundrente__einnahmen_aus_vermietung_und_verpachtung_vorvorjahr_y": None,  # noqa: E501
+    "sozialversicherung__rente__grundrente__einnahmen_aus_vermietung_und_verpachtung_vorvorjahr_y": "income_from_rental_leasing_y_hh",  # noqa: E501
     "sozialversicherung__rente__grundrente__gesamteinnahmen_aus_renten_vorjahr_m": None,
     "sozialversicherung__rente__grundrente__grundrentenzeiten_monate": None,
     "sozialversicherung__rente__grundrente__mean_entgeltpunkte": None,
