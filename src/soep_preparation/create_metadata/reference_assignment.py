@@ -496,11 +496,11 @@ _PREVIOUS_MONTH = (
 
 # Biographical or otherwise fixed facts that do not move with the survey wave.
 _TIME_INVARIANT = (
+    "birth_federal_state",
     "birth_month",
     "birth_month_bioedu",
     "birth_month_child",
     "birth_month_ppathl",
-    "birth_state",
     "birth_year",
     "birth_year_child",
     "birthplace",

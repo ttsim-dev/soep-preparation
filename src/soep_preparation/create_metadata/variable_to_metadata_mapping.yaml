@@ -1102,23 +1102,28 @@ betriebliche_altersversorgung_y:
     - 2022
     - 2023
     - 2024
-birth_month:
-  dtype: int8[pyarrow]
-  module: ppathl_bioedu
-  reference: time_invariant
-  survey_years: null
-birth_month_bioedu:
-  dtype: int8[pyarrow]
-  module: bioedu
-  reference: time_invariant
-  survey_years: null
-birth_month_child:
-  dtype: int8[pyarrow]
-  module: biobirth
-  reference: time_invariant
-  survey_years: null
-birth_month_ppathl:
-  dtype: int8[pyarrow]
+birth_federal_state:
+  dtype:
+    categorical:
+      categories:
+        - Baden-Wuerttemberg
+        - Bayern
+        - Berlin
+        - Brandenburg
+        - Bremen
+        - Hamburg
+        - Hessen
+        - Mecklenburg-Vorpommern
+        - Niedersachsen
+        - Nordrhein-Westfalen
+        - Rheinland-Pfalz
+        - Saarland
+        - Sachsen
+        - Sachsen-Anhalt
+        - Schleswig-Holstein
+        - Thueringen
+      categories_dtype: string
+      ordered: false
   module: ppathl
   reference: time_invariant
   survey_years:
@@ -1163,28 +1168,23 @@ birth_month_ppathl:
     - 2022
     - 2023
     - 2024
-birth_state:
-  dtype:
-    categorical:
-      categories:
-        - Baden-Wuerttemberg
-        - Bayern
-        - Berlin
-        - Brandenburg
-        - Bremen
-        - Hamburg
-        - Hessen
-        - Mecklenburg-Vorpommern
-        - Niedersachsen
-        - Nordrhein-Westfalen
-        - Rheinland-Pfalz
-        - Saarland
-        - Sachsen
-        - Sachsen-Anhalt
-        - Schleswig-Holstein
-        - Thueringen
-      categories_dtype: string
-      ordered: false
+birth_month:
+  dtype: int8[pyarrow]
+  module: ppathl_bioedu
+  reference: time_invariant
+  survey_years: null
+birth_month_bioedu:
+  dtype: int8[pyarrow]
+  module: bioedu
+  reference: time_invariant
+  survey_years: null
+birth_month_child:
+  dtype: int8[pyarrow]
+  module: biobirth
+  reference: time_invariant
+  survey_years: null
+birth_month_ppathl:
+  dtype: int8[pyarrow]
   module: ppathl
   reference: time_invariant
   survey_years:
