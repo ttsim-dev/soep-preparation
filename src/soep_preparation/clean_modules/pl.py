@@ -3,16 +3,21 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    convert_to_float,
     create_dummy,
     object_to_bool_categorical,
     object_to_float,
     object_to_int,
-    object_to_int_categorical,
     object_to_str_categorical,
     replace_not_applicable_answer,
+    translate_categories,
 )
+
+_HEALTH_INSURANCE_2022_EN = {
+    "Ausschließlich privat versichert": "Privately insured only",
+    "In einer gesetzlichen Krankenversicherung": "In statutory health insurance",
+}
 
 
 def _private_rente_beitrag_m_ein_umfragejahr(
@@ -36,20 +41,48 @@ def _private_rente_beitrag_m_ein_umfragejahr(
 def _private_rente_beitrag_m(private_rente_data: pd.DataFrame) -> pd.Series:
     """Combine private pension contributions and forward-fill within individuals."""
     combined_years = pd.Series(
-        private_rente_data["private_rente_beitrag_m_2013"].mask(
+        private_rente_data["private_rente_contribution_m_2013"].mask(
             private_rente_data["survey_year"] == 2018,  # noqa: PLR2004
-            private_rente_data["private_rente_beitrag_m_2018"],
+            private_rente_data["private_rente_contribution_m_2018"],
         ),
-        name="private_rente_beitrag_m",
+        name="private_rente_contribution_m",
     )
 
     data = pd.concat([private_rente_data["p_id"], combined_years], axis=1)
-    out = data.groupby("p_id")["private_rente_beitrag_m"].ffill()
-    return apply_smallest_float_dtype(out)
+    out = data.groupby("p_id")["private_rente_contribution_m"].ffill()
+    return convert_to_float(out)
 
 
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
-    return apply_smallest_float_dtype(frailty_inputs.mean(axis=1))
+    return convert_to_float(frailty_inputs.mean(axis=1))
+
+
+def _arbeitslosengeld_received_last_month(
+    all_samples: pd.Series,
+    m3_to_m5_sample: pd.Series,
+) -> pd.Series:
+    """Coalesce the two SOEP versions of "Arbeitslosengeld received last month".
+
+    `plc0130_v1` (`all_samples`) is asked across all samples (1995-2024); `plc0130_v2`
+    (`m3_to_m5_sample`) is the version fielded in the M3-M5 sample instrument
+    (2019-2020). Both record whether unemployment benefit was received in the month
+    before the interview, on disjoint samples, so prefer the all-sample version and fill
+    the rest from the M3-M5 one — carrying the latter's {True, False} bool[pyarrow]
+    categories so the "No" answers it contributes are kept.
+    """
+    received_all_samples = object_to_bool_categorical(
+        series=all_samples,
+        renaming={"[1] Ja": True},
+        ordered=True,
+    )
+    received_m3_to_m5 = object_to_bool_categorical(
+        series=m3_to_m5_sample,
+        renaming={"[1] Ja": True, 2: False},
+        ordered=True,
+    )
+    return received_all_samples.combine_first(received_m3_to_m5).astype(
+        received_m3_to_m5.dtype
+    )
 
 
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
@@ -82,79 +115,72 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["beendigung_beschäftigungsverhältnis_grund"] = object_to_str_categorical(
+    out["employment_ended_reason_pl"] = object_to_str_categorical(
         raw_data["plb0304_v14"]
     )
-    out["beendigung_beschäftigungsverhältnis_grund_1999"] = object_to_str_categorical(
+    out["employment_ended_reason_1999_pl"] = object_to_str_categorical(
         raw_data["plb0304_v13"]
     )
-    out["beendigung_beschäftigungsverhältnis_betriebsstillegung"] = (
-        object_to_str_categorical(raw_data["plb0304_v11"])
+    out["employment_ended_business_closure"] = object_to_str_categorical(
+        raw_data["plb0304_v11"]
     )
     out["active_work_search_last_four_weeks"] = object_to_bool_categorical(
         series=raw_data["plb0424_v2"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["altersteilzeit_art_aktuell"] = object_to_str_categorical(raw_data["plb0460"])
+    out["altersteilzeit_type"] = object_to_str_categorical(raw_data["plb0460"])
     out["net_labor_income_m_average"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plb0471_h"], value=0)
     )
-    out["bezog_mutterschaftsgeld_pl"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_received_pl"] = object_to_bool_categorical(
         series=raw_data["plc0126_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
-    out["bezog_arbeitslosengeld_im_letzten_monat"] = object_to_bool_categorical(
-        series=raw_data["plc0130_v1"],
-        renaming={"[1] Ja": True},
-        ordered=True,
+    out["arbeitslosengeld_received_last_month"] = _arbeitslosengeld_received_last_month(
+        all_samples=raw_data["plc0130_v1"],
+        m3_to_m5_sample=raw_data["plc0130_v2"],
     )
-    # bezog arbeitslosengeld m3-m5 available 2017 through 2020
-    out["bezog_arbeitslosengeld_m3_m5"] = object_to_bool_categorical(
-        series=raw_data["plc0130_v2"],
-        renaming={"[1] Ja": True, 2: False},
-        ordered=True,
-    )
-    out["bezog_mutterschaftsgeld_im_letzten_monat"] = object_to_bool_categorical(
+    out["mutterschaftsgeld_received_last_month"] = object_to_bool_categorical(
         series=raw_data["plc0152_v1"],
         renaming={"[1] Ja": True},
     )
-    out["erhaltenes_mutterschaftsgeld_im_letzten_monat_m"] = object_to_float(
+    out["mutterschaftsgeld_received_last_month_m"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plc0153_h"], value=0)
     )
-    out["erhaltenes_mutterschaftsgeld_m"] = object_to_float(
+    out["mutterschaftsgeld_received_m"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plc0155_h"], value=0)
     )
-    out["kindesunterhalt_erhalten_m_pl"] = object_to_float(
+    out["kindesunterhalt_received_m_pl"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plc0178"], value=0)
     )
 
     # private pension plan
-    out["in_private_rente_eingezahlt"] = object_to_bool_categorical(
+    out["paid_into_private_rente"] = object_to_bool_categorical(
         series=raw_data["plc0437"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["in_private_rente_eingezahlte_monate"] = object_to_int(raw_data["plc0438"])
-    out["private_rente_beitrag_m_2013"] = _private_rente_beitrag_m_ein_umfragejahr(
+    out["private_rente_number_of_months_paid_in"] = object_to_int(raw_data["plc0438"])
+    out["private_rente_contribution_m_2013"] = _private_rente_beitrag_m_ein_umfragejahr(
         private_rente_beitrag_jahr=raw_data["plc0439_v1"],
-        eingezahlte_monate=out["in_private_rente_eingezahlte_monate"],
-        eingezahlt=out["in_private_rente_eingezahlt"],
+        eingezahlte_monate=out["private_rente_number_of_months_paid_in"],
+        eingezahlt=out["paid_into_private_rente"],
         survey_year=2013,
     )
-    out["private_rente_beitrag_m_2018"] = _private_rente_beitrag_m_ein_umfragejahr(
+    out["private_rente_contribution_m_2018"] = _private_rente_beitrag_m_ein_umfragejahr(
         private_rente_beitrag_jahr=raw_data["plc0439_v2"],
-        eingezahlte_monate=out["in_private_rente_eingezahlte_monate"],
-        eingezahlt=out["in_private_rente_eingezahlt"],
+        eingezahlte_monate=out["private_rente_number_of_months_paid_in"],
+        eingezahlt=out["paid_into_private_rente"],
         survey_year=2018,
     )
-    out["private_rente_beitrag_m"] = _private_rente_beitrag_m(
+    out["private_rente_contribution_m"] = _private_rente_beitrag_m(
         out[
             [
                 "p_id",
                 "survey_year",
-                "private_rente_beitrag_m_2013",
-                "private_rente_beitrag_m_2018",
+                "private_rente_contribution_m_2013",
+                "private_rente_contribution_m_2018",
             ]
         ],
     )
@@ -168,12 +194,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     # pension below that age cannot be an old-age pension).
     # SPOT-CHECK on data: the `plc0232_h` Ja/Nein label strings (harmonized
     # variables sometimes carry English "[1] Yes" / "[2] No").
-    out["bezieht_rente_aus_eigener_versicherung"] = object_to_bool_categorical(
+    out["receives_own_pension"] = object_to_bool_categorical(
         series=raw_data["plc0232_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["rente_aus_eigener_versicherung_brutto_m"] = object_to_float(
+    out["own_pension_gross_m"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["plc0233_v2"], value=0)
     )
 
@@ -182,8 +208,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         raw_data["ple0097_v1"]
     )
     # there is no information on the type of health insurance in 2021
-    out["type_of_health_insurance_2022"] = object_to_str_categorical(
-        raw_data["ple0097_v2"]
+    out["type_of_health_insurance_2022"] = translate_categories(
+        object_to_str_categorical(raw_data["ple0097_v2"]), _HEALTH_INSURANCE_2022_EN
     )
     out["motor_disability"] = create_dummy(
         series=raw_data["plj0582"],
@@ -199,47 +225,47 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     # that is True only when this holds and the GdB is below 50, dropping pure
     # Schwerbehinderung (who may still work). SPOT-CHECK on data: the "[1] Ja" /
     # "[2] Nein" label strings.
-    out["erwerbsgemindert_oder_schwerbehindert"] = object_to_bool_categorical(
+    out["reduced_earning_capacity_or_severely_disabled"] = object_to_bool_categorical(
         series=raw_data["ple0040"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
-    out["med_schwierigkeiten_treppen_pl"] = object_to_str_categorical(
+    out["med_difficulty_stairs_pl"] = object_to_str_categorical(
         raw_data["ple0004"],
         renaming={
-            "[3] Gar nicht": "Gar nicht",
-            "[2] Ein wenig": "Ein wenig",
-            "[1] Stark": "Stark",
+            "[3] Gar nicht": "Not at all",
+            "[2] Ein wenig": "A little",
+            "[1] Stark": "A lot",
         },
         ordered=True,
     )
-    out["med_schwierigkeiten_taten_pl"] = object_to_str_categorical(
+    out["med_difficulty_demanding_activities_pl"] = object_to_str_categorical(
         series=raw_data["ple0005"],
         renaming={
-            "[3] Gar nicht": "Gar nicht",
-            "[2] Ein wenig": "Ein wenig",
-            "[1] Stark": "Stark",
+            "[3] Gar nicht": "Not at all",
+            "[2] Ein wenig": "A little",
+            "[1] Stark": "A lot",
         },
         ordered=True,
     )
-    out["med_größe_pl"] = object_to_float(raw_data["ple0006"])
-    out["med_gewicht_pl"] = object_to_float(raw_data["ple0007"])
-    out["bmi_pl"] = out["med_gewicht_pl"] / ((out["med_größe_pl"] / 100) ** 2)
+    out["med_height_pl"] = object_to_float(raw_data["ple0006"])
+    out["med_weight_pl"] = object_to_float(raw_data["ple0007"])
+    out["bmi_pl"] = out["med_weight_pl"] / ((out["med_height_pl"] / 100) ** 2)
     out["obese_pl"] = create_dummy(
         series=out["bmi_pl"], value_for_comparison=30, comparison_type="geq"
     )
     out["med_subjective_status_pl"] = object_to_str_categorical(
         series=raw_data["ple0008"],
         renaming={
-            "[1] Sehr gut": "Sehr gut",
-            "[2] Gut": "Gut",
-            "[3] Zufriedenstellend": "Zufriedenstellend",
-            "[4] Weniger gut": "Weniger gut",
-            "[5] Schlecht": "Schlecht",
+            "[1] Sehr gut": "Very good",
+            "[2] Gut": "Good",
+            "[3] Zufriedenstellend": "Satisfactory",
+            "[4] Weniger gut": "Poor",
+            "[5] Schlecht": "Bad",
         },
         ordered=True,
     )
-    out["med_schlaf_pl"] = object_to_bool_categorical(
+    out["med_sleep_disorder_pl"] = object_to_bool_categorical(
         series=raw_data["ple0011_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
@@ -254,97 +280,97 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_herzkrankheit_pl"] = object_to_bool_categorical(
+    out["med_heart_disease_pl"] = object_to_bool_categorical(
         series=raw_data["ple0014_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_krebs_pl"] = object_to_bool_categorical(
+    out["med_cancer_pl"] = object_to_bool_categorical(
         series=raw_data["ple0015_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_schlaganfall_pl"] = object_to_bool_categorical(
+    out["med_stroke_pl"] = object_to_bool_categorical(
         series=raw_data["ple0016_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_migräne_pl"] = object_to_bool_categorical(
+    out["med_migraine_pl"] = object_to_bool_categorical(
         series=raw_data["ple0017_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_bluthochdruck_pl"] = object_to_bool_categorical(
+    out["med_hypertension_pl"] = object_to_bool_categorical(
         series=raw_data["ple0018_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_depressiv_pl"] = object_to_bool_categorical(
+    out["med_depression_pl"] = object_to_bool_categorical(
         series=raw_data["ple0019_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_demenz_pl"] = object_to_bool_categorical(
+    out["med_dementia_pl"] = object_to_bool_categorical(
         series=raw_data["ple0020_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_gelenk_pl"] = object_to_bool_categorical(
+    out["med_joint_disease_pl"] = object_to_bool_categorical(
         series=raw_data["ple0021_v1"],
         renaming={"[1] genannt": True},
     )
-    out["med_rücken_pl"] = object_to_bool_categorical(
+    out["med_back_pl"] = object_to_bool_categorical(
         series=raw_data["ple0022_v1"],
         renaming={"[1] genannt": True},
     )
-    out["med_sonst_pl"] = object_to_bool_categorical(
+    out["med_other_pl"] = object_to_bool_categorical(
         series=raw_data["ple0023_v1"],
         renaming={"[1] genannt": True},
         ordered=True,
     )
-    out["med_raucher_pl"] = object_to_bool_categorical(
+    out["med_smoker_pl"] = object_to_bool_categorical(
         series=raw_data["ple0081_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
         ordered=True,
     )
     frailty_inputs = out[
         [
-            "med_schlaf_pl",
+            "med_sleep_disorder_pl",
             "med_diabetes_pl",
             "med_asthma_pl",
-            "med_herzkrankheit_pl",
-            "med_krebs_pl",
-            "med_schlaganfall_pl",
-            "med_migräne_pl",
-            "med_bluthochdruck_pl",
-            "med_depressiv_pl",
-            "med_demenz_pl",
-            "med_gelenk_pl",
-            "med_rücken_pl",
-            "med_sonst_pl",
-            "med_raucher_pl",
+            "med_heart_disease_pl",
+            "med_cancer_pl",
+            "med_stroke_pl",
+            "med_migraine_pl",
+            "med_hypertension_pl",
+            "med_depression_pl",
+            "med_dementia_pl",
+            "med_joint_disease_pl",
+            "med_back_pl",
+            "med_other_pl",
+            "med_smoker_pl",
         ]
     ].assign(
         med_schwierigkeiten_treppen_dummy=create_dummy(
-            series=out["med_schwierigkeiten_treppen_pl"],
-            value_for_comparison=["Ein wenig", "Stark"],
+            series=out["med_difficulty_stairs_pl"],
+            value_for_comparison=["A little", "A lot"],
             comparison_type="isin",
         ),
         med_schwierigkeiten_taten_dummy=create_dummy(
-            series=out["med_schwierigkeiten_taten_pl"],
-            value_for_comparison=["Ein wenig", "Stark"],
+            series=out["med_difficulty_demanding_activities_pl"],
+            value_for_comparison=["A little", "A lot"],
             comparison_type="isin",
         ),
         med_subjective_status_dummy=create_dummy(
             series=out["med_subjective_status_pl"],
-            value_for_comparison=["Zufriedenstellend", "Weniger gut", "Schlecht"],
+            value_for_comparison=["Satisfactory", "Poor", "Bad"],
             comparison_type="isin",
         ),
     )
     out["frailty_pl"] = _calculate_frailty(frailty_inputs=frailty_inputs)
 
     # personal positions, norms, and political variables
-    out["political_spectrum_left_to_right"] = object_to_int_categorical(
+    out["political_spectrum_left_to_right"] = object_to_int(
         series=raw_data["plh0004"],
         renaming={
             "[0] 0 ganz links": 0,
@@ -359,15 +385,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[9] 9": 9,
             "[10] 10 ganz rechts": 10,
         },
-        ordered=True,
     )
     out["political_interest"] = object_to_str_categorical(
         series=raw_data["plh0007"],
         renaming={
-            "[1] Sehr stark": "Sehr stark",
-            "[2] Stark": "Stark",
-            "[3] Nicht so stark": "Nicht so stark",
-            "[4] Ueberhaupt nicht": "Überhaupt nicht",
+            "[1] Sehr stark": "Very strong",
+            "[2] Stark": "Strong",
+            "[3] Nicht so stark": "Not so strong",
+            "[4] Ueberhaupt nicht": "Not at all",
         },
         ordered=True,
     )
@@ -380,35 +405,35 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["party_affiliation_intensity"] = object_to_str_categorical(
         series=raw_data["plh0013_h"],
         renaming={
-            "[1] Sehr stark": "Sehr stark",
-            "[2] Ziemlich stark": "Ziemlich stark",
-            "[3] Maessig": "Mäßig",
-            "[4] Ziemlich schwach": "Ziemlich schwach",
-            "[5] Sehr schwach": "Sehr schwach",
+            "[1] Sehr stark": "Very strong",
+            "[2] Ziemlich stark": "Fairly strong",
+            "[3] Maessig": "Moderate",
+            "[4] Ziemlich schwach": "Fairly weak",
+            "[5] Sehr schwach": "Very weak",
         },
         ordered=True,
     )
     out["relevance_career"] = object_to_str_categorical(
         series=raw_data["plh0107"],
         renaming={
-            "[1] 1 Sehr wichtig": "Sehr wichtig",
-            "[2] 2 Wichtig": "Wichtig",
-            "[3] 3 Weniger wichtig": "Weniger wichtig",
-            "[4] 4 Ganz unwichtig": "Ganz unwichtig",
+            "[1] 1 Sehr wichtig": "Very important",
+            "[2] 2 Wichtig": "Important",
+            "[3] 3 Weniger wichtig": "Less important",
+            "[4] 4 Ganz unwichtig": "Not at all important",
         },
         ordered=True,
     )
     out["relevance_children"] = object_to_str_categorical(
         series=raw_data["plh0110"],
         renaming={
-            "[1] 1 Sehr wichtig": "Sehr wichtig",
-            "[2] 2 Wichtig": "Wichtig",
-            "[3] 3 Weniger wichtig": "Weniger wichtig",
-            "[4] 4 Ganz unwichtig": "Ganz unwichtig",
+            "[1] 1 Sehr wichtig": "Very important",
+            "[2] 2 Wichtig": "Important",
+            "[3] 3 Weniger wichtig": "Less important",
+            "[4] 4 Ganz unwichtig": "Not at all important",
         },
         ordered=True,
     )
-    out["life_satisfaction_low_to_high"] = object_to_int_categorical(
+    out["life_satisfaction_low_to_high"] = object_to_int(
         series=raw_data["plh0182"],
         renaming={
             "[0] 0 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 0,
@@ -423,15 +448,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[9] 9 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 9,
             "[10] 10 Zufrieden: Skala 0-Niedrig bis 10-Hoch": 10,
         },
-        ordered=True,
     )
     out["general_trust"] = object_to_str_categorical(
         series=raw_data["plh0192"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Lehne eher ab": "Lehne eher ab",
-            "[4] Lehne voll ab": "Lehne voll ab",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Lehne eher ab": "Somewhat disagree",
+            "[4] Lehne voll ab": "Strongly disagree",
         },
         ordered=True,
     )
@@ -440,14 +464,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_child_suffers_under_6"] = object_to_str_categorical(
         series=raw_data["plh0298_v1"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
-    out["norm_child_suffers_under_6_low_to_high_2018"] = object_to_int_categorical(
+    out["norm_child_suffers_under_6_low_to_high_2018"] = object_to_int(
         series=raw_data["plh0298_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -458,19 +482,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[6] Skala von 1-7": 6,
             "[7] Stimme voll zu": 7,
         },
-        ordered=True,
     )
     out["norm_marry_when_together"] = object_to_str_categorical(
         series=raw_data["plh0300_v1"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
-    out["norm_marry_when_together_low_to_high_2018"] = object_to_int_categorical(
+    out["norm_marry_when_together_low_to_high_2018"] = object_to_int(
         series=raw_data["plh0300_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -485,24 +508,24 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_women_family_priority"] = object_to_str_categorical(
         series=raw_data["plh0301"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
     out["norm_child_suffers_under_3"] = object_to_str_categorical(
         series=raw_data["plh0302_v1"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
-    out["norm_child_suffers_under_3_low_to_high_2018"] = object_to_int_categorical(
+    out["norm_child_suffers_under_3_low_to_high_2018"] = object_to_int(
         series=raw_data["plh0302_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -517,34 +540,34 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_men_chores"] = object_to_str_categorical(
         series=raw_data["plh0303"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
     out["norm_child_suffers_father_career"] = object_to_str_categorical(
         series=raw_data["plh0304"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
     out["norm_genders_similar"] = object_to_str_categorical(
         series=raw_data["plh0308_v1"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
-    out["norm_genders_similar_low_to_high_2018"] = object_to_int_categorical(
+    out["norm_genders_similar_low_to_high_2018"] = object_to_int(
         series=raw_data["plh0308_v2"],
         renaming={
             "[1] Stimme ueberhaupt nicht zu": 1,
@@ -559,34 +582,34 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     out["norm_career_mothers_same_warmth"] = object_to_str_categorical(
         series=raw_data["plh0309"],
         renaming={
-            "[1] Stimme voll zu": "Stimme voll zu",
-            "[2] Stimme eher zu": "Stimme eher zu",
-            "[3] Stimme eher nicht zu": "Stimme eher nicht zu",
-            "[4] Stimme ueberhaupt nicht zu": "Stimme überhaupt nicht zu",
+            "[1] Stimme voll zu": "Strongly agree",
+            "[2] Stimme eher zu": "Somewhat agree",
+            "[3] Stimme eher nicht zu": "Somewhat disagree",
+            "[4] Stimme ueberhaupt nicht zu": "Strongly disagree",
         },
         ordered=True,
     )
     out["importance_faith"] = object_to_str_categorical(
         series=raw_data["plh0343_v1"],
         renaming={
-            "[1] sehr wichtig": "Sehr wichtig",
-            "[2] wichtig": "Wichtig",
-            "[3] weniger wichtig": "Weniger wichtig",
-            "[4] ganz unwichtig": "Ganz unwichtig",
+            "[1] sehr wichtig": "Very important",
+            "[2] wichtig": "Important",
+            "[3] weniger wichtig": "Less important",
+            "[4] ganz unwichtig": "Not at all important",
         },
         ordered=True,
     )
     out["importance_faith_v2"] = object_to_str_categorical(
         series=raw_data["plh0343_v2"],
         renaming={
-            "[1] sehr wichtig": "Sehr wichtig",
-            "[2] wichtig": "Wichtig",
-            "[3] weniger wichtig": "Weniger wichtig",
-            "[4] ganz unwichtig": "Ganz unwichtig",
+            "[1] sehr wichtig": "Very important",
+            "[2] wichtig": "Important",
+            "[3] weniger wichtig": "Less important",
+            "[4] ganz unwichtig": "Not at all important",
         },
         ordered=True,
     )
-    out["trust_public_admin_low_to_high"] = object_to_int_categorical(
+    out["trust_public_admin_low_to_high"] = object_to_int(
         series=raw_data["plm0672"],
         renaming={
             "[0] Skala von 0-10: Überhaupt kein Vertrauen": 0,
@@ -601,9 +624,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[9] Skala von 0-10": 9,
             "[10] Skala von 0-10: Volles Vertrauen": 10,
         },
-        ordered=True,
     )
-    out["trust_government_low_to_high"] = object_to_int_categorical(
+    out["trust_government_low_to_high"] = object_to_int(
         series=raw_data["plm0673"],
         renaming={
             "[0] Skala von 0-10: Überhaupt kein Vertrauen": 0,
@@ -618,7 +640,6 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
             "[9] Skala von 0-10": 9,
             "[10] Skala von 0-10: Volles Vertrauen": 10,
         },
-        ordered=True,
     )
 
     # time spent

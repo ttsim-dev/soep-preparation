@@ -36,7 +36,10 @@ MODULES = DataCatalog(name="modules")
 
 _METADATA_DTYPE = dict[
     str,
-    dict[Literal["module", "dtype", "survey_years"], dict[str, Any] | list[int] | str],
+    dict[
+        Literal["module", "dtype", "survey_years", "reference"],
+        dict[str, Any] | list[int] | str,
+    ],
 ]
 METADATA: _METADATA_DTYPE = yaml.safe_load(
     (SRC / "create_metadata" / "variable_to_metadata_mapping.yaml").open(
