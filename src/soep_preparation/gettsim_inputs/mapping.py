@@ -68,7 +68,7 @@ _BASE: Final[dict[str, str | None]] = {
     # Family (`familie__*`).
     "familie__alleinerziehend": None,
     "familie__p_id_ehepartner": "ehepartner_p_id",
-    "familie__p_id_elternteil_1": "mother_p_id",
+    "familie__p_id_elternteil_1": "p_id_mother",
     "familie__p_id_elternteil_2": None,
     # Income (`einnahmen__*`).
     "einnahmen__bruttolohn_m": "gross_labor_income_previous_month_m",
@@ -207,7 +207,7 @@ GAP_NOTES: Final[MappingProxyType[str, str]] = MappingProxyType(
         "wohngeld__mietstufe_hh": "No Mietstufe in SOEP final variables.",
         "familie__alleinerziehend": "No single-parent flag in SOEP.",
         "familie__p_id_elternteil_2": (
-            "Only a mother pointer exists in SOEP (`mother_p_id`); no father pointer."
+            "Only a mother pointer exists in SOEP (`p_id_mother`); no father pointer."
         ),
         "einnahmen__kapitalerträge_y": "SOEP only has household-level capital income.",
         "einnahmen__renten__aus_berufsständischen_versicherungen_m": (

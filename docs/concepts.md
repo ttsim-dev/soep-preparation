@@ -78,4 +78,5 @@ Search the project for a variable name. You will find it in at least two places:
 entry in `create_metadata/variable_to_metadata_mapping.yaml` (module, dtype, available
 survey years) and its definition in `clean_modules/` or `combine_modules/`. The
 definition shows the raw SOEP variable(s) it is built from, which you can then look up on
-paneldata.org.
+paneldata.org. The [Variables](variables.md) reference lists every variable with its
+module, dtype, and available survey years.
