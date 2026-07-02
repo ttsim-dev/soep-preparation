@@ -354,19 +354,22 @@ def mapping_periods() -> tuple[MappingPeriod, ...]:
     return _periods()
 
 
-def period_for_date(policy_date: datetime.date) -> MappingPeriod:
+def period_for_date(policy_date: datetime.date | str) -> MappingPeriod:
     """Return the mapping period containing `policy_date`.
 
     Args:
-        policy_date: The GETTSIM policy date.
+        policy_date: The GETTSIM policy date, as a `datetime.date` or an ISO 8601
+            date string (`"YYYY-MM-DD"`).
 
     Returns:
         The `MappingPeriod` whose inclusive `[start_date, end_date]` contains
         `policy_date`.
 
     Raises:
-        ValueError: If no period covers `policy_date`.
+        ValueError: If `policy_date` is a malformed date string, or if no period
+            covers it.
     """
+    policy_date = _coerce_policy_date(policy_date)
     for period in _periods():
         if period.start_date <= policy_date <= period.end_date:
             return period
@@ -380,7 +383,7 @@ def period_for_date(policy_date: datetime.date) -> MappingPeriod:
 
 
 def get_soep_to_gettsim(
-    policy_date: datetime.date,
+    policy_date: datetime.date | str,
 ) -> MappingProxyType[str, str | None]:
     """Return the SOEP-to-GETTSIM mapping in scope at `policy_date`.
 
@@ -389,16 +392,35 @@ def get_soep_to_gettsim(
     sources are date-invariant; only the set of qnames changes with the date.
 
     Args:
-        policy_date: The GETTSIM policy date.
+        policy_date: The GETTSIM policy date, as a `datetime.date` or an ISO 8601
+            date string (`"YYYY-MM-DD"`).
 
     Returns:
         GETTSIM qname to SOEP variable name (or `None`), restricted to the qnames in
         scope at `policy_date`.
 
     Raises:
-        ValueError: If no period covers `policy_date`.
+        ValueError: If `policy_date` is a malformed date string, or if no period
+            covers it.
     """
     period = period_for_date(policy_date)
     return MappingProxyType(
         {qname: _BASE[qname] for qname in _BASE if qname in period.in_scope}
     )
+
+
+def _coerce_policy_date(policy_date: datetime.date | str) -> datetime.date:
+    """Coerce a policy date given as an ISO 8601 string to a `datetime.date`.
+
+    Args:
+        policy_date: A `datetime.date` or an ISO 8601 date string (`"YYYY-MM-DD"`).
+
+    Returns:
+        The corresponding `datetime.date` (returned unchanged if already a `date`).
+
+    Raises:
+        ValueError: If `policy_date` is a string not in ISO 8601 date format.
+    """
+    if isinstance(policy_date, str):
+        return datetime.date.fromisoformat(policy_date)
+    return policy_date

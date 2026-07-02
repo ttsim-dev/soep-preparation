@@ -150,6 +150,24 @@ def test_recent_period_is_not_low_confidence() -> None:
     assert period_for_date(datetime.date(2024, 1, 1)).low_confidence is False
 
 
+def test_period_for_date_accepts_iso_string() -> None:
+    """An ISO date string selects the same period as the equivalent `date`."""
+    assert period_for_date("2024-01-01") == period_for_date(datetime.date(2024, 1, 1))
+
+
+def test_get_soep_to_gettsim_accepts_iso_string() -> None:
+    """An ISO date string resolves the same mapping as the equivalent `date`."""
+    assert dict(get_soep_to_gettsim("2024-01-01")) == dict(
+        get_soep_to_gettsim(datetime.date(2024, 1, 1))
+    )
+
+
+def test_period_for_date_rejects_malformed_string() -> None:
+    """A non-ISO date string raises `ValueError`."""
+    with pytest.raises(ValueError, match="Invalid isoformat string"):
+        period_for_date("01.01.2024")
+
+
 def test_periods_are_contiguous_and_non_overlapping() -> None:
     """Consecutive periods join with no gap and no overlap."""
     periods = mapping_periods()
