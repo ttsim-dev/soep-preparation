@@ -1,5 +1,14 @@
 """Curated mapping from SOEP final variables to GETTSIM nodes, resolved by policy date.
 
+This mapping is a **discovery aid, not a ready-to-use input pipe**. For each GETTSIM
+concept it records the SOEP final variable that comes *closest* to it — but a survey
+proxy routinely differs from the GETTSIM node in reference period, aggregation level,
+or exact definition, and feeding one to GETTSIM directly can be *worse* than letting
+GETTSIM compute the node. For an actual GETTSIM run, drive inputs through
+`gettsim-personas` rather than handing GETTSIM these columns wholesale; use this table
+to discover which SOEP variable approximates which qname, then decide per node via the
+DAG.
+
 GETTSIM consumes data as a flat table whose column labels are double-underscore
 qualified names (qnames) such as `wohnen__wohnfläche_hh`. A SOEP variable can stand in
 for two kinds of GETTSIM node:

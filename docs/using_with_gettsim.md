@@ -12,6 +12,16 @@ double-underscore qualified names (qnames), for example `wohnen__wohnfläche_hh`
 package maps the project's cleaned SOEP final variables onto GETTSIM nodes and emits a
 GETTSIM-ready dataset.
 
+:::{caution}
+This mapping is a **discovery aid, not a ready-to-use input pipe**. For each GETTSIM
+concept it records the SOEP final variable that comes *closest* — but a survey proxy
+routinely differs in reference period, aggregation level, or exact definition, and
+feeding it to GETTSIM directly can be *worse* than letting GETTSIM compute the node. For
+an actual GETTSIM run, drive inputs through **gettsim-personas** rather than handing
+GETTSIM these columns wholesale; use the table here to discover which SOEP variable
+approximates which qname, then decide per node via the DAG.
+:::
+
 ## The mapping
 
 A SOEP variable can stand in for two kinds of GETTSIM node:
@@ -115,6 +125,11 @@ date-invariant union — and returns a flat frame with GETTSIM qnames as column 
 keeps the index variables (`p_id`, `hh_id`, `survey_year`) and renames every mapped SOEP
 column that is present; mapped qnames whose SOEP column is absent are skipped, so the
 result holds exactly the inputs the data can supply.
+
+Build from a dataset restricted to a **single reference date** — one policy date's worth
+of rows and columns. Do not feed the raw, multi-wave output of `task_create_soep_dataset`
+here: GETTSIM evaluates one policy date at a time, so a frame mixing survey years yields
+meaningless inputs.
 
 ```python
 import datetime
