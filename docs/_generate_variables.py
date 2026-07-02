@@ -33,9 +33,14 @@ def _dtype_label(dtype: object) -> str:
 
 
 def _survey_years_label(survey_years: list[int] | None) -> str:
-    """Render the available survey years as a compact first-to-last range."""
+    """Render the available survey years as a compact first-to-last range.
+
+    Returns "—" for a variable with no per-wave availability: those from
+    biographical/design modules, which have no `survey_year` dimension (`None`), and
+    those with no non-missing observation in any wave (`[]`).
+    """
     if not survey_years:
-        return ""
+        return "—"
     return f"{min(survey_years)}-{max(survey_years)}"
 
 
@@ -56,6 +61,10 @@ def _render(mapping: dict[str, dict]) -> str:
         "",
         f"{len(mapping)} final variables across {len(by_module)} modules, generated "
         "from `variable_to_metadata_mapping.yaml`.",
+        "",
+        "A **—** in the *Survey years* column marks a variable with no per-wave "
+        "availability: biographical and design modules have no `survey_year` "
+        "dimension.",
         "",
     ]
     for module in sorted(by_module):

@@ -122,6 +122,19 @@ df["rmonth"] = periods["rmonth"]
 # `survey_year` — your choice.
 ```
 
+### How reference periods are decided
+
+Most assignments follow deterministic rules: annual `_y` flows and the `pkal` 12-month
+calendar are `previous_year`, point-in-time status is `current`, and biographical facts
+are `time_invariant`. Where a variable's mode is ambiguous, the
+`soep_preparation.survey_year_audit` task cross-checks it against the data — for every
+variable carrying `survey_year` it writes a low-cell-count-screened, per-survey-year
+value distribution to `bld/survey_year_audit/alignment_report.json`. Comparing a
+variable's year-over-year movement against the questionnaire and external benchmarks
+reveals whether it aligns to the survey year or the previous year, which fixes its
+`reference` entry in `create_metadata/reference_assignment.py`. Regenerate the report
+with `pixi run pytask`.
+
 ## Enforcement
 
 A test fails any final variable name (checked against the generated metadata inventory

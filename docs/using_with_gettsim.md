@@ -49,9 +49,11 @@ The per-date scope is generated offline from GETTSIM and committed as
 
 ## The mapping for a policy date
 
-Set `policy_date` below and run the cell to see exactly the mapping in force at that date
-— the qnames GETTSIM uses then, which SOEP variable supplies each, and why the rest are
-unmapped. Change the date and re-run.
+The cells below resolve the mapping for one `policy_date` — the qnames GETTSIM uses at
+that date, which SOEP variable supplies each, and why the rest are unmapped. The rendered
+page bakes in the result for the date set here; to explore a different date, change
+`policy_date` and re-run the page locally with `pixi run view-docs` (or via live compute
+where it is enabled).
 
 ```{code-cell} python
 import datetime
@@ -132,12 +134,11 @@ here: GETTSIM evaluates one policy date at a time, so a frame mixing survey year
 meaningless inputs.
 
 ```python
-import datetime
-
 from soep_preparation.gettsim_inputs.build import build_gettsim_inputs
 from soep_preparation.gettsim_inputs.mapping import get_soep_to_gettsim
 
-mapping = get_soep_to_gettsim(datetime.date(2024, 1, 1))
+# `get_soep_to_gettsim` accepts a `datetime.date` or an ISO date string ("YYYY-MM-DD").
+mapping = get_soep_to_gettsim("2024-01-01")
 gettsim_inputs = build_gettsim_inputs(final_dataset, mapping=mapping)
 ```
 
