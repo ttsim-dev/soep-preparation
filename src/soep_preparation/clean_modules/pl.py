@@ -57,6 +57,34 @@ def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return convert_to_float(frailty_inputs.mean(axis=1))
 
 
+def _arbeitslosengeld_received_last_month(
+    all_samples: pd.Series,
+    m3_to_m5_sample: pd.Series,
+) -> pd.Series:
+    """Coalesce the two SOEP versions of "Arbeitslosengeld received last month".
+
+    `plc0130_v1` (`all_samples`) is asked across all samples (1995-2024); `plc0130_v2`
+    (`m3_to_m5_sample`) is the version fielded in the M3-M5 sample instrument
+    (2019-2020). Both record whether unemployment benefit was received in the month
+    before the interview, on disjoint samples, so prefer the all-sample version and fill
+    the rest from the M3-M5 one — carrying the latter's {True, False} bool[pyarrow]
+    categories so the "No" answers it contributes are kept.
+    """
+    received_all_samples = object_to_bool_categorical(
+        series=all_samples,
+        renaming={"[1] Ja": True},
+        ordered=True,
+    )
+    received_m3_to_m5 = object_to_bool_categorical(
+        series=m3_to_m5_sample,
+        renaming={"[1] Ja": True, 2: False},
+        ordered=True,
+    )
+    return received_all_samples.combine_first(received_m3_to_m5).astype(
+        received_m3_to_m5.dtype
+    )
+
+
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     """Create cleaned variables from the pl module.
 
@@ -109,16 +137,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         series=raw_data["plc0126_h"],
         renaming={"[2] Nein": False, "[1] Ja": True},
     )
-    out["arbeitslosengeld_received_last_month"] = object_to_bool_categorical(
-        series=raw_data["plc0130_v1"],
-        renaming={"[1] Ja": True},
-        ordered=True,
-    )
-    # bezog arbeitslosengeld m3-m5 available 2017 through 2020
-    out["arbeitslosengeld_received_months_3_to_5"] = object_to_bool_categorical(
-        series=raw_data["plc0130_v2"],
-        renaming={"[1] Ja": True, 2: False},
-        ordered=True,
+    out["arbeitslosengeld_received_last_month"] = _arbeitslosengeld_received_last_month(
+        all_samples=raw_data["plc0130_v1"],
+        m3_to_m5_sample=raw_data["plc0130_v2"],
     )
     out["mutterschaftsgeld_received_last_month"] = object_to_bool_categorical(
         series=raw_data["plc0152_v1"],

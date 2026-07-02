@@ -502,6 +502,7 @@ arbeitslosengeld_received_last_month:
     categorical:
       categories:
         - true
+        - false
       categories_dtype: bool[pyarrow]
       ordered: true
   module: pl
@@ -537,19 +538,6 @@ arbeitslosengeld_received_last_month:
     - 2022
     - 2023
     - 2024
-arbeitslosengeld_received_months_3_to_5:
-  dtype:
-    categorical:
-      categories:
-        - true
-        - false
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pl
-  reference: previous_month
-  survey_years:
-    - 2019
-    - 2020
 arbeitslosengeld_y:
   dtype: double[pyarrow]
   module: pequiv

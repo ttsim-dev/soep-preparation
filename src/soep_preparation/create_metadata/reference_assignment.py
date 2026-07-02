@@ -487,7 +487,6 @@ _PREVIOUS_YEAR = (
 _PREVIOUS_MONTH = (
     "active_work_search_last_four_weeks",
     "arbeitslosengeld_received_last_month",
-    "arbeitslosengeld_received_months_3_to_5",
     "gross_labor_income_previous_month_m",
     "mutterschaftsgeld_received_last_month",
     "mutterschaftsgeld_received_last_month_m",
