@@ -73,7 +73,7 @@ kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
 [tool.pixi.tasks]
 generate-variables = { cmd = "python _generate_variables.py", cwd = "docs" }
-build-docs = { cmd = "python _generate_variables.py && jupyter book build --html", cwd = "docs" }
+build-docs = { cmd = "python _generate_variables.py && jupyter book build --html --execute", cwd = "docs" }
 view-docs = { cmd = "python _generate_variables.py && jupyter book start", cwd = "docs" }
 [tool.pixi.workspace]
 channels = [ "conda-forge" ]

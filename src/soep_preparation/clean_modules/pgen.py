@@ -296,6 +296,31 @@ def _education(
     return out.astype(cat_type)
 
 
+def _fail_if_expected_categories_absent(
+    series: pd.Series,
+    expected: list[str],
+) -> None:
+    """Fail if any expected category label is absent from the series' categories.
+
+    Guards the hardcoded `isin` label lists against silent SOEP relabelling: a renamed
+    category would otherwise drop out of the match with no error.
+
+    Args:
+        series: A categorical Series to check.
+        expected: Category labels that must all be present.
+
+    Raises:
+        ValueError: If any label in `expected` is not among the series' categories.
+    """
+    missing = sorted(set(expected) - set(series.cat.categories))
+    if missing:
+        msg = (
+            f"Expected occupation categories absent from the data: {missing}. "
+            "SOEP may have relabelled them; update the hardcoded list."
+        )
+        raise ValueError(msg)
+
+
 def _in_education(
     employment: pd.Series[pd.Categorical],
     occupation: pd.Series[pd.Categorical],
@@ -307,6 +332,7 @@ def _in_education(
         "NE: in Ausbildung, inkl. Weiterbildung, Berufsausbildung, Lehre",
         "Volontär*innen, Praktikant*innen",
     ]
+    _fail_if_expected_categories_absent(series=occupation, expected=in_education)
     out = create_dummy(series=employment, value_for_comparison="In education/training")
     # Set in_education to missing if out of the labor force -- could mean anything.
     out = out.where(employment != "Not employed", pd.NA)

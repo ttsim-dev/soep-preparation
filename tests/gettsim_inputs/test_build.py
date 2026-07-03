@@ -1,5 +1,7 @@
 """Tests for building a GETTSIM-ready dataset from a SOEP final dataset."""
 
+import datetime
+
 import pandas as pd
 import pytest
 
@@ -9,7 +11,7 @@ from soep_preparation.gettsim_inputs.build import (
     fail_if_required_inputs_missing,
     resolve_available_mapping,
 )
-from soep_preparation.gettsim_inputs.mapping import SOEP_TO_GETTSIM
+from soep_preparation.gettsim_inputs.mapping import BASE_MAPPING, get_soep_to_gettsim
 
 
 def _synthetic_final_dataset() -> pd.DataFrame:
@@ -32,13 +34,20 @@ def _synthetic_final_dataset() -> pd.DataFrame:
 
 def test_build_renames_living_space_to_gettsim_qname() -> None:
     """The living-space column is renamed to `wohnen__wohnfläche_hh`."""
-    out = build_gettsim_inputs(_synthetic_final_dataset())
+    out = build_gettsim_inputs(_synthetic_final_dataset(), mapping=BASE_MAPPING)
+    assert "wohnen__wohnfläche_hh" in out.columns
+
+
+def test_build_with_policy_date_renames_living_space() -> None:
+    """Building with a date-resolved mapping renames the living-space column."""
+    mapping = get_soep_to_gettsim(datetime.date(2023, 1, 1))
+    out = build_gettsim_inputs(_synthetic_final_dataset(), mapping=mapping)
     assert "wohnen__wohnfläche_hh" in out.columns
 
 
 def test_build_keeps_index_variables() -> None:
     """Index variables are carried through verbatim."""
-    out = build_gettsim_inputs(_synthetic_final_dataset())
+    out = build_gettsim_inputs(_synthetic_final_dataset(), mapping=BASE_MAPPING)
     assert list(out[["p_id", "hh_id", "survey_year"]].columns) == [
         "p_id",
         "hh_id",
@@ -48,7 +57,7 @@ def test_build_keeps_index_variables() -> None:
 
 def test_build_preserves_values_under_renamed_column() -> None:
     """Renaming preserves the underlying values."""
-    out = build_gettsim_inputs(_synthetic_final_dataset())
+    out = build_gettsim_inputs(_synthetic_final_dataset(), mapping=BASE_MAPPING)
     expected = pd.Series([80.0, 80.0], dtype="float[pyarrow]")
     pd.testing.assert_series_equal(
         out["wohnen__wohnfläche_hh"].reset_index(drop=True),
@@ -59,7 +68,7 @@ def test_build_preserves_values_under_renamed_column() -> None:
 
 def test_build_drops_unmapped_soep_columns() -> None:
     """SOEP columns with no GETTSIM target are not carried into the output."""
-    out = build_gettsim_inputs(_synthetic_final_dataset())
+    out = build_gettsim_inputs(_synthetic_final_dataset(), mapping=BASE_MAPPING)
     assert "life_satisfaction_low_to_high" not in out.columns
 
 
@@ -71,14 +80,14 @@ def test_build_skips_inputs_whose_soep_column_is_absent() -> None:
             "living_space_hh": pd.Series([80.0], dtype="float[pyarrow]"),
         }
     )
-    out = build_gettsim_inputs(minimal)
+    out = build_gettsim_inputs(minimal, mapping=BASE_MAPPING)
     assert "wohnen__heizkosten_m_hh" not in out.columns
 
 
 def test_resolve_available_mapping_matches_present_columns() -> None:
     """Resolution keeps only mapped inputs whose SOEP column is present."""
     resolved = resolve_available_mapping(
-        mapping=SOEP_TO_GETTSIM,
+        mapping=BASE_MAPPING,
         available_columns=pd.Index(["living_space_hh", "heating_costs_m_hh"]),
     )
     assert resolved == {
@@ -93,6 +102,7 @@ def test_validator_flags_unmapped_required_input() -> None:
         fail_if_required_inputs_missing(
             required_inputs=frozenset({"lohnsteuer__steuerklasse"}),
             available_columns=pd.Index(["living_space_hh"]),
+            mapping=BASE_MAPPING,
         )
 
 
@@ -102,6 +112,7 @@ def test_validator_flags_mapped_input_with_absent_column() -> None:
         fail_if_required_inputs_missing(
             required_inputs=frozenset({"wohnen__wohnfläche_hh"}),
             available_columns=pd.Index(["heating_costs_m_hh"]),
+            mapping=BASE_MAPPING,
         )
 
 
@@ -110,19 +121,20 @@ def test_validator_passes_for_supplied_input() -> None:
     fail_if_required_inputs_missing(
         required_inputs=frozenset({"wohnen__wohnfläche_hh"}),
         available_columns=pd.Index(["living_space_hh"]),
+        mapping=BASE_MAPPING,
     )
 
 
 def test_mapping_report_counts_sum_to_total() -> None:
     """Mapped plus unmapped counts equal the total number of inputs."""
-    report = create_mapping_report(SOEP_TO_GETTSIM)
+    report = create_mapping_report(BASE_MAPPING)
     assert (
         report["n_inputs_mapped"] + report["n_inputs_unmapped"]
-        == (report["n_inputs_total"])
+        == report["n_inputs_total"]
     )
 
 
 def test_mapping_report_lists_mapped_pairs() -> None:
     """The report's `mapped` table contains a known mapped pair."""
-    report = create_mapping_report(SOEP_TO_GETTSIM)
+    report = create_mapping_report(BASE_MAPPING)
     assert report["mapped"]["wohnen__wohnfläche_hh"] == "living_space_hh"

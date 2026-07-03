@@ -1,7 +1,8 @@
 # SOEP data preparation for use with research projects
 
-[![image](https://img.shields.io/github/actions/workflow/status/felixschmitz/soep_preparation/main.yml?branch=main)](https://github.com/felixschmitz/soep_preparation/actions?query=branch%3Amain)
-[![image](https://codecov.io/gh/felixschmitz/soep_preparation/branch/main/graph/badge.svg)](https://codecov.io/gh/felixschmitz/soep_preparation)
+[![image](https://img.shields.io/github/actions/workflow/status/ttsim-dev/soep-preparation/main.yml?branch=main)](https://github.com/ttsim-dev/soep-preparation/actions?query=branch%3Amain)
+[![image](https://codecov.io/gh/ttsim-dev/soep-preparation/branch/main/graph/badge.svg)](https://codecov.io/gh/ttsim-dev/soep-preparation)
+[![docs](https://readthedocs.org/projects/soep-preparation/badge/?version=latest)](https://soep-preparation.readthedocs.io/en/latest/)
 
 Prepare German Socio-Economic Panel (SOEP-Core) survey data into typed, cleaned,
 documented variables — for research and as inputs to
@@ -24,8 +25,10 @@ $ pixi run build-docs      # render the documentation
 
 ## Documentation
 
-Full documentation lives in [`docs/`](docs/) — build it with `pixi run build-docs`,
-preview live with `pixi run view-docs`:
+The rendered documentation is hosted at
+[soep-preparation.readthedocs.io](https://soep-preparation.readthedocs.io/en/latest/).
+The sources live in [`docs/`](docs/) — build them with `pixi run build-docs`, preview
+live with `pixi run view-docs`:
 
 - **Getting started** — install and run the pipeline.
 - **Concepts** — waves, modules, SOEP file names, index variables, reference periods.

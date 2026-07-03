@@ -232,7 +232,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["place_of_residence_1989"] = object_to_str_categorical(raw_data["loc1989"])
     out["migration_background"] = object_to_str_categorical(raw_data["migback"])
-    out["birth_state"] = object_to_str_categorical(raw_data["birthregion"])
+    out["birth_federal_state"] = object_to_str_categorical(raw_data["birthregion"])
 
     # individual current information
     out["survey_status_current"] = object_to_str_categorical(raw_data["netto"])

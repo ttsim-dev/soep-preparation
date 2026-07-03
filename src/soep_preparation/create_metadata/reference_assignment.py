@@ -488,7 +488,6 @@ _PREVIOUS_YEAR = (
 _PREVIOUS_MONTH = (
     "active_work_search_last_four_weeks",
     "arbeitslosengeld_received_last_month",
-    "arbeitslosengeld_received_months_3_to_5",
     "gross_labor_income_previous_month_m",
     "mutterschaftsgeld_received_last_month",
     "mutterschaftsgeld_received_last_month_m",
@@ -497,11 +496,11 @@ _PREVIOUS_MONTH = (
 
 # Biographical or otherwise fixed facts that do not move with the survey wave.
 _TIME_INVARIANT = (
+    "birth_federal_state",
     "birth_month",
     "birth_month_bioedu",
     "birth_month_child",
     "birth_month_ppathl",
-    "birth_state",
     "birth_year",
     "birth_year_child",
     "birthplace",
@@ -519,11 +518,11 @@ _TIME_INVARIANT = (
     "highest_education",
     "migration_background",
     "months_worked_last_job",
-    "mother_p_id",
     "number_of_children",
     "p_id_child",
     "p_id_father_1",
     "p_id_father_2",
+    "p_id_mother",
     "p_id_mother_1",
     "p_id_mother_2",
     "person_number_surveyed",

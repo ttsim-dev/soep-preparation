@@ -1,12 +1,14 @@
 """Build a GETTSIM-ready dataset from a SOEP final dataset.
 
 GETTSIM consumes flat data: each column label is a double-underscore qualified name
-(qname) such as `wohnen__wohnfläche_hh`. `build_gettsim_inputs` selects the SOEP final
-variables that `SOEP_TO_GETTSIM` maps to a GETTSIM input, renames them to the GETTSIM
-qname, and keeps the index variables (`p_id`, `hh_id`, `survey_year`) verbatim.
+(qname) such as `wohnen__wohnfläche_hh`. `build_gettsim_inputs` takes a SOEP-to-GETTSIM
+mapping — either `get_soep_to_gettsim(policy_date)` for a specific date or the
+date-invariant `BASE_MAPPING` union — selects the SOEP final variables it maps to a
+GETTSIM qname, renames them to the qname, and keeps the index variables (`p_id`,
+`hh_id`, `survey_year`) verbatim.
 
-Inputs whose mapped SOEP variable is absent from the supplied frame are skipped; the
-result therefore carries exactly the GETTSIM inputs that the data can currently supply.
+Variables whose mapped SOEP variable is absent from the supplied frame are skipped; the
+result therefore carries exactly the GETTSIM qnames that the data can currently supply.
 Use `fail_if_required_inputs_missing` to surface the gap against a concrete set of
 required GETTSIM inputs.
 """
@@ -16,7 +18,7 @@ from typing import TypedDict
 
 import pandas as pd
 
-from soep_preparation.gettsim_inputs.mapping import INDEX_VARIABLES, SOEP_TO_GETTSIM
+from soep_preparation.gettsim_inputs.mapping import INDEX_VARIABLES
 
 
 class MappingReport(TypedDict):
@@ -34,19 +36,25 @@ class MappingReport(TypedDict):
     """GETTSIM input qnames without a SOEP source, sorted."""
 
 
-def build_gettsim_inputs(final_dataset: pd.DataFrame) -> pd.DataFrame:
-    """Select and rename SOEP final variables to their GETTSIM input qnames.
+def build_gettsim_inputs(
+    final_dataset: pd.DataFrame,
+    mapping: Mapping[str, str | None],
+) -> pd.DataFrame:
+    """Select and rename SOEP final variables to their GETTSIM qnames.
 
     Args:
         final_dataset: A SOEP final dataset with single-underscore SOEP variable names
             as columns, including index variables.
+        mapping: GETTSIM qname to SOEP variable name (or `None`), e.g. the output of
+            `get_soep_to_gettsim(policy_date)` for a date-specific build or
+            `BASE_MAPPING` for the date-invariant union.
 
     Returns:
-        A flat dataset whose columns are the GETTSIM input qnames (plus any present
-        index variables), holding the values of the mapped SOEP variables.
+        A flat dataset whose columns are the GETTSIM qnames (plus any present index
+        variables), holding the values of the mapped SOEP variables.
     """
     resolved = resolve_available_mapping(
-        mapping=SOEP_TO_GETTSIM,
+        mapping=mapping,
         available_columns=final_dataset.columns,
     )
 
@@ -85,7 +93,7 @@ def resolve_available_mapping(
 
 
 def create_mapping_report(
-    mapping: Mapping[str, str | None] = SOEP_TO_GETTSIM,
+    mapping: Mapping[str, str | None],
 ) -> MappingReport:
     """Summarize how many GETTSIM inputs the mapping covers.
 
@@ -116,7 +124,7 @@ def create_mapping_report(
 def fail_if_required_inputs_missing(
     required_inputs: frozenset[str],
     available_columns: pd.Index,
-    mapping: Mapping[str, str | None] = SOEP_TO_GETTSIM,
+    mapping: Mapping[str, str | None],
 ) -> None:
     """Fail if any required GETTSIM input cannot be supplied from the data.
 
