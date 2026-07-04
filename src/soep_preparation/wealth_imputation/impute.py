@@ -70,6 +70,7 @@ from soep_preparation.wealth_imputation.market_indices import (
     RESIDUAL_INDEX,
     REX_BOND_INDEX,
 )
+from soep_preparation.wealth_imputation.replicates import bayesian_bootstrap_weights
 from soep_preparation.wealth_imputation.residual_model import ResidualModel
 from soep_preparation.wealth_imputation.simulate import (
     ComponentDrawConfig,
@@ -193,6 +194,7 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
     training_waves: Sequence[int] = _WEALTH_WAVES,
     keep_draws: bool = False,
     caliper: float | None = None,
+    bootstrap_seed: int | None = None,
 ) -> ImputationResult:
     """Impute household net wealth for `prediction_wave` as point estimates with bands.
 
@@ -220,6 +222,10 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
             value. A recipient with no donor within the caliper raises. Recipients are
             never dropped from the output, but their donor set and drawn value can
             change. This gates extrapolation; it does not create target-wave info.
+        bootstrap_seed: If set, reweight the training rows by one approximate-Bayesian-
+            bootstrap draw at this seed before fitting, so the result is one replicate
+            (parameter uncertainty) rather than the fixed point-estimate fit. `None`
+            (the default) fits unweighted and is byte-for-byte the base behaviour.
 
     Returns:
         An `ImputationResult` with the prediction-wave intervals and a run summary.
@@ -238,6 +244,16 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
 
     in_training_waves = heads["survey_year"].isin(training_waves)
     training = heads[in_training_waves & (heads["survey_year"] != prediction_wave)]
+    # One approximate-Bayesian-bootstrap draw over the training rows, reused across
+    # every component, so a replicate refits under a single coherent parameter draw.
+    training_weights = (
+        pd.Series(
+            bayesian_bootstrap_weights(len(training), seed=bootstrap_seed),
+            index=training.index,
+        )
+        if bootstrap_seed is not None
+        else None
+    )
     recipients = heads[heads["survey_year"] == prediction_wave].reset_index(drop=True)
     if recipients.empty:
         msg = f"No recipients in prediction wave {prediction_wave}."
@@ -279,7 +295,14 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
         design = encode_features(
             trained, continuous_columns=continuous_columns, encoder=encoder
         )
-        models = fit_component_models(design, values, seed=seed)
+        component_weight = (
+            training_weights.loc[trained.index].to_numpy()
+            if training_weights is not None
+            else None
+        )
+        models = fit_component_models(
+            design, values, seed=seed, sample_weight=component_weight
+        )
         owner_mask = values > 0.0
         if component is CanonicalComponent.OWNER_OCCUPIED_MORTGAGE:
             mortgage_donor_pool_size = int(owner_mask.sum())

@@ -1,5 +1,8 @@
 """End-to-end behavior of the 2022 wealth imputation on synthetic modules."""
 
+from typing import Any
+from unittest import mock
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -167,6 +170,51 @@ def test_run_imputation_produces_one_interval_per_recipient_household():
     assert set(intervals["hh_id"]) == set(_RECIPIENT_IDS)
     assert np.all(np.isfinite(intervals["point_estimate"].to_numpy()))
     assert np.all(intervals["lower"].to_numpy() <= intervals["upper"].to_numpy())
+
+
+def _record_component_fit_weights(bootstrap_seed: int | None) -> list[object]:
+    """Run the imputation and capture the `sample_weight` each component fit received.
+
+    The `sample_weight` effect on the fit itself is covered by the ownership/amount/
+    training unit tests; the deterministic end-to-end fixture is invariant to those fit
+    changes (constant, separable donors), so the run-level guarantee to test is the
+    wiring: a bootstrap seed reaches every component fit.
+    """
+    seen: list[object] = []
+    real_fit = impute.fit_component_models
+
+    def spy(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401 -- pass-through spy
+        seen.append(kwargs.get("sample_weight"))
+        return real_fit(*args, **kwargs)
+
+    with mock.patch.object(impute, "fit_component_models", spy):
+        run_imputation(
+            _synthetic_modules(), n_draws=5, seed=0, k=3, bootstrap_seed=bootstrap_seed
+        )
+    return seen
+
+
+def test_run_imputation_passes_bootstrap_weights_to_the_component_fits():
+    """A bootstrap seed reaches the component fits as non-null sample weights."""
+    weights = _record_component_fit_weights(bootstrap_seed=1)
+    assert all(weight is not None for weight in weights)
+
+
+def test_run_imputation_without_bootstrap_seed_fits_unweighted():
+    """Without a bootstrap seed the component fits receive no sample weights."""
+    weights = _record_component_fit_weights(bootstrap_seed=None)
+    assert all(weight is None for weight in weights)
+
+
+def test_run_imputation_without_bootstrap_seed_is_byte_identical_to_base():
+    """Passing `bootstrap_seed=None` reproduces the deterministic base fit exactly."""
+    modules = _synthetic_modules()
+    first = run_imputation(modules, n_draws=20, seed=0, k=3)
+    second = run_imputation(modules, n_draws=20, seed=0, k=3, bootstrap_seed=None)
+    np.testing.assert_array_equal(
+        first.intervals["point_estimate"].to_numpy(),
+        second.intervals["point_estimate"].to_numpy(),
+    )
 
 
 def test_run_imputation_fits_all_six_components():
