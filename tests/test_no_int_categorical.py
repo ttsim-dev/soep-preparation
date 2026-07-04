@@ -16,6 +16,15 @@ Two AST guards keep the dtype out:
   not an integer code. Genuine rating/Likert scales are exempt — they have more than
   `_MAX_INT_CODED_OUTCOMES` points and the integer is the scale value — so only inline
   renamings with at most that many entries are flagged.
+
+The second guard is a **conservative heuristic tripwire, not a semantic proof**: an
+outcome count cannot decide whether an integer genuinely *is* the value. It can
+false-positive on a real ≤5-point numeric rating scale and false-negative on a
+>5-outcome qualitative coding or a renaming passed by name (which it does not inspect).
+`test_int_renaming_threshold_*` characterise those edges. The robust replacement is
+explicit per-variable scale metadata (a `scale_is_numeric_value` flag with range and
+direction) plus a registered allowlist of known scales; until then, treat a guard
+failure as a prompt to check the variable, not a proof of misuse.
 """
 
 import ast
@@ -149,4 +158,30 @@ def test_detector_allows_renaming_passed_by_name() -> None:
         '    raw_data["kidmon01"], renaming=month_mapping.de\n'
         ")\n"
     )
+    assert _small_int_renaming_lines(ast.parse(snippet)) == []
+
+
+def test_int_renaming_threshold_false_positive_on_a_five_point_numeric_scale() -> None:
+    """Known limit: a real five-point numeric rating scale is flagged (false positive).
+
+    The integer here *is* the value, so plain int is correct, yet the count heuristic
+    flags it. This documents why a guard failure is a prompt to check, not a proof.
+    """
+    pairs = "\n".join(
+        f'        "[{code}] Rating {code}": {code},' for code in range(1, 6)
+    )
+    snippet = f'out["rating"] = object_to_int(\n    renaming={{\n{pairs}\n    }},\n)\n'
+    assert _small_int_renaming_lines(ast.parse(snippet)) == [1]
+
+
+def test_int_renaming_threshold_false_negative_on_a_six_outcome_qualitative() -> None:
+    """Known limit: a six-outcome qualitative coding is not flagged (false negative).
+
+    Above the threshold the integer codes are arbitrary qualitative labels that #66
+    would want as a string categorical, but the count heuristic waves them through.
+    """
+    pairs = "\n".join(
+        f'        "[{code}] Qualitative {code}": {code},' for code in range(1, 7)
+    )
+    snippet = f'out["qual"] = object_to_int(\n    renaming={{\n{pairs}\n    }},\n)\n'
     assert _small_int_renaming_lines(ast.parse(snippet)) == []

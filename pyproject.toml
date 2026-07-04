@@ -56,6 +56,7 @@ mystmd = "*"
 prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
+scikit-learn = ">=1.9.0,<2"
 [tool.pixi.environments]
 py314 = [ "py314", "tests" ]
 [tool.pixi.feature.py314]
@@ -72,6 +73,7 @@ soep_preparation = { path = ".", editable = true }
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
 [tool.pixi.tasks]
+wealth = { cmd = "pytask", env = { SOEP_WEALTH_IMPUTATION = "1" } }
 generate-variables = { cmd = "python _generate_variables.py", cwd = "docs" }
 build-docs = { cmd = "python _generate_variables.py && jupyter book build --html --execute", cwd = "docs" }
 view-docs = { cmd = "python _generate_variables.py && jupyter book start", cwd = "docs" }
@@ -101,8 +103,9 @@ extend-ignore = [
   "TC003",  # Move standard library import into a type-checking block
   "TRY003", # Avoid specifying long messages outside the exception class
 ]
-per-file-ignores."**/task.py" = [
-  "ANN", # Type annotations (pytask signatures use Annotated[Path, Product])
+per-file-ignores."**/task*.py" = [
+  "ANN",    # Type annotations (pytask signatures use Annotated[Path, Product])
+  "ARG001", # Source-file dependencies are declared as parameters for cache invalidation
 ]
 per-file-ignores."docs/*" = [
   "INP001", # Implicit namespace packages
@@ -160,7 +163,7 @@ rules.unused-awaitable = "error"
 rules.unused-ignore-comment = "error"
 
 [tool.pytest]
-ini_options.norecursedirs = [ "docs" ]
+ini_options.norecursedirs = [ "docs", "pro-audit-*" ]
 ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
 ini_options.filterwarnings = []
 
