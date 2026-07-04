@@ -13,8 +13,10 @@ from soep_preparation.wealth_imputation.replicates import (
     draw_transport_shocks,
     impute_replicates,
     replicate_mc_summary,
+    robust_total_scale,
     select_released_implicates,
     transport_log_scale_from_fold_errors,
+    transport_scale_from_official_aggregates,
 )
 
 _RUN_IMPUTATION = "soep_preparation.wealth_imputation.impute.run_imputation"
@@ -126,6 +128,44 @@ def test_draw_transport_shocks_reject_negative_scale() -> None:
     """A log scale is a standard deviation and cannot be negative."""
     with pytest.raises(ValueError, match="log_scale"):
         draw_transport_shocks(n_replicates=10, log_scale=-0.1, seed=0)
+
+
+def test_transport_scale_from_official_aggregates_is_log_growth_dispersion() -> None:
+    """The scale is the sample SD of the aggregate's consecutive log-growth steps."""
+    aggregates = {2002: 100.0, 2007: 110.0, 2012: 132.0, 2017: 145.2}
+    steps = np.diff(np.log([100.0, 110.0, 132.0, 145.2]))
+    scale = transport_scale_from_official_aggregates(aggregates)
+    np.testing.assert_allclose(scale, steps.std(ddof=1), rtol=1e-9)
+
+
+def test_transport_scale_from_official_aggregates_is_zero_for_constant_growth() -> None:
+    """A constant growth rate implies no transport dispersion."""
+    aggregates = {2002: 100.0, 2007: 110.0, 2012: 121.0, 2017: 133.1}
+    scale = transport_scale_from_official_aggregates(aggregates)
+    np.testing.assert_allclose(scale, 0.0, atol=1e-9)
+
+
+def test_transport_scale_from_official_aggregates_rejects_too_few_waves() -> None:
+    """Estimating a dispersion needs at least two growth steps (three waves)."""
+    with pytest.raises(ValueError, match="wave"):
+        transport_scale_from_official_aggregates({2012: 100.0, 2017: 110.0})
+
+
+def test_transport_scale_from_official_aggregates_rejects_non_positive_level() -> None:
+    """A non-positive aggregate has no logarithm."""
+    with pytest.raises(ValueError, match="positive"):
+        transport_scale_from_official_aggregates({2007: 100.0, 2012: 0.0, 2017: 110.0})
+
+
+def test_robust_total_scale_is_median_absolute_total() -> None:
+    """The asinh knee is the median of the absolute net-wealth totals."""
+    scale = robust_total_scale(np.array([-100.0, 200.0, 300.0, -400.0]))
+    np.testing.assert_allclose(scale, 250.0, atol=1e-6)
+
+
+def test_robust_total_scale_falls_back_to_one_without_positive_magnitude() -> None:
+    """An all-zero total column still yields a usable positive scale."""
+    assert robust_total_scale(np.array([0.0, 0.0])) == 1.0
 
 
 def test_apply_transport_shock_is_identity_at_zero_delta() -> None:

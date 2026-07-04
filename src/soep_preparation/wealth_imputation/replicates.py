@@ -170,6 +170,62 @@ def replicate_mc_summary(frame: pd.DataFrame) -> dict[str, float]:
     }
 
 
+def transport_scale_from_official_aggregates(
+    wave_aggregates: Mapping[int, float],
+) -> float:
+    """Calibrate the transport log-scale from official cross-wave aggregate levels.
+
+    The size of a five-year forward wealth-level projection error is unobservable for
+    the 2017-to-2022 step, because SOEP-Core V41 ships no 2022 wealth wave. As an
+    empirical prior, use the dispersion of the official aggregate's own five-year
+    log-growth across the observed wealth waves: how much the population wealth level
+    has historically moved per step bounds how far the 2022 projection can
+    systematically drift. The wealth waves are equally spaced (five years), so the
+    consecutive log-growth steps are comparable.
+
+    Args:
+        wave_aggregates: Official population wealth aggregate per wealth-wave year (e.g.
+            summed `w011h`), for at least three waves (two growth steps).
+
+    Returns:
+        The sample standard deviation of the consecutive log-growth steps -- the
+        transport log-scale for `draw_transport_shocks`.
+
+    Raises:
+        ValueError: If fewer than three waves, or a non-positive aggregate.
+
+    """
+    minimum_waves = 3
+    if len(wave_aggregates) < minimum_waves:
+        msg = f"need at least {minimum_waves} waves to estimate a dispersion"
+        raise ValueError(msg)
+    years = sorted(wave_aggregates)
+    levels = np.array([wave_aggregates[year] for year in years], dtype=float)
+    if np.any(levels <= 0.0):
+        msg = "official aggregates must be positive to take a logarithm"
+        raise ValueError(msg)
+    log_steps = np.diff(np.log(levels))
+    return float(log_steps.std(ddof=1))
+
+
+def robust_total_scale(totals: np.ndarray) -> float:
+    """Return the median absolute net-wealth total, or 1.0 if that is not positive.
+
+    Sets the asinh knee for the transport shock so it tracks the magnitude of the wealth
+    distribution rather than a hard-coded euro figure.
+
+    Args:
+        totals: Signed household net-wealth totals.
+
+    Returns:
+        A positive, finite asinh scale.
+
+    """
+    magnitude = np.abs(np.asarray(totals, dtype="float64"))
+    median = float(np.median(magnitude)) if magnitude.size else 0.0
+    return median if median > 0.0 else 1.0
+
+
 def bayesian_bootstrap_weights(n_units: int, *, seed: int) -> np.ndarray:
     """Draw approximate-Bayesian-bootstrap weights for one replicate.
 
