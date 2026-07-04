@@ -140,10 +140,11 @@ Two complementary checks, both low-cell-count-screened aggregates:
 
 The component-only total is a **coarse rank/covariate proxy** for downstream use (e.g. as
 a GETTSIM input), not a calibrated population estimate. Rank discrimination is moderate,
-not precise: the rolling-origin rank correlation to the official total is around 0.74, but
-exact-quintile accuracy is well below half, so the proxy supports **broad** ranking and
-covariate adjustment — not exact quintile classification, bottom/top-group membership, or
-household-level mobility. The 2017 temporal backtest shows its **level** is off (imputed
+not precise: the rolling-origin rank correlation to the official total averages about 0.69
+(0.731 in the 2017 fold, the closest observed analogue to the 2022 direction), while
+exact-quintile accuracy is only about 0.40 and households land ~0.8 quintiles off on
+average. So the proxy supports **broad** ranking and covariate adjustment — not exact
+quintile classification, bottom/top-group membership, or household-level mobility. The 2017 temporal backtest shows its **level** is off (imputed
 mean ~33% above observed), its **inequality** is understated (Gini below observed), and its
 **zero mass** and **negative tail** are not calibrated to observed. So 2022 levels,
 inequality, and tails must not be headlined as population estimates — only the proxy's
