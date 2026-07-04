@@ -60,7 +60,11 @@ def component_scale(values: np.ndarray) -> float:
 
 
 def fit_component_models(
-    features: np.ndarray, values: np.ndarray, *, seed: int
+    features: np.ndarray,
+    values: np.ndarray,
+    *,
+    seed: int,
+    sample_weight: np.ndarray | None = None,
 ) -> ComponentModels:
     """Fit the ownership and amount models for one component.
 
@@ -68,6 +72,9 @@ def fit_component_models(
         features: Training design matrix, shape `(n_rows, n_features)`.
         values: Observed component amounts per row (positive magnitudes).
         seed: Random seed for the ownership model.
+        sample_weight: Optional per-row training weights (e.g. an approximate-Bayesian-
+            bootstrap draw for a replicate). The incidence model uses the full vector;
+            the amount model uses the owner-row subset. `None` fits unweighted.
 
     Returns:
         The fitted `ComponentModels` (ownership model, amount model, scale).
@@ -77,12 +84,18 @@ def fit_component_models(
     """
     scale = component_scale(values)
     owns = derive_ownership(values)
-    ownership_model = OwnershipModel.fit(features, owns, seed=seed)
+    ownership_model = OwnershipModel.fit(
+        features, owns, seed=seed, sample_weight=sample_weight
+    )
     owner_mask = owns.astype(bool)
+    amount_weight = (
+        None if sample_weight is None else np.asarray(sample_weight)[owner_mask]
+    )
     amount_model = AmountModel.fit(
         features[owner_mask],
         np.asarray(values, dtype="float64")[owner_mask],
         scale=scale,
+        sample_weight=amount_weight,
     )
     return ComponentModels(
         ownership_model=ownership_model, amount_model=amount_model, scale=scale

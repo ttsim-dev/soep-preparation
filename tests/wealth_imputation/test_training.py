@@ -17,6 +17,41 @@ from soep_preparation.wealth_imputation.training import (
 )
 
 
+def _curved_component_training_data() -> tuple[np.ndarray, np.ndarray]:
+    """Owners on the positive side of one feature, with a curved amount relation."""
+    feature = np.linspace(-3.0, 3.0, 40)
+    amount = 1000.0 * np.exp(0.5 * feature + 0.3 * feature**2)
+    values = np.where(feature > 0.0, amount, 0.0)
+    return feature.reshape(-1, 1), values
+
+
+def test_fit_component_models_uniform_weight_matches_unweighted_incidence():
+    """Unit weights reproduce the unweighted ownership fit (bootstrap identity case)."""
+    features, values = _curved_component_training_data()
+    weighted = fit_component_models(
+        features, values, seed=0, sample_weight=np.ones(values.shape[0])
+    )
+    unweighted = fit_component_models(features, values, seed=0)
+    np.testing.assert_allclose(
+        weighted.ownership_model.probability(features),
+        unweighted.ownership_model.probability(features),
+        rtol=1e-9,
+    )
+
+
+def test_fit_component_models_sample_weight_changes_the_amount_fit():
+    """Non-uniform weights on the owner rows move the fitted amount score."""
+    features, values = _curved_component_training_data()
+    weights = np.where(features.ravel() > 1.0, 5.0, 1.0)
+    weighted = fit_component_models(features, values, seed=0, sample_weight=weights)
+    unweighted = fit_component_models(features, values, seed=0)
+    point = np.array([[1.5]])
+    assert (
+        weighted.amount_model.predict_score(point)[0]
+        != unweighted.amount_model.predict_score(point)[0]
+    )
+
+
 def test_select_household_heads_keeps_the_oldest_member_per_household():
     """Each household-year is represented by its oldest member."""
     frame = pd.DataFrame(
