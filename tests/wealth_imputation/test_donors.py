@@ -28,6 +28,40 @@ def test_pmm_draw_is_deterministic_under_same_seed():
     np.testing.assert_array_equal(first.donor_indices, second.donor_indices)
 
 
+def test_pmm_draw_selects_the_high_weight_donor_among_the_nearest():
+    """Among the k nearest, a donor with dominant weight is the one drawn."""
+    donor_scores = np.array([0.0, 0.05, -0.05])
+    donor_values = np.array([10.0, 20.0, 30.0])
+    recipient_scores = np.array([0.0])
+    donor_weights = np.array([1_000_000.0, 1.0, 1.0])
+    result = pmm_draw(
+        recipient_scores,
+        donor_scores,
+        donor_values,
+        k=3,
+        rng=np.random.default_rng(seed=0),
+        donor_weights=donor_weights,
+    )
+    assert result.values[0] == 10.0
+
+
+def test_pmm_draw_uniform_and_weighted_differ_when_weights_are_skewed():
+    """Weighting the selection changes which nearest donor is drawn."""
+    donor_scores = np.array([0.0, 0.05, -0.05])
+    donor_values = np.array([10.0, 20.0, 30.0])
+    recipient_scores = np.array([0.0])
+    donor_weights = np.array([1.0, 1.0, 1_000_000.0])
+    weighted = pmm_draw(
+        recipient_scores,
+        donor_scores,
+        donor_values,
+        k=3,
+        rng=np.random.default_rng(seed=0),
+        donor_weights=donor_weights,
+    )
+    assert weighted.values[0] == 30.0
+
+
 def test_pmm_draw_never_selects_donor_outside_caliper():
     # Nearest donor (0.1) is inside the caliper; the other (100.0) is outside it.
     donor_scores = np.array([0.1, 100.0])

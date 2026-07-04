@@ -333,6 +333,11 @@ def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest wav
                 k=min(k, int(donor_keep.sum())),
                 donor_year=donor_year,
                 paired_liability_values=paired_liability_values,
+                donor_weights=(
+                    component_weight[donor_keep]
+                    if component_weight is not None
+                    else None
+                ),
             )
         )
         used.append(component)

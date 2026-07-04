@@ -24,6 +24,7 @@ def draw_amounts(  # noqa: PLR0913
     rng: np.random.Generator,
     caliper: float | None = None,
     exclude: Sequence[Sequence[int]] | None = None,
+    donor_weights: np.ndarray | None = None,
 ) -> PmmResult:
     """Draw each recipient's amount from a near donor's observed value.
 
@@ -38,6 +39,8 @@ def draw_amounts(  # noqa: PLR0913
         rng: NumPy random generator.
         caliper: Maximum allowed distance on the asinh-scaled axis, if set (>= 0).
         exclude: Per-recipient sequences of donor indices to exclude, if any.
+        donor_weights: Optional per-donor selection weights for the PMM draw among the
+            nearest donors; `None` draws uniformly.
 
     Returns:
         A `PmmResult` whose `values` are the drawn observed euro amounts (float64).
@@ -53,4 +56,5 @@ def draw_amounts(  # noqa: PLR0913
         rng=rng,
         caliper=caliper,
         exclude=exclude,
+        donor_weights=donor_weights,
     )

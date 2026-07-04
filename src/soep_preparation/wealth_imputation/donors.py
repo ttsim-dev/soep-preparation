@@ -104,6 +104,7 @@ def pmm_draw(  # noqa: PLR0913
     rng: np.random.Generator,
     caliper: float | None = None,
     exclude: Sequence[Sequence[int]] | None = None,
+    donor_weights: np.ndarray | None = None,
 ) -> PmmResult:
     """Draw one near, eligible donor's observed value per recipient.
 
@@ -120,6 +121,11 @@ def pmm_draw(  # noqa: PLR0913
         rng: NumPy random generator.
         caliper: Maximum allowed score distance to a donor, if set (>= 0).
         exclude: Per-recipient sequences of donor indices to exclude, if any.
+        donor_weights: Optional non-negative selection weight per donor, shape
+            `(n_donors,)`. When set, the draw among the `k` nearest is proportional to
+            these weights (an approximate-Bayesian-bootstrap draw over the donor pool),
+            so donor-composition uncertainty enters the replicate spread; `None` draws
+            uniformly. A nearest set whose weights are all zero falls back to uniform.
 
     Returns:
         A `PmmResult` with drawn values (float64), donor indices, and distances.
@@ -131,6 +137,7 @@ def pmm_draw(  # noqa: PLR0913
         recipient_scores, donor_scores, donor_values, k, caliper, exclude
     )
     all_indices = np.arange(donor_scores.shape[0])
+    weights = None if donor_weights is None else np.asarray(donor_weights, dtype=float)
     n_recipients = recipient_scores.shape[0]
     values = np.empty(n_recipients, dtype=np.float64)
     donor_indices = np.empty(n_recipients, dtype=np.intp)
@@ -149,10 +156,31 @@ def pmm_draw(  # noqa: PLR0913
             msg = f"No eligible donor within caliper {caliper} for recipient {i}."
             raise ValueError(msg)
         nearest = np.argsort(distances)[:k]
-        chosen = rng.choice(nearest)
+        chosen = _choose_donor(nearest, eligible, weights, rng)
         donor_indices[i] = eligible[chosen]
         values[i] = float(donor_values[eligible[chosen]])
         distances_out[i] = float(distances[chosen])
     return PmmResult(
         values=values, donor_indices=donor_indices, distances=distances_out
     )
+
+
+def _choose_donor(
+    nearest: np.ndarray,
+    eligible: np.ndarray,
+    weights: np.ndarray | None,
+    rng: np.random.Generator,
+) -> int:
+    """Pick one of the `k` nearest donors, weighted by `weights` if given.
+
+    `nearest` indexes into `eligible`; `weights` is indexed by the original donor id.
+    Selection is proportional to the nearest donors' weights, falling back to uniform
+    when no weights are given or their sum is not positive.
+    """
+    if weights is None:
+        return int(rng.choice(nearest))
+    nearest_weights = weights[eligible[nearest]]
+    total = nearest_weights.sum()
+    if total <= 0.0:
+        return int(rng.choice(nearest))
+    return int(rng.choice(nearest, p=nearest_weights / total))

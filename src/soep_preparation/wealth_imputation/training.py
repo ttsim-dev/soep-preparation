@@ -112,6 +112,7 @@ def build_component_config(  # noqa: PLR0913
     k: int,
     donor_year: np.ndarray | None = None,
     paired_liability_values: np.ndarray | None = None,
+    donor_weights: np.ndarray | None = None,
 ) -> ComponentDrawConfig:
     """Predict for recipients and donors and assemble a `ComponentDrawConfig`.
 
@@ -130,6 +131,9 @@ def build_component_config(  # noqa: PLR0913
             `donor_values`; set on a backing-asset config (owner-occupied property) so
             its mortgage can be drawn from the same donor. `None` for unsecured
             components.
+        donor_weights: Per-donor approximate-Bayesian-bootstrap weights, aligned to
+            `donor_values`; when set, the PMM draw among the nearest donors is weighted
+            by them. `None` draws uniformly.
 
     Returns:
         A `ComponentDrawConfig` ready for `simulate_household_totals`.
@@ -147,6 +151,11 @@ def build_component_config(  # noqa: PLR0913
         paired_liability_observed=(
             np.asarray(paired_liability_values, dtype="float64")
             if paired_liability_values is not None
+            else None
+        ),
+        donor_weight=(
+            np.asarray(donor_weights, dtype="float64")
+            if donor_weights is not None
             else None
         ),
     )

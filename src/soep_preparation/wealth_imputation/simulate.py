@@ -96,6 +96,10 @@ class ComponentDrawConfig:
     mortgage) can be drawn from the *same* donor household via `_draw_secured_housing`,
     keeping each drawn (asset, liability) pair an observed one. `None` on every
     unsecured component and on the liability's own config."""
+    donor_weight: np.ndarray | None = None
+    """Optional per-donor selection weight, aligned to `donor_observed`. Set to a
+    replicate's approximate-Bayesian-bootstrap weights so the PMM draw among the nearest
+    donors reflects the donor pool's bootstrap composition; `None` draws uniformly."""
 
 
 def simulate_household_total_draws(  # noqa: PLR0913 -- keyword-only simulation knobs
@@ -282,6 +286,7 @@ def _draw_config(
         k=config.k,
         rng=rng,
         caliper=caliper,
+        donor_weights=config.donor_weight,
     )
 
 

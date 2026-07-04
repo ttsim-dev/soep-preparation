@@ -71,6 +71,7 @@ def draw_component(  # noqa: PLR0913
     k: int,
     rng: np.random.Generator,
     caliper: float | None = None,
+    donor_weights: np.ndarray | None = None,
 ) -> ComponentDraw:
     """Draw one component's person value for every recipient.
 
@@ -84,6 +85,7 @@ def draw_component(  # noqa: PLR0913
         k: Number of nearest eligible donors to sample from (>= 1).
         rng: NumPy random generator (ownership drawn first, then amounts).
         caliper: Maximum donor distance on the asinh-scaled axis, if set.
+        donor_weights: Optional per-donor PMM selection weights; `None` draws uniformly.
 
     Returns:
         A `ComponentDraw` with the share-resolved `person_value`, the `owns`
@@ -112,6 +114,7 @@ def draw_component(  # noqa: PLR0913
             k=k,
             rng=rng,
             caliper=caliper,
+            donor_weights=donor_weights,
         )
         gross_amount[owns] = drawn.values  # noqa: PD011 -- PmmResult attr, not pandas
         distances[owns] = drawn.distances
