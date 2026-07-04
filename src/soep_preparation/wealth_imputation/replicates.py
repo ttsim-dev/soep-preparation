@@ -92,6 +92,84 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
     return frame
 
 
+_IMPLICATE_LETTERS = "abcdefghijklmnopqrstuvwxyz"
+
+
+def select_released_implicates(
+    frame: pd.DataFrame, *, n_released: int = 5, name: str = "net_wealth_2022"
+) -> pd.DataFrame:
+    """Select the released `a`-`e` implicates from an engine replicate frame.
+
+    Mirrors the DIW release shape: one column per released implicate, keyed by `hh_id`.
+    More replicates than released columns can be run to estimate the Monte-Carlo error
+    (`replicate_mc_summary`); the released set is drawn evenly across the replicate
+    index so it spans the full run rather than an arbitrary prefix.
+
+    Args:
+        frame: Engine output with `hh_id` and one `draw_i` total column per replicate.
+        n_released: Number of implicates to release (five mirrors DIW).
+        name: Column-name stem; each released column is `{name}_{letter}`.
+
+    Returns:
+        A frame with `hh_id` and `n_released` lettered net-wealth implicate columns.
+
+    Raises:
+        ValueError: If fewer than `n_released` replicates are available.
+
+    """
+    draw_columns = [
+        column for column in frame.columns if str(column).startswith("draw_")
+    ]
+    if len(draw_columns) < n_released:
+        msg = (
+            f"n_released={n_released} exceeds the {len(draw_columns)} "
+            "replicates available"
+        )
+        raise ValueError(msg)
+    positions = np.linspace(0, len(draw_columns) - 1, n_released).round().astype(int)
+    released = frame[["hh_id"]].reset_index(drop=True)
+    for letter, position in zip(_IMPLICATE_LETTERS, positions, strict=False):
+        released[f"{name}_{letter}"] = frame[draw_columns[position]].to_numpy()
+    return released
+
+
+def replicate_mc_summary(frame: pd.DataFrame) -> dict[str, float]:
+    """Summarise the Monte-Carlo error of the aggregate across replicates.
+
+    Reports how much the population-mean net wealth wobbles from replicate to replicate
+    -- the Monte-Carlo error introduced by imputing with a finite number of replicates,
+    estimated over every replicate the engine produced (not just the released subset).
+
+    Args:
+        frame: Engine output with `hh_id` and one `draw_i` total column per replicate.
+
+    Returns:
+        `n_replicates`, the mean aggregate, its between-replicate standard deviation,
+        and the relative Monte-Carlo error (`sd / |mean|`, `nan` when the mean is
+        ~zero).
+
+    """
+    draw_columns = [
+        column for column in frame.columns if str(column).startswith("draw_")
+    ]
+    per_replicate_mean = np.array(
+        [frame[column].to_numpy().mean() for column in draw_columns], dtype=float
+    )
+    aggregate_mean = float(per_replicate_mean.mean())
+    between_replicate_sd = float(per_replicate_mean.std(ddof=0))
+    relative_mc_error = (
+        float("nan")
+        if np.isclose(aggregate_mean, 0.0)
+        else between_replicate_sd / abs(aggregate_mean)
+    )
+    return {
+        "n_replicates": len(draw_columns),
+        "aggregate_mean": aggregate_mean,
+        "aggregate_between_replicate_sd": between_replicate_sd,
+        "relative_mc_error": relative_mc_error,
+    }
+
+
 def bayesian_bootstrap_weights(n_units: int, *, seed: int) -> np.ndarray:
     """Draw approximate-Bayesian-bootstrap weights for one replicate.
 

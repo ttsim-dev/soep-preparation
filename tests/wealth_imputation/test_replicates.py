@@ -12,6 +12,8 @@ from soep_preparation.wealth_imputation.replicates import (
     bayesian_bootstrap_weights,
     draw_transport_shocks,
     impute_replicates,
+    replicate_mc_summary,
+    select_released_implicates,
     transport_log_scale_from_fold_errors,
 )
 
@@ -207,3 +209,60 @@ def test_impute_replicates_rejects_non_positive_replicate_count() -> None:
     """At least one replicate is required."""
     with pytest.raises(ValueError, match="n_replicates"):
         _run_engine(n_replicates=0, transport_log_scale=0.3)
+
+
+def _replicate_frame(n_replicates: int) -> pd.DataFrame:
+    """A stand-in engine output: `hh_id` plus one total column per replicate."""
+    frame = pd.DataFrame({"hh_id": [101, 102, 103]})
+    for index in range(n_replicates):
+        frame[f"draw_{index}"] = [10_000.0 * index, 20_000.0 + index, 300_000.0 - index]
+    return frame
+
+
+def test_select_released_implicates_yields_five_lettered_columns() -> None:
+    """The released frame carries `hh_id` and the five DIW-mirrored implicates a-e."""
+    released = select_released_implicates(_replicate_frame(10), n_released=5)
+    assert list(released.columns) == [
+        "hh_id",
+        *[f"net_wealth_2022_{letter}" for letter in "abcde"],
+    ]
+
+
+def test_select_released_implicates_preserves_hh_id() -> None:
+    """Every recipient household survives the selection, in order."""
+    released = select_released_implicates(_replicate_frame(10), n_released=5)
+    assert list(released["hh_id"]) == [101, 102, 103]
+
+
+def test_select_released_implicates_is_the_replicates_when_count_matches() -> None:
+    """With exactly five replicates, the implicates are those five columns verbatim."""
+    frame = _replicate_frame(5)
+    released = select_released_implicates(frame, n_released=5)
+    np.testing.assert_array_equal(
+        released["net_wealth_2022_a"].to_numpy(), frame["draw_0"].to_numpy()
+    )
+
+
+def test_select_released_implicates_rejects_too_few_replicates() -> None:
+    """Releasing five implicates needs at least five replicates."""
+    with pytest.raises(ValueError, match="n_released"):
+        select_released_implicates(_replicate_frame(3), n_released=5)
+
+
+def test_replicate_mc_summary_counts_the_replicates() -> None:
+    """The summary records how many replicates the MC error is estimated from."""
+    summary = replicate_mc_summary(_replicate_frame(8))
+    assert summary["n_replicates"] == 8
+
+
+def test_replicate_mc_summary_is_zero_spread_for_identical_replicates() -> None:
+    """Identical replicates carry no Monte-Carlo spread in the aggregate."""
+    frame = pd.DataFrame({"hh_id": [1, 2], "draw_0": [5.0, 7.0], "draw_1": [5.0, 7.0]})
+    summary = replicate_mc_summary(frame)
+    assert summary["aggregate_between_replicate_sd"] == 0.0
+
+
+def test_replicate_mc_summary_reports_positive_spread_for_varying_replicates() -> None:
+    """Replicates with different aggregates carry a positive Monte-Carlo spread."""
+    summary = replicate_mc_summary(_replicate_frame(6))
+    assert summary["aggregate_between_replicate_sd"] > 0.0
