@@ -1,23 +1,25 @@
-"""Multiply-imputed 2022 wealth as a set of `a`-`e` projection replicates.
+"""Component-only 2022 wealth as a set of projection replicates.
 
 SOEP-Core V41 ships no 2022 wealth wave, so every 2022 cell is a forward projection
 from the 2002-2017 donor waves. This module builds several complete replicates of that
-projection and exposes them in the DIW `a`-`e` shape, so downstream code can combine
-them with Rubin's rules. Each replicate integrates the uncertainty layers that the
-single-value proxy in `impute` collapses:
+projection -- the six-component net-wealth total, *not* the residual-inclusive total --
+and releases them lettered `a`-`e`. The letters are exchangeable projection draws, not
+DIW's own donor implicates, and the release is deliberately **not** Rubin-valid: the
+metadata block records that so an analyst cannot silently treat 2022 as an ordinary
+observed-and-imputed wealth wave. Each replicate integrates the uncertainty layers that
+the single-value proxy in `impute` collapses:
 
 - parameter uncertainty, via an approximate-Bayesian-bootstrap reweighting of the
-  training units before each refit (`bayesian_bootstrap_weights`);
-- donor-draw uncertainty, via the predictive-mean-matching draw the imputation already
-  performs;
-- transport uncertainty, via a per-replicate shock calibrated on rolling-origin
-  forward-prediction error (the 2017-to-2022 direction cannot be observed, so this layer
-  is a calibrated scenario, not a validated posterior).
-
-Because the whole wave is imputed, the released `a`-`e` columns carry a metadata block
-recording that they are a historical projection (`uses_observed_2022_wealth = false`)
-and whether transport uncertainty is priced, so an analyst cannot silently treat 2022
-as an ordinary observed-and-imputed wealth wave.
+  training units before each refit (`bayesian_bootstrap_weights`); this perturbs the
+  fitted models, not the predictive-mean-matching donor pool, so donor-composition
+  uncertainty is only partly captured;
+- donor-draw uncertainty, via the single predictive-mean-matching draw each replicate
+  performs (the replicates *are* the draws, so this is carried across `a`-`e`);
+- transport uncertainty, via a per-replicate asinh-axis level shock whose scale is
+  calibrated from the official aggregate's cross-wave log-growth dispersion
+  (`transport_scale_from_official_aggregates`). The 2017-to-2022 direction cannot be
+  observed, so this is a calibrated prior, not a validated posterior; the shock is
+  mean-zero on the asinh axis but shifts euro-scale means, so it moves the level.
 """
 
 from collections.abc import Mapping, Sequence
@@ -37,15 +39,20 @@ class OfficialWealthAggregates(TypedDict):
 
 
 class ImplicatesMetadata(TypedDict):
-    """Provenance and validity guards stored with the released `a`-`e` implicates."""
+    """Provenance and validity guards stored with the released projection draws."""
 
     method: str
     n_internal_replicates: int
-    n_released_implicates: int
+    n_released_draws: int
     transport_log_scale: float
     total_scale: float
     uses_observed_2022_wealth: bool
     transport_uncertainty_included: bool
+    transport_posterior_validated: bool
+    euro_scale_mean_neutral: bool
+    component_only: bool
+    residual_inclusive: bool
+    donor_implicates_propagated: bool
     rubin_valid: bool
     distribution_calibrated: bool
 
@@ -60,13 +67,14 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
     n_draws: int,
     k: int,
 ) -> pd.DataFrame:
-    """Build `n_replicates` complete projection replicates of 2022 net wealth.
+    """Build `n_replicates` component-only projection replicates of 2022 net wealth.
 
     Each replicate is one bootstrap refit (parameter uncertainty) plus one systematic
-    transport shock (transport uncertainty) on top of the donor draws, so the spread
-    across the returned columns prices those layers jointly. The columns are generic
-    `draw_i` totals; mapping a released subset onto the DIW `a`-`e` names and attaching
-    the projection metadata is a separate assembly step.
+    transport shock (transport uncertainty) on top of a single donor draw, so the spread
+    across the returned columns prices those layers jointly. `n_draws` must be 1: the
+    replicate *is* the draw, so donor-draw uncertainty is carried across replicates
+    rather than averaged into a per-replicate median. The columns are generic `draw_i`
+    totals; selecting and lettering a released subset is a separate assembly step.
 
     Args:
         modules: Cleaned SOEP modules passed through to `run_imputation`.
@@ -76,14 +84,14 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
         transport_log_scale: Transport-shock scale on the asinh axis; `0.0` disables
             the transport layer.
         total_scale: Positive asinh knee (euros) for the transport shock.
-        n_draws: Donor draws per replicate, forwarded to `run_imputation`.
+        n_draws: Draws per replicate, forwarded to `run_imputation`; must be 1.
         k: Nearest-donor count, forwarded to `run_imputation`.
 
     Returns:
         A frame with `hh_id` and one `draw_i` net-wealth total column per replicate.
 
     Raises:
-        ValueError: If `n_replicates` is not positive.
+        ValueError: If `n_replicates` is not positive or `n_draws` is not 1.
 
     """
     # Lazy import: `impute` imports `bayesian_bootstrap_weights` from this module, so a
@@ -92,6 +100,12 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
 
     if n_replicates <= 0:
         msg = f"n_replicates must be positive, got {n_replicates}"
+        raise ValueError(msg)
+    if n_draws != 1:
+        # Each implicate is one predictive draw; `run_imputation` collapses multiple
+        # draws to their median, which would average away the donor-draw uncertainty
+        # the implicates are meant to carry.
+        msg = f"each implicate is a single draw, so n_draws must be 1, got {n_draws}"
         raise ValueError(msg)
     deltas = draw_transport_shocks(
         n_replicates, log_scale=transport_log_scale, seed=base_seed
@@ -120,14 +134,19 @@ _IMPLICATE_LETTERS = "abcdefghijklmnopqrstuvwxyz"
 
 
 def select_released_implicates(
-    frame: pd.DataFrame, *, n_released: int = 5, name: str = "net_wealth_2022"
+    frame: pd.DataFrame,
+    *,
+    n_released: int = 5,
+    name: str = "component_only_net_wealth_2022",
 ) -> pd.DataFrame:
-    """Select the released `a`-`e` implicates from an engine replicate frame.
+    """Select the released component-only projection draws from a replicate frame.
 
-    Mirrors the DIW release shape: one column per released implicate, keyed by `hh_id`.
-    More replicates than released columns can be run to estimate the Monte-Carlo error
-    (`replicate_mc_summary`); the released set is drawn evenly across the replicate
-    index so it spans the full run rather than an arbitrary prefix.
+    One column per released draw, keyed by `hh_id`. The columns are lettered `a`-`e`
+    for a five-draw release, but they are exchangeable projection draws, not DIW's own
+    donor implicates (see `build_implicates_metadata`). More replicates than released
+    columns can be run to estimate the Monte-Carlo error (`replicate_mc_summary`); the
+    released set is drawn evenly across the replicate index so it spans the full run
+    rather than an arbitrary prefix.
 
     Args:
         frame: Engine output with `hh_id` and one `draw_i` total column per replicate.
@@ -295,17 +314,25 @@ def build_implicates_metadata(
     transport_log_scale: float,
     total_scale: float,
 ) -> ImplicatesMetadata:
-    """Assemble the metadata guards recorded with the released `a`-`e` implicates.
+    """Assemble the metadata guards recorded with the released projection draws.
 
-    The guards keep an analyst from silently treating the release as ordinary
-    observed-and-imputed wealth: 2022 is a projection with no observed anchor, the
-    transport layer is a calibrated prior rather than a validated posterior, and the
-    donor-implicate layer is not yet propagated, so the release is not fully
-    Rubin-valid.
+    The guards keep an analyst from treating the release as ordinary
+    observed-and-imputed wealth. Each flag records a way the object falls short of
+    Rubin-valid SOEP wealth implicates:
+
+    - `component_only` / `residual_inclusive`: the release is the six-component total,
+      omitting the reconciliation residual (business, other real estate).
+    - `transport_posterior_validated`: the transport scale is a calibrated prior, not a
+      validated posterior (the 2017-to-2022 drift is unobservable).
+    - `euro_scale_mean_neutral`: the asinh-axis shock is mean-zero on its own axis but
+      shifts euro-scale means, so it moves the level, not just its uncertainty.
+    - `donor_implicates_propagated`: DIW's donor implicates `b`-`e` are not threaded
+      through the fits, so the `a`-`e` letters are exchangeable draws, not DIW worlds.
+    - `rubin_valid`: false while any of the above hold.
 
     Args:
         n_replicates: Internal replicates the engine ran.
-        n_released: Released implicates (five mirrors DIW).
+        n_released: Released projection draws.
         transport_log_scale: Calibrated transport shock scale on the asinh axis.
         total_scale: Asinh knee used for the transport shock.
 
@@ -314,13 +341,18 @@ def build_implicates_metadata(
 
     """
     return {
-        "method": "diw_mirrored_projection_replicates",
+        "method": "component_only_projection_replicates",
         "n_internal_replicates": n_replicates,
-        "n_released_implicates": n_released,
+        "n_released_draws": n_released,
         "transport_log_scale": float(transport_log_scale),
         "total_scale": float(total_scale),
         "uses_observed_2022_wealth": False,
         "transport_uncertainty_included": True,
+        "transport_posterior_validated": False,
+        "euro_scale_mean_neutral": False,
+        "component_only": True,
+        "residual_inclusive": False,
+        "donor_implicates_propagated": False,
         "rubin_valid": False,
         "distribution_calibrated": False,
     }
@@ -333,6 +365,9 @@ def bayesian_bootstrap_weights(n_units: int, *, seed: int) -> np.ndarray:
     so the weights average one. Used as `sample_weight` in a replicate's model refit, so
     that each replicate reflects a different plausible parameter draw (the approximate
     Bayesian bootstrap), rather than the single fixed fit the point-estimate proxy uses.
+    This reweights the fitted ownership and amount models only; the predictive-mean-
+    matching donor pool and its nearest-neighbour selection are left unweighted, so
+    donor-composition uncertainty is not fully captured.
 
     Args:
         n_units: Number of training units to reweight (must be positive).
@@ -414,10 +449,13 @@ def apply_transport_shock(
     axis the amount model fits on -- gives a monotone, signed analog of a proportional
     *level* shock: approximately multiplicative for wealth well outside
     `[-scale, scale]` and linear near zero. A positive `delta` shifts every total up
-    (a richer 2022 than projected), a negative one down. The per-replicate shocks are
-    mean-zero, so across replicates they add transport spread without a net bias. A
-    household near zero net wealth can cross sign under a large shock -- an intended
-    consequence of a level shift, not a magnitude scaler.
+    (a richer 2022 than projected), a negative one down. The shocks are mean-zero *on
+    the asinh axis*, but the transform is convex in `delta`, so a symmetric shock is not
+    mean-neutral on the euro scale: `E[sinh(x + delta)] = sinh(x) E[cosh(delta)]` with
+    `E[cosh(delta)] > 1`, so positive totals drift up and negative totals down in
+    expectation. The layer therefore moves the euro-scale level, not only its
+    uncertainty. A household near zero net wealth can cross sign under a large shock --
+    an intended consequence of a level shift, not a magnitude scaler.
 
     Args:
         totals: Signed household net-wealth totals for one replicate.

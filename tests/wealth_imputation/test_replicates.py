@@ -32,7 +32,9 @@ def _stub_result() -> SimpleNamespace:
     return SimpleNamespace(intervals=intervals)
 
 
-def _run_engine(*, n_replicates: int, transport_log_scale: float) -> pd.DataFrame:
+def _run_engine(
+    *, n_replicates: int, transport_log_scale: float, n_draws: int = 1
+) -> pd.DataFrame:
     with mock.patch(_RUN_IMPUTATION, return_value=_stub_result()):
         return impute_replicates(
             {},
@@ -40,7 +42,7 @@ def _run_engine(*, n_replicates: int, transport_log_scale: float) -> pd.DataFram
             base_seed=0,
             transport_log_scale=transport_log_scale,
             total_scale=100_000.0,
-            n_draws=5,
+            n_draws=n_draws,
             k=3,
         )
 
@@ -196,6 +198,18 @@ def test_official_wealth_aggregates_ignores_non_wealth_waves() -> None:
     assert set(result["wave_aggregates"]) == {2012, 2017}
 
 
+def test_official_wealth_aggregates_are_unweighted_row_sums() -> None:
+    """A raw row sum: duplicating a row doubles that wave's total (unweighted)."""
+    base = pd.DataFrame(
+        {"survey_year": [2012, 2017], "hh_net_overall_wealth_a": [100.0, 110.0]}
+    )
+    duplicated = pd.concat([base, base.iloc[[1]]], ignore_index=True)
+    result = official_wealth_aggregates(
+        duplicated, total_column="hh_net_overall_wealth_a", waves=[2012, 2017]
+    )
+    assert result["wave_aggregates"] == {2012: 100.0, 2017: 220.0}
+
+
 def test_official_wealth_aggregates_reports_median_absolute_total() -> None:
     """The knee is the median absolute total across the wealth waves."""
     result = official_wealth_aggregates(
@@ -228,12 +242,58 @@ def test_build_implicates_metadata_is_not_rubin_valid() -> None:
     assert meta["rubin_valid"] is False
 
 
+def test_build_implicates_metadata_flags_component_only() -> None:
+    """The release omits the reconciliation residual, so it is component-only."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["component_only"] is True
+
+
+def test_build_implicates_metadata_flags_donor_implicates_not_propagated() -> None:
+    """DIW donor implicates b-e are not threaded through the fits."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["donor_implicates_propagated"] is False
+
+
+def test_build_implicates_metadata_flags_transport_not_mean_neutral() -> None:
+    """The asinh-axis shock shifts euro-scale means, so it is not level-neutral."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["euro_scale_mean_neutral"] is False
+
+
+def test_build_implicates_metadata_flags_transport_not_validated() -> None:
+    """The transport scale is a calibrated prior, not a validated posterior."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["transport_posterior_validated"] is False
+
+
 def test_build_implicates_metadata_records_the_transport_scale() -> None:
     """The calibrated transport log-scale is recorded for provenance."""
     meta = build_implicates_metadata(
         n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
     )
     np.testing.assert_allclose(meta["transport_log_scale"], 0.2, rtol=1e-9)
+
+
+def test_impute_replicates_requires_one_draw_per_replicate() -> None:
+    """An implicate is one predictive draw; `n_draws>1` would collapse to a median."""
+    with pytest.raises(ValueError, match="n_draws"):
+        _run_engine(n_replicates=5, transport_log_scale=0.0, n_draws=2)
+
+
+def test_apply_transport_shock_is_not_euro_scale_mean_neutral() -> None:
+    """Mean-zero asinh shocks bias a positive total's euro mean upward (`E[cosh]>1`)."""
+    totals = np.array([250_000.0])
+    up = apply_transport_shock(totals, 0.5, scale=100_000.0)[0]
+    down = apply_transport_shock(totals, -0.5, scale=100_000.0)[0]
+    assert (up + down) / 2 > 250_000.0
 
 
 def test_apply_transport_shock_is_identity_at_zero_delta() -> None:
@@ -306,7 +366,7 @@ def test_impute_replicates_varies_the_bootstrap_seed_per_replicate() -> None:
             base_seed=0,
             transport_log_scale=0.0,
             total_scale=100_000.0,
-            n_draws=5,
+            n_draws=1,
             k=3,
         )
     seeds = {call.kwargs["bootstrap_seed"] for call in spy.call_args_list}
@@ -328,11 +388,11 @@ def _replicate_frame(n_replicates: int) -> pd.DataFrame:
 
 
 def test_select_released_implicates_yields_five_lettered_columns() -> None:
-    """The released frame carries `hh_id` and the five DIW-mirrored implicates a-e."""
+    """The released frame carries `hh_id` and five component-only projection draws."""
     released = select_released_implicates(_replicate_frame(10), n_released=5)
     assert list(released.columns) == [
         "hh_id",
-        *[f"net_wealth_2022_{letter}" for letter in "abcde"],
+        *[f"component_only_net_wealth_2022_{letter}" for letter in "abcde"],
     ]
 
 
@@ -347,7 +407,8 @@ def test_select_released_implicates_is_the_replicates_when_count_matches() -> No
     frame = _replicate_frame(5)
     released = select_released_implicates(frame, n_released=5)
     np.testing.assert_array_equal(
-        released["net_wealth_2022_a"].to_numpy(), frame["draw_0"].to_numpy()
+        released["component_only_net_wealth_2022_a"].to_numpy(),
+        frame["draw_0"].to_numpy(),
     )
 
 

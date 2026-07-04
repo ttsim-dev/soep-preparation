@@ -1,17 +1,20 @@
-"""Replicate task: build the DIW-mirrored `a`-`e` implicates for 2022 net wealth.
+"""Replicate task: build the component-only 2022 net-wealth projection replicates.
 
 Opt-in like the other wealth tasks (env var `SOEP_WEALTH_IMPUTATION`, or
 `pixi run wealth`). It calibrates the transport layer from the official cross-wave
 aggregates, runs the replicate engine -- five bootstrap refits, each contributing one
 predictive draw plus a systematic transport shock -- and writes the released `a`-`e`
-household net-wealth implicates plus a disclosure-safe summary (calibration inputs,
-Monte-Carlo error, and the metadata guards).
+projection draws plus a disclosure-safe summary (calibration inputs, Monte-Carlo error,
+and the metadata guards).
 
-Each implicate is a single predictive draw: the five implicates *are* the draws
-(multiple imputation), so donor-draw uncertainty is carried across `a`-`e` rather than
-averaged away within a single point estimate. The between-implicate spread also prices
-the parameter (bootstrap) and transport layers that no number of draws off one fixed fit
-could see.
+The released columns are the six-component net-wealth total (they omit the
+reconciliation residual) and are lettered `a`-`e` as exchangeable projection draws, not
+DIW donor
+implicates; the metadata block records that the release is not Rubin-valid. Each draw is
+a single predictive draw -- the five replicates *are* the draws, so donor-draw
+uncertainty is carried across them rather than averaged into a point estimate -- while
+the parameter (bootstrap) and transport layers enter through the between-replicate
+spread.
 """
 
 import json
@@ -39,7 +42,7 @@ from soep_preparation.wealth_imputation.replicates import (
 # Cleaned modules the imputation consumes: household + person wealth and the covariates.
 _IMPUTE_MODULES = ("hwealth", "pwealth", "pequiv", "pgen", "ppathl", "hgen")
 
-# One predictive draw per implicate, five implicates released to mirror DIW.
+# One predictive draw per replicate; five released, matching the DIW implicate count.
 _N_REPLICATES = 5
 _N_RELEASED = 5
 _N_DRAWS = 1
@@ -79,17 +82,17 @@ if RUN_WEALTH_IMPUTATION:
         source_dependencies: tuple[Path, ...] = _SOURCE_DEPENDENCIES,
         implicates_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
-        / "household_wealth_2022_implicates.arrow",
+        / "household_wealth_2022_component_only_projection_replicates.arrow",
         summary_path: Annotated[Path, Product] = BLD
         / "wealth_imputation"
-        / "implicates_summary.json",
+        / "projection_replicates_summary.json",
     ) -> None:
-        """Build and write the DIW-mirrored `a`-`e` 2022 net-wealth implicates.
+        """Build and write the component-only 2022 net-wealth projection replicates.
 
         Args:
             modules: Injected cleaned `MODULES` frames (declared dependencies).
             source_dependencies: First-party modules whose edits re-run the task.
-            implicates_path: Output Feather file of the released `a`-`e` implicates.
+            implicates_path: Output Feather file of the released projection draws.
             summary_path: Output JSON of the calibration, Monte-Carlo error, and guards.
         """
         aggregates = official_wealth_aggregates(
@@ -115,6 +118,10 @@ if RUN_WEALTH_IMPUTATION:
 
         summary = {
             "calibration": {
+                # Unweighted row-sum aggregates (no SOEP design weights), consistent
+                # with the rest of the harness; a sample-total-growth prior, not a
+                # validated population transport-error scale.
+                "aggregate_basis": "unweighted_sample_total",
                 "wave_aggregates": {
                     str(year): value
                     for year, value in aggregates["wave_aggregates"].items()
