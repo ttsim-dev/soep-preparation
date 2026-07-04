@@ -20,9 +20,76 @@ and whether transport uncertainty is priced, so an analyst cannot silently treat
 as an ordinary observed-and-imputed wealth wave.
 """
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 import numpy as np
+import pandas as pd
+
+
+def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
+    modules: Mapping[str, pd.DataFrame],
+    *,
+    n_replicates: int,
+    base_seed: int,
+    transport_log_scale: float,
+    total_scale: float,
+    n_draws: int,
+    k: int,
+) -> pd.DataFrame:
+    """Build `n_replicates` complete projection replicates of 2022 net wealth.
+
+    Each replicate is one bootstrap refit (parameter uncertainty) plus one systematic
+    transport shock (transport uncertainty) on top of the donor draws, so the spread
+    across the returned columns prices those layers jointly. The columns are generic
+    `draw_i` totals; mapping a released subset onto the DIW `a`-`e` names and attaching
+    the projection metadata is a separate assembly step.
+
+    Args:
+        modules: Cleaned SOEP modules passed through to `run_imputation`.
+        n_replicates: Number of replicates to draw (must be positive).
+        base_seed: Seed anchoring the per-replicate bootstrap/draw seeds and the
+            transport shocks.
+        transport_log_scale: Transport-shock scale on the asinh axis; `0.0` disables
+            the transport layer.
+        total_scale: Positive asinh knee (euros) for the transport shock.
+        n_draws: Donor draws per replicate, forwarded to `run_imputation`.
+        k: Nearest-donor count, forwarded to `run_imputation`.
+
+    Returns:
+        A frame with `hh_id` and one `draw_i` net-wealth total column per replicate.
+
+    Raises:
+        ValueError: If `n_replicates` is not positive.
+
+    """
+    # Lazy import: `impute` imports `bayesian_bootstrap_weights` from this module, so a
+    # top-level import here would form a cycle.
+    from soep_preparation.wealth_imputation import impute  # noqa: PLC0415
+
+    if n_replicates <= 0:
+        msg = f"n_replicates must be positive, got {n_replicates}"
+        raise ValueError(msg)
+    deltas = draw_transport_shocks(
+        n_replicates, log_scale=transport_log_scale, seed=base_seed
+    )
+    results = [
+        impute.run_imputation(
+            modules,
+            n_draws=n_draws,
+            seed=base_seed + index + 1,
+            k=k,
+            bootstrap_seed=base_seed + index + 1,
+        )
+        for index in range(n_replicates)
+    ]
+    frame = results[0].intervals[["hh_id"]].reset_index(drop=True)
+    for index, result in enumerate(results):
+        frame[f"draw_{index}"] = apply_transport_shock(
+            result.intervals["point_estimate"].to_numpy(),
+            float(deltas[index]),
+            scale=total_scale,
+        )
+    return frame
 
 
 def bayesian_bootstrap_weights(n_units: int, *, seed: int) -> np.ndarray:

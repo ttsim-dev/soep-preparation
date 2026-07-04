@@ -1,14 +1,42 @@
 """Tests for the multiply-imputed 2022 wealth replicate engine."""
 
+from types import SimpleNamespace
+from unittest import mock
+
 import numpy as np
+import pandas as pd
 import pytest
 
 from soep_preparation.wealth_imputation.replicates import (
     apply_transport_shock,
     bayesian_bootstrap_weights,
     draw_transport_shocks,
+    impute_replicates,
     transport_log_scale_from_fold_errors,
 )
+
+_RUN_IMPUTATION = "soep_preparation.wealth_imputation.impute.run_imputation"
+
+
+def _stub_result() -> SimpleNamespace:
+    """A fixed imputation result standing in for one `run_imputation` call."""
+    intervals = pd.DataFrame(
+        {"hh_id": [101, 102, 103], "point_estimate": [10_000.0, -5_000.0, 250_000.0]}
+    )
+    return SimpleNamespace(intervals=intervals)
+
+
+def _run_engine(*, n_replicates: int, transport_log_scale: float) -> pd.DataFrame:
+    with mock.patch(_RUN_IMPUTATION, return_value=_stub_result()):
+        return impute_replicates(
+            {},
+            n_replicates=n_replicates,
+            base_seed=0,
+            transport_log_scale=transport_log_scale,
+            total_scale=100_000.0,
+            n_draws=5,
+            k=3,
+        )
 
 
 def test_bayesian_bootstrap_weights_has_one_weight_per_unit() -> None:
@@ -129,3 +157,53 @@ def test_apply_transport_shock_rejects_non_positive_scale() -> None:
     """The asinh scale must be positive."""
     with pytest.raises(ValueError, match="scale"):
         apply_transport_shock(np.array([1.0]), 0.1, scale=0.0)
+
+
+def test_impute_replicates_produces_one_column_per_replicate() -> None:
+    """The engine emits one total column per requested replicate."""
+    frame = _run_engine(n_replicates=5, transport_log_scale=0.3)
+    draw_columns = [name for name in frame.columns if name.startswith("draw_")]
+    assert draw_columns == [f"draw_{index}" for index in range(5)]
+
+
+def test_impute_replicates_keeps_one_row_per_recipient_household() -> None:
+    """Every recipient household appears once, keyed by `hh_id`."""
+    frame = _run_engine(n_replicates=3, transport_log_scale=0.3)
+    assert list(frame["hh_id"]) == [101, 102, 103]
+
+
+def test_impute_replicates_transport_shock_makes_replicates_differ() -> None:
+    """A positive transport scale gives each replicate a distinct systematic level."""
+    frame = _run_engine(n_replicates=5, transport_log_scale=0.3)
+    assert not np.allclose(frame["draw_0"].to_numpy(), frame["draw_1"].to_numpy())
+
+
+def test_impute_replicates_are_identical_without_transport_under_a_fixed_fit() -> None:
+    """With no transport shock and a fixed fit, replicates coincide."""
+    frame = _run_engine(n_replicates=5, transport_log_scale=0.0)
+    np.testing.assert_array_equal(
+        frame["draw_0"].to_numpy(), frame["draw_4"].to_numpy()
+    )
+
+
+def test_impute_replicates_varies_the_bootstrap_seed_per_replicate() -> None:
+    """Each replicate refits under a distinct bootstrap seed."""
+    spy = mock.MagicMock(return_value=_stub_result())
+    with mock.patch(_RUN_IMPUTATION, spy):
+        impute_replicates(
+            {},
+            n_replicates=3,
+            base_seed=0,
+            transport_log_scale=0.0,
+            total_scale=100_000.0,
+            n_draws=5,
+            k=3,
+        )
+    seeds = {call.kwargs["bootstrap_seed"] for call in spy.call_args_list}
+    assert len(seeds) == 3
+
+
+def test_impute_replicates_rejects_non_positive_replicate_count() -> None:
+    """At least one replicate is required."""
+    with pytest.raises(ValueError, match="n_replicates"):
+        _run_engine(n_replicates=0, transport_log_scale=0.3)
