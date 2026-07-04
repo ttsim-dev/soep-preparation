@@ -58,6 +58,7 @@ pygments = ">=2.19.2"
 pygraphviz = "*"
 scikit-learn = ">=1.9.0,<2"
 [tool.pixi.environments]
+default = [ "py314", "tests" ]
 py314 = [ "py314", "tests" ]
 [tool.pixi.feature.py314]
 dependencies.python = "~=3.14.0"
@@ -146,9 +147,11 @@ expand_tables = [
 
 [tool.ty]
 # ty resolves third-party imports from this pixi env (the ty-pre-commit hook runs
-# `uv check --no-project`, so uv neither creates a `.venv` nor resolves deps). Run
-# `pixi install` once.
-environment.python = ".pixi/envs/py314"
+# `uv check --no-project`, so uv neither creates a `.venv` nor resolves deps). Points at
+# the `default` environment so a bare `pixi install` (no `-e`) builds it and ty resolves
+# out of the box; `default` carries the same `py314` + `tests` features as the `py314`
+# env, so the checked packages (Python 3.14, scikit-learn, pytest) are all present.
+environment.python = ".pixi/envs/default"
 rules.ambiguous-protocol-member = "error"
 rules.deprecated = "error"
 rules.division-by-zero = "error"
