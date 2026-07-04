@@ -39,8 +39,9 @@ from soep_preparation.wealth_imputation.replicates import (
     transport_scale_from_official_aggregates,
 )
 
-# Cleaned modules the imputation consumes: household + person wealth and the covariates.
-_IMPUTE_MODULES = ("hwealth", "pwealth", "pequiv", "pgen", "ppathl", "hgen")
+# Cleaned modules the imputation consumes: household + person wealth, the covariates,
+# and `hpathl` for the household design weight used to calibrate the transport scale.
+_IMPUTE_MODULES = ("hwealth", "pwealth", "pequiv", "pgen", "ppathl", "hgen", "hpathl")
 
 # One predictive draw per replicate; five released, matching the DIW implicate count.
 _N_REPLICATES = 5
@@ -48,6 +49,8 @@ _N_RELEASED = 5
 _N_DRAWS = 1
 _SEED = 0
 _K = 10
+
+_WEIGHT_COLUMN = "hh_weighting_factor"
 
 # Official all-wave net-wealth total (`w011h`, implicate a) and the wealth waves it
 # calibrates the transport scale from.
@@ -95,10 +98,17 @@ if RUN_WEALTH_IMPUTATION:
             implicates_path: Output Feather file of the released projection draws.
             summary_path: Output JSON of the calibration, Monte-Carlo error, and guards.
         """
-        aggregates = official_wealth_aggregates(
+        household_wealth = pd.merge(
             modules["hwealth"],
+            modules["hpathl"][["hh_id", "survey_year", _WEIGHT_COLUMN]],
+            on=["hh_id", "survey_year"],
+            how="left",
+        )
+        aggregates = official_wealth_aggregates(
+            household_wealth,
             total_column=_OFFICIAL_TOTAL_COLUMN,
             waves=_WEALTH_WAVES,
+            weight_column=_WEIGHT_COLUMN,
         )
         transport_log_scale = transport_scale_from_official_aggregates(
             aggregates["wave_aggregates"]
@@ -118,10 +128,10 @@ if RUN_WEALTH_IMPUTATION:
 
         summary = {
             "calibration": {
-                # Unweighted row-sum aggregates (no SOEP design weights), consistent
-                # with the rest of the harness; a sample-total-growth prior, not a
-                # validated population transport-error scale.
-                "aggregate_basis": "unweighted_sample_total",
+                # Design-weighted population totals (household weight `hhrf`), so the
+                # cross-wave log-growth reflects population wealth, not sample size. It
+                # is still an empirical prior, not a validated transport-error scale.
+                "aggregate_basis": "design_weighted_population_total",
                 "wave_aggregates": {
                     str(year): value
                     for year, value in aggregates["wave_aggregates"].items()

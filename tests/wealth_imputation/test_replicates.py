@@ -198,6 +198,60 @@ def test_official_wealth_aggregates_ignores_non_wealth_waves() -> None:
     assert set(result["wave_aggregates"]) == {2012, 2017}
 
 
+def test_official_wealth_aggregates_weights_the_wave_sum() -> None:
+    """With a weight column each wave aggregate is the design-weighted total."""
+    frame = pd.DataFrame(
+        {
+            "survey_year": [2012, 2012, 2017],
+            "hh_net_overall_wealth_a": [100.0, 200.0, 300.0],
+            "hh_weight": [2.0, 1.0, 1.0],
+        }
+    )
+    result = official_wealth_aggregates(
+        frame,
+        total_column="hh_net_overall_wealth_a",
+        waves=[2012, 2017],
+        weight_column="hh_weight",
+    )
+    assert result["wave_aggregates"] == {2012: 400.0, 2017: 300.0}
+
+
+def test_official_wealth_aggregates_weights_the_median_knee() -> None:
+    """The knee is the weighted median absolute total when weights are supplied."""
+    frame = pd.DataFrame(
+        {
+            "survey_year": [2012, 2012, 2012],
+            "hh_net_overall_wealth_a": [100.0, 200.0, 300.0],
+            "hh_weight": [3.0, 1.0, 1.0],
+        }
+    )
+    result = official_wealth_aggregates(
+        frame,
+        total_column="hh_net_overall_wealth_a",
+        waves=[2012],
+        weight_column="hh_weight",
+    )
+    np.testing.assert_allclose(result["median_absolute_total"], 100.0, atol=1e-6)
+
+
+def test_official_wealth_aggregates_drops_rows_with_missing_weight() -> None:
+    """A household with a missing weight does not contribute to the aggregate."""
+    frame = pd.DataFrame(
+        {
+            "survey_year": [2012, 2012],
+            "hh_net_overall_wealth_a": [100.0, 200.0],
+            "hh_weight": [1.0, np.nan],
+        }
+    )
+    result = official_wealth_aggregates(
+        frame,
+        total_column="hh_net_overall_wealth_a",
+        waves=[2012],
+        weight_column="hh_weight",
+    )
+    assert result["wave_aggregates"] == {2012: 100.0}
+
+
 def test_official_wealth_aggregates_are_unweighted_row_sums() -> None:
     """A raw row sum: duplicating a row doubles that wave's total (unweighted)."""
     base = pd.DataFrame(

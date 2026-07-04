@@ -275,36 +275,75 @@ def official_wealth_aggregates(
     total_column: str,
     waves: Sequence[int],
     wave_column: str = "survey_year",
+    weight_column: str | None = None,
 ) -> OfficialWealthAggregates:
     """Aggregate the official household net-wealth total per wealth wave.
 
-    Both returned quantities are disclosure-safe population aggregates -- the summed
-    total per wave (the input to `transport_scale_from_official_aggregates`) and the
-    median absolute total (the asinh knee via `robust_total_scale`).
+    With `weight_column`, each wave aggregate is the design-weighted total
+    `Σ wᵢ · totalᵢ` (a population total, invariant to sample size and composition), and
+    the knee is the weighted median absolute total. Without it, the aggregates are raw
+    unweighted row sums -- sensitive to how many households each wave sampled -- so the
+    resulting transport scale should be read as a sample-total-growth prior.
 
     Args:
         household_wealth: Cleaned household-wealth frame across waves.
         total_column: Column holding the official net-wealth total (e.g. `w011h`).
         waves: The wealth-wave years to aggregate.
         wave_column: Column identifying each row's survey year.
+        weight_column: Optional household design-weight column; rows with a missing
+            weight are dropped.
 
     Returns:
-        `wave_aggregates` (summed total per wave, waves with no data omitted) and
-        `median_absolute_total`.
+        `wave_aggregates` (weighted or raw total per wave, waves with no data omitted)
+        and `median_absolute_total`.
 
     """
     totals = pd.to_numeric(household_wealth[total_column], errors="coerce")
     years = household_wealth[wave_column]
+    weights = (
+        pd.to_numeric(household_wealth[weight_column], errors="coerce")
+        if weight_column is not None
+        else None
+    )
     wave_aggregates: dict[int, float] = {}
     for wave in waves:
-        wave_totals = totals[years == wave].dropna()
-        if not wave_totals.empty:
-            wave_aggregates[wave] = float(wave_totals.sum())
-    across_waves = totals[years.isin(waves)].dropna().to_numpy()
-    return {
-        "wave_aggregates": wave_aggregates,
-        "median_absolute_total": robust_total_scale(across_waves),
-    }
+        in_wave = years == wave
+        if weights is None:
+            wave_totals = totals[in_wave].dropna()
+            if not wave_totals.empty:
+                wave_aggregates[wave] = float(wave_totals.sum())
+        else:
+            valid = in_wave & totals.notna() & weights.notna()
+            if valid.any():
+                wave_aggregates[wave] = float((totals[valid] * weights[valid]).sum())
+    in_waves = years.isin(waves)
+    if weights is None:
+        knee = robust_total_scale(totals[in_waves].dropna().to_numpy())
+    else:
+        valid = in_waves & totals.notna() & weights.notna()
+        knee = _weighted_median_absolute(
+            totals[valid].to_numpy(), weights[valid].to_numpy()
+        )
+    return {"wave_aggregates": wave_aggregates, "median_absolute_total": knee}
+
+
+def _weighted_median_absolute(values: np.ndarray, weights: np.ndarray) -> float:
+    """Return the weighted median of `|values|`, or 1.0 if no positive weight remains.
+
+    The weighted median is the smallest absolute total at which the cumulative weight
+    reaches half the total weight -- the robust, sample-composition-invariant analog of
+    `robust_total_scale`'s asinh knee.
+    """
+    magnitude = np.abs(np.asarray(values, dtype="float64"))
+    weight = np.asarray(weights, dtype="float64")
+    total_weight = weight.sum()
+    if magnitude.size == 0 or total_weight <= 0.0:
+        return 1.0
+    order = np.argsort(magnitude)
+    cumulative = np.cumsum(weight[order])
+    crossing = np.searchsorted(cumulative, total_weight / 2.0)
+    median = float(magnitude[order][min(int(crossing), magnitude.size - 1)])
+    return median if median > 0.0 else 1.0
 
 
 def build_implicates_metadata(
