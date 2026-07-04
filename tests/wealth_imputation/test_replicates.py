@@ -5,6 +5,8 @@ import pytest
 
 from soep_preparation.wealth_imputation.replicates import (
     bayesian_bootstrap_weights,
+    draw_transport_shocks,
+    transport_log_scale_from_fold_errors,
 )
 
 
@@ -45,3 +47,51 @@ def test_bayesian_bootstrap_weights_rejects_non_positive_unit_count(bad_n: int) 
     """A replicate needs at least one unit to reweight."""
     with pytest.raises(ValueError, match="n_units"):
         bayesian_bootstrap_weights(n_units=bad_n, seed=0)
+
+
+def test_transport_log_scale_is_rms_of_fold_errors() -> None:
+    """The transport scale is the root-mean-square forward-prediction log error."""
+    scale = transport_log_scale_from_fold_errors([0.1, -0.1, 0.2])
+    np.testing.assert_allclose(scale, np.sqrt((0.01 + 0.01 + 0.04) / 3), rtol=1e-9)
+
+
+def test_transport_log_scale_is_zero_for_perfect_folds() -> None:
+    """No forward-prediction error implies no transport uncertainty."""
+    assert transport_log_scale_from_fold_errors([0.0, 0.0]) == 0.0
+
+
+def test_transport_log_scale_rejects_no_folds() -> None:
+    """Calibration needs at least one rolling-origin fold error."""
+    with pytest.raises(ValueError, match="fold"):
+        transport_log_scale_from_fold_errors([])
+
+
+def test_draw_transport_shocks_has_one_shock_per_replicate() -> None:
+    """Each replicate receives exactly one systematic shock."""
+    shocks = draw_transport_shocks(n_replicates=60, log_scale=0.3, seed=0)
+    assert shocks.shape == (60,)
+
+
+def test_draw_transport_shocks_are_zero_when_scale_is_zero() -> None:
+    """A zero transport scale leaves every replicate unshifted."""
+    shocks = draw_transport_shocks(n_replicates=20, log_scale=0.0, seed=0)
+    np.testing.assert_array_equal(shocks, np.zeros(20))
+
+
+def test_draw_transport_shocks_match_the_calibrated_scale() -> None:
+    """Across many replicates the shock spread reproduces the calibrated log scale."""
+    shocks = draw_transport_shocks(n_replicates=100_000, log_scale=0.25, seed=1)
+    np.testing.assert_allclose(shocks.std(), 0.25, rtol=0.02)
+
+
+def test_draw_transport_shocks_are_reproducible_for_a_seed() -> None:
+    """The same seed reproduces the identical shock draws."""
+    first = draw_transport_shocks(n_replicates=40, log_scale=0.2, seed=5)
+    second = draw_transport_shocks(n_replicates=40, log_scale=0.2, seed=5)
+    np.testing.assert_array_equal(first, second)
+
+
+def test_draw_transport_shocks_reject_negative_scale() -> None:
+    """A log scale is a standard deviation and cannot be negative."""
+    with pytest.raises(ValueError, match="log_scale"):
+        draw_transport_shocks(n_replicates=10, log_scale=-0.1, seed=0)
