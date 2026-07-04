@@ -10,8 +10,10 @@ import pytest
 from soep_preparation.wealth_imputation.replicates import (
     apply_transport_shock,
     bayesian_bootstrap_weights,
+    build_implicates_metadata,
     draw_transport_shocks,
     impute_replicates,
+    official_wealth_aggregates,
     replicate_mc_summary,
     robust_total_scale,
     select_released_implicates,
@@ -166,6 +168,72 @@ def test_robust_total_scale_is_median_absolute_total() -> None:
 def test_robust_total_scale_falls_back_to_one_without_positive_magnitude() -> None:
     """An all-zero total column still yields a usable positive scale."""
     assert robust_total_scale(np.array([0.0, 0.0])) == 1.0
+
+
+def _official_hwealth() -> pd.DataFrame:
+    """Household net-wealth totals across two wealth waves plus a non-wealth year."""
+    return pd.DataFrame(
+        {
+            "survey_year": [2011, 2012, 2012, 2017, 2017],
+            "hh_net_overall_wealth_a": [999.0, -100.0, 200.0, 300.0, -400.0],
+        }
+    )
+
+
+def test_official_wealth_aggregates_sums_the_total_per_wave() -> None:
+    """Each wealth wave's aggregate is the sum of its household totals."""
+    result = official_wealth_aggregates(
+        _official_hwealth(), total_column="hh_net_overall_wealth_a", waves=[2012, 2017]
+    )
+    assert result["wave_aggregates"] == {2012: 100.0, 2017: -100.0}
+
+
+def test_official_wealth_aggregates_ignores_non_wealth_waves() -> None:
+    """Years outside the wealth waves do not contribute an aggregate."""
+    result = official_wealth_aggregates(
+        _official_hwealth(), total_column="hh_net_overall_wealth_a", waves=[2012, 2017]
+    )
+    assert set(result["wave_aggregates"]) == {2012, 2017}
+
+
+def test_official_wealth_aggregates_reports_median_absolute_total() -> None:
+    """The knee is the median absolute total across the wealth waves."""
+    result = official_wealth_aggregates(
+        _official_hwealth(), total_column="hh_net_overall_wealth_a", waves=[2012, 2017]
+    )
+    np.testing.assert_allclose(result["median_absolute_total"], 250.0, atol=1e-6)
+
+
+def test_build_implicates_metadata_flags_no_observed_2022_wealth() -> None:
+    """The guard records that 2022 wealth is projected, never observed."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["uses_observed_2022_wealth"] is False
+
+
+def test_build_implicates_metadata_flags_transport_uncertainty_included() -> None:
+    """The guard records that the transport layer is priced."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["transport_uncertainty_included"] is True
+
+
+def test_build_implicates_metadata_is_not_rubin_valid() -> None:
+    """Without donor-implicate propagation the release is not fully Rubin-valid."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["rubin_valid"] is False
+
+
+def test_build_implicates_metadata_records_the_transport_scale() -> None:
+    """The calibrated transport log-scale is recorded for provenance."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    np.testing.assert_allclose(meta["transport_log_scale"], 0.2, rtol=1e-9)
 
 
 def test_apply_transport_shock_is_identity_at_zero_delta() -> None:

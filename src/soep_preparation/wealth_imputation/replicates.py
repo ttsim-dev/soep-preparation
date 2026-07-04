@@ -21,9 +21,33 @@ as an ordinary observed-and-imputed wealth wave.
 """
 
 from collections.abc import Mapping, Sequence
+from typing import TypedDict
 
 import numpy as np
 import pandas as pd
+
+
+class OfficialWealthAggregates(TypedDict):
+    """Disclosure-safe official-wealth aggregates that calibrate the transport layer."""
+
+    wave_aggregates: dict[int, float]
+    """Summed official net-wealth total per wealth wave."""
+    median_absolute_total: float
+    """Median absolute total -- the asinh knee for the transport shock."""
+
+
+class ImplicatesMetadata(TypedDict):
+    """Provenance and validity guards stored with the released `a`-`e` implicates."""
+
+    method: str
+    n_internal_replicates: int
+    n_released_implicates: int
+    transport_log_scale: float
+    total_scale: float
+    uses_observed_2022_wealth: bool
+    transport_uncertainty_included: bool
+    rubin_valid: bool
+    distribution_calibrated: bool
 
 
 def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
@@ -224,6 +248,82 @@ def robust_total_scale(totals: np.ndarray) -> float:
     magnitude = np.abs(np.asarray(totals, dtype="float64"))
     median = float(np.median(magnitude)) if magnitude.size else 0.0
     return median if median > 0.0 else 1.0
+
+
+def official_wealth_aggregates(
+    household_wealth: pd.DataFrame,
+    *,
+    total_column: str,
+    waves: Sequence[int],
+    wave_column: str = "survey_year",
+) -> OfficialWealthAggregates:
+    """Aggregate the official household net-wealth total per wealth wave.
+
+    Both returned quantities are disclosure-safe population aggregates -- the summed
+    total per wave (the input to `transport_scale_from_official_aggregates`) and the
+    median absolute total (the asinh knee via `robust_total_scale`).
+
+    Args:
+        household_wealth: Cleaned household-wealth frame across waves.
+        total_column: Column holding the official net-wealth total (e.g. `w011h`).
+        waves: The wealth-wave years to aggregate.
+        wave_column: Column identifying each row's survey year.
+
+    Returns:
+        `wave_aggregates` (summed total per wave, waves with no data omitted) and
+        `median_absolute_total`.
+
+    """
+    totals = pd.to_numeric(household_wealth[total_column], errors="coerce")
+    years = household_wealth[wave_column]
+    wave_aggregates: dict[int, float] = {}
+    for wave in waves:
+        wave_totals = totals[years == wave].dropna()
+        if not wave_totals.empty:
+            wave_aggregates[wave] = float(wave_totals.sum())
+    across_waves = totals[years.isin(waves)].dropna().to_numpy()
+    return {
+        "wave_aggregates": wave_aggregates,
+        "median_absolute_total": robust_total_scale(across_waves),
+    }
+
+
+def build_implicates_metadata(
+    *,
+    n_replicates: int,
+    n_released: int,
+    transport_log_scale: float,
+    total_scale: float,
+) -> ImplicatesMetadata:
+    """Assemble the metadata guards recorded with the released `a`-`e` implicates.
+
+    The guards keep an analyst from silently treating the release as ordinary
+    observed-and-imputed wealth: 2022 is a projection with no observed anchor, the
+    transport layer is a calibrated prior rather than a validated posterior, and the
+    donor-implicate layer is not yet propagated, so the release is not fully
+    Rubin-valid.
+
+    Args:
+        n_replicates: Internal replicates the engine ran.
+        n_released: Released implicates (five mirrors DIW).
+        transport_log_scale: Calibrated transport shock scale on the asinh axis.
+        total_scale: Asinh knee used for the transport shock.
+
+    Returns:
+        A JSON-serialisable metadata block.
+
+    """
+    return {
+        "method": "diw_mirrored_projection_replicates",
+        "n_internal_replicates": n_replicates,
+        "n_released_implicates": n_released,
+        "transport_log_scale": float(transport_log_scale),
+        "total_scale": float(total_scale),
+        "uses_observed_2022_wealth": False,
+        "transport_uncertainty_included": True,
+        "rubin_valid": False,
+        "distribution_calibrated": False,
+    }
 
 
 def bayesian_bootstrap_weights(n_units: int, *, seed: int) -> np.ndarray:
