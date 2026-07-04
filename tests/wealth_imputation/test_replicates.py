@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from soep_preparation.wealth_imputation.replicates import (
+    apply_transport_shock,
     bayesian_bootstrap_weights,
     draw_transport_shocks,
     transport_log_scale_from_fold_errors,
@@ -95,3 +96,36 @@ def test_draw_transport_shocks_reject_negative_scale() -> None:
     """A log scale is a standard deviation and cannot be negative."""
     with pytest.raises(ValueError, match="log_scale"):
         draw_transport_shocks(n_replicates=10, log_scale=-0.1, seed=0)
+
+
+def test_apply_transport_shock_is_identity_at_zero_delta() -> None:
+    """A zero shock leaves signed totals unchanged."""
+    totals = np.array([-50_000.0, 0.0, 250_000.0])
+    shocked = apply_transport_shock(totals, 0.0, scale=100_000.0)
+    np.testing.assert_allclose(shocked, totals, atol=1e-6)
+
+
+def test_apply_transport_shock_is_monotone_in_delta() -> None:
+    """A larger shock maps a total to a larger value."""
+    totals = np.array([250_000.0])
+    low = apply_transport_shock(totals, 0.1, scale=100_000.0)[0]
+    high = apply_transport_shock(totals, 0.5, scale=100_000.0)[0]
+    assert high > low
+
+
+def test_apply_transport_shock_shifts_a_positive_total_up_for_positive_delta() -> None:
+    """A positive level shock makes a positive total larger."""
+    shocked = apply_transport_shock(np.array([250_000.0]), 0.4, scale=100_000.0)
+    assert shocked[0] > 250_000.0
+
+
+def test_apply_transport_shock_shifts_a_negative_total_up_for_positive_delta() -> None:
+    """A positive level shock moves an indebted total up toward zero, not down."""
+    shocked = apply_transport_shock(np.array([-50_000.0]), 0.4, scale=100_000.0)
+    assert shocked[0] > -50_000.0
+
+
+def test_apply_transport_shock_rejects_non_positive_scale() -> None:
+    """The asinh scale must be positive."""
+    with pytest.raises(ValueError, match="scale"):
+        apply_transport_shock(np.array([1.0]), 0.1, scale=0.0)

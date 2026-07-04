@@ -101,3 +101,34 @@ def draw_transport_shocks(
         raise ValueError(msg)
     rng = np.random.default_rng(seed=seed)
     return rng.normal(0.0, log_scale, size=n_replicates)
+
+
+def apply_transport_shock(
+    totals: np.ndarray, delta: float, *, scale: float
+) -> np.ndarray:
+    """Shift signed household totals by `delta` on the `asinh(total / scale)` axis.
+
+    Net wealth is signed, so a multiplicative `exp(delta)` shock is undefined on a
+    negative total. Shifting on the asinh axis instead -- the same variance-stabilising
+    axis the amount model fits on -- gives a monotone, signed analog of a proportional
+    *level* shock: approximately multiplicative for wealth well outside
+    `[-scale, scale]` and linear near zero. A positive `delta` shifts every total up
+    (a richer 2022 than projected), a negative one down. The per-replicate shocks are
+    mean-zero, so across replicates they add transport spread without a net bias. A
+    household near zero net wealth can cross sign under a large shock -- an intended
+    consequence of a level shift, not a magnitude scaler.
+
+    Args:
+        totals: Signed household net-wealth totals for one replicate.
+        delta: The replicate's transport shock on the asinh axis.
+        scale: Positive total scale setting the asinh knee (euros).
+
+    Returns:
+        The shocked totals, same shape as `totals`.
+
+    """
+    if scale <= 0:
+        msg = f"scale must be positive, got {scale}"
+        raise ValueError(msg)
+    axis = np.arcsinh(np.asarray(totals, dtype=float) / scale)
+    return scale * np.sinh(axis + delta)
