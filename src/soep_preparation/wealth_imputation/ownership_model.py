@@ -47,7 +47,12 @@ class OwnershipModel:
 
     @classmethod
     def fit(
-        cls, features: np.ndarray, owns: np.ndarray, *, seed: int
+        cls,
+        features: np.ndarray,
+        owns: np.ndarray,
+        *,
+        seed: int,
+        sample_weight: np.ndarray | None = None,
     ) -> OwnershipModel:
         """Fit the incidence model on observed ownership outcomes.
 
@@ -55,6 +60,8 @@ class OwnershipModel:
             features: Design matrix, shape `(n_rows, n_features)`, all finite.
             owns: Binary ownership outcome per row (`0`/`1`), both classes present.
             seed: Random seed for the estimator's deterministic solver state.
+            sample_weight: Optional per-row training weights (e.g. an approximate-
+                Bayesian-bootstrap draw for a replicate). `None` fits unweighted.
 
         Returns:
             A fitted `OwnershipModel`.
@@ -65,7 +72,7 @@ class OwnershipModel:
         """
         _fail_if_training_data_invalid(features, owns)
         estimator = LogisticRegression(random_state=seed)
-        estimator.fit(features, owns)
+        estimator.fit(features, owns, sample_weight=sample_weight)
         return cls(estimator=estimator)
 
     def probability(self, features: np.ndarray) -> np.ndarray:

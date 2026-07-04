@@ -46,6 +46,34 @@ def test_amount_model_rejects_mismatched_lengths():
         AmountModel.fit(features, observed[:-1], scale=_SCALE)
 
 
+def test_amount_model_uniform_sample_weight_matches_unweighted():
+    """Weights of one reproduce the unweighted fit (bootstrap identity case)."""
+    features, observed = _asinh_linear_data()
+    weighted = AmountModel.fit(
+        features, observed, scale=_SCALE, sample_weight=np.ones(observed.shape[0])
+    )
+    unweighted = AmountModel.fit(features, observed, scale=_SCALE)
+    np.testing.assert_allclose(
+        weighted.predict_score(features), unweighted.predict_score(features), rtol=1e-9
+    )
+
+
+def test_amount_model_sample_weight_changes_the_fit():
+    """Non-uniform weights change the fitted score, i.e. reach the estimator.
+
+    The asinh-axis target is curved (`x + 0.4 x^2`), so the linear fit is imperfect and
+    reweighting one side of the support genuinely moves the fitted line.
+    """
+    feature = np.linspace(-2.0, 2.0, 40)
+    observed = _SCALE * np.sinh(feature + 0.4 * feature**2)
+    features = feature.reshape(-1, 1)
+    weights = np.where(feature > 0.0, 5.0, 1.0)
+    weighted = AmountModel.fit(features, observed, scale=_SCALE, sample_weight=weights)
+    unweighted = AmountModel.fit(features, observed, scale=_SCALE)
+    point = np.array([[1.0]])
+    assert weighted.predict_score(point)[0] != unweighted.predict_score(point)[0]
+
+
 def test_predict_score_stays_finite_at_the_extrapolation_boundary():
     """The PMM matching score is finite where `sinh` of the prediction would overflow.
 

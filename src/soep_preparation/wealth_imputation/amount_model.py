@@ -55,7 +55,12 @@ class AmountModel:
 
     @classmethod
     def fit(
-        cls, features: np.ndarray, observed_amounts: np.ndarray, *, scale: float
+        cls,
+        features: np.ndarray,
+        observed_amounts: np.ndarray,
+        *,
+        scale: float,
+        sample_weight: np.ndarray | None = None,
     ) -> AmountModel:
         """Fit the amount model on observed euro amounts.
 
@@ -63,6 +68,8 @@ class AmountModel:
             features: Design matrix, shape `(n_rows, n_features)`, all finite.
             observed_amounts: Observed euro amounts per row, all finite.
             scale: Positive, finite component scale for the asinh transform.
+            sample_weight: Optional per-row training weights (e.g. an approximate-
+                Bayesian-bootstrap draw for a replicate). `None` fits unweighted.
 
         Returns:
             A fitted `AmountModel`.
@@ -74,7 +81,7 @@ class AmountModel:
         _fail_if_training_data_invalid(features, observed_amounts)
         target = asinh_scaled(pd.Series(observed_amounts), scale).to_numpy()
         estimator = LinearRegression()
-        estimator.fit(features, target)
+        estimator.fit(features, target, sample_weight=sample_weight)
         return cls(estimator=estimator, scale=scale)
 
     def predict_score(self, features: np.ndarray) -> np.ndarray:

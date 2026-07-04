@@ -51,3 +51,25 @@ def test_ownership_model_rejects_non_binary_outcome():
     owns = np.full(10, 2, dtype=int)
     with pytest.raises(ValueError, match="binary"):
         OwnershipModel.fit(features, owns, seed=0)
+
+
+def test_ownership_model_uniform_sample_weight_matches_unweighted():
+    """Weights of one reproduce the unweighted fit (bootstrap identity case)."""
+    features, owns = _separable_data()
+    weighted = OwnershipModel.fit(
+        features, owns, seed=0, sample_weight=np.ones(owns.shape[0])
+    )
+    unweighted = OwnershipModel.fit(features, owns, seed=0)
+    np.testing.assert_allclose(
+        weighted.probability(features), unweighted.probability(features), rtol=1e-9
+    )
+
+
+def test_ownership_model_sample_weight_raises_incidence_when_owners_upweighted():
+    """Upweighting owners raises the fitted ownership probability at the boundary."""
+    features, owns = _separable_data()
+    weights = np.where(owns == 1, 5.0, 1.0)
+    weighted = OwnershipModel.fit(features, owns, seed=0, sample_weight=weights)
+    unweighted = OwnershipModel.fit(features, owns, seed=0)
+    point = np.array([[0.0]])
+    assert weighted.probability(point)[0] > unweighted.probability(point)[0]
