@@ -44,11 +44,14 @@ from soep_preparation.wealth_imputation.replicates import (
 _IMPUTE_MODULES = ("hwealth", "pwealth", "pequiv", "pgen", "ppathl", "hgen", "hpathl")
 
 # One predictive draw per replicate; five released, matching the DIW implicate count.
+# Each replicate imputes from a distinct DIW donor implicate a-e, so the
+# between-replicate spread also prices DIW's own imputation uncertainty (layer a).
 _N_REPLICATES = 5
 _N_RELEASED = 5
 _N_DRAWS = 1
 _SEED = 0
 _K = 10
+_DONOR_IMPLICATES = ("a", "b", "c", "d", "e")
 
 _WEIGHT_COLUMN = "hh_weighting_factor"
 
@@ -123,6 +126,7 @@ if RUN_WEALTH_IMPUTATION:
             total_scale=total_scale,
             n_draws=_N_DRAWS,
             k=_K,
+            donor_implicates=_DONOR_IMPLICATES,
         )
         released = select_released_implicates(replicates, n_released=_N_RELEASED)
 
@@ -145,6 +149,7 @@ if RUN_WEALTH_IMPUTATION:
                 n_released=_N_RELEASED,
                 transport_log_scale=transport_log_scale,
                 total_scale=total_scale,
+                donor_implicates_propagated=len(set(_DONOR_IMPLICATES)) > 1,
             ),
         }
 

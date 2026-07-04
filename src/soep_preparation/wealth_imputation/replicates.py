@@ -57,6 +57,48 @@ class ImplicatesMetadata(TypedDict):
     distribution_calibrated: bool
 
 
+_IMPLICATE_MODULES = ("hwealth", "pwealth")
+
+
+def select_implicate_modules(
+    modules: Mapping[str, pd.DataFrame], implicate: str
+) -> Mapping[str, pd.DataFrame]:
+    """Move DIW donor implicate `implicate` into the `_a` slots of the wealth modules.
+
+    `run_imputation` reads the `_a` implicate columns. To impute from a different DIW
+    donor implicate without changing `run_imputation`, overwrite each `{base}_a` column
+    with its `{base}_{implicate}` sibling in the wealth modules, so each replicate can
+    draw from a different DIW implicate and the between-replicate spread prices DIW's
+    own imputation uncertainty. Columns with no `{implicate}` sibling keep their `a`
+    value.
+
+    Args:
+        modules: Cleaned SOEP modules.
+        implicate: DIW implicate letter to move into the `_a` slots (`"a"` is identity).
+
+    Returns:
+        A shallow copy of `modules` with the wealth frames rewritten; the input is not
+        mutated. For `implicate == "a"` the input mapping is returned unchanged.
+
+    """
+    if implicate == "a":
+        return modules
+    updated = dict(modules)
+    for name in _IMPLICATE_MODULES:
+        if name not in modules:
+            continue
+        frame = modules[name]
+        replacements = {
+            str(column): frame[f"{str(column)[:-2]}_{implicate}"]
+            for column in frame.columns
+            if str(column).endswith("_a")
+            and f"{str(column)[:-2]}_{implicate}" in frame.columns
+        }
+        if replacements:
+            updated[name] = frame.assign(**replacements)
+    return updated
+
+
 def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
     modules: Mapping[str, pd.DataFrame],
     *,
@@ -66,6 +108,7 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
     total_scale: float,
     n_draws: int,
     k: int,
+    donor_implicates: Sequence[str] = ("a",),
 ) -> pd.DataFrame:
     """Build `n_replicates` component-only projection replicates of 2022 net wealth.
 
@@ -86,12 +129,17 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
         total_scale: Positive asinh knee (euros) for the transport shock.
         n_draws: Draws per replicate, forwarded to `run_imputation`; must be 1.
         k: Nearest-donor count, forwarded to `run_imputation`.
+        donor_implicates: DIW donor implicate letters cycled across replicates
+            (`select_implicate_modules`), so each replicate draws from a different DIW
+            implicate and their spread prices DIW's own imputation uncertainty. The
+            default `("a",)` uses only implicate `a` (no propagation).
 
     Returns:
         A frame with `hh_id` and one `draw_i` net-wealth total column per replicate.
 
     Raises:
-        ValueError: If `n_replicates` is not positive or `n_draws` is not 1.
+        ValueError: If `n_replicates` is not positive, `n_draws` is not 1, or
+            `donor_implicates` is empty.
 
     """
     # Lazy import: `impute` imports `bayesian_bootstrap_weights` from this module, so a
@@ -107,12 +155,17 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
         # the implicates are meant to carry.
         msg = f"each implicate is a single draw, so n_draws must be 1, got {n_draws}"
         raise ValueError(msg)
+    if len(donor_implicates) == 0:
+        msg = "donor_implicates must contain at least one implicate letter"
+        raise ValueError(msg)
     deltas = draw_transport_shocks(
         n_replicates, log_scale=transport_log_scale, seed=base_seed
     )
     results = [
         impute.run_imputation(
-            modules,
+            select_implicate_modules(
+                modules, donor_implicates[index % len(donor_implicates)]
+            ),
             n_draws=n_draws,
             seed=base_seed + index + 1,
             k=k,
@@ -352,6 +405,7 @@ def build_implicates_metadata(
     n_released: int,
     transport_log_scale: float,
     total_scale: float,
+    donor_implicates_propagated: bool = False,
 ) -> ImplicatesMetadata:
     """Assemble the metadata guards recorded with the released projection draws.
 
@@ -365,8 +419,10 @@ def build_implicates_metadata(
       validated posterior (the 2017-to-2022 drift is unobservable).
     - `euro_scale_mean_neutral`: the asinh-axis shock is mean-zero on its own axis but
       shifts euro-scale means, so it moves the level, not just its uncertainty.
-    - `donor_implicates_propagated`: DIW's donor implicates `b`-`e` are not threaded
-      through the fits, so the `a`-`e` letters are exchangeable draws, not DIW worlds.
+    - `donor_implicates_propagated`: whether replicates drew from more than one DIW
+      donor implicate, so DIW's own imputation uncertainty is priced. Even when true the
+      released letters are projection draws, each built from a DIW implicate, not DIW's
+      implicate `a`-`e` verbatim.
     - `rubin_valid`: false while any of the above hold.
 
     Args:
@@ -374,6 +430,9 @@ def build_implicates_metadata(
         n_released: Released projection draws.
         transport_log_scale: Calibrated transport shock scale on the asinh axis.
         total_scale: Asinh knee used for the transport shock.
+        donor_implicates_propagated: Whether replicates drew from more than one DIW
+            donor implicate; still leaves `rubin_valid` false because 2022 stays a
+            component-only projection with an unvalidated transport prior.
 
     Returns:
         A JSON-serialisable metadata block.
@@ -391,7 +450,7 @@ def build_implicates_metadata(
         "euro_scale_mean_neutral": False,
         "component_only": True,
         "residual_inclusive": False,
-        "donor_implicates_propagated": False,
+        "donor_implicates_propagated": donor_implicates_propagated,
         "rubin_valid": False,
         "distribution_calibrated": False,
     }

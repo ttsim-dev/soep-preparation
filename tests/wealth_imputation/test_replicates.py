@@ -1,5 +1,6 @@
 """Tests for the multiply-imputed 2022 wealth replicate engine."""
 
+from collections.abc import Mapping
 from types import SimpleNamespace
 from unittest import mock
 
@@ -7,6 +8,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from soep_preparation.wealth_imputation import replicates as replicates_module
 from soep_preparation.wealth_imputation.replicates import (
     apply_transport_shock,
     bayesian_bootstrap_weights,
@@ -16,6 +18,7 @@ from soep_preparation.wealth_imputation.replicates import (
     official_wealth_aggregates,
     replicate_mc_summary,
     robust_total_scale,
+    select_implicate_modules,
     select_released_implicates,
     transport_log_scale_from_fold_errors,
     transport_scale_from_official_aggregates,
@@ -305,11 +308,23 @@ def test_build_implicates_metadata_flags_component_only() -> None:
 
 
 def test_build_implicates_metadata_flags_donor_implicates_not_propagated() -> None:
-    """DIW donor implicates b-e are not threaded through the fits."""
+    """Default: DIW donor implicates b-e are not threaded through the fits."""
     meta = build_implicates_metadata(
         n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
     )
     assert meta["donor_implicates_propagated"] is False
+
+
+def test_build_implicates_metadata_records_donor_implicate_propagation() -> None:
+    """When replicates draw distinct DIW implicates, the flag flips to true."""
+    meta = build_implicates_metadata(
+        n_replicates=5,
+        n_released=5,
+        transport_log_scale=0.2,
+        total_scale=100_000.0,
+        donor_implicates_propagated=True,
+    )
+    assert meta["donor_implicates_propagated"] is True
 
 
 def test_build_implicates_metadata_flags_transport_not_mean_neutral() -> None:
@@ -431,6 +446,56 @@ def test_impute_replicates_rejects_non_positive_replicate_count() -> None:
     """At least one replicate is required."""
     with pytest.raises(ValueError, match="n_replicates"):
         _run_engine(n_replicates=0, transport_log_scale=0.3)
+
+
+def test_select_implicate_modules_moves_the_implicate_into_the_a_slot() -> None:
+    """Requesting implicate `b` overwrites each `_a` column with its `_b` sibling."""
+    hwealth = pd.DataFrame(
+        {"hh_financial_assets_value_a": [1.0], "hh_financial_assets_value_b": [2.0]}
+    )
+    out = select_implicate_modules({"hwealth": hwealth, "pwealth": pd.DataFrame()}, "b")
+    assert out["hwealth"]["hh_financial_assets_value_a"].iloc[0] == 2.0
+
+
+def test_select_implicate_modules_is_identity_for_implicate_a() -> None:
+    """Implicate `a` is the stored default, so the modules are returned unchanged."""
+    modules = {"hwealth": pd.DataFrame({"x_a": [1.0]}), "pwealth": pd.DataFrame()}
+    assert select_implicate_modules(modules, "a") is modules
+
+
+def test_select_implicate_modules_does_not_mutate_the_input() -> None:
+    """Building a replicate's modules leaves the shared input frame untouched."""
+    hwealth = pd.DataFrame({"c_a": [1.0], "c_b": [2.0]})
+    select_implicate_modules({"hwealth": hwealth, "pwealth": pd.DataFrame()}, "b")
+    assert hwealth["c_a"].iloc[0] == 1.0
+
+
+def test_impute_replicates_cycles_donor_implicates_across_replicates() -> None:
+    """Each replicate imputes from the next DIW donor implicate in turn."""
+    seen: list[str] = []
+    real = replicates_module.select_implicate_modules
+
+    def spy(
+        modules: Mapping[str, pd.DataFrame], implicate: str
+    ) -> Mapping[str, pd.DataFrame]:
+        seen.append(implicate)
+        return real(modules, implicate)
+
+    with (
+        mock.patch(_RUN_IMPUTATION, return_value=_stub_result()),
+        mock.patch.object(replicates_module, "select_implicate_modules", spy),
+    ):
+        impute_replicates(
+            {},
+            n_replicates=4,
+            base_seed=0,
+            transport_log_scale=0.0,
+            total_scale=1.0,
+            n_draws=1,
+            k=3,
+            donor_implicates=("a", "b"),
+        )
+    assert seen == ["a", "b", "a", "b"]
 
 
 def _replicate_frame(n_replicates: int) -> pd.DataFrame:
