@@ -267,6 +267,43 @@ def test_official_wealth_aggregates_drops_rows_with_missing_weight() -> None:
     assert result["wave_aggregates"] == {2012: 100.0}
 
 
+@pytest.mark.parametrize("bad_weight", [-1.0, np.inf])
+def test_official_wealth_aggregates_rejects_invalid_weights(bad_weight: float) -> None:
+    """A negative or non-finite design weight corrupts the calibration and fails."""
+    frame = pd.DataFrame(
+        {
+            "survey_year": [2012, 2012],
+            "hh_net_overall_wealth_a": [100.0, 200.0],
+            "hh_weight": [1.0, bad_weight],
+        }
+    )
+    with pytest.raises(ValueError, match="weight"):
+        official_wealth_aggregates(
+            frame,
+            total_column="hh_net_overall_wealth_a",
+            waves=[2012],
+            weight_column="hh_weight",
+        )
+
+
+def test_official_wealth_aggregates_rejects_zero_total_weight_for_a_wave() -> None:
+    """A wave whose observed households all carry zero weight has no population."""
+    frame = pd.DataFrame(
+        {
+            "survey_year": [2012, 2012],
+            "hh_net_overall_wealth_a": [100.0, 200.0],
+            "hh_weight": [0.0, 0.0],
+        }
+    )
+    with pytest.raises(ValueError, match="weight"):
+        official_wealth_aggregates(
+            frame,
+            total_column="hh_net_overall_wealth_a",
+            waves=[2012],
+            weight_column="hh_weight",
+        )
+
+
 def test_official_wealth_aggregates_are_unweighted_row_sums() -> None:
     """A raw row sum: duplicating a row doubles that wave's total (unweighted)."""
     base = pd.DataFrame(
@@ -603,6 +640,34 @@ def test_select_released_implicates_is_the_replicates_when_count_matches() -> No
         released["component_only_net_wealth_2022_a"].to_numpy(),
         frame["draw_0"].to_numpy(),
     )
+
+
+def test_released_projection_prefix_excludes_transport_scenario_columns() -> None:
+    """A projection-prefix selector returns only the five projection columns.
+
+    The transport-scenario stem must not start with the projection stem, so the macro
+    axis cannot be folded back into the released `a`-`e` projection set.
+    """
+    frame = _replicate_frame(5)
+    released = select_released_implicates(
+        frame, n_released=5, name="component_only_net_wealth_2022"
+    ).merge(
+        select_released_implicates(
+            frame,
+            n_released=5,
+            name="transport_scenario_component_only_net_wealth_2022",
+        ),
+        on="hh_id",
+        how="left",
+    )
+    selected = [
+        column
+        for column in released.columns
+        if str(column).startswith("component_only_net_wealth_2022_")
+    ]
+    assert selected == [
+        f"component_only_net_wealth_2022_{letter}" for letter in "abcde"
+    ]
 
 
 def test_select_released_implicates_rejects_too_few_replicates() -> None:

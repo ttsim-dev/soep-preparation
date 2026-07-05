@@ -131,9 +131,10 @@ if RUN_WEALTH_IMPUTATION:
             donor_implicates=_DONOR_IMPLICATES,
         )
         # Release the no-transport projection replicates (the interpretable object) and
-        # the transport-scenario draws as a second, clearly-named column set, so an
-        # analyst can see the macro-sensitivity axis without it being folded into the
-        # projection spread.
+        # the transport-scenario draws as a second column set. The scenario stem does
+        # not start with the projection stem, so a `startswith("component_only_net_
+        # wealth_2022_")` selector returns only the five projection columns and cannot
+        # silently fold the macro-sensitivity axis back into the projection set.
         released = select_released_implicates(
             replicates.projection,
             n_released=_N_RELEASED,
@@ -142,7 +143,7 @@ if RUN_WEALTH_IMPUTATION:
             select_released_implicates(
                 replicates.transport_scenario,
                 n_released=_N_RELEASED,
-                name="component_only_net_wealth_2022_transport_scenario",
+                name="transport_scenario_component_only_net_wealth_2022",
             ),
             on="hh_id",
             how="left",
@@ -160,6 +161,10 @@ if RUN_WEALTH_IMPUTATION:
                 },
                 "median_absolute_total": aggregates["median_absolute_total"],
                 "transport_log_scale": transport_log_scale,
+                # The scale is the dispersion of realised cross-wave wealth growth, not
+                # a validated forecast error, so it is a scenario prior -- not
+                # calibrated projection uncertainty.
+                "transport_scale_source": "weighted_aggregate_growth_scenario_prior",
             },
             # The interpretable between-replicate spread (bootstrap, donor-implicate,
             # donor-draw), free of the transport prior.

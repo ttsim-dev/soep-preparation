@@ -3,23 +3,29 @@
 SOEP-Core V41 ships no 2022 wealth wave, so every 2022 cell is a forward projection
 from the 2002-2017 donor waves. This module builds several complete replicates of that
 projection -- the six-component net-wealth total, *not* the residual-inclusive total --
-and releases them lettered `a`-`e`. The letters are exchangeable projection draws, not
-DIW's own donor implicates, and the release is deliberately **not** Rubin-valid: the
-metadata block records that so an analyst cannot silently treat 2022 as an ordinary
-observed-and-imputed wealth wave. Each replicate integrates the uncertainty layers that
-the single-value proxy in `impute` collapses:
+and releases them lettered `a`-`e`. The letters are projection replicates built from DIW
+donor implicates, not DIW's implicates verbatim, and the release is deliberately **not**
+Rubin-valid: the metadata block records that so an analyst cannot silently treat 2022 as
+an ordinary observed-and-imputed wealth wave. The projection spread *mixes* the
+uncertainty layers that the single-value proxy in `impute` collapses -- with a handful
+of replicates it is not decomposable into them (`layer_decomposition_available=false`):
 
 - parameter uncertainty, via an approximate-Bayesian-bootstrap reweighting of the
-  training units before each refit (`bayesian_bootstrap_weights`); this perturbs the
-  fitted models, not the predictive-mean-matching donor pool, so donor-composition
-  uncertainty is only partly captured;
+  training units before each refit (`bayesian_bootstrap_weights`). The same weights also
+  weight the predictive-mean-matching donor selection, so donor composition varies with
+  the parameter draw; it is an approximate bootstrap predictive draw, not a full
+  posterior predictive;
 - donor-draw uncertainty, via the single predictive-mean-matching draw each replicate
   performs (the replicates *are* the draws, so this is carried across `a`-`e`);
-- transport uncertainty, via a per-replicate asinh-axis level shock whose scale is
-  calibrated from the official aggregate's cross-wave log-growth dispersion
-  (`transport_scale_from_official_aggregates`). The 2017-to-2022 direction cannot be
-  observed, so this is a calibrated prior, not a validated posterior; the shock is
-  mean-zero on the asinh axis but shifts euro-scale means, so it moves the level.
+- donor-implicate uncertainty, via cycling a distinct DIW donor implicate `a`-`e` into
+  each replicate (`select_implicate_modules`).
+
+The transport shock is reported *separately* as a labelled macro-sensitivity axis
+(`ProjectionReplicates.transport_scenario`), not folded into the projection spread. Its
+scale is calibrated from the official aggregate's cross-wave log-growth dispersion
+(`transport_scale_from_official_aggregates`); the 2017-to-2022 direction cannot be
+observed, so it is a scenario prior, not a validated posterior, and the shock is
+mean-zero on the asinh axis but shifts euro-scale means, so it moves the level.
 """
 
 from collections.abc import Mapping, Sequence
@@ -156,8 +162,9 @@ class ProjectionReplicates:
 
     projection: pd.DataFrame
     """`hh_id` plus one no-transport `draw_i` total per replicate. The interpretable
-    object: its between-replicate spread reflects the bootstrap, donor-implicate, and
-    donor-draw layers, without the macro transport prior folded in."""
+    object: its between-replicate spread *mixes* the bootstrap, donor-implicate, and
+    donor-draw layers -- not decomposable into them with a handful of replicates -- and
+    excludes the macro transport prior."""
     transport_scenario: pd.DataFrame
     """`hh_id` plus one `draw_i` total per replicate after the systematic transport
     shock. A labelled macro-sensitivity axis reported beside `projection`, not merged
@@ -350,8 +357,9 @@ def replicate_mc_summary(frame: pd.DataFrame) -> dict[str, float]:
     Separates three distinct quantities the release must not conflate:
 
     - `aggregate_between_replicate_sd`: the sample SD (`ddof=1`) of the per-replicate
-      aggregate means -- the uncertainty the replicates represent (bootstrap,
-      donor-implicate, donor-draw), *not* simulation noise.
+      aggregate means -- the uncertainty the replicates represent, a mixture of the
+      bootstrap, donor-implicate, and donor-draw layers (not decomposable into them),
+      *not* simulation noise.
     - `mc_se_mean`: the Monte-Carlo standard error of the replicate mean,
       `sd / sqrt(n_replicates)` -- how tightly a finite replicate count pins the central
       aggregate.
@@ -473,11 +481,17 @@ def official_wealth_aggregates(
         waves: The wealth-wave years to aggregate.
         wave_column: Column identifying each row's survey year.
         weight_column: Optional household design-weight column; rows with a missing
-            weight are dropped.
+            weight are dropped. As the calibration gate it fails closed: a negative or
+            non-finite observed weight, or a requested wave whose observed households
+            carry zero total weight, raises.
 
     Returns:
         `wave_aggregates` (weighted or raw total per wave, waves with no data omitted)
         and `median_absolute_total`.
+
+    Raises:
+        ValueError: If `weight_column` holds a negative or non-finite observed weight,
+            or a requested wave has zero total observed weight.
 
     """
     totals = pd.to_numeric(household_wealth[total_column], errors="coerce")
@@ -487,6 +501,8 @@ def official_wealth_aggregates(
         if weight_column is not None
         else None
     )
+    if weights is not None:
+        _fail_if_weight_column_invalid(weights, totals, years, waves)
     wave_aggregates: dict[int, float] = {}
     for wave in waves:
         in_wave = years == wave
@@ -507,6 +523,33 @@ def official_wealth_aggregates(
             totals[valid].to_numpy(), weights[valid].to_numpy()
         )
     return {"wave_aggregates": wave_aggregates, "median_absolute_total": knee}
+
+
+def _fail_if_weight_column_invalid(
+    weights: pd.Series,
+    totals: pd.Series,
+    years: pd.Series,
+    waves: Sequence[int],
+) -> None:
+    """Fail closed on design weights that would corrupt the transport calibration.
+
+    Only weights on rows with an observed total in a requested wave feed the aggregates,
+    so those are the rows validated.
+    """
+    in_waves = years.isin(waves)
+    observed = in_waves & totals.notna() & weights.notna()
+    observed_weights = weights[observed].to_numpy(dtype="float64")
+    if not np.all(np.isfinite(observed_weights)):
+        msg = "weight_column must be finite (no NaN/inf) where wealth is observed"
+        raise ValueError(msg)
+    if np.any(observed_weights < 0.0):
+        msg = "weight_column must be non-negative"
+        raise ValueError(msg)
+    for wave in waves:
+        in_wave = (years == wave) & totals.notna() & weights.notna()
+        if bool(in_wave.any()) and weights[in_wave].sum() <= 0.0:
+            msg = f"weight_column has zero total weight for wave {wave}"
+            raise ValueError(msg)
 
 
 def _weighted_median_absolute(values: np.ndarray, weights: np.ndarray) -> float:
