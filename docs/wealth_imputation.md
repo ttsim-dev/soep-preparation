@@ -33,6 +33,11 @@ Both are written to `bld/wealth_imputation/`, together with a run summary whose
 `distribution_across_draws` describes the predictive wealth distribution (see
 [Uncertainty](#uncertainty-what-the-bands-mean)).
 
+A second release — the **projection replicates** — draws the component-only total five
+times to price parameter, donor-draw, and donor-implicate uncertainty, with transport as a
+labelled scenario axis (see
+[Projection replicates](#projection-replicates-the-multiply-drawn-release)).
+
 ## Components modelled
 
 Six components are modelled from the DIW-aggregated household wealth file (`hwealth`) and
@@ -115,6 +120,84 @@ Two summaries serve two jobs:
   of per-household medians is **not**, because it erases the zero and negative mass any
   single complete draw carries.
 
+## Projection replicates (the multiply-drawn release)
+
+The bands above hold the fitted models and a single wealth implicate fixed. A second,
+richer release — the **projection replicates** — instead varies them: it draws five
+complete projections of the component-only 2022 total (`task_replicates.py`,
+`household_wealth_2022_component_only_projection_replicates.arrow` +
+`projection_replicates_summary.json`). Each of the five columns is one predictive draw
+under its own conditions; the spread across them prices several uncertainty layers the
+single-value proxy collapses.
+
+```{important}
+The five columns are **projection replicates built from DIW donor implicates**, not DIW's
+implicates verbatim and **not Rubin-valid multiple imputation**. Every metadata flag in
+the summary records a way the object falls short of ordinary observed-and-imputed wealth;
+`rubin_valid` is `false`. Read the between-replicate spread as the dispersion of *this
+projection generator*, not as an MI variance.
+```
+
+### The layers each replicate carries
+
+- **Parameter** — an approximate Bayesian bootstrap (`Dirichlet(1,…,1)` reweighting of
+  the training units) refits the models per replicate. The same weights also weight the
+  PMM donor selection, so donor composition varies with the parameter draw
+  (`weighted_pmm=true`). It is an approximate bootstrap predictive draw, not a full
+  posterior predictive.
+- **Donor-draw** — the single PMM draw each replicate performs (the replicates *are* the
+  draws, so `n_draws` is 1).
+- **Donor-implicate** — each replicate imputes from a distinct DIW donor implicate `a`–`e`
+  (the base intervals use only implicate `a`). The summary's
+  `donor_implicate_propagation` block records the realised per-implicate swap count, so
+  propagation is certified as *done*, not merely requested.
+
+These three mix in the between-replicate spread and, with only five replicates, **cannot
+be decomposed** into individual contributions (`layer_decomposition_available=false`). The
+opt-in `layer_ablation` diagnostic re-runs the projection under one-layer-at-a-time
+configurations if a decomposition is needed.
+
+### Transport is a separate scenario axis
+
+A fourth layer — **transport** — is deliberately *not* folded into the projection spread.
+It is a per-replicate level shock on the asinh axis,
+`total' = S·sinh(asinh(total/S) + δ)` with `δ ~ Normal(0, transport_log_scale)`. Because
+`sinh` is convex in `δ`, the shock is mean-zero on the asinh axis but **shifts euro-scale
+means** (`euro_scale_mean_neutral=false`): it moves the level, not just its uncertainty.
+
+Its scale is a **scenario prior** — the dispersion of the design-weighted population
+wealth total's cross-wave log-growth — *not* a validated forecast-error posterior
+(`transport_is_scenario_axis=true`, `transport_posterior_validated=false`); the 2017→2022
+step is unobservable in V41. The summary reports it under more than one explicitly named
+scale, so a reader can see how much rests on the calibration choice:
+
+- `historical_growth_dispersion` — the full growth-dispersion prior.
+- `excluding_largest_growth_step` — a conservative leave-one-out bound that drops the
+  single most extreme five-year step.
+
+On the production data the full scale (≈ 0.23) roughly **doubles** the between-replicate
+spread (from ≈ 4.5% of the mean to ≈ 9.9%) and lifts the level ≈ 1.3%, whereas the
+boom-excluded bound (≈ 0.09) leaves the spread at essentially the no-transport level. In
+other words the entire "transport doubles the uncertainty" effect is one macro step — a
+reason to treat it as a labelled scenario, never as calibrated projection uncertainty.
+
+### Reading the release
+
+- **Columns.** `component_only_net_wealth_2022_a…e` are the interpretable no-transport
+  projection replicates. `transport_scenario_component_only_net_wealth_2022_a…e` are the
+  transport-shocked scenario draws. The scenario stem does **not** start with the
+  projection stem, so a `startswith("component_only_net_wealth_2022_")` selector returns
+  only the five projection columns — the scenario axis cannot be folded back in by
+  accident.
+- **Summary.** `projection_replicates` reports the interpretable spread: the
+  between-replicate SD (`aggregate_between_replicate_sd`, the uncertainty) and, separately,
+  the Monte-Carlo SE of the mean (`mc_se_mean = sd/√n`, simulation precision) — the two are
+  distinct and never conflated. `transport_scenarios` reports each named scale's spread and
+  its isolated euro-scale level shift (base held fixed).
+- **What not to do.** Do not quote the `a`–`e` spread as a Rubin MI variance, do not read
+  the transport scenario as calibrated uncertainty, and do not headline the 2022 level,
+  inequality, or tails (see [Intended use](#intended-use-and-calibration-status)).
+
 ## Backtest
 
 Two complementary checks, both low-cell-count-screened aggregates:
@@ -155,10 +238,13 @@ The across-draws bands are **draw dispersion** — Monte-Carlo spread over donor
 no-anchoring warning and the support diagnostics beside every 2022 level, tail, and
 mobility table.
 
-**Path to calibration (future, partly data-gated):** proper predictive intervals
-(bootstrap over model fits combined with the five a–e implicates), an all-wave `w011h`
-residual with a pseudo-out-of-fold backtest, and the raw 2022 wealth wave once SOEP
-releases it.
+**Path to calibration (future, partly data-gated):** the projection-replicate release
+already combines the bootstrap over model fits with the five `a`–`e` implicates and a
+transport axis, but its transport scale is still a scenario prior, not a validated
+forecast-error distribution. What remains is a *validated* transport scale (a rolling-origin
+forecast-error calibration once more wealth waves exist), residual-inclusive scenario
+replicates, an all-wave `w011h` residual with a pseudo-out-of-fold backtest, and the raw
+2022 wealth wave once SOEP releases it.
 
 ## Known limitations
 
@@ -177,8 +263,10 @@ releases it.
   a draw but not the empirical joint law of the components; tail mass and inequality can
   reflect recombination rather than observed households.
 - **Nominal debts** — mortgage, vehicle, and consumer-debt donors are not deflated.
-- **Single implicate** — implicate `a` is used as the representative value; multiple-
-  implicate uncertainty is not propagated.
+- **Single implicate (base intervals only)** — the per-household intervals use implicate
+  `a` as the representative value. The projection-replicate release instead propagates the
+  DIW donor implicates `a`–`e` across its five draws (see
+  [Projection replicates](#projection-replicates-the-multiply-drawn-release)).
 - **Vehicles are single-wave** — vehicle holdings are observed only in 2017, so the 2022
   vehicle contribution is a projection from a single wave (flagged in
   `single_wave_components`). No temporal backtest can validate it: in the rolling-origin
@@ -216,3 +304,13 @@ Outputs land in `bld/wealth_imputation/`:
 - `imputation_summary.json` — run settings, component counts, and the across-draw
   distributions (component-only and the residual scenario).
 - `backtest_2017_report.json` — the out-of-fold 2017 backtest scorecard.
+- `household_wealth_2022_component_only_projection_replicates.arrow` — the five
+  projection replicates (`component_only_net_wealth_2022_a…e`) and the transport-scenario
+  draws (`transport_scenario_component_only_net_wealth_2022_a…e`).
+- `projection_replicates_summary.json` — the transport calibration, the interpretable
+  `projection_replicates` spread, the per-scale `transport_scenarios`, the realised
+  `donor_implicate_propagation` counts, and the metadata guards.
+
+The projection-replicate release runs only that task; scope to it with
+`pixi run wealth -k task_wealth_imputation_replicates`. Its opt-in per-layer ablation is
+gated separately.
