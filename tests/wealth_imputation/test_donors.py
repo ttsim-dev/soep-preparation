@@ -62,6 +62,45 @@ def test_pmm_draw_uniform_and_weighted_differ_when_weights_are_skewed():
     assert weighted.values[0] == 30.0
 
 
+def test_pmm_draw_rejects_negative_donor_weights():
+    """A selection weight is a probability mass and cannot be negative."""
+    with pytest.raises(ValueError, match="donor_weights"):
+        pmm_draw(
+            np.array([0.0]),
+            np.array([0.0, 0.1]),
+            np.array([10.0, 20.0]),
+            k=2,
+            rng=np.random.default_rng(0),
+            donor_weights=np.array([1.0, -2.0]),
+        )
+
+
+def test_pmm_draw_rejects_mismatched_donor_weight_length():
+    """One weight per donor is required, aligned to `donor_scores`."""
+    with pytest.raises(ValueError, match="donor_weights"):
+        pmm_draw(
+            np.array([1.0]),
+            np.array([0.0, 1.0]),
+            np.array([10.0, 20.0]),
+            k=1,
+            rng=np.random.default_rng(0),
+            donor_weights=np.array([1.0]),
+        )
+
+
+def test_pmm_draw_rejects_nonfinite_donor_weights():
+    """A NaN weight cannot reach `rng.choice` as a probability."""
+    with pytest.raises(ValueError, match="donor_weights"):
+        pmm_draw(
+            np.array([0.0]),
+            np.array([0.0, 0.1]),
+            np.array([10.0, 20.0]),
+            k=2,
+            rng=np.random.default_rng(0),
+            donor_weights=np.array([1.0, np.nan]),
+        )
+
+
 def test_pmm_draw_never_selects_donor_outside_caliper():
     # Nearest donor (0.1) is inside the caliper; the other (100.0) is outside it.
     donor_scores = np.array([0.1, 100.0])

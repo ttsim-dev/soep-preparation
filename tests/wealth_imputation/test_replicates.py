@@ -10,6 +10,7 @@ import pytest
 
 from soep_preparation.wealth_imputation import replicates as replicates_module
 from soep_preparation.wealth_imputation.replicates import (
+    ProjectionReplicates,
     apply_transport_shock,
     bayesian_bootstrap_weights,
     build_implicates_metadata,
@@ -22,6 +23,7 @@ from soep_preparation.wealth_imputation.replicates import (
     select_released_implicates,
     transport_log_scale_from_fold_errors,
     transport_scale_from_official_aggregates,
+    transport_scenario_summary,
 )
 
 _RUN_IMPUTATION = "soep_preparation.wealth_imputation.impute.run_imputation"
@@ -35,9 +37,9 @@ def _stub_result() -> SimpleNamespace:
     return SimpleNamespace(intervals=intervals)
 
 
-def _run_engine(
+def _run_engine_full(
     *, n_replicates: int, transport_log_scale: float, n_draws: int = 1
-) -> pd.DataFrame:
+) -> ProjectionReplicates:
     with mock.patch(_RUN_IMPUTATION, return_value=_stub_result()):
         return impute_replicates(
             {},
@@ -48,6 +50,16 @@ def _run_engine(
             n_draws=n_draws,
             k=3,
         )
+
+
+def _run_engine(
+    *, n_replicates: int, transport_log_scale: float, n_draws: int = 1
+) -> pd.DataFrame:
+    return _run_engine_full(
+        n_replicates=n_replicates,
+        transport_log_scale=transport_log_scale,
+        n_draws=n_draws,
+    ).transport_scenario
 
 
 def test_bayesian_bootstrap_weights_has_one_weight_per_unit() -> None:
@@ -283,12 +295,28 @@ def test_build_implicates_metadata_flags_no_observed_2022_wealth() -> None:
     assert meta["uses_observed_2022_wealth"] is False
 
 
-def test_build_implicates_metadata_flags_transport_uncertainty_included() -> None:
-    """The guard records that the transport layer is priced."""
+def test_build_implicates_metadata_flags_transport_as_scenario_axis() -> None:
+    """The transport shock is a separate labelled axis, not folded into the spread."""
     meta = build_implicates_metadata(
         n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
     )
-    assert meta["transport_uncertainty_included"] is True
+    assert meta["transport_is_scenario_axis"] is True
+
+
+def test_build_implicates_metadata_flags_weighted_pmm() -> None:
+    """The PMM donor draw is weighted by the bootstrap weights."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["weighted_pmm"] is True
+
+
+def test_build_implicates_metadata_flags_no_layer_decomposition() -> None:
+    """Five replicates confound the uncertainty layers, so none is decomposable."""
+    meta = build_implicates_metadata(
+        n_replicates=5, n_released=5, transport_log_scale=0.2, total_scale=100_000.0
+    )
+    assert meta["layer_decomposition_available"] is False
 
 
 def test_build_implicates_metadata_is_not_rubin_valid() -> None:
@@ -425,6 +453,38 @@ def test_impute_replicates_are_identical_without_transport_under_a_fixed_fit() -
     )
 
 
+def test_impute_replicates_projection_is_free_of_the_transport_shock() -> None:
+    """The projection frame carries no transport shock even with a nonzero scale."""
+    result = _run_engine_full(n_replicates=5, transport_log_scale=0.3)
+    np.testing.assert_array_equal(
+        result.projection["draw_0"].to_numpy(),
+        result.projection["draw_1"].to_numpy(),
+    )
+
+
+def test_impute_replicates_transport_scenario_differs_from_projection() -> None:
+    """A positive transport scale shifts the scenario away from the projection."""
+    result = _run_engine_full(n_replicates=5, transport_log_scale=0.3)
+    assert not np.allclose(
+        result.projection["draw_1"].to_numpy(),
+        result.transport_scenario["draw_1"].to_numpy(),
+    )
+
+
+def test_transport_scenario_summary_isolates_a_positive_mean_shift() -> None:
+    """Holding the base fixed, the convex shock lifts a net-positive aggregate mean."""
+    result = _run_engine_full(n_replicates=5, transport_log_scale=0.3)
+    summary = transport_scenario_summary(result)
+    assert summary["aggregate_mean_shift"] > 0.0
+
+
+def test_transport_scenario_summary_is_zero_shift_without_transport() -> None:
+    """A zero transport scale leaves the aggregate mean unchanged."""
+    result = _run_engine_full(n_replicates=5, transport_log_scale=0.0)
+    summary = transport_scenario_summary(result)
+    assert summary["aggregate_mean_shift"] == 0.0
+
+
 def test_impute_replicates_varies_the_bootstrap_seed_per_replicate() -> None:
     """Each replicate refits under a distinct bootstrap seed."""
     spy = mock.MagicMock(return_value=_stub_result())
@@ -468,6 +528,20 @@ def test_select_implicate_modules_does_not_mutate_the_input() -> None:
     hwealth = pd.DataFrame({"c_a": [1.0], "c_b": [2.0]})
     select_implicate_modules({"hwealth": hwealth, "pwealth": pd.DataFrame()}, "b")
     assert hwealth["c_a"].iloc[0] == 1.0
+
+
+def test_select_implicate_modules_rejects_a_missing_requested_suffix() -> None:
+    """Requesting implicate `b` when a consumed component lacks its `_b` sibling fails.
+
+    Otherwise the swap silently no-ops and the run reports donor implicates propagated
+    while still imputing from implicate `a`.
+    """
+    modules = {
+        "hwealth": pd.DataFrame({"hh_financial_assets_value_a": [1.0]}),
+        "pwealth": pd.DataFrame({"financial_assets_value_a": [2.0]}),
+    }
+    with pytest.raises(ValueError, match="implicate"):
+        select_implicate_modules(modules, "b")
 
 
 def test_impute_replicates_cycles_donor_implicates_across_replicates() -> None:
@@ -551,6 +625,41 @@ def test_replicate_mc_summary_is_zero_spread_for_identical_replicates() -> None:
 
 
 def test_replicate_mc_summary_reports_positive_spread_for_varying_replicates() -> None:
-    """Replicates with different aggregates carry a positive Monte-Carlo spread."""
+    """Replicates with different aggregates carry a positive replicate spread."""
     summary = replicate_mc_summary(_replicate_frame(6))
     assert summary["aggregate_between_replicate_sd"] > 0.0
+
+
+def _four_replicate_means_100_to_400() -> pd.DataFrame:
+    """Four replicates whose aggregate means are 100, 200, 300, 400."""
+    return pd.DataFrame(
+        {
+            "hh_id": [1, 2],
+            "draw_0": [100.0, 100.0],
+            "draw_1": [200.0, 200.0],
+            "draw_2": [300.0, 300.0],
+            "draw_3": [400.0, 400.0],
+        }
+    )
+
+
+def test_replicate_mc_summary_relative_between_replicate_sd_is_sd_over_mean() -> None:
+    """`relative_between_replicate_sd` is the sample SD of replicate means over mean."""
+    summary = replicate_mc_summary(_four_replicate_means_100_to_400())
+    means = np.array([100.0, 200.0, 300.0, 400.0])
+    sd = means.std(ddof=1)
+    assert summary["aggregate_between_replicate_sd"] == sd
+    assert summary["relative_between_replicate_sd"] == sd / means.mean()
+
+
+def test_replicate_mc_summary_mc_se_of_the_mean_scales_with_sqrt_n() -> None:
+    """The Monte-Carlo SE of the replicate mean is the between-replicate SD over √n."""
+    summary = replicate_mc_summary(_four_replicate_means_100_to_400())
+    sd = np.array([100.0, 200.0, 300.0, 400.0]).std(ddof=1)
+    assert summary["mc_se_mean"] == sd / np.sqrt(4)
+
+
+def test_replicate_mc_summary_does_not_call_the_spread_monte_carlo_error() -> None:
+    """The between-replicate spread is the uncertainty, not simulation error."""
+    summary = replicate_mc_summary(_four_replicate_means_100_to_400())
+    assert "relative_mc_error" not in summary

@@ -23,6 +23,8 @@ the single-value proxy in `impute` collapses:
 """
 
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from types import MappingProxyType
 from typing import TypedDict
 
 import numpy as np
@@ -47,9 +49,11 @@ class ImplicatesMetadata(TypedDict):
     transport_log_scale: float
     total_scale: float
     uses_observed_2022_wealth: bool
-    transport_uncertainty_included: bool
+    transport_is_scenario_axis: bool
     transport_posterior_validated: bool
     euro_scale_mean_neutral: bool
+    weighted_pmm: bool
+    layer_decomposition_available: bool
     component_only: bool
     residual_inclusive: bool
     donor_implicates_propagated: bool
@@ -58,6 +62,29 @@ class ImplicatesMetadata(TypedDict):
 
 
 _IMPLICATE_MODULES = ("hwealth", "pwealth")
+
+# The `_a` component bases `run_imputation` consumes from each wealth module. Every one
+# of these carries DIW implicates `a`-`e` in the cleaned data, so requesting implicate
+# `b`-`e` must find each base's sibling; a missing sibling means schema drift and fails
+# closed rather than silently imputing from implicate `a`.
+_REQUIRED_IMPLICATE_BASES: Mapping[str, tuple[str, ...]] = MappingProxyType(
+    {
+        "hwealth": (
+            "hh_property_value_primary_residence",
+            "hh_net_property_value_primary_residence",
+            "hh_financial_assets_value",
+            "hh_vehicles_value",
+            "hh_net_overall_wealth_including_vehicles_and_student_loans",
+        ),
+        "pwealth": (
+            "property_value_primary_residence",
+            "financial_assets_value",
+            "private_insurances_value",
+            "vehicles_value",
+            "consumer_debt_value",
+        ),
+    }
+)
 
 
 def select_implicate_modules(
@@ -69,8 +96,12 @@ def select_implicate_modules(
     donor implicate without changing `run_imputation`, overwrite each `{base}_a` column
     with its `{base}_{implicate}` sibling in the wealth modules, so each replicate can
     draw from a different DIW implicate and the between-replicate spread prices DIW's
-    own imputation uncertainty. Columns with no `{implicate}` sibling keep their `a`
-    value.
+    own imputation uncertainty.
+
+    Fails closed: for `implicate != "a"`, every consumed component base present in `_a`
+    form (`_REQUIRED_IMPLICATE_BASES`) must have its `{base}_{implicate}` sibling, so a
+    schema drift cannot silently leave the run on implicate `a` while the metadata
+    claims propagation. Non-consumed `_a` columns are swapped when their sibling exists.
 
     Args:
         modules: Cleaned SOEP modules.
@@ -80,9 +111,13 @@ def select_implicate_modules(
         A shallow copy of `modules` with the wealth frames rewritten; the input is not
         mutated. For `implicate == "a"` the input mapping is returned unchanged.
 
+    Raises:
+        ValueError: If a consumed component's requested implicate sibling is absent.
+
     """
     if implicate == "a":
         return modules
+    _fail_if_implicate_siblings_missing(modules, implicate)
     updated = dict(modules)
     for name in _IMPLICATE_MODULES:
         if name not in modules:
@@ -99,6 +134,38 @@ def select_implicate_modules(
     return updated
 
 
+def _fail_if_implicate_siblings_missing(
+    modules: Mapping[str, pd.DataFrame], implicate: str
+) -> None:
+    for name, bases in _REQUIRED_IMPLICATE_BASES.items():
+        if name not in modules:
+            continue
+        columns = set(modules[name].columns)
+        for base in bases:
+            if f"{base}_a" in columns and f"{base}_{implicate}" not in columns:
+                msg = (
+                    f"module {name!r} has {base}_a but no implicate sibling "
+                    f"{base}_{implicate}; cannot propagate implicate {implicate!r}"
+                )
+                raise ValueError(msg)
+
+
+@dataclass(frozen=True)
+class ProjectionReplicates:
+    """Component-only 2022 projection replicates with transport as a separate axis."""
+
+    projection: pd.DataFrame
+    """`hh_id` plus one no-transport `draw_i` total per replicate. The interpretable
+    object: its between-replicate spread reflects the bootstrap, donor-implicate, and
+    donor-draw layers, without the macro transport prior folded in."""
+    transport_scenario: pd.DataFrame
+    """`hh_id` plus one `draw_i` total per replicate after the systematic transport
+    shock. A labelled macro-sensitivity axis reported beside `projection`, not merged
+    into it."""
+    transport_deltas: np.ndarray
+    """The per-replicate asinh-axis transport shocks applied to `transport_scenario`."""
+
+
 def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
     modules: Mapping[str, pd.DataFrame],
     *,
@@ -109,23 +176,25 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
     n_draws: int,
     k: int,
     donor_implicates: Sequence[str] = ("a",),
-) -> pd.DataFrame:
+) -> ProjectionReplicates:
     """Build `n_replicates` component-only projection replicates of 2022 net wealth.
 
-    Each replicate is one bootstrap refit (parameter uncertainty) plus one systematic
-    transport shock (transport uncertainty) on top of a single donor draw, so the spread
-    across the returned columns prices those layers jointly. `n_draws` must be 1: the
-    replicate *is* the draw, so donor-draw uncertainty is carried across replicates
-    rather than averaged into a per-replicate median. The columns are generic `draw_i`
-    totals; selecting and lettering a released subset is a separate assembly step.
+    Each replicate is one bootstrap refit (parameter uncertainty) carrying one donor
+    draw; `n_draws` must be 1, because the replicate *is* the draw, so donor-draw
+    uncertainty is carried across replicates rather than averaged into a per-replicate
+    median. The transport shock is applied as a *separate* frame
+    (`ProjectionReplicates.transport_scenario`), not folded into the projection, so the
+    projection spread stays an interpretable between-replicate uncertainty and transport
+    is a labelled macro-sensitivity axis. The columns are generic `draw_i` totals;
+    lettering a released subset is a separate assembly step.
 
     Args:
         modules: Cleaned SOEP modules passed through to `run_imputation`.
         n_replicates: Number of replicates to draw (must be positive).
         base_seed: Seed anchoring the per-replicate bootstrap/draw seeds and the
             transport shocks.
-        transport_log_scale: Transport-shock scale on the asinh axis; `0.0` disables
-            the transport layer.
+        transport_log_scale: Transport-shock scale on the asinh axis; `0.0` makes the
+            transport scenario coincide with the projection.
         total_scale: Positive asinh knee (euros) for the transport shock.
         n_draws: Draws per replicate, forwarded to `run_imputation`; must be 1.
         k: Nearest-donor count, forwarded to `run_imputation`.
@@ -135,7 +204,8 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
             default `("a",)` uses only implicate `a` (no propagation).
 
     Returns:
-        A frame with `hh_id` and one `draw_i` net-wealth total column per replicate.
+        A `ProjectionReplicates` with the no-transport `projection` frame, the shocked
+        `transport_scenario` frame, and the per-replicate transport deltas.
 
     Raises:
         ValueError: If `n_replicates` is not positive, `n_draws` is not 1, or
@@ -173,14 +243,59 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
         )
         for index in range(n_replicates)
     ]
-    frame = results[0].intervals[["hh_id"]].reset_index(drop=True)
+    hh_id = results[0].intervals[["hh_id"]].reset_index(drop=True)
+    projection = hh_id.copy()
+    transport_scenario = hh_id.copy()
     for index, result in enumerate(results):
-        frame[f"draw_{index}"] = apply_transport_shock(
-            result.intervals["point_estimate"].to_numpy(),
-            float(deltas[index]),
-            scale=total_scale,
+        base_totals = result.intervals["point_estimate"].to_numpy()
+        projection[f"draw_{index}"] = base_totals
+        transport_scenario[f"draw_{index}"] = apply_transport_shock(
+            base_totals, float(deltas[index]), scale=total_scale
         )
-    return frame
+    return ProjectionReplicates(
+        projection=projection,
+        transport_scenario=transport_scenario,
+        transport_deltas=deltas,
+    )
+
+
+def transport_scenario_summary(replicates: ProjectionReplicates) -> dict[str, float]:
+    """Isolate the transport shock's euro-scale effect, holding the base fixed.
+
+    `projection` and `transport_scenario` share the same base draws, so the difference
+    in their aggregate means isolates the level shift the (convex) transport shock
+    induces for the realised shocks -- the controlled before/after that raw production
+    means cannot give. It is one realisation of `n_shocks` draws, not the expectation
+    over the shock distribution.
+
+    Args:
+        replicates: The engine output holding both frames and the transport deltas.
+
+    Returns:
+        The shock count, the projection and transport-scenario aggregate means, their
+        difference, and the relative shift (`nan` when the base mean is ~zero).
+
+    """
+    base = _aggregate_mean(replicates.projection)
+    scenario = _aggregate_mean(replicates.transport_scenario)
+    shift = scenario - base
+    return {
+        "n_shocks": int(replicates.transport_deltas.size),
+        "projection_aggregate_mean": base,
+        "transport_scenario_aggregate_mean": scenario,
+        "aggregate_mean_shift": shift,
+        "relative_aggregate_mean_shift": (
+            float("nan") if np.isclose(base, 0.0) else shift / abs(base)
+        ),
+    }
+
+
+def _aggregate_mean(frame: pd.DataFrame) -> float:
+    draw_columns = [
+        column for column in frame.columns if str(column).startswith("draw_")
+    ]
+    per_replicate_mean = [frame[column].to_numpy().mean() for column in draw_columns]
+    return float(np.mean(per_replicate_mean))
 
 
 _IMPLICATE_LETTERS = "abcdefghijklmnopqrstuvwxyz"
@@ -195,11 +310,11 @@ def select_released_implicates(
     """Select the released component-only projection draws from a replicate frame.
 
     One column per released draw, keyed by `hh_id`. The columns are lettered `a`-`e`
-    for a five-draw release, but they are exchangeable projection draws, not DIW's own
-    donor implicates (see `build_implicates_metadata`). More replicates than released
-    columns can be run to estimate the Monte-Carlo error (`replicate_mc_summary`); the
-    released set is drawn evenly across the replicate index so it spans the full run
-    rather than an arbitrary prefix.
+    for a five-draw release, but they are projection replicates built from DIW donor
+    implicates, not DIW's implicates verbatim (see `build_implicates_metadata`). More
+    replicates than released columns can be run to characterise the between-replicate
+    spread (`replicate_mc_summary`); the released set is drawn evenly across the
+    replicate index so it spans the full run rather than an arbitrary prefix.
 
     Args:
         frame: Engine output with `hh_id` and one `draw_i` total column per replicate.
@@ -230,19 +345,27 @@ def select_released_implicates(
 
 
 def replicate_mc_summary(frame: pd.DataFrame) -> dict[str, float]:
-    """Summarise the Monte-Carlo error of the aggregate across replicates.
+    """Summarise the between-replicate spread of the aggregate mean net wealth.
 
-    Reports how much the population-mean net wealth wobbles from replicate to replicate
-    -- the Monte-Carlo error introduced by imputing with a finite number of replicates,
-    estimated over every replicate the engine produced (not just the released subset).
+    Separates three distinct quantities the release must not conflate:
+
+    - `aggregate_between_replicate_sd`: the sample SD (`ddof=1`) of the per-replicate
+      aggregate means -- the uncertainty the replicates represent (bootstrap,
+      donor-implicate, donor-draw), *not* simulation noise.
+    - `mc_se_mean`: the Monte-Carlo standard error of the replicate mean,
+      `sd / sqrt(n_replicates)` -- how tightly a finite replicate count pins the central
+      aggregate.
+    - the relative forms of each, divided by `|aggregate_mean|` (`nan` when the mean is
+      ~zero).
+
+    Estimated over every replicate the engine produced, not just the released subset.
 
     Args:
         frame: Engine output with `hh_id` and one `draw_i` total column per replicate.
 
     Returns:
-        `n_replicates`, the mean aggregate, its between-replicate standard deviation,
-        and the relative Monte-Carlo error (`sd / |mean|`, `nan` when the mean is
-        ~zero).
+        `n_replicates`, the mean aggregate, its between-replicate SD, the Monte-Carlo SE
+        of the mean, and the relative forms of both.
 
     """
     draw_columns = [
@@ -251,18 +374,24 @@ def replicate_mc_summary(frame: pd.DataFrame) -> dict[str, float]:
     per_replicate_mean = np.array(
         [frame[column].to_numpy().mean() for column in draw_columns], dtype=float
     )
+    n_replicates = len(draw_columns)
     aggregate_mean = float(per_replicate_mean.mean())
-    between_replicate_sd = float(per_replicate_mean.std(ddof=0))
-    relative_mc_error = (
-        float("nan")
-        if np.isclose(aggregate_mean, 0.0)
-        else between_replicate_sd / abs(aggregate_mean)
+    between_replicate_sd = (
+        float(per_replicate_mean.std(ddof=1)) if n_replicates > 1 else float("nan")
     )
+    mc_se_mean = between_replicate_sd / np.sqrt(n_replicates)
+    near_zero = np.isclose(aggregate_mean, 0.0)
     return {
-        "n_replicates": len(draw_columns),
+        "n_replicates": n_replicates,
         "aggregate_mean": aggregate_mean,
         "aggregate_between_replicate_sd": between_replicate_sd,
-        "relative_mc_error": relative_mc_error,
+        "relative_between_replicate_sd": (
+            float("nan") if near_zero else between_replicate_sd / abs(aggregate_mean)
+        ),
+        "mc_se_mean": mc_se_mean,
+        "relative_mc_se_mean": (
+            float("nan") if near_zero else mc_se_mean / abs(aggregate_mean)
+        ),
     }
 
 
@@ -415,14 +544,21 @@ def build_implicates_metadata(
 
     - `component_only` / `residual_inclusive`: the release is the six-component total,
       omitting the reconciliation residual (business, other real estate).
-    - `transport_posterior_validated`: the transport scale is a calibrated prior, not a
-      validated posterior (the 2017-to-2022 drift is unobservable).
+    - `transport_is_scenario_axis`: the transport shock is reported as a separate,
+      labelled macro-sensitivity axis, not folded into the released projection spread;
+      its scale is a calibrated prior, not a validated posterior
+      (`transport_posterior_validated=false`, the 2017-to-2022 drift is unobservable).
     - `euro_scale_mean_neutral`: the asinh-axis shock is mean-zero on its own axis but
       shifts euro-scale means, so it moves the level, not just its uncertainty.
+    - `weighted_pmm`: the PMM donor draw is weighted by the same bootstrap weights as
+      the model fits (an approximate Bayesian bootstrap), so donor composition varies
+      with the parameter draw.
+    - `layer_decomposition_available`: false -- five replicates confound the bootstrap,
+      donor-implicate, and donor-draw layers, so the spread cannot be attributed to one.
     - `donor_implicates_propagated`: whether replicates drew from more than one DIW
       donor implicate, so DIW's own imputation uncertainty is priced. Even when true the
-      released letters are projection draws, each built from a DIW implicate, not DIW's
-      implicate `a`-`e` verbatim.
+      released letters are projection replicates, each built from a DIW donor implicate,
+      not DIW's implicate `a`-`e` verbatim.
     - `rubin_valid`: false while any of the above hold.
 
     Args:
@@ -445,9 +581,11 @@ def build_implicates_metadata(
         "transport_log_scale": float(transport_log_scale),
         "total_scale": float(total_scale),
         "uses_observed_2022_wealth": False,
-        "transport_uncertainty_included": True,
+        "transport_is_scenario_axis": True,
         "transport_posterior_validated": False,
         "euro_scale_mean_neutral": False,
+        "weighted_pmm": True,
+        "layer_decomposition_available": False,
         "component_only": True,
         "residual_inclusive": False,
         "donor_implicates_propagated": donor_implicates_propagated,
@@ -463,9 +601,10 @@ def bayesian_bootstrap_weights(n_units: int, *, seed: int) -> np.ndarray:
     so the weights average one. Used as `sample_weight` in a replicate's model refit, so
     that each replicate reflects a different plausible parameter draw (the approximate
     Bayesian bootstrap), rather than the single fixed fit the point-estimate proxy uses.
-    This reweights the fitted ownership and amount models only; the predictive-mean-
-    matching donor pool and its nearest-neighbour selection are left unweighted, so
-    donor-composition uncertainty is not fully captured.
+    The same weights also weight the predictive-mean-matching donor selection
+    (`pmm_draw(donor_weights=...)`), so donor composition varies with the parameter draw
+    -- one weighted empirical distribution drives both the fit and the donor draw. This
+    is an approximate bootstrap predictive draw, not a full posterior predictive.
 
     Args:
         n_units: Number of training units to reweight (must be positive).

@@ -33,18 +33,14 @@ def _fail_if_pmm_inputs_invalid(  # noqa: PLR0913
     k: int,
     caliper: float | None,
     exclude: Sequence[Sequence[int]] | None,
+    donor_weights: np.ndarray | None,
 ) -> None:
     for name, arr in (
         ("recipient_scores", recipient_scores),
         ("donor_scores", donor_scores),
         ("donor_values", donor_values),
     ):
-        if arr.ndim != 1:
-            msg = f"{name} must be 1-D, got {arr.ndim}-D"
-            raise ValueError(msg)
-        if not np.all(np.isfinite(arr)):
-            msg = f"{name} must be finite (no NaN/inf)"
-            raise ValueError(msg)
+        _fail_if_score_array_invalid(name, arr)
     if donor_scores.shape[0] != donor_values.shape[0]:
         msg = (
             "donor_scores and donor_values must have equal length, got "
@@ -54,6 +50,8 @@ def _fail_if_pmm_inputs_invalid(  # noqa: PLR0913
     if donor_scores.shape[0] == 0:
         msg = "donors must be non-empty"
         raise ValueError(msg)
+    if donor_weights is not None:
+        _fail_if_donor_weights_invalid(donor_weights, donor_scores.shape[0])
     if not isinstance(k, int) or isinstance(k, bool):
         msg = f"k must be an integer, got {type(k).__name__}"
         raise TypeError(msg)
@@ -67,6 +65,33 @@ def _fail_if_pmm_inputs_invalid(  # noqa: PLR0913
         _fail_if_exclude_invalid(
             exclude, recipient_scores.shape[0], donor_scores.shape[0]
         )
+
+
+def _fail_if_score_array_invalid(name: str, arr: np.ndarray) -> None:
+    if arr.ndim != 1:
+        msg = f"{name} must be 1-D, got {arr.ndim}-D"
+        raise ValueError(msg)
+    if not np.all(np.isfinite(arr)):
+        msg = f"{name} must be finite (no NaN/inf)"
+        raise ValueError(msg)
+
+
+def _fail_if_donor_weights_invalid(donor_weights: np.ndarray, n_donors: int) -> None:
+    if donor_weights.ndim != 1:
+        msg = f"donor_weights must be 1-D, got {donor_weights.ndim}-D"
+        raise ValueError(msg)
+    if donor_weights.shape[0] != n_donors:
+        msg = (
+            "donor_weights must have one weight per donor, got "
+            f"{donor_weights.shape[0]} for {n_donors} donors"
+        )
+        raise ValueError(msg)
+    if not np.all(np.isfinite(donor_weights)):
+        msg = "donor_weights must be finite (no NaN/inf)"
+        raise ValueError(msg)
+    if np.any(donor_weights < 0.0):
+        msg = "donor_weights must be non-negative"
+        raise ValueError(msg)
 
 
 def _fail_if_exclude_invalid(
@@ -133,11 +158,11 @@ def pmm_draw(  # noqa: PLR0913
     Raises:
         ValueError: On invalid inputs, or if a recipient has no eligible donor.
     """
+    weights = None if donor_weights is None else np.asarray(donor_weights, dtype=float)
     _fail_if_pmm_inputs_invalid(
-        recipient_scores, donor_scores, donor_values, k, caliper, exclude
+        recipient_scores, donor_scores, donor_values, k, caliper, exclude, weights
     )
     all_indices = np.arange(donor_scores.shape[0])
-    weights = None if donor_weights is None else np.asarray(donor_weights, dtype=float)
     n_recipients = recipient_scores.shape[0]
     values = np.empty(n_recipients, dtype=np.float64)
     donor_indices = np.empty(n_recipients, dtype=np.intp)

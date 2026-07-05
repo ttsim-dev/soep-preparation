@@ -1,20 +1,21 @@
 """Replicate task: build the component-only 2022 net-wealth projection replicates.
 
 Opt-in like the other wealth tasks (env var `SOEP_WEALTH_IMPUTATION`, or
-`pixi run wealth`). It calibrates the transport layer from the official cross-wave
-aggregates, runs the replicate engine -- five bootstrap refits, each contributing one
-predictive draw plus a systematic transport shock -- and writes the released `a`-`e`
-projection draws plus a disclosure-safe summary (calibration inputs, Monte-Carlo error,
-and the metadata guards).
+`pixi run wealth`). It calibrates the transport scale from the official cross-wave
+aggregates, runs the replicate engine -- five bootstrap refits, each cycling a distinct
+DIW donor implicate and contributing one predictive draw -- and writes the released
+`a`-`e` projection draws plus a disclosure-safe summary.
 
-The released columns are the six-component net-wealth total (they omit the
-reconciliation residual) and are lettered `a`-`e` as exchangeable projection draws, not
-DIW donor
-implicates; the metadata block records that the release is not Rubin-valid. Each draw is
-a single predictive draw -- the five replicates *are* the draws, so donor-draw
-uncertainty is carried across them rather than averaged into a point estimate -- while
-the parameter (bootstrap) and transport layers enter through the between-replicate
-spread.
+The released `component_only_net_wealth_2022_*` columns are the six-component net-wealth
+total (they omit the reconciliation residual), lettered `a`-`e` as projection replicates
+built from DIW donor implicates -- not DIW's own implicates; the metadata block records
+that the release is not Rubin-valid. Each is a single predictive draw -- the five
+replicates *are* the draws, so donor-draw uncertainty is carried across them -- and
+their spread reflects the bootstrap and donor-implicate layers. The transport shock is
+reported *separately*: the `component_only_net_wealth_2022_transport_scenario_*` columns
+and the summary's `transport_scenario` block are a labelled macro-sensitivity axis (a
+calibrated, unvalidated prior that shifts the euro-scale level), kept out of the
+projection spread so the latter stays an interpretable between-replicate uncertainty.
 """
 
 import json
@@ -37,6 +38,7 @@ from soep_preparation.wealth_imputation.replicates import (
     replicate_mc_summary,
     select_released_implicates,
     transport_scale_from_official_aggregates,
+    transport_scenario_summary,
 )
 
 # Cleaned modules the imputation consumes: household + person wealth, the covariates,
@@ -128,7 +130,23 @@ if RUN_WEALTH_IMPUTATION:
             k=_K,
             donor_implicates=_DONOR_IMPLICATES,
         )
-        released = select_released_implicates(replicates, n_released=_N_RELEASED)
+        # Release the no-transport projection replicates (the interpretable object) and
+        # the transport-scenario draws as a second, clearly-named column set, so an
+        # analyst can see the macro-sensitivity axis without it being folded into the
+        # projection spread.
+        released = select_released_implicates(
+            replicates.projection,
+            n_released=_N_RELEASED,
+            name="component_only_net_wealth_2022",
+        ).merge(
+            select_released_implicates(
+                replicates.transport_scenario,
+                n_released=_N_RELEASED,
+                name="component_only_net_wealth_2022_transport_scenario",
+            ),
+            on="hh_id",
+            how="left",
+        )
 
         summary = {
             "calibration": {
@@ -143,7 +161,15 @@ if RUN_WEALTH_IMPUTATION:
                 "median_absolute_total": aggregates["median_absolute_total"],
                 "transport_log_scale": transport_log_scale,
             },
-            "monte_carlo_error": replicate_mc_summary(replicates),
+            # The interpretable between-replicate spread (bootstrap, donor-implicate,
+            # donor-draw), free of the transport prior.
+            "projection_replicates": replicate_mc_summary(replicates.projection),
+            # The transport shock as a separate labelled scenario axis: its own spread
+            # plus the isolated euro-scale level shift it induces (base held fixed).
+            "transport_scenario": {
+                **replicate_mc_summary(replicates.transport_scenario),
+                **transport_scenario_summary(replicates),
+            },
             "metadata": build_implicates_metadata(
                 n_replicates=_N_REPLICATES,
                 n_released=_N_RELEASED,
