@@ -69,6 +69,12 @@ class ImplicatesMetadata(TypedDict):
 
 _IMPLICATE_MODULES = ("hwealth", "pwealth")
 
+# Offset added to a replicate's bootstrap seed so the parameter-draw RNG (the Dirichlet
+# reweighting) and the donor-draw RNG (seeded by `seed`) start from different
+# bitstreams. Seeding both from the same integer would draw the two uncertainty layers
+# from shared entropy; a large offset keeps them independent while staying reproducible.
+_BOOTSTRAP_SEED_OFFSET = 1_000_000
+
 # The `_a` component bases `run_imputation` consumes from each wealth module. Every one
 # of these carries DIW implicates `a`-`e` in the cleaned data, so requesting implicate
 # `b`-`e` must find each base's sibling; a missing sibling means schema drift and fails
@@ -253,7 +259,11 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
             n_draws=n_draws,
             seed=base_seed + index + 1,
             k=k,
-            bootstrap_seed=(base_seed + index + 1) if use_bootstrap else None,
+            bootstrap_seed=(
+                base_seed + index + 1 + _BOOTSTRAP_SEED_OFFSET
+                if use_bootstrap
+                else None
+            ),
         )
         for index in range(n_replicates)
     ]
@@ -411,7 +421,7 @@ def count_implicate_swaps(modules: Mapping[str, pd.DataFrame], implicate: str) -
 
 def transport_scenario_summary(
     projection: pd.DataFrame, scenario: pd.DataFrame
-) -> dict[str, float]:
+) -> dict[str, float | int]:
     """Isolate a transport shock's euro-scale effect, holding the base projection fixed.
 
     `projection` and `scenario` share the same base draws, so the difference in their
@@ -446,6 +456,10 @@ def transport_scenario_summary(
 
 
 def _aggregate_mean(frame: pd.DataFrame) -> float:
+    # Unweighted mean across recipients of the per-replicate means. It is a reference
+    # level for the between-replicate spread and the transport shift, not a design-
+    # weighted population aggregate (the transport *scale* is calibrated from weighted
+    # population totals, but this projection mean deliberately is not).
     draw_columns = [
         column for column in frame.columns if str(column).startswith("draw_")
     ]
@@ -499,8 +513,11 @@ def select_released_implicates(
     return released
 
 
-def replicate_mc_summary(frame: pd.DataFrame) -> dict[str, float]:
+def replicate_mc_summary(frame: pd.DataFrame) -> dict[str, float | int]:
     """Summarise the between-replicate spread of the aggregate mean net wealth.
+
+    The `aggregate_mean` is the unweighted mean across recipients (a reference level for
+    the relative spreads), not a design-weighted population estimate.
 
     Separates three distinct quantities the release must not conflate:
 
@@ -618,6 +635,16 @@ def transport_log_scale_excluding_largest_step(
 
 def _official_log_growth_steps(wave_aggregates: Mapping[int, float]) -> np.ndarray:
     years = sorted(wave_aggregates)
+    # A dropped wave (no observed rows) would leave unequal year gaps, so a 10-year
+    # step would be compared against a 5-year one as if equal. Fail closed rather than
+    # mislabel the dispersion; the wealth waves are meant to be equally spaced.
+    gaps = np.diff(years)
+    if len(set(gaps.tolist())) > 1:
+        msg = (
+            "wealth waves must be equally spaced to compare log-growth steps, "
+            f"got years {years}"
+        )
+        raise ValueError(msg)
     levels = np.array([wave_aggregates[year] for year in years], dtype=float)
     if np.any(levels <= 0.0):
         msg = "official aggregates must be positive to take a logarithm"

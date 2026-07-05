@@ -205,6 +205,16 @@ def test_transport_scale_from_official_aggregates_rejects_non_positive_level() -
         transport_scale_from_official_aggregates({2007: 100.0, 2012: 0.0, 2017: 110.0})
 
 
+def test_transport_scale_from_official_aggregates_rejects_unequally_spaced_waves() -> (
+    None
+):
+    """Comparing log-growth steps requires equally spaced waves; a gap fails closed."""
+    with pytest.raises(ValueError, match="equally spaced"):
+        transport_scale_from_official_aggregates(
+            {2002: 100.0, 2012: 120.0, 2017: 140.0}
+        )
+
+
 def test_robust_total_scale_is_median_absolute_total() -> None:
     """The asinh knee is the median of the absolute net-wealth totals."""
     scale = robust_total_scale(np.array([-100.0, 200.0, 300.0, -400.0]))
@@ -626,6 +636,23 @@ def test_impute_replicates_varies_the_bootstrap_seed_per_replicate() -> None:
         )
     seeds = {call.kwargs["bootstrap_seed"] for call in spy.call_args_list}
     assert len(seeds) == 3
+
+
+def test_impute_replicates_decouples_bootstrap_seed_from_the_draw_seed() -> None:
+    """The parameter draw and the donor draw must not share a seed (shared entropy)."""
+    spy = mock.MagicMock(return_value=_stub_result())
+    with mock.patch(_RUN_IMPUTATION, spy):
+        impute_replicates(
+            {},
+            n_replicates=3,
+            base_seed=0,
+            transport_log_scale=0.0,
+            total_scale=100_000.0,
+            n_draws=1,
+            k=3,
+        )
+    for call in spy.call_args_list:
+        assert call.kwargs["bootstrap_seed"] != call.kwargs["seed"]
 
 
 def test_impute_replicates_rejects_non_positive_replicate_count() -> None:
