@@ -32,6 +32,7 @@ from soep_preparation.config import (
     BLD,
     MODULES,
     RUN_WEALTH_IMPUTATION,
+    RUN_WEALTH_LAYER_ABLATION,
     SRC,
 )
 from soep_preparation.wealth_imputation.replicates import (
@@ -60,11 +61,6 @@ _N_DRAWS = 1
 _SEED = 0
 _K = 10
 _DONOR_IMPLICATES = ("a", "b", "c", "d", "e")
-
-# Opt-in layer-ablation diagnostic (`layer_ablation_summary`): runs the projection under
-# four layer configurations, so one full set of refits per configuration. Off by default
-# to keep the standard run cheap; set True to attribute the projection spread to layers.
-_RUN_LAYER_ABLATION = False
 
 _WEIGHT_COLUMN = "hh_weighting_factor"
 
@@ -225,8 +221,9 @@ if RUN_WEALTH_IMPUTATION:
                 donor_implicates_propagated=len(set(_DONOR_IMPLICATES)) > 1,
             ),
         }
-        if _RUN_LAYER_ABLATION:
-            # Opt-in: one full set of refits per configuration, so off by default.
+        if RUN_WEALTH_LAYER_ABLATION:
+            # Opt-in (`SOEP_WEALTH_LAYER_ABLATION=1`): one full set of refits per
+            # configuration, so off even when the wealth subsystem runs.
             summary["layer_ablation"] = layer_ablation_summary(
                 modules,
                 n_replicates=_N_REPLICATES,
