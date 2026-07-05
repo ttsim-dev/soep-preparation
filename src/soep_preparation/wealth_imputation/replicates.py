@@ -167,10 +167,13 @@ class ProjectionReplicates:
     excludes the macro transport prior."""
     transport_scenario: pd.DataFrame
     """`hh_id` plus one `draw_i` total per replicate after the systematic transport
-    shock. A labelled macro-sensitivity axis reported beside `projection`, not merged
-    into it."""
-    transport_deltas: np.ndarray
-    """The per-replicate asinh-axis transport shocks applied to `transport_scenario`."""
+    shock at the primary scale. A labelled macro-sensitivity axis reported beside
+    `projection`, not merged into it. `apply_transport_scenario` rebuilds it at any
+    other scale from `projection`."""
+    donor_implicate_swaps: Mapping[str, int]
+    """Realised count of columns swapped into the `_a` slots per distinct DIW donor
+    implicate used (`0` for `a`). Records that propagation actually happened, rather
+    than inferring it from the requested implicate tuple."""
 
 
 def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
@@ -183,6 +186,7 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
     n_draws: int,
     k: int,
     donor_implicates: Sequence[str] = ("a",),
+    use_bootstrap: bool = True,
 ) -> ProjectionReplicates:
     """Build `n_replicates` component-only projection replicates of 2022 net wealth.
 
@@ -209,10 +213,16 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
             (`select_implicate_modules`), so each replicate draws from a different DIW
             implicate and their spread prices DIW's own imputation uncertainty. The
             default `("a",)` uses only implicate `a` (no propagation).
+        use_bootstrap: When `True`, each replicate refits under its own
+            approximate-Bayesian-bootstrap weights (which also weight the PMM donor
+            draw). When `False`, every replicate uses the fixed unweighted fit
+            (`bootstrap_seed=None`), so the replicate spread carries only the donor-draw
+            layer -- used by `layer_ablation_summary`.
 
     Returns:
         A `ProjectionReplicates` with the no-transport `projection` frame, the shocked
-        `transport_scenario` frame, and the per-replicate transport deltas.
+        `transport_scenario` frame at the primary scale, and the realised
+        donor-implicate swap counts.
 
     Raises:
         ValueError: If `n_replicates` is not positive, `n_draws` is not 1, or
@@ -235,9 +245,6 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
     if len(donor_implicates) == 0:
         msg = "donor_implicates must contain at least one implicate letter"
         raise ValueError(msg)
-    deltas = draw_transport_shocks(
-        n_replicates, log_scale=transport_log_scale, seed=base_seed
-    )
     results = [
         impute.run_imputation(
             select_implicate_modules(
@@ -246,50 +253,191 @@ def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
             n_draws=n_draws,
             seed=base_seed + index + 1,
             k=k,
-            bootstrap_seed=base_seed + index + 1,
+            bootstrap_seed=(base_seed + index + 1) if use_bootstrap else None,
         )
         for index in range(n_replicates)
     ]
     hh_id = results[0].intervals[["hh_id"]].reset_index(drop=True)
     projection = hh_id.copy()
-    transport_scenario = hh_id.copy()
     for index, result in enumerate(results):
-        base_totals = result.intervals["point_estimate"].to_numpy()
-        projection[f"draw_{index}"] = base_totals
-        transport_scenario[f"draw_{index}"] = apply_transport_shock(
-            base_totals, float(deltas[index]), scale=total_scale
-        )
+        projection[f"draw_{index}"] = result.intervals["point_estimate"].to_numpy()
+    transport_scenario = apply_transport_scenario(
+        projection,
+        transport_log_scale=transport_log_scale,
+        total_scale=total_scale,
+        base_seed=base_seed,
+    )
+    donor_implicate_swaps = {
+        letter: count_implicate_swaps(modules, letter)
+        for letter in dict.fromkeys(donor_implicates)
+    }
     return ProjectionReplicates(
         projection=projection,
         transport_scenario=transport_scenario,
-        transport_deltas=deltas,
+        donor_implicate_swaps=donor_implicate_swaps,
     )
 
 
-def transport_scenario_summary(replicates: ProjectionReplicates) -> dict[str, float]:
-    """Isolate the transport shock's euro-scale effect, holding the base fixed.
+def apply_transport_scenario(
+    projection: pd.DataFrame,
+    *,
+    transport_log_scale: float,
+    total_scale: float,
+    base_seed: int,
+) -> pd.DataFrame:
+    """Apply one per-replicate asinh transport shock to a projection frame at one scale.
 
-    `projection` and `transport_scenario` share the same base draws, so the difference
-    in their aggregate means isolates the level shift the (convex) transport shock
-    induces for the realised shocks -- the controlled before/after that raw production
-    means cannot give. It is one realisation of `n_shocks` draws, not the expectation
-    over the shock distribution.
+    Draws one systematic shock per `draw_i` column (seeded by `base_seed`, so the shocks
+    are reproducible and comparable across scales) and shifts every household in that
+    replicate by it. Reusable so the same projection can be shocked at several named
+    scales (`transport_scale_from_official_aggregates`, a bounded scale, ...) without
+    re-imputing.
 
     Args:
-        replicates: The engine output holding both frames and the transport deltas.
+        projection: The no-transport frame with `hh_id` and one `draw_i` total column
+            per replicate.
+        transport_log_scale: Transport-shock scale on the asinh axis; `0.0` returns a
+            copy of `projection`.
+        total_scale: Positive asinh knee (euros) for the shock.
+        base_seed: Seed for the per-replicate shocks.
+
+    Returns:
+        A copy of `projection` with each `draw_i` column shifted by its own shock.
+
+    """
+    draw_columns = [
+        column for column in projection.columns if str(column).startswith("draw_")
+    ]
+    deltas = draw_transport_shocks(
+        len(draw_columns), log_scale=transport_log_scale, seed=base_seed
+    )
+    scenario = projection.copy()
+    for index, column in enumerate(draw_columns):
+        scenario[column] = apply_transport_shock(
+            projection[column].to_numpy(), float(deltas[index]), scale=total_scale
+        )
+    return scenario
+
+
+def layer_ablation_summary(
+    modules: Mapping[str, pd.DataFrame],
+    *,
+    n_replicates: int,
+    base_seed: int,
+    k: int,
+    donor_implicates: Sequence[str] = ("a", "b", "c", "d", "e"),
+) -> dict[str, dict[str, float]]:
+    """Attribute the projection spread to its layers by toggling them one at a time.
+
+    The production projection spread mixes the donor-draw, bootstrap, and
+    donor-implicate layers and cannot be decomposed from a handful of replicates
+    (`layer_decomposition_available=false`). This runs the no-transport projection under
+    four configurations and reports each one's between-replicate spread, so a reader can
+    see which layer dominates instead of reading the mixed spread as if it were a
+    decomposition. Expensive -- one full set of refits per configuration -- so it is an
+    opt-in diagnostic, not part of the default run.
+
+    - `donor_draw_only`: fixed unweighted fit, single implicate -- the PMM donor draw
+      alone.
+    - `plus_bootstrap`: adds the approximate-Bayesian-bootstrap refit (which also
+      weights the PMM donor draw).
+    - `plus_donor_implicate`: fixed fit, cycling the DIW donor implicates.
+    - `all_layers`: bootstrap and implicate cycling together (production, no transport).
+
+    Args:
+        modules: Cleaned SOEP modules passed through to `run_imputation`.
+        n_replicates: Replicates per configuration.
+        base_seed: Seed shared across configurations, so their spreads are comparable.
+        k: Nearest-donor count.
+        donor_implicates: DIW implicate letters for the cycling configurations.
+
+    Returns:
+        A mapping from configuration name to its `replicate_mc_summary`.
+
+    """
+    configurations = {
+        "donor_draw_only": (False, ("a",)),
+        "plus_bootstrap": (True, ("a",)),
+        "plus_donor_implicate": (False, tuple(donor_implicates)),
+        "all_layers": (True, tuple(donor_implicates)),
+    }
+    ablation: dict[str, dict[str, float]] = {}
+    for name, (use_bootstrap, implicates) in configurations.items():
+        replicates = impute_replicates(
+            modules,
+            n_replicates=n_replicates,
+            base_seed=base_seed,
+            transport_log_scale=0.0,
+            total_scale=1.0,
+            n_draws=1,
+            k=k,
+            donor_implicates=implicates,
+            use_bootstrap=use_bootstrap,
+        )
+        ablation[name] = replicate_mc_summary(replicates.projection)
+    return ablation
+
+
+def count_implicate_swaps(modules: Mapping[str, pd.DataFrame], implicate: str) -> int:
+    """Count the columns `select_implicate_modules` would swap for `implicate`.
+
+    The realised propagation count: how many `_a` columns in the wealth modules have the
+    requested implicate sibling. `0` for implicate `a` (identity). Reported so the run
+    records that donor-implicate propagation actually happened.
+
+    Args:
+        modules: Cleaned SOEP modules.
+        implicate: DIW implicate letter.
+
+    Returns:
+        The number of columns that carry the requested implicate.
+
+    """
+    if implicate == "a":
+        return 0
+    total = 0
+    for name in _IMPLICATE_MODULES:
+        if name not in modules:
+            continue
+        columns = set(modules[name].columns)
+        total += sum(
+            1
+            for column in columns
+            if str(column).endswith("_a")
+            and f"{str(column)[:-2]}_{implicate}" in columns
+        )
+    return total
+
+
+def transport_scenario_summary(
+    projection: pd.DataFrame, scenario: pd.DataFrame
+) -> dict[str, float]:
+    """Isolate a transport shock's euro-scale effect, holding the base projection fixed.
+
+    `projection` and `scenario` share the same base draws, so the difference in their
+    aggregate means isolates the level shift the (convex) transport shock induces for
+    the realised shocks -- the controlled before/after that raw production means cannot
+    give.
+    It is one realisation of `n_shocks` draws, not the expectation over the shock
+    distribution.
+
+    Args:
+        projection: The no-transport frame.
+        scenario: The same frame after `apply_transport_scenario` at some scale.
 
     Returns:
         The shock count, the projection and transport-scenario aggregate means, their
         difference, and the relative shift (`nan` when the base mean is ~zero).
 
     """
-    base = _aggregate_mean(replicates.projection)
-    scenario = _aggregate_mean(replicates.transport_scenario)
-    shift = scenario - base
+    base = _aggregate_mean(projection)
+    shocked = _aggregate_mean(scenario)
+    shift = shocked - base
+    n_shocks = sum(1 for column in scenario.columns if str(column).startswith("draw_"))
     return {
-        "n_shocks": int(replicates.transport_deltas.size),
+        "n_shocks": n_shocks,
         "projection_aggregate_mean": base,
-        "transport_scenario_aggregate_mean": scenario,
+        "transport_scenario_aggregate_mean": shocked,
         "aggregate_mean_shift": shift,
         "relative_aggregate_mean_shift": (
             float("nan") if np.isclose(base, 0.0) else shift / abs(base)
@@ -432,13 +580,49 @@ def transport_scale_from_official_aggregates(
     if len(wave_aggregates) < minimum_waves:
         msg = f"need at least {minimum_waves} waves to estimate a dispersion"
         raise ValueError(msg)
+    return float(_official_log_growth_steps(wave_aggregates).std(ddof=1))
+
+
+def transport_log_scale_excluding_largest_step(
+    wave_aggregates: Mapping[int, float],
+) -> float:
+    """A bounded transport scale: log-growth dispersion after dropping the largest step.
+
+    The full growth-dispersion scale is dominated by the single most extreme five-year
+    step (a crisis or a boom), which overstates how far an ordinary five-year projection
+    drifts. Dropping the largest-magnitude step is a leave-one-out lower bound -- a
+    conservative, explicitly labelled transport *sensitivity*, not a calibrated
+    forecast-error scale.
+
+    Args:
+        wave_aggregates: Official population wealth aggregate per wealth-wave year, for
+            at least four waves (three steps, so two remain after the drop).
+
+    Returns:
+        The sample SD of the log-growth steps excluding the largest-magnitude one.
+
+    Raises:
+        ValueError: If fewer than four waves, or a non-positive aggregate.
+
+    """
+    minimum_waves = 4
+    if len(wave_aggregates) < minimum_waves:
+        msg = (
+            f"need at least {minimum_waves} waves to drop a step and keep a dispersion"
+        )
+        raise ValueError(msg)
+    steps = _official_log_growth_steps(wave_aggregates)
+    kept = np.delete(steps, int(np.argmax(np.abs(steps))))
+    return float(kept.std(ddof=1))
+
+
+def _official_log_growth_steps(wave_aggregates: Mapping[int, float]) -> np.ndarray:
     years = sorted(wave_aggregates)
     levels = np.array([wave_aggregates[year] for year in years], dtype=float)
     if np.any(levels <= 0.0):
         msg = "official aggregates must be positive to take a logarithm"
         raise ValueError(msg)
-    log_steps = np.diff(np.log(levels))
-    return float(log_steps.std(ddof=1))
+    return np.diff(np.log(levels))
 
 
 def robust_total_scale(totals: np.ndarray) -> float:

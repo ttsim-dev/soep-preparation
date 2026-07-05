@@ -11,11 +11,14 @@ total (they omit the reconciliation residual), lettered `a`-`e` as projection re
 built from DIW donor implicates -- not DIW's own implicates; the metadata block records
 that the release is not Rubin-valid. Each is a single predictive draw -- the five
 replicates *are* the draws, so donor-draw uncertainty is carried across them -- and
-their spread reflects the bootstrap and donor-implicate layers. The transport shock is
-reported *separately*: the `component_only_net_wealth_2022_transport_scenario_*` columns
-and the summary's `transport_scenario` block are a labelled macro-sensitivity axis (a
-calibrated, unvalidated prior that shifts the euro-scale level), kept out of the
-projection spread so the latter stays an interpretable between-replicate uncertainty.
+their spread mixes the bootstrap and donor-implicate layers. The transport shock is
+reported *separately*: the `transport_scenario_component_only_net_wealth_2022_*` columns
+and the summary's `transport_scenarios` block (one entry per named scale -- the full
+historical-growth prior and a conservative leave-one-out bound) are a labelled
+macro-sensitivity axis, kept out of the projection spread so the latter stays an
+interpretable between-replicate uncertainty. The summary also records the realised
+donor-implicate swap counts, and an opt-in `layer_ablation` block attributes the
+projection spread to its layers.
 """
 
 import json
@@ -32,11 +35,14 @@ from soep_preparation.config import (
     SRC,
 )
 from soep_preparation.wealth_imputation.replicates import (
+    apply_transport_scenario,
     build_implicates_metadata,
     impute_replicates,
+    layer_ablation_summary,
     official_wealth_aggregates,
     replicate_mc_summary,
     select_released_implicates,
+    transport_log_scale_excluding_largest_step,
     transport_scale_from_official_aggregates,
     transport_scenario_summary,
 )
@@ -54,6 +60,11 @@ _N_DRAWS = 1
 _SEED = 0
 _K = 10
 _DONOR_IMPLICATES = ("a", "b", "c", "d", "e")
+
+# Opt-in layer-ablation diagnostic (`layer_ablation_summary`): runs the projection under
+# four layer configurations, so one full set of refits per configuration. Off by default
+# to keep the standard run cheap; set True to attribute the projection spread to layers.
+_RUN_LAYER_ABLATION = False
 
 _WEIGHT_COLUMN = "hh_weighting_factor"
 
@@ -119,6 +130,17 @@ if RUN_WEALTH_IMPUTATION:
             aggregates["wave_aggregates"]
         )
         total_scale = aggregates["median_absolute_total"]
+        # Two explicitly named transport scenarios, both scenario priors: the full
+        # historical-growth dispersion, and a conservative leave-one-out bound that
+        # drops the single most extreme (crisis/boom) step.
+        transport_scales = {
+            "historical_growth_dispersion": transport_log_scale,
+            "excluding_largest_growth_step": (
+                transport_log_scale_excluding_largest_step(
+                    aggregates["wave_aggregates"]
+                )
+            ),
+        }
 
         replicates = impute_replicates(
             modules,
@@ -130,6 +152,22 @@ if RUN_WEALTH_IMPUTATION:
             k=_K,
             donor_implicates=_DONOR_IMPLICATES,
         )
+        transport_scenarios = {
+            scale_name: {
+                "transport_log_scale": scale,
+                **replicate_mc_summary(scenario),
+                **transport_scenario_summary(replicates.projection, scenario),
+            }
+            for scale_name, scale in transport_scales.items()
+            for scenario in [
+                apply_transport_scenario(
+                    replicates.projection,
+                    transport_log_scale=scale,
+                    total_scale=total_scale,
+                    base_seed=_SEED,
+                )
+            ]
+        }
         # Release the no-transport projection replicates (the interpretable object) and
         # the transport-scenario draws as a second column set. The scenario stem does
         # not start with the projection stem, so a `startswith("component_only_net_
@@ -169,11 +207,15 @@ if RUN_WEALTH_IMPUTATION:
             # The interpretable between-replicate spread (bootstrap, donor-implicate,
             # donor-draw), free of the transport prior.
             "projection_replicates": replicate_mc_summary(replicates.projection),
-            # The transport shock as a separate labelled scenario axis: its own spread
-            # plus the isolated euro-scale level shift it induces (base held fixed).
-            "transport_scenario": {
-                **replicate_mc_summary(replicates.transport_scenario),
-                **transport_scenario_summary(replicates),
+            # The transport shock as a separate labelled scenario axis, reported under
+            # each named scale: its own spread plus the isolated euro-scale level shift
+            # it induces (base held fixed).
+            "transport_scenarios": transport_scenarios,
+            # Realised donor-implicate propagation: columns actually swapped per
+            # implicate (records that propagation happened, not just that it was asked).
+            "donor_implicate_propagation": {
+                "implicates_used": list(replicates.donor_implicate_swaps),
+                "swaps_per_implicate": replicates.donor_implicate_swaps,
             },
             "metadata": build_implicates_metadata(
                 n_replicates=_N_REPLICATES,
@@ -183,6 +225,15 @@ if RUN_WEALTH_IMPUTATION:
                 donor_implicates_propagated=len(set(_DONOR_IMPLICATES)) > 1,
             ),
         }
+        if _RUN_LAYER_ABLATION:
+            # Opt-in: one full set of refits per configuration, so off by default.
+            summary["layer_ablation"] = layer_ablation_summary(
+                modules,
+                n_replicates=_N_REPLICATES,
+                base_seed=_SEED,
+                k=_K,
+                donor_implicates=_DONOR_IMPLICATES,
+            )
 
         released.to_feather(implicates_path)
         summary_path.write_text(json.dumps(summary, indent=2))

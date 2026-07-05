@@ -11,16 +11,20 @@ import pytest
 from soep_preparation.wealth_imputation import replicates as replicates_module
 from soep_preparation.wealth_imputation.replicates import (
     ProjectionReplicates,
+    apply_transport_scenario,
     apply_transport_shock,
     bayesian_bootstrap_weights,
     build_implicates_metadata,
+    count_implicate_swaps,
     draw_transport_shocks,
     impute_replicates,
+    layer_ablation_summary,
     official_wealth_aggregates,
     replicate_mc_summary,
     robust_total_scale,
     select_implicate_modules,
     select_released_implicates,
+    transport_log_scale_excluding_largest_step,
     transport_log_scale_from_fold_errors,
     transport_scale_from_official_aggregates,
     transport_scenario_summary,
@@ -162,6 +166,31 @@ def test_transport_scale_from_official_aggregates_is_zero_for_constant_growth() 
     aggregates = {2002: 100.0, 2007: 110.0, 2012: 121.0, 2017: 133.1}
     scale = transport_scale_from_official_aggregates(aggregates)
     np.testing.assert_allclose(scale, 0.0, atol=1e-9)
+
+
+def test_transport_log_scale_excluding_largest_step_drops_the_extreme_step() -> None:
+    """The bounded scale is the SD of the log-growth steps without the largest one."""
+    aggregates = {2002: 100.0, 2007: 110.0, 2012: 132.0, 2017: 300.0}
+    steps = np.diff(np.log([100.0, 110.0, 132.0, 300.0]))
+    kept = np.delete(steps, int(np.argmax(np.abs(steps))))
+    scale = transport_log_scale_excluding_largest_step(aggregates)
+    np.testing.assert_allclose(scale, kept.std(ddof=1), rtol=1e-9)
+
+
+def test_transport_log_scale_excluding_largest_step_is_below_the_full_scale() -> None:
+    """Dropping the dominant step gives a strictly smaller, more conservative scale."""
+    aggregates = {2002: 100.0, 2007: 110.0, 2012: 132.0, 2017: 300.0}
+    bounded = transport_log_scale_excluding_largest_step(aggregates)
+    full = transport_scale_from_official_aggregates(aggregates)
+    assert bounded < full
+
+
+def test_transport_log_scale_excluding_largest_step_rejects_too_few_waves() -> None:
+    """Dropping a step and keeping a dispersion needs at least four waves."""
+    with pytest.raises(ValueError, match="waves"):
+        transport_log_scale_excluding_largest_step(
+            {2007: 100.0, 2012: 110.0, 2017: 132.0}
+        )
 
 
 def test_transport_scale_from_official_aggregates_rejects_too_few_waves() -> None:
@@ -511,15 +540,75 @@ def test_impute_replicates_transport_scenario_differs_from_projection() -> None:
 def test_transport_scenario_summary_isolates_a_positive_mean_shift() -> None:
     """Holding the base fixed, the convex shock lifts a net-positive aggregate mean."""
     result = _run_engine_full(n_replicates=5, transport_log_scale=0.3)
-    summary = transport_scenario_summary(result)
+    summary = transport_scenario_summary(result.projection, result.transport_scenario)
     assert summary["aggregate_mean_shift"] > 0.0
 
 
 def test_transport_scenario_summary_is_zero_shift_without_transport() -> None:
     """A zero transport scale leaves the aggregate mean unchanged."""
     result = _run_engine_full(n_replicates=5, transport_log_scale=0.0)
-    summary = transport_scenario_summary(result)
+    summary = transport_scenario_summary(result.projection, result.transport_scenario)
     assert summary["aggregate_mean_shift"] == 0.0
+
+
+def test_apply_transport_scenario_at_zero_scale_returns_the_projection() -> None:
+    """A zero scale leaves every draw column unchanged."""
+    result = _run_engine_full(n_replicates=3, transport_log_scale=0.0)
+    scenario = apply_transport_scenario(
+        result.projection, transport_log_scale=0.0, total_scale=100_000.0, base_seed=0
+    )
+    np.testing.assert_array_equal(
+        scenario["draw_0"].to_numpy(), result.projection["draw_0"].to_numpy()
+    )
+
+
+def test_apply_transport_scenario_shocks_the_projection_at_a_positive_scale() -> None:
+    """A positive scale shifts the draws away from the untouched projection."""
+    result = _run_engine_full(n_replicates=3, transport_log_scale=0.0)
+    scenario = apply_transport_scenario(
+        result.projection, transport_log_scale=0.3, total_scale=100_000.0, base_seed=0
+    )
+    assert not np.allclose(
+        scenario["draw_0"].to_numpy(), result.projection["draw_0"].to_numpy()
+    )
+
+
+def test_count_implicate_swaps_counts_columns_with_the_requested_sibling() -> None:
+    """The realised count is how many `_a` columns carry the requested implicate."""
+    modules = {
+        "hwealth": pd.DataFrame(
+            {"hh_financial_assets_value_a": [1.0], "hh_financial_assets_value_b": [2.0]}
+        ),
+        "pwealth": pd.DataFrame(
+            {"financial_assets_value_a": [1.0], "financial_assets_value_b": [2.0]}
+        ),
+    }
+    assert count_implicate_swaps(modules, "b") == 2
+
+
+def test_count_implicate_swaps_is_zero_for_implicate_a() -> None:
+    """Implicate `a` is the stored default, so nothing is swapped."""
+    modules = {"hwealth": pd.DataFrame({"x_a": [1.0]}), "pwealth": pd.DataFrame()}
+    assert count_implicate_swaps(modules, "a") == 0
+
+
+def test_impute_replicates_reports_realised_donor_implicate_swaps() -> None:
+    """The engine records the realised swap count per distinct implicate used."""
+    result = _run_engine_full(n_replicates=2, transport_log_scale=0.0)
+    assert result.donor_implicate_swaps == {"a": 0}
+
+
+def test_layer_ablation_summary_reports_one_spread_per_configuration() -> None:
+    """The ablation reports a between-replicate spread for each layer configuration."""
+    with mock.patch(_RUN_IMPUTATION, return_value=_stub_result()):
+        ablation = layer_ablation_summary({}, n_replicates=3, base_seed=0, k=3)
+    assert set(ablation) == {
+        "donor_draw_only",
+        "plus_bootstrap",
+        "plus_donor_implicate",
+        "all_layers",
+    }
+    assert "aggregate_between_replicate_sd" in ablation["all_layers"]
 
 
 def test_impute_replicates_varies_the_bootstrap_seed_per_replicate() -> None:
