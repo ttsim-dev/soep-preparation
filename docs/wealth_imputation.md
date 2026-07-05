@@ -175,11 +175,13 @@ scale, so a reader can see how much rests on the calibration choice:
 - `excluding_largest_growth_step` — a conservative leave-one-out bound that drops the
   single most extreme five-year step.
 
-On the production data the full scale (≈ 0.23) roughly **doubles** the between-replicate
-spread (from ≈ 4.5% of the mean to ≈ 9.9%) and lifts the level ≈ 1.3%, whereas the
-boom-excluded bound (≈ 0.09) leaves the spread at essentially the no-transport level. In
-other words the entire "transport doubles the uncertainty" effect is one macro step — a
-reason to treat it as a labelled scenario, never as calibrated projection uncertainty.
+On the production data the transport scenario **dominates** the projection uncertainty:
+against a no-transport spread of ≈ 3.3% of the mean, the full-scale scenario (≈ 0.23)
+widens the between-replicate spread to ≈ 11.7% (several times the projection spread) and
+lifts the level ≈ 1.5%, and even the boom-excluded bound (≈ 0.09, which roughly halves the
+shock) stays above the projection spread at ≈ 5.6%. The 2012→2017 boom drives most of the
+gap between the two scales. Transport is the larger axis under either scale — a reason to
+treat it as a labelled scenario, never as calibrated projection uncertainty.
 
 ### Reading the release
 
