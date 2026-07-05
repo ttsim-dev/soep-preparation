@@ -56,6 +56,12 @@ POTENTIAL_INDEX_VARIABLES = ["hh_id", "hh_id_original", "p_id", "survey_year"]
 # this is True, so nothing wealth-related is collected by default.
 RUN_WEALTH_IMPUTATION = os.environ.get("SOEP_WEALTH_IMPUTATION", "0") != "0"
 
+# Opt-in gate for the wealth-imputation layer-ablation diagnostic. Off even when the
+# wealth subsystem runs, because it re-runs the projection once per layer configuration
+# (one full set of refits each). Enable with `SOEP_WEALTH_LAYER_ABLATION=1` to attribute
+# the projection spread to its layers.
+RUN_WEALTH_LAYER_ABLATION = os.environ.get("SOEP_WEALTH_LAYER_ABLATION", "0") != "0"
+
 
 __all__ = [
     "BLD",
@@ -64,6 +70,7 @@ __all__ = [
     "RAW_DATA_FILES",
     "ROOT",
     "RUN_WEALTH_IMPUTATION",
+    "RUN_WEALTH_LAYER_ABLATION",
     "SOEP_VERSION",
     "SRC",
     "SURVEY_YEARS",

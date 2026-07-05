@@ -312,5 +312,6 @@ Outputs land in `bld/wealth_imputation/`:
   `donor_implicate_propagation` counts, and the metadata guards.
 
 The projection-replicate release runs only that task; scope to it with
-`pixi run wealth -k task_wealth_imputation_replicates`. Its opt-in per-layer ablation is
-gated separately.
+`pixi run wealth -k task_wealth_imputation_replicates`. Its per-layer ablation is a
+separate opt-in — add `SOEP_WEALTH_LAYER_ABLATION=1` to include the `layer_ablation`
+block (one full set of refits per layer configuration, so off by default).
