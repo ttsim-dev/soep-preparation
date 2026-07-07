@@ -16,7 +16,7 @@ def test_combine_dates_statutory_pension_income_at_survey_year():
         {
             "p_id": [1, 1],
             "survey_year": [2010, 2011],
-            "number_of_months_in_retirement_last_year": [0, 0],
+            "number_of_months_pension_receipt_or_retirement_last_year": [0, 0],
         }
     )
 
@@ -29,8 +29,9 @@ def test_combine_dates_prior_year_retirement_status_one_year_earlier():
     """The pkal retirement calendar reports the *previous* year.
 
     A person whose only retirement signal is the pkal status reported at survey
-    year `Y` (`number_of_months_in_retirement_last_year > 0`) was in retirement in
-    year `Y - 1`, so first receipt is dated `Y - 1`, not `Y`.
+    year `Y` (`number_of_months_pension_receipt_or_retirement_last_year > 0`) was
+    receiving a pension or retired in year `Y - 1`, so first receipt is dated
+    `Y - 1`, not `Y`.
     """
     pequiv = pd.DataFrame(
         {
@@ -43,7 +44,7 @@ def test_combine_dates_prior_year_retirement_status_one_year_earlier():
         {
             "p_id": [2, 2],
             "survey_year": [2010, 2011],
-            "number_of_months_in_retirement_last_year": [0, 6],
+            "number_of_months_pension_receipt_or_retirement_last_year": [0, 6],
         }
     )
 
