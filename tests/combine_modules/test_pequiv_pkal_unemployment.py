@@ -40,7 +40,7 @@ def _pkal(unemployment_benefits_number_of_months: int) -> pd.DataFrame:
         {
             "p_id": [1],
             "survey_year": [2003],
-            "number_of_months_in_retirement_last_year": [0],
+            "number_of_months_pension_receipt_or_retirement_last_year": [0],
             "unemployment_benefits_number_of_months": [
                 unemployment_benefits_number_of_months
             ],

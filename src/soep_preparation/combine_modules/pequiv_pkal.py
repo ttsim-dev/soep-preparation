@@ -23,8 +23,9 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     positive annual statutory pension income (`gesetzliche_rente_y`, pequiv, dated at
     `survey_year - 1` because CNEF annual incomes refer to the previous calendar year)
     or any retirement month in the calendar of the previous year
-    (`number_of_months_in_retirement_last_year`, pkal, dated at `survey_year - 1`
-    because that calendar item refers to the year before the survey). The consuming
+    (`number_of_months_pension_receipt_or_retirement_last_year`, pkal, dated at
+    `survey_year - 1` because that calendar item refers to the year before the
+    survey). The consuming
     project turns it into a claiming age with the birth year. The pkal branch is a
     labour-market-*status* proxy (raw label "Rente, Pension, Vorruhestand"), not
     validated statutory receipt: it can flag early exit / Vorruhestand that is not
@@ -57,7 +58,7 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
             [
                 "p_id",
                 "survey_year",
-                "number_of_months_in_retirement_last_year",
+                "number_of_months_pension_receipt_or_retirement_last_year",
                 "unemployment_benefits_number_of_months",
             ]
         ],
@@ -79,7 +80,10 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     # receipt year is `survey_year - 1`. This OR-branch is a labour-market-status
     # proxy, not validated statutory receipt (flagged for review; see docstring).
     has_prior_year_retirement = (
-        merged["number_of_months_in_retirement_last_year"].fillna(value=0) > 0
+        merged["number_of_months_pension_receipt_or_retirement_last_year"].fillna(
+            value=0
+        )
+        > 0
     )
     status_receipt_year = (
         merged.loc[has_prior_year_retirement, "survey_year"]
