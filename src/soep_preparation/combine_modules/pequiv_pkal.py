@@ -7,7 +7,7 @@ general pequiv x pkal merge:
 - `first_pension_receipt_year`: first observed year of pension income or a
   retirement-status proxy, not validated statutory pension receipt (see `combine`
   for the status-proxy caveat).
-- `received_unemployment_benefits_last_year`: whether the person drew any
+- `received_unemployment_benefits`: whether the person drew any
   unemployment benefit in the previous calendar year.
 """
 
@@ -33,8 +33,8 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     reference year, but whether such a status should feed "first statutory pension
     receipt" at all is flagged for maintainer review (see clean_modules/pkal.py).
 
-    `received_unemployment_benefits_last_year` unifies three previous-calendar-year
-    signals (see `_received_unemployment_benefits_last_year`).
+    `received_unemployment_benefits` unifies three previous-calendar-year
+    signals (see `_received_unemployment_benefits`).
 
     Args:
         pequiv: Cleaned pequiv module (pension income, unemployment-benefit amounts).
@@ -42,7 +42,7 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         Person-year frame with `first_pension_receipt_year` and
-        `received_unemployment_benefits_last_year`.
+        `received_unemployment_benefits`.
     """
     merged = pd.merge(
         pequiv[
@@ -99,19 +99,17 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     out["first_pension_receipt_year"] = apply_smallest_int_dtype(
         merged["p_id"].map(first_receipt_year)
     )
-    out["received_unemployment_benefits_last_year"] = (
-        _received_unemployment_benefits_last_year(
-            unemployment_benefits_number_of_months=merged[
-                "unemployment_benefits_number_of_months"
-            ],
-            arbeitslosengeld_y=merged["arbeitslosengeld_y"],
-            arbeitslosenhilfe_y=merged["arbeitslosenhilfe_y"],
-        )
+    out["received_unemployment_benefits"] = _received_unemployment_benefits(
+        unemployment_benefits_number_of_months=merged[
+            "unemployment_benefits_number_of_months"
+        ],
+        arbeitslosengeld_y=merged["arbeitslosengeld_y"],
+        arbeitslosenhilfe_y=merged["arbeitslosenhilfe_y"],
     )
     return out
 
 
-def _received_unemployment_benefits_last_year(
+def _received_unemployment_benefits(
     unemployment_benefits_number_of_months: pd.Series,
     arbeitslosengeld_y: pd.Series,
     arbeitslosenhilfe_y: pd.Series,

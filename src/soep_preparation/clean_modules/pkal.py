@@ -112,7 +112,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["unemployed_number_of_months"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["kal1d02"], value=0)
     )
-    out["early_retirement_number_of_months_last_year"] = object_to_int(
+    out["early_retirement_number_of_months"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["kal1e02"], value=0)
     )
     out["unemployment_benefits_number_of_months"] = object_to_int(

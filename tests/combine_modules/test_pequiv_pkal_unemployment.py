@@ -1,6 +1,6 @@
 """Tests for the combined last-year unemployment-benefit receipt indicator.
 
-The indicator `received_unemployment_benefits_last_year` lives in
+The indicator `received_unemployment_benefits` lives in
 `combine_modules/pequiv_pkal.combine` and unifies three signals that all refer
 to the previous calendar year:
 
@@ -15,7 +15,7 @@ to the previous calendar year:
 import pandas as pd
 
 from soep_preparation.combine_modules.pequiv_pkal import (
-    _received_unemployment_benefits_last_year,
+    _received_unemployment_benefits,
     combine,
 )
 
@@ -54,7 +54,7 @@ def test_received_unemployment_benefits_true_when_pkal_months_positive():
         pequiv=_pequiv(arbeitslosengeld_y=0.0, arbeitslosenhilfe_y=0.0),
         pkal=_pkal(unemployment_benefits_number_of_months=4),
     )
-    assert out["received_unemployment_benefits_last_year"].tolist() == [True]
+    assert out["received_unemployment_benefits"].tolist() == [True]
 
 
 def test_received_unemployment_benefits_filled_from_arbeitslosengeld_amount():
@@ -68,7 +68,7 @@ def test_received_unemployment_benefits_filled_from_arbeitslosengeld_amount():
         pequiv=_pequiv(arbeitslosengeld_y=3600.0, arbeitslosenhilfe_y=0.0),
         pkal=_pkal(unemployment_benefits_number_of_months=0),
     )
-    assert out["received_unemployment_benefits_last_year"].tolist() == [True]
+    assert out["received_unemployment_benefits"].tolist() == [True]
 
 
 def test_received_unemployment_benefits_filled_from_arbeitslosenhilfe_amount():
@@ -81,7 +81,7 @@ def test_received_unemployment_benefits_filled_from_arbeitslosenhilfe_amount():
         pequiv=_pequiv(arbeitslosengeld_y=0.0, arbeitslosenhilfe_y=2400.0),
         pkal=_pkal(unemployment_benefits_number_of_months=0),
     )
-    assert out["received_unemployment_benefits_last_year"].tolist() == [True]
+    assert out["received_unemployment_benefits"].tolist() == [True]
 
 
 def test_received_unemployment_benefits_false_when_no_signal():
@@ -90,7 +90,7 @@ def test_received_unemployment_benefits_false_when_no_signal():
         pequiv=_pequiv(arbeitslosengeld_y=0.0, arbeitslosenhilfe_y=0.0),
         pkal=_pkal(unemployment_benefits_number_of_months=0),
     )
-    assert out["received_unemployment_benefits_last_year"].tolist() == [False]
+    assert out["received_unemployment_benefits"].tolist() == [False]
 
 
 def test_received_unemployment_benefits_dtype_is_pyarrow_boolean():
@@ -99,7 +99,7 @@ def test_received_unemployment_benefits_dtype_is_pyarrow_boolean():
         pequiv=_pequiv(arbeitslosengeld_y=3600.0, arbeitslosenhilfe_y=0.0),
         pkal=_pkal(unemployment_benefits_number_of_months=0),
     )
-    assert out["received_unemployment_benefits_last_year"].dtype == "bool[pyarrow]"
+    assert out["received_unemployment_benefits"].dtype == "bool[pyarrow]"
 
 
 def test_received_unemployment_benefits_na_amount_does_not_imply_receipt():
@@ -117,7 +117,7 @@ def test_received_unemployment_benefits_na_amount_does_not_imply_receipt():
         pequiv=pequiv,
         pkal=_pkal(unemployment_benefits_number_of_months=0),
     )
-    assert out["received_unemployment_benefits_last_year"].tolist() == [False]
+    assert out["received_unemployment_benefits"].tolist() == [False]
 
 
 def test_received_unemployment_benefits_all_missing_is_na():
@@ -127,7 +127,7 @@ def test_received_unemployment_benefits_all_missing_is_na():
     which is a different claim. With every input `NA` the indicator must stay `NA`.
     """
     missing = pd.Series([pd.NA], dtype="float64[pyarrow]")
-    result = _received_unemployment_benefits_last_year(
+    result = _received_unemployment_benefits(
         unemployment_benefits_number_of_months=missing,
         arbeitslosengeld_y=missing,
         arbeitslosenhilfe_y=missing,
@@ -139,7 +139,7 @@ def test_received_unemployment_benefits_positive_signal_is_true_despite_missing(
     """A positive signal yields `True` even when the other sources are missing."""
     missing = pd.Series([pd.NA], dtype="float64[pyarrow]")
     months = pd.Series([3], dtype="float64[pyarrow]")
-    result = _received_unemployment_benefits_last_year(
+    result = _received_unemployment_benefits(
         unemployment_benefits_number_of_months=months,
         arbeitslosengeld_y=missing,
         arbeitslosenhilfe_y=missing,
