@@ -2,7 +2,6 @@ import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
     object_to_bool_categorical,
-    object_to_int_categorical,
     object_to_str_categorical,
 )
 
@@ -67,20 +66,4 @@ def test_object_to_str_categorical_assert_renaming_2_identifier():
     expected = pd.Series(pd.Categorical(expected_categories, ordered=True))
     sr = pd.Series(["[0] A Cat 0", "[10] B Cat 10"], dtype=object)
     actual = object_to_str_categorical(sr, nr_identifiers=2, ordered=True)
-    pd.testing.assert_series_equal(actual, expected)
-
-
-def test_object_to_int_categorical_assert_dtype():
-    expected_categories = pd.array([0, 10], dtype="int8[pyarrow]")
-    expected = pd.Series(pd.Categorical(expected_categories)).dtype
-    sr = pd.Series([0, 10], dtype=object)
-    actual = object_to_int_categorical(sr).dtype
-    assert actual == expected
-
-
-def test_object_to_int_categorical_assert_ordering():
-    expected_categories = pd.array([0, 10], dtype="int8[pyarrow]")
-    expected = pd.Series(pd.Categorical(expected_categories, ordered=True))
-    sr = pd.Series([0, 10], dtype=object)
-    actual = object_to_int_categorical(sr, ordered=True)
     pd.testing.assert_series_equal(actual, expected)

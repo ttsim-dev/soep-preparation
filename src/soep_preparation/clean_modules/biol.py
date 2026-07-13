@@ -26,10 +26,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["residence_childhood"] = object_to_str_categorical(
         series=raw_data["lb0058"],
         renaming={
-            "[4] Auf dem Land": "Auf dem Land",
-            "[3] Kleinstadt": "Kleinstadt",
-            "[2] Mittelgrosse Stadt": "Mittelgroße Stadt",
-            "[1] Grosstadt": "Großstadt",
+            "[4] Auf dem Land": "Rural area",
+            "[3] Kleinstadt": "Small town",
+            "[2] Mittelgrosse Stadt": "Medium-sized town",
+            "[1] Grosstadt": "Large city",
         },
         ordered=True,
     )

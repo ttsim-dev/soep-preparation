@@ -1,0 +1,29 @@
+---
+# Read the Docs configuration for the soep-preparation MyST / Jupyter Book site.
+# https://docs.readthedocs.io/en/stable/config-file/v2.html
+#
+# Jupyter Book 2 (mystmd) is a Node application driven through pixi. Read the Docs
+# has no native pixi support, so we install pixi via asdf, install the environment,
+# and run the existing `build-docs` task, then publish `docs/_build/html`. This
+# mirrors the opensourceeconomics/pylcm and /dags setups.
+version: 2
+build:
+  os: ubuntu-24.04
+  tools:
+    python: '3.14'
+    nodejs: '20'
+  jobs:
+    create_environment:
+      - asdf plugin add pixi
+      - asdf install pixi latest
+      - asdf global pixi latest
+    install:
+      - pixi install
+    post_build:
+      # Jupyter Book 2.0 builds site content to docs/_build/html; copy it to the
+      # location Read the Docs publishes.
+      - mkdir --parents $READTHEDOCS_OUTPUT/html/
+      - >-
+        BASE_URL="/$READTHEDOCS_LANGUAGE/$READTHEDOCS_VERSION"
+        pixi run build-docs
+      - cp -a docs/_build/html/. "$READTHEDOCS_OUTPUT/html" && rm -r docs/_build

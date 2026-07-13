@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    combine_first_and_make_categorical,
+    combined_int,
 )
 
 
@@ -22,9 +22,8 @@ def combine(ppathl: pd.DataFrame, bioedu: pd.DataFrame) -> pd.DataFrame:
     out = pd.DataFrame(index=merged.index)
     out["p_id"] = merged["p_id"]
 
-    out["birth_month"] = combine_first_and_make_categorical(
+    out["birth_month"] = combined_int(
         series_1=merged["birth_month_ppathl"],
         series_2=merged["birth_month_bioedu"],
-        ordered=False,
     )
     return out

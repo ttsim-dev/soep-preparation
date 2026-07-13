@@ -17,6 +17,9 @@ from soep_preparation.config import (
     POTENTIAL_INDEX_VARIABLES,
     SRC,
 )
+from soep_preparation.create_metadata.reference_assignment import (
+    REFERENCE_BY_VARIABLE,
+)
 
 _METADATA_CATALOG = DataCatalog(name="metadata")
 
@@ -135,11 +138,16 @@ def _get_variable_metadata(
         module: The data containing the variables.
 
     Returns:
-        Metadata for each variable, including dtype and survey year availability.
+        Metadata for each variable, including dtype, survey year availability, and the
+        reference period its value refers to.
+
+    Raises:
+        KeyError: If a variable has no reference-period assignment.
     """
     columns = module.columns.tolist()
     survey_year_in_columns = "survey_year" in columns
     variables = [col for col in columns if col not in POTENTIAL_INDEX_VARIABLES]
+    _fail_if_variable_has_no_reference(variables)
 
     metadata = {}
     # for each variable/column in data
@@ -164,9 +172,29 @@ def _get_variable_metadata(
         metadata[variable] = {
             "dtype": serialized_variable_dtype,
             "survey_years": variable_survey_years,
+            "reference": str(REFERENCE_BY_VARIABLE[variable]),
         }
 
     return metadata
+
+
+def _fail_if_variable_has_no_reference(variables: list[str]) -> None:
+    """Abort if any variable lacks a reference-period assignment.
+
+    Args:
+        variables: Non-index variable names of a single module.
+
+    Raises:
+        KeyError: If a variable is missing from `REFERENCE_BY_VARIABLE`.
+    """
+    unassigned = [name for name in variables if name not in REFERENCE_BY_VARIABLE]
+    if unassigned:
+        msg = (
+            "The following variables have no reference-period assignment in "
+            f"create_metadata/reference_assignment.py: {unassigned}. Add each to the "
+            "appropriate group in REFERENCE_BY_VARIABLE."
+        )
+        raise KeyError(msg)
 
 
 def _fail_if_variable_in_multiple_modules(
@@ -261,11 +289,58 @@ def _fail_if_stale_module_entries(module_names: Iterable[str]) -> None:
     raise FileNotFoundError(msg)
 
 
-def _fail_if_mapping_changed(  # noqa: C901
+def _metadata_field_change_messages(
+    new_metadata: dict[str, Any],
+    existing_metadata: dict[str, Any],
+) -> list[str]:
+    """Describe every metadata field that differs between two variable entries.
+
+    Compares all fields generically so a change to any field — including ones
+    added to the schema later — trips the gate. `dtype` and `survey_years` get
+    tailored messages; every other field reports its before/after values.
+
+    Args:
+        new_metadata: The newly generated metadata for one variable.
+        existing_metadata: The committed metadata for the same variable.
+
+    Returns:
+        One human-readable message per differing field.
+    """
+    messages = []
+    for field in sorted(set(new_metadata) | set(existing_metadata)):
+        new_value = new_metadata.get(field)
+        existing_value = existing_metadata.get(field)
+        if new_value == existing_value:
+            continue
+        if field == "survey_years":
+            old_years = set(existing_value or [])
+            new_years = set(new_value or [])
+            added_years = sorted(new_years - old_years)
+            removed_years = sorted(old_years - new_years)
+            if added_years:
+                messages.append(f"  - new survey years: {added_years}")
+            if removed_years:
+                messages.append(f"  - removed survey years: {removed_years}")
+        elif field == "dtype":
+            messages.append(f"  - dtype changed from {existing_value} to {new_value}")
+        else:
+            messages.append(f"  - {field} changed from {existing_value} to {new_value}")
+    return messages
+
+
+def _fail_if_mapping_changed(
     new_mapping: dict[str, Any],
     existing_mapping: dict[str, Any],
     new_mapping_path: Path,
 ) -> None:
+    """Fail if the regenerated metadata catalogue differs from the committed one.
+
+    This is a **schema** gate: it compares each variable's module, dtype, category
+    set and order, and survey-year support. It does not see column *values*, so a
+    silent value regression that preserves the schema (an all-False dummy, a sign
+    flip, a one-year date shift) passes unchanged. Value-level correctness must be
+    pinned by targeted unit tests, not by this gate.
+    """
     # Collect error messages for all variables with issues
     variables_with_errors: dict[str, dict[str, Any]] = {}
 
@@ -282,22 +357,12 @@ def _fail_if_mapping_changed(  # noqa: C901
             )
         elif metadata != existing_mapping[variable]:
             existing_metadata = existing_mapping[variable]
-
-            if metadata["dtype"] != existing_metadata["dtype"]:
-                error_messages.append(
-                    f"  - dtype changed from {existing_metadata['dtype']} "
-                    f"to {metadata['dtype']}"
+            error_messages.extend(
+                _metadata_field_change_messages(
+                    new_metadata=metadata,
+                    existing_metadata=existing_metadata,
                 )
-
-            if metadata["survey_years"] != existing_metadata["survey_years"]:
-                old_years = set(existing_metadata["survey_years"] or [])
-                new_years = set(metadata["survey_years"] or [])
-                added_years = sorted(new_years - old_years)
-                removed_years = sorted(old_years - new_years)
-                if added_years:
-                    error_messages.append(f"  - new survey years: {added_years}")
-                if removed_years:
-                    error_messages.append(f"  - removed survey years: {removed_years}")
+            )
 
         if error_messages:
             variables_with_errors[variable] = {

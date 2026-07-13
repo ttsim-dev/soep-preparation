@@ -1,16 +1,16 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    apply_smallest_float_dtype,
     apply_smallest_int_dtype,
+    convert_to_float,
     float_to_int,
 )
 
 
-def test_apply_smallest_float_dtype_assert_dtype():
-    expected = pd.Series([0.1, 0.2], dtype="float[pyarrow]").dtype
+def test_convert_to_float_assert_dtype():
+    expected = pd.Series([0.1, 0.2], dtype="double[pyarrow]").dtype
     sr = pd.Series([0.1, 0.2])
-    actual = apply_smallest_float_dtype(sr).dtype
+    actual = convert_to_float(sr).dtype
     assert actual == expected
 
 

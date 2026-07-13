@@ -1,0 +1,33 @@
+---
+# Jupyter Book 2.0 configuration
+# See: https://jupyterbook.org/
+version: 1
+project:
+  id: soep-preparation
+  title: soep-preparation
+  description: >-
+    Prepare German Socio-Economic Panel (SOEP) survey data into typed, cleaned,
+    documented variables for research and as GETTSIM inputs.
+  github: https://github.com/ttsim-dev/soep-preparation
+  jupyter: true
+  toc:
+    - file: index.md
+    - file: getting_started.md
+    - file: concepts.md
+    - file: scope.md
+    - file: creating_a_dataset.md
+    - file: extending.md
+    - file: naming_conventions.md
+    - file: using_with_gettsim.md
+    - file: variables.md
+  error_rules:
+    - rule: link-resolves
+      severity: ignore
+site:
+  template: book-theme
+  options:
+    logo_text: soep-preparation
+    # Serve a local favicon so the static HTML build never fetches the book-theme
+    # default from mystmd.org — that remote fetch is flaky and aborts the build on
+    # Read the Docs when it fails.
+    favicon: _static/favicon.svg

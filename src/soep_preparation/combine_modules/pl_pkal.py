@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    combine_first_and_make_categorical,
+    combined_categorical,
 )
 
 
@@ -26,9 +26,9 @@ def combine(pl: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     out["hh_id"] = merged["hh_id"]
     out["survey_year"] = merged["survey_year"]
 
-    out["bezog_mutterschaftsgeld"] = combine_first_and_make_categorical(
-        series_1=merged["bezog_mutterschaftsgeld_pl"],
-        series_2=merged["bezog_mutterschaftsgeld_pkal"],
+    out["mutterschaftsgeld_received"] = combined_categorical(
+        series_1=merged["mutterschaftsgeld_received_pl"],
+        series_2=merged["mutterschaftsgeld_received_pkal"],
         ordered=False,
     )
     return out

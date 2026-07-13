@@ -6,7 +6,6 @@ from soep_preparation.utilities import month_mapping
 from soep_preparation.utilities.data_manipulator import (
     apply_smallest_int_dtype,
     object_to_int,
-    object_to_int_categorical,
 )
 
 
@@ -27,77 +26,77 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # the personal id of children (kidpnr) only exists for the first 9 children
     wide["tmp_p_id_child_1"] = object_to_int(raw_data["kidpnr01"])
     wide["tmp_birth_year_child_1"] = object_to_int(raw_data["kidgeb01"])
-    wide["tmp_birth_month_child_1"] = object_to_int_categorical(
-        raw_data["kidmon01"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_1"] = object_to_int(
+        raw_data["kidmon01"], renaming=month_mapping.de
     )
     wide["tmp_p_id_child_2"] = object_to_int(raw_data["kidpnr02"])
     wide["tmp_birth_year_child_2"] = object_to_int(raw_data["kidgeb02"])
-    wide["tmp_birth_month_child_2"] = object_to_int_categorical(
-        raw_data["kidmon02"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_2"] = object_to_int(
+        raw_data["kidmon02"], renaming=month_mapping.de
     )
     wide["tmp_p_id_child_3"] = object_to_int(raw_data["kidpnr03"])
     wide["tmp_birth_year_child_3"] = object_to_int(raw_data["kidgeb03"])
-    wide["tmp_birth_month_child_3"] = object_to_int_categorical(
-        raw_data["kidmon03"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_3"] = object_to_int(
+        raw_data["kidmon03"], renaming=month_mapping.de
     )
     wide["tmp_p_id_child_4"] = object_to_int(raw_data["kidpnr04"])
     wide["tmp_birth_year_child_4"] = object_to_int(raw_data["kidgeb04"])
-    wide["tmp_birth_month_child_4"] = object_to_int_categorical(
-        raw_data["kidmon04"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_4"] = object_to_int(
+        raw_data["kidmon04"], renaming=month_mapping.de
     )
     wide["tmp_p_id_child_5"] = object_to_int(raw_data["kidpnr05"])
     wide["tmp_birth_year_child_5"] = object_to_int(raw_data["kidgeb05"])
-    wide["tmp_birth_month_child_5"] = object_to_int_categorical(
-        raw_data["kidmon05"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_5"] = object_to_int(
+        raw_data["kidmon05"], renaming=month_mapping.de
     )
     wide["tmp_p_id_child_6"] = object_to_int(raw_data["kidpnr06"])
     wide["tmp_birth_year_child_6"] = object_to_int(raw_data["kidgeb06"])
-    wide["tmp_birth_month_child_6"] = object_to_int_categorical(
-        raw_data["kidmon06"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_6"] = object_to_int(
+        raw_data["kidmon06"], renaming=month_mapping.de
     )
     wide["tmp_p_id_child_7"] = object_to_int(raw_data["kidpnr07"])
     wide["tmp_birth_year_child_7"] = object_to_int(raw_data["kidgeb07"])
-    wide["tmp_birth_month_child_7"] = object_to_int_categorical(
-        raw_data["kidmon07"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_7"] = object_to_int(
+        raw_data["kidmon07"], renaming=month_mapping.de
     )
 
     wide["tmp_p_id_child_8"] = object_to_int(raw_data["kidpnr08"])
     wide["tmp_birth_year_child_8"] = object_to_int(raw_data["kidgeb08"])
-    wide["tmp_birth_month_child_8"] = object_to_int_categorical(
-        raw_data["kidmon08"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_8"] = object_to_int(
+        raw_data["kidmon08"], renaming=month_mapping.de
     )
     wide["tmp_p_id_child_9"] = object_to_int(raw_data["kidpnr09"])
     wide["tmp_birth_year_child_9"] = object_to_int(raw_data["kidgeb09"])
-    wide["tmp_birth_month_child_9"] = object_to_int_categorical(
-        raw_data["kidmon09"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_9"] = object_to_int(
+        raw_data["kidmon09"], renaming=month_mapping.de
     )
     wide["tmp_birth_year_child_10"] = object_to_int(raw_data["kidgeb10"])
-    wide["tmp_birth_month_child_10"] = object_to_int_categorical(
-        raw_data["kidmon10"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_10"] = object_to_int(
+        raw_data["kidmon10"], renaming=month_mapping.de
     )
     wide["tmp_birth_year_child_11"] = object_to_int(raw_data["kidgeb11"])
-    wide["tmp_birth_month_child_11"] = object_to_int_categorical(
-        raw_data["kidmon11"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_11"] = object_to_int(
+        raw_data["kidmon11"], renaming=month_mapping.de
     )
     wide["tmp_birth_year_child_12"] = object_to_int(raw_data["kidgeb12"])
-    wide["tmp_birth_month_child_12"] = object_to_int_categorical(
-        raw_data["kidmon12"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_12"] = object_to_int(
+        raw_data["kidmon12"], renaming=month_mapping.de
     )
     wide["tmp_birth_year_child_13"] = object_to_int(raw_data["kidgeb13"])
-    wide["tmp_birth_month_child_13"] = object_to_int_categorical(
-        raw_data["kidmon13"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_13"] = object_to_int(
+        raw_data["kidmon13"], renaming=month_mapping.de
     )
     wide["tmp_birth_year_child_14"] = object_to_int(raw_data["kidgeb14"])
-    wide["tmp_birth_month_child_14"] = object_to_int_categorical(
-        raw_data["kidmon14"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_14"] = object_to_int(
+        raw_data["kidmon14"], renaming=month_mapping.de
     )
     wide["tmp_birth_year_child_15"] = object_to_int(raw_data["kidgeb15"])
-    wide["tmp_birth_month_child_15"] = object_to_int_categorical(
-        raw_data["kidmon15"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_15"] = object_to_int(
+        raw_data["kidmon15"], renaming=month_mapping.de
     )
     wide["tmp_birth_year_child_16"] = object_to_int(raw_data["kidgeb16"])
-    wide["tmp_birth_month_child_16"] = object_to_int_categorical(
-        raw_data["kidmon16"], renaming=month_mapping.de, ordered=True
+    wide["tmp_birth_month_child_16"] = object_to_int(
+        raw_data["kidmon16"], renaming=month_mapping.de
     )
 
     # Transforming the wide data to long format

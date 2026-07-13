@@ -3,7 +3,7 @@
 import pandas as pd
 
 from soep_preparation.utilities.data_manipulator import (
-    combine_first_and_make_categorical,
+    combined_categorical,
 )
 
 
@@ -21,7 +21,7 @@ def combine(hpathl: pd.DataFrame, design: pd.DataFrame) -> pd.DataFrame:
     merged = pd.merge(left=hpathl, right=design, on=["hh_id"], how="outer")
     out = pd.DataFrame(index=merged.index)
     out["hh_id"] = merged["hh_id"]
-    out["hh_soep_sample"] = combine_first_and_make_categorical(
+    out["hh_soep_sample"] = combined_categorical(
         series_1=merged["hh_soep_sample_hpathl"],
         series_2=merged["hh_soep_sample_design"],
         ordered=False,

@@ -96,6 +96,38 @@ def test_removed_survey_years():
         )
 
 
+def test_arbitrary_metadata_field_change_is_reported():
+    """A change to any metadata field trips the gate, not only dtype/survey_years.
+
+    The guard must compare every metadata field generically so that a field
+    added to the schema later (e.g. a per-variable reference period) cannot
+    change silently without regenerating the committed mapping.
+    """
+    new_mapping = {
+        "var1": {
+            "module": "test_module",
+            "dtype": "float64",
+            "survey_years": [2020],
+            "reference": "previous_year",
+        }
+    }
+    existing_mapping = {
+        "var1": {
+            "module": "test_module",
+            "dtype": "float64",
+            "survey_years": [2020],
+            "reference": "current",
+        }
+    }
+
+    with pytest.raises(ValueError, match="reference"):
+        _fail_if_mapping_changed(
+            new_mapping=new_mapping,
+            existing_mapping=existing_mapping,
+            new_mapping_path=Path("/tmp/test.yaml"),
+        )
+
+
 def test_all_errors_together():
     """Test all three non-mutually-exclusive errors together."""
     new_mapping = {
