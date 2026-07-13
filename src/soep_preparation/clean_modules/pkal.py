@@ -34,9 +34,9 @@ def _number_of_months_employed(
 
     # Per-month: employed if any of the types has a category in [0,1]
     employed_per_month = [
-        data[f"full_time_employed_m_{month}"].cat.codes.between(0, 1)
-        | data[f"part_time_employed_m_{month}"].cat.codes.between(0, 1)
-        | data[f"minijob_employed_m_{month}"].cat.codes.between(0, 1)
+        data[f"full_time_employed_month_{month:02d}"].cat.codes.between(0, 1)
+        | data[f"part_time_employed_month_{month:02d}"].cat.codes.between(0, 1)
+        | data[f"minijob_employed_month_{month:02d}"].cat.codes.between(0, 1)
         for month in months
     ]
     employed = pd.concat(employed_per_month, axis=1)
@@ -44,7 +44,9 @@ def _number_of_months_employed(
     # Compute per-month non-missingness
     nonmissing = pd.concat(
         [
-            data[[f"{kind}_employed_m_{month}" for kind in kinds]].notna().any(axis=1)
+            data[[f"{kind}_employed_month_{month:02d}" for kind in kinds]]
+            .notna()
+            .any(axis=1)
             for month in months
         ],
         axis=1,
@@ -110,7 +112,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["unemployed_number_of_months"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["kal1d02"], value=0)
     )
-    out["early_retirement_number_of_months_last_year"] = object_to_int(
+    out["early_retirement_number_of_months"] = object_to_int(
         replace_not_applicable_answer(series=raw_data["kal1e02"], value=0)
     )
     out["unemployment_benefits_number_of_months"] = object_to_int(
@@ -130,7 +132,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # the second the timeframe 1998 until 2022
     # individual employment status by month
     # Month 1 - Jan
-    out["full_time_employed_m_1"] = _combine_versions_employed_m(
+    out["full_time_employed_month_01"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a001_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a001_v2"],
@@ -139,7 +141,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Jan Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_1"] = _combine_versions_employed_m(
+    out["part_time_employed_month_01"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b001_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b001_v2"],
@@ -148,7 +150,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_1"] = object_to_str_categorical(
+    out["minijob_employed_month_01"] = object_to_str_categorical(
         series=raw_data["kal1n001"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -157,7 +159,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 2 - Feb
-    out["full_time_employed_m_2"] = _combine_versions_employed_m(
+    out["full_time_employed_month_02"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a002_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a002_v2"],
@@ -166,7 +168,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Feb Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_2"] = _combine_versions_employed_m(
+    out["part_time_employed_month_02"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b002_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b002_v2"],
@@ -175,14 +177,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_2"] = object_to_str_categorical(
+    out["minijob_employed_month_02"] = object_to_str_categorical(
         raw_data["kal1n002"],
         renaming={
             "[1] genannt": "Minijob employed",
             "[8] Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["full_time_employed_m_3"] = _combine_versions_employed_m(
+    out["full_time_employed_month_03"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a003_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a003_v2"],
@@ -191,7 +193,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Mar Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_3"] = _combine_versions_employed_m(
+    out["part_time_employed_month_03"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b003_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b003_v2"],
@@ -200,7 +202,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_3"] = object_to_str_categorical(
+    out["minijob_employed_month_03"] = object_to_str_categorical(
         raw_data["kal1n003"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -209,7 +211,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 4 - Apr
-    out["full_time_employed_m_4"] = _combine_versions_employed_m(
+    out["full_time_employed_month_04"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a004_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a004_v2"],
@@ -218,7 +220,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Apr Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_4"] = _combine_versions_employed_m(
+    out["part_time_employed_month_04"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b004_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b004_v2"],
@@ -227,7 +229,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_4"] = object_to_str_categorical(
+    out["minijob_employed_month_04"] = object_to_str_categorical(
         raw_data["kal1n004"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -236,7 +238,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 5 - Mai
-    out["full_time_employed_m_5"] = _combine_versions_employed_m(
+    out["full_time_employed_month_05"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a005_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a005_v2"],
@@ -245,7 +247,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Mai Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_5"] = _combine_versions_employed_m(
+    out["part_time_employed_month_05"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b005_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b005_v2"],
@@ -254,7 +256,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_5"] = object_to_str_categorical(
+    out["minijob_employed_month_05"] = object_to_str_categorical(
         raw_data["kal1n005"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -263,7 +265,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 6 - Jun
-    out["full_time_employed_m_6"] = _combine_versions_employed_m(
+    out["full_time_employed_month_06"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a006_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a006_v2"],
@@ -272,7 +274,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Jun Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_6"] = _combine_versions_employed_m(
+    out["part_time_employed_month_06"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b006_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b006_v2"],
@@ -281,7 +283,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_6"] = object_to_str_categorical(
+    out["minijob_employed_month_06"] = object_to_str_categorical(
         raw_data["kal1n006"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -290,7 +292,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 7 - Jul
-    out["full_time_employed_m_7"] = _combine_versions_employed_m(
+    out["full_time_employed_month_07"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a007_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a007_v2"],
@@ -299,7 +301,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Jul Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_7"] = _combine_versions_employed_m(
+    out["part_time_employed_month_07"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b007_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b007_v2"],
@@ -308,7 +310,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_7"] = object_to_str_categorical(
+    out["minijob_employed_month_07"] = object_to_str_categorical(
         raw_data["kal1n007"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -317,7 +319,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 8 - Aug
-    out["full_time_employed_m_8"] = _combine_versions_employed_m(
+    out["full_time_employed_month_08"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a008_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a008_v2"],
@@ -326,7 +328,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Aug Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_8"] = _combine_versions_employed_m(
+    out["part_time_employed_month_08"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b008_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b008_v2"],
@@ -335,7 +337,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_8"] = object_to_str_categorical(
+    out["minijob_employed_month_08"] = object_to_str_categorical(
         raw_data["kal1n008"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -344,7 +346,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 9 - Sep
-    out["full_time_employed_m_9"] = _combine_versions_employed_m(
+    out["full_time_employed_month_09"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a009_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a009_v2"],
@@ -353,7 +355,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Sep Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_9"] = _combine_versions_employed_m(
+    out["part_time_employed_month_09"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b009_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b009_v2"],
@@ -362,7 +364,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_9"] = object_to_str_categorical(
+    out["minijob_employed_month_09"] = object_to_str_categorical(
         raw_data["kal1n009"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -371,7 +373,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 10 - Okt
-    out["full_time_employed_m_10"] = _combine_versions_employed_m(
+    out["full_time_employed_month_10"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a010_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a010_v2"],
@@ -380,7 +382,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Okt Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_10"] = _combine_versions_employed_m(
+    out["part_time_employed_month_10"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b010_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b010_v2"],
@@ -389,7 +391,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_10"] = object_to_str_categorical(
+    out["minijob_employed_month_10"] = object_to_str_categorical(
         raw_data["kal1n010"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -398,7 +400,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 11 - Nov
-    out["full_time_employed_m_11"] = _combine_versions_employed_m(
+    out["full_time_employed_month_11"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a011_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a011_v2"],
@@ -407,7 +409,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Nov Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_11"] = _combine_versions_employed_m(
+    out["part_time_employed_month_11"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b011_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b011_v2"],
@@ -416,7 +418,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_11"] = object_to_str_categorical(
+    out["minijob_employed_month_11"] = object_to_str_categorical(
         raw_data["kal1n011"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -425,7 +427,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Month 12 - Dez
-    out["full_time_employed_m_12"] = _combine_versions_employed_m(
+    out["full_time_employed_month_12"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1a012_v1"],
         renaming_v1={"[1] Ja": "Full-time employed"},
         data_v2=raw_data["kal1a012_v2"],
@@ -434,7 +436,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Dez Werkstatt fuer behinderte Menschen": "Werkstatt für behinderte Menschen",  # noqa: E501
         },
     )
-    out["part_time_employed_m_12"] = _combine_versions_employed_m(
+    out["part_time_employed_month_12"] = _combine_versions_employed_m(
         data_v1=raw_data["kal1b012_v1"],
         renaming_v1={"[1] genannt": "Part-time employed"},
         data_v2=raw_data["kal1b012_v2"],
@@ -443,7 +445,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             "[8] Werkstatt für Behinderte": "Werkstatt für behinderte Menschen",
         },
     )
-    out["minijob_employed_m_12"] = object_to_str_categorical(
+    out["minijob_employed_month_12"] = object_to_str_categorical(
         raw_data["kal1n012"],
         renaming={
             "[1] genannt": "Minijob employed",
@@ -466,40 +468,40 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # Read as explicit literals (not an f-string loop): the convert stage selects
     # which raw columns to load from the .dta by scanning this function for literal
     # string subscripts on raw_data, so a dynamic reference is silently dropped.
-    out["pension_receipt_or_retirement_m_1_last_year"] = (
+    out["pension_receipt_or_retirement_month_01"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e001"])
     )
-    out["pension_receipt_or_retirement_m_2_last_year"] = (
+    out["pension_receipt_or_retirement_month_02"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e002"])
     )
-    out["pension_receipt_or_retirement_m_3_last_year"] = (
+    out["pension_receipt_or_retirement_month_03"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e003"])
     )
-    out["pension_receipt_or_retirement_m_4_last_year"] = (
+    out["pension_receipt_or_retirement_month_04"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e004"])
     )
-    out["pension_receipt_or_retirement_m_5_last_year"] = (
+    out["pension_receipt_or_retirement_month_05"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e005"])
     )
-    out["pension_receipt_or_retirement_m_6_last_year"] = (
+    out["pension_receipt_or_retirement_month_06"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e006"])
     )
-    out["pension_receipt_or_retirement_m_7_last_year"] = (
+    out["pension_receipt_or_retirement_month_07"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e007"])
     )
-    out["pension_receipt_or_retirement_m_8_last_year"] = (
+    out["pension_receipt_or_retirement_month_08"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e008"])
     )
-    out["pension_receipt_or_retirement_m_9_last_year"] = (
+    out["pension_receipt_or_retirement_month_09"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e009"])
     )
-    out["pension_receipt_or_retirement_m_10_last_year"] = (
+    out["pension_receipt_or_retirement_month_10"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e010"])
     )
-    out["pension_receipt_or_retirement_m_11_last_year"] = (
+    out["pension_receipt_or_retirement_month_11"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e011"])
     )
-    out["pension_receipt_or_retirement_m_12_last_year"] = (
+    out["pension_receipt_or_retirement_month_12"] = (
         _clean_pension_receipt_or_retirement_month(raw_data["kal1e012"])
     )
     # Count retirement months from the twelve monthly indicators. Each is True for
@@ -510,28 +512,28 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     pension_receipt_or_retirement_months = (
         out[
             [
-                "pension_receipt_or_retirement_m_1_last_year",
-                "pension_receipt_or_retirement_m_2_last_year",
-                "pension_receipt_or_retirement_m_3_last_year",
-                "pension_receipt_or_retirement_m_4_last_year",
-                "pension_receipt_or_retirement_m_5_last_year",
-                "pension_receipt_or_retirement_m_6_last_year",
-                "pension_receipt_or_retirement_m_7_last_year",
-                "pension_receipt_or_retirement_m_8_last_year",
-                "pension_receipt_or_retirement_m_9_last_year",
-                "pension_receipt_or_retirement_m_10_last_year",
-                "pension_receipt_or_retirement_m_11_last_year",
-                "pension_receipt_or_retirement_m_12_last_year",
+                "pension_receipt_or_retirement_month_01",
+                "pension_receipt_or_retirement_month_02",
+                "pension_receipt_or_retirement_month_03",
+                "pension_receipt_or_retirement_month_04",
+                "pension_receipt_or_retirement_month_05",
+                "pension_receipt_or_retirement_month_06",
+                "pension_receipt_or_retirement_month_07",
+                "pension_receipt_or_retirement_month_08",
+                "pension_receipt_or_retirement_month_09",
+                "pension_receipt_or_retirement_month_10",
+                "pension_receipt_or_retirement_month_11",
+                "pension_receipt_or_retirement_month_12",
             ]
         ]
         .astype("boolean")
         .fillna(value=False)
     )
-    out["number_of_months_pension_receipt_or_retirement_last_year"] = (
-        apply_smallest_int_dtype(pension_receipt_or_retirement_months.sum(axis=1))
+    out["number_of_months_pension_receipt_or_retirement"] = apply_smallest_int_dtype(
+        pension_receipt_or_retirement_months.sum(axis=1)
     )
-    out["pension_receipt_or_retirement_in_at_least_one_month_last_year"] = (
-        out["number_of_months_pension_receipt_or_retirement_last_year"] > 0
+    out["pension_receipt_or_retirement_in_at_least_one_month"] = (
+        out["number_of_months_pension_receipt_or_retirement"] > 0
     )
 
     return out

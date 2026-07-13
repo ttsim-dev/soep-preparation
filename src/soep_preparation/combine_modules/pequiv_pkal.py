@@ -7,7 +7,7 @@ general pequiv x pkal merge:
 - `first_pension_receipt_year`: first observed year of pension income or a
   retirement-status proxy, not validated statutory pension receipt (see `combine`
   for the status-proxy caveat).
-- `received_unemployment_benefits_last_year`: whether the person drew any
+- `received_unemployment_benefits`: whether the person drew any
   unemployment benefit in the previous calendar year.
 """
 
@@ -23,7 +23,7 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     positive annual statutory pension income (`gesetzliche_rente_y`, pequiv, dated at
     `survey_year - 1` because CNEF annual incomes refer to the previous calendar year)
     or any retirement month in the calendar of the previous year
-    (`number_of_months_pension_receipt_or_retirement_last_year`, pkal, dated at
+    (`number_of_months_pension_receipt_or_retirement`, pkal, dated at
     `survey_year - 1` because that calendar item refers to the year before the
     survey). The consuming
     project turns it into a claiming age with the birth year. The pkal branch is a
@@ -33,8 +33,8 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     reference year, but whether such a status should feed "first statutory pension
     receipt" at all is flagged for maintainer review (see clean_modules/pkal.py).
 
-    `received_unemployment_benefits_last_year` unifies three previous-calendar-year
-    signals (see `_received_unemployment_benefits_last_year`).
+    `received_unemployment_benefits` unifies three previous-calendar-year
+    signals (see `_received_unemployment_benefits`).
 
     Args:
         pequiv: Cleaned pequiv module (pension income, unemployment-benefit amounts).
@@ -42,7 +42,7 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
 
     Returns:
         Person-year frame with `first_pension_receipt_year` and
-        `received_unemployment_benefits_last_year`.
+        `received_unemployment_benefits`.
     """
     merged = pd.merge(
         pequiv[
@@ -58,7 +58,7 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
             [
                 "p_id",
                 "survey_year",
-                "number_of_months_pension_receipt_or_retirement_last_year",
+                "number_of_months_pension_receipt_or_retirement",
                 "unemployment_benefits_number_of_months",
             ]
         ],
@@ -80,10 +80,7 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     # receipt year is `survey_year - 1`. This OR-branch is a labour-market-status
     # proxy, not validated statutory receipt (flagged for review; see docstring).
     has_prior_year_retirement = (
-        merged["number_of_months_pension_receipt_or_retirement_last_year"].fillna(
-            value=0
-        )
-        > 0
+        merged["number_of_months_pension_receipt_or_retirement"].fillna(value=0) > 0
     )
     status_receipt_year = (
         merged.loc[has_prior_year_retirement, "survey_year"]
@@ -102,19 +99,17 @@ def combine(pequiv: pd.DataFrame, pkal: pd.DataFrame) -> pd.DataFrame:
     out["first_pension_receipt_year"] = apply_smallest_int_dtype(
         merged["p_id"].map(first_receipt_year)
     )
-    out["received_unemployment_benefits_last_year"] = (
-        _received_unemployment_benefits_last_year(
-            unemployment_benefits_number_of_months=merged[
-                "unemployment_benefits_number_of_months"
-            ],
-            arbeitslosengeld_y=merged["arbeitslosengeld_y"],
-            arbeitslosenhilfe_y=merged["arbeitslosenhilfe_y"],
-        )
+    out["received_unemployment_benefits"] = _received_unemployment_benefits(
+        unemployment_benefits_number_of_months=merged[
+            "unemployment_benefits_number_of_months"
+        ],
+        arbeitslosengeld_y=merged["arbeitslosengeld_y"],
+        arbeitslosenhilfe_y=merged["arbeitslosenhilfe_y"],
     )
     return out
 
 
-def _received_unemployment_benefits_last_year(
+def _received_unemployment_benefits(
     unemployment_benefits_number_of_months: pd.Series,
     arbeitslosengeld_y: pd.Series,
     arbeitslosenhilfe_y: pd.Series,
