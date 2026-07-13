@@ -56,7 +56,9 @@ mystmd = "*"
 prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
+scikit-learn = ">=1.9.0,<2"
 [tool.pixi.environments]
+default = [ "py314", "tests" ]
 py314 = [ "py314", "tests" ]
 [tool.pixi.feature.py314]
 dependencies.python = "~=3.14.0"
@@ -72,6 +74,7 @@ soep_preparation = { path = ".", editable = true }
 kaleido = ">=1.0.0"
 pdbp = ">=1.8.1"
 [tool.pixi.tasks]
+wealth = { cmd = "pytask", env = { SOEP_WEALTH_IMPUTATION = "1" } }
 generate-variables = { cmd = "python _generate_variables.py", cwd = "docs" }
 build-docs = { cmd = "python _generate_variables.py && jupyter book build --html --execute", cwd = "docs" }
 view-docs = { cmd = "python _generate_variables.py && jupyter book start", cwd = "docs" }
@@ -101,8 +104,9 @@ extend-ignore = [
   "TC003",  # Move standard library import into a type-checking block
   "TRY003", # Avoid specifying long messages outside the exception class
 ]
-per-file-ignores."**/task.py" = [
-  "ANN", # Type annotations (pytask signatures use Annotated[Path, Product])
+per-file-ignores."**/task*.py" = [
+  "ANN",    # Type annotations (pytask signatures use Annotated[Path, Product])
+  "ARG001", # Source-file dependencies are declared as parameters for cache invalidation
 ]
 per-file-ignores."docs/*" = [
   "INP001", # Implicit namespace packages
@@ -143,9 +147,11 @@ expand_tables = [
 
 [tool.ty]
 # ty resolves third-party imports from this pixi env (the ty-pre-commit hook runs
-# `uv check --no-project`, so uv neither creates a `.venv` nor resolves deps). Run
-# `pixi install` once.
-environment.python = ".pixi/envs/py314"
+# `uv check --no-project`, so uv neither creates a `.venv` nor resolves deps). Points at
+# the `default` environment so a bare `pixi install` (no `-e`) builds it and ty resolves
+# out of the box; `default` carries the same `py314` + `tests` features as the `py314`
+# env, so the checked packages (Python 3.14, scikit-learn, pytest) are all present.
+environment.python = ".pixi/envs/default"
 rules.ambiguous-protocol-member = "error"
 rules.deprecated = "error"
 rules.division-by-zero = "error"
@@ -160,7 +166,7 @@ rules.unused-awaitable = "error"
 rules.unused-ignore-comment = "error"
 
 [tool.pytest]
-ini_options.norecursedirs = [ "docs" ]
+ini_options.norecursedirs = [ "docs", "pro-audit-*" ]
 ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
 ini_options.filterwarnings = []
 

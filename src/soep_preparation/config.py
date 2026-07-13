@@ -5,6 +5,7 @@ SURVEY_YEARS = [*range(1984, 2024 + 1)]
 
 
 import functools
+import os
 from pathlib import Path
 from typing import Any, Literal
 
@@ -49,6 +50,18 @@ METADATA: _METADATA_DTYPE = yaml.safe_load(
 
 POTENTIAL_INDEX_VARIABLES = ["hh_id", "hh_id_original", "p_id", "survey_year"]
 
+# Opt-in gate for the (eventually expensive) wealth-imputation subsystem. Off by
+# default so `pixi run pytask` skips it; enable with `SOEP_WEALTH_IMPUTATION=1`
+# (or the `pixi run wealth` task). Wealth task modules define their tasks only when
+# this is True, so nothing wealth-related is collected by default.
+RUN_WEALTH_IMPUTATION = os.environ.get("SOEP_WEALTH_IMPUTATION", "0") != "0"
+
+# Opt-in gate for the wealth-imputation layer-ablation diagnostic. Off even when the
+# wealth subsystem runs, because it re-runs the projection once per layer configuration
+# (one full set of refits each). Enable with `SOEP_WEALTH_LAYER_ABLATION=1` to attribute
+# the projection spread to its layers.
+RUN_WEALTH_LAYER_ABLATION = os.environ.get("SOEP_WEALTH_LAYER_ABLATION", "0") != "0"
+
 
 __all__ = [
     "BLD",
@@ -56,6 +69,8 @@ __all__ = [
     "MODULES",
     "RAW_DATA_FILES",
     "ROOT",
+    "RUN_WEALTH_IMPUTATION",
+    "RUN_WEALTH_LAYER_ABLATION",
     "SOEP_VERSION",
     "SRC",
     "SURVEY_YEARS",
