@@ -2191,7 +2191,7 @@ disability_degree:
     - 2022
     - 2023
     - 2024
-early_retirement_number_of_months_last_year:
+early_retirement_number_of_months:
   dtype: int8[pyarrow]
   module: pkal
   reference: previous_year
@@ -3842,7 +3842,7 @@ frailty_pl:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_1:
+full_time_employed_month_01:
   dtype:
     categorical:
       categories:
@@ -3894,7 +3894,7 @@ full_time_employed_m_1:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_10:
+full_time_employed_month_10:
   dtype:
     categorical:
       categories:
@@ -3946,7 +3946,7 @@ full_time_employed_m_10:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_11:
+full_time_employed_month_11:
   dtype:
     categorical:
       categories:
@@ -3998,7 +3998,7 @@ full_time_employed_m_11:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_12:
+full_time_employed_month_12:
   dtype:
     categorical:
       categories:
@@ -4050,7 +4050,7 @@ full_time_employed_m_12:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_2:
+full_time_employed_month_02:
   dtype:
     categorical:
       categories:
@@ -4102,7 +4102,7 @@ full_time_employed_m_2:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_3:
+full_time_employed_month_03:
   dtype:
     categorical:
       categories:
@@ -4154,7 +4154,7 @@ full_time_employed_m_3:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_4:
+full_time_employed_month_04:
   dtype:
     categorical:
       categories:
@@ -4206,7 +4206,7 @@ full_time_employed_m_4:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_5:
+full_time_employed_month_05:
   dtype:
     categorical:
       categories:
@@ -4258,7 +4258,7 @@ full_time_employed_m_5:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_6:
+full_time_employed_month_06:
   dtype:
     categorical:
       categories:
@@ -4310,7 +4310,7 @@ full_time_employed_m_6:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_7:
+full_time_employed_month_07:
   dtype:
     categorical:
       categories:
@@ -4362,7 +4362,7 @@ full_time_employed_m_7:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_8:
+full_time_employed_month_08:
   dtype:
     categorical:
       categories:
@@ -4414,7 +4414,7 @@ full_time_employed_m_8:
     - 2022
     - 2023
     - 2024
-full_time_employed_m_9:
+full_time_employed_month_09:
   dtype:
     categorical:
       categories:
@@ -6943,7 +6943,7 @@ in_public_service:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_in_at_least_one_month_last_year:
+pension_receipt_or_retirement_in_at_least_one_month:
   dtype: bool[pyarrow]
   module: pkal
   reference: previous_year
@@ -6989,7 +6989,7 @@ pension_receipt_or_retirement_in_at_least_one_month_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_10_last_year:
+pension_receipt_or_retirement_month_10:
   dtype:
     categorical:
       categories:
@@ -7040,7 +7040,7 @@ pension_receipt_or_retirement_m_10_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_11_last_year:
+pension_receipt_or_retirement_month_11:
   dtype:
     categorical:
       categories:
@@ -7091,7 +7091,7 @@ pension_receipt_or_retirement_m_11_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_12_last_year:
+pension_receipt_or_retirement_month_12:
   dtype:
     categorical:
       categories:
@@ -7142,7 +7142,7 @@ pension_receipt_or_retirement_m_12_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_1_last_year:
+pension_receipt_or_retirement_month_01:
   dtype:
     categorical:
       categories:
@@ -7193,7 +7193,7 @@ pension_receipt_or_retirement_m_1_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_2_last_year:
+pension_receipt_or_retirement_month_02:
   dtype:
     categorical:
       categories:
@@ -7244,7 +7244,7 @@ pension_receipt_or_retirement_m_2_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_3_last_year:
+pension_receipt_or_retirement_month_03:
   dtype:
     categorical:
       categories:
@@ -7295,7 +7295,7 @@ pension_receipt_or_retirement_m_3_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_4_last_year:
+pension_receipt_or_retirement_month_04:
   dtype:
     categorical:
       categories:
@@ -7346,7 +7346,7 @@ pension_receipt_or_retirement_m_4_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_5_last_year:
+pension_receipt_or_retirement_month_05:
   dtype:
     categorical:
       categories:
@@ -7397,7 +7397,7 @@ pension_receipt_or_retirement_m_5_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_6_last_year:
+pension_receipt_or_retirement_month_06:
   dtype:
     categorical:
       categories:
@@ -7448,7 +7448,7 @@ pension_receipt_or_retirement_m_6_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_7_last_year:
+pension_receipt_or_retirement_month_07:
   dtype:
     categorical:
       categories:
@@ -7499,7 +7499,7 @@ pension_receipt_or_retirement_m_7_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_8_last_year:
+pension_receipt_or_retirement_month_08:
   dtype:
     categorical:
       categories:
@@ -7550,7 +7550,7 @@ pension_receipt_or_retirement_m_8_last_year:
     - 2022
     - 2023
     - 2024
-pension_receipt_or_retirement_m_9_last_year:
+pension_receipt_or_retirement_month_09:
   dtype:
     categorical:
       categories:
@@ -10539,7 +10539,7 @@ military:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_1:
+minijob_employed_month_01:
   dtype:
     categorical:
       categories:
@@ -10570,7 +10570,7 @@ minijob_employed_m_1:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_10:
+minijob_employed_month_10:
   dtype:
     categorical:
       categories:
@@ -10601,7 +10601,7 @@ minijob_employed_m_10:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_11:
+minijob_employed_month_11:
   dtype:
     categorical:
       categories:
@@ -10632,7 +10632,7 @@ minijob_employed_m_11:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_12:
+minijob_employed_month_12:
   dtype:
     categorical:
       categories:
@@ -10663,7 +10663,7 @@ minijob_employed_m_12:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_2:
+minijob_employed_month_02:
   dtype:
     categorical:
       categories:
@@ -10694,7 +10694,7 @@ minijob_employed_m_2:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_3:
+minijob_employed_month_03:
   dtype:
     categorical:
       categories:
@@ -10725,7 +10725,7 @@ minijob_employed_m_3:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_4:
+minijob_employed_month_04:
   dtype:
     categorical:
       categories:
@@ -10756,7 +10756,7 @@ minijob_employed_m_4:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_5:
+minijob_employed_month_05:
   dtype:
     categorical:
       categories:
@@ -10787,7 +10787,7 @@ minijob_employed_m_5:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_6:
+minijob_employed_month_06:
   dtype:
     categorical:
       categories:
@@ -10818,7 +10818,7 @@ minijob_employed_m_6:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_7:
+minijob_employed_month_07:
   dtype:
     categorical:
       categories:
@@ -10849,7 +10849,7 @@ minijob_employed_m_7:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_8:
+minijob_employed_month_08:
   dtype:
     categorical:
       categories:
@@ -10880,7 +10880,7 @@ minijob_employed_m_8:
     - 2022
     - 2023
     - 2024
-minijob_employed_m_9:
+minijob_employed_month_09:
   dtype:
     categorical:
       categories:
@@ -10962,6 +10962,52 @@ months_worked_last_job:
   module: pl
   reference: time_invariant
   survey_years:
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+p_id_mother:
+  dtype: int32[pyarrow]
+  module: kidlong
+  reference: time_invariant
+  survey_years:
+    - 1984
     - 1985
     - 1986
     - 1987
@@ -11931,7 +11977,7 @@ number_of_months_employed:
     - 2022
     - 2023
     - 2024
-number_of_months_pension_receipt_or_retirement_last_year:
+number_of_months_pension_receipt_or_retirement:
   dtype: int8[pyarrow]
   module: pkal
   reference: previous_year
@@ -12419,52 +12465,6 @@ p_id_father_2:
   module: bioparen
   reference: time_invariant
   survey_years: null
-p_id_mother:
-  dtype: int32[pyarrow]
-  module: kidlong
-  reference: time_invariant
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 p_id_mother_1:
   dtype: int32[pyarrow]
   module: bioparen
@@ -12488,7 +12488,7 @@ paid_into_private_rente:
   survey_years:
     - 2013
     - 2018
-part_time_employed_m_1:
+part_time_employed_month_01:
   dtype:
     categorical:
       categories:
@@ -12540,7 +12540,7 @@ part_time_employed_m_1:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_10:
+part_time_employed_month_10:
   dtype:
     categorical:
       categories:
@@ -12574,59 +12574,7 @@ part_time_employed_m_10:
     - 2018
     - 2019
     - 2020
-part_time_employed_m_11:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_m_12:
+part_time_employed_month_11:
   dtype:
     categorical:
       categories:
@@ -12678,7 +12626,7 @@ part_time_employed_m_12:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_2:
+part_time_employed_month_12:
   dtype:
     categorical:
       categories:
@@ -12730,7 +12678,7 @@ part_time_employed_m_2:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_3:
+part_time_employed_month_02:
   dtype:
     categorical:
       categories:
@@ -12782,7 +12730,7 @@ part_time_employed_m_3:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_4:
+part_time_employed_month_03:
   dtype:
     categorical:
       categories:
@@ -12834,7 +12782,7 @@ part_time_employed_m_4:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_5:
+part_time_employed_month_04:
   dtype:
     categorical:
       categories:
@@ -12886,7 +12834,7 @@ part_time_employed_m_5:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_6:
+part_time_employed_month_05:
   dtype:
     categorical:
       categories:
@@ -12938,7 +12886,7 @@ part_time_employed_m_6:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_7:
+part_time_employed_month_06:
   dtype:
     categorical:
       categories:
@@ -12990,7 +12938,7 @@ part_time_employed_m_7:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_8:
+part_time_employed_month_07:
   dtype:
     categorical:
       categories:
@@ -13042,7 +12990,59 @@ part_time_employed_m_8:
     - 2022
     - 2023
     - 2024
-part_time_employed_m_9:
+part_time_employed_month_08:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_month_09:
   dtype:
     categorical:
       categories:
@@ -14052,7 +14052,7 @@ property_value_primary_residence_e:
     - 2007
     - 2012
     - 2017
-received_unemployment_benefits_last_year:
+received_unemployment_benefits:
   dtype: bool[pyarrow]
   module: pequiv_pkal
   reference: previous_year

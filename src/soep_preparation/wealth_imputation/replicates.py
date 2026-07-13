@@ -315,6 +315,9 @@ def apply_transport_scenario(
         A copy of `projection` with each `draw_i` column shifted by its own shock.
 
     """
+    if transport_log_scale == 0.0:
+        return projection.copy()
+
     draw_columns = [
         column for column in projection.columns if str(column).startswith("draw_")
     ]
