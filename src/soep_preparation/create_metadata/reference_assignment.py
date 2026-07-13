@@ -85,6 +85,7 @@ _CURRENT = (
     "gross_overall_wealth_including_vehicles_c",
     "gross_overall_wealth_including_vehicles_d",
     "gross_overall_wealth_including_vehicles_e",
+    "grundsicherung_im_alter_currently_received_hh",
     "grundsicherung_im_alter_currently_received_m_hh",
     "heating_costs_m_hh",
     "heating_costs_reason_missing",
