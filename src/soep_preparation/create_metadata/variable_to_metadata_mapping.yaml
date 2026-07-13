@@ -7368,7 +7368,7 @@ in_private_rente_eingezahlte_monate:
   survey_years:
     - 2013
     - 2018
-in_retirement_in_at_least_one_month_last_year:
+pension_receipt_or_retirement_in_at_least_one_month_last_year:
   dtype: bool[pyarrow]
   module: pkal
   survey_years:
@@ -7413,7 +7413,7 @@ in_retirement_in_at_least_one_month_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_10_last_year:
+pension_receipt_or_retirement_m_10_last_year:
   dtype:
     categorical:
       categories:
@@ -7463,7 +7463,7 @@ in_retirement_m_10_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_11_last_year:
+pension_receipt_or_retirement_m_11_last_year:
   dtype:
     categorical:
       categories:
@@ -7513,7 +7513,7 @@ in_retirement_m_11_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_12_last_year:
+pension_receipt_or_retirement_m_12_last_year:
   dtype:
     categorical:
       categories:
@@ -7563,7 +7563,7 @@ in_retirement_m_12_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_1_last_year:
+pension_receipt_or_retirement_m_1_last_year:
   dtype:
     categorical:
       categories:
@@ -7613,7 +7613,7 @@ in_retirement_m_1_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_2_last_year:
+pension_receipt_or_retirement_m_2_last_year:
   dtype:
     categorical:
       categories:
@@ -7663,7 +7663,7 @@ in_retirement_m_2_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_3_last_year:
+pension_receipt_or_retirement_m_3_last_year:
   dtype:
     categorical:
       categories:
@@ -7713,7 +7713,7 @@ in_retirement_m_3_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_4_last_year:
+pension_receipt_or_retirement_m_4_last_year:
   dtype:
     categorical:
       categories:
@@ -7763,7 +7763,7 @@ in_retirement_m_4_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_5_last_year:
+pension_receipt_or_retirement_m_5_last_year:
   dtype:
     categorical:
       categories:
@@ -7813,7 +7813,7 @@ in_retirement_m_5_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_6_last_year:
+pension_receipt_or_retirement_m_6_last_year:
   dtype:
     categorical:
       categories:
@@ -7863,7 +7863,7 @@ in_retirement_m_6_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_7_last_year:
+pension_receipt_or_retirement_m_7_last_year:
   dtype:
     categorical:
       categories:
@@ -7913,7 +7913,7 @@ in_retirement_m_7_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_8_last_year:
+pension_receipt_or_retirement_m_8_last_year:
   dtype:
     categorical:
       categories:
@@ -7963,7 +7963,7 @@ in_retirement_m_8_last_year:
     - 2022
     - 2023
     - 2024
-in_retirement_m_9_last_year:
+pension_receipt_or_retirement_m_9_last_year:
   dtype:
     categorical:
       categories:
@@ -11765,7 +11765,7 @@ number_of_months_employed:
     - 2022
     - 2023
     - 2024
-number_of_months_in_retirement_last_year:
+number_of_months_pension_receipt_or_retirement_last_year:
   dtype: int8[pyarrow]
   module: pkal
   survey_years:

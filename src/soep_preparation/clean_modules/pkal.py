@@ -62,7 +62,7 @@ def _number_of_months_employed(
     )
 
 
-def _clean_in_retirement_month(series: pd.Series) -> pd.Series:
+def _clean_pension_receipt_or_retirement_month(series: pd.Series) -> pd.Series:
     return object_to_bool_categorical(
         series=series,
         renaming={"[1] genannt": True},
@@ -456,77 +456,83 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["employed_in_at_least_one_month"] = out["number_of_months_employed"] > 0
 
     # Monthly retirement calendar of the previous year (raw SOEP label "Rente,
-    # Pension, Vorruhestand Jan-Dez im Vorjahr", pkal kal1e001-kal1e012): a
-    # labour-market status, not a benefit-claiming flag, hence `in_retirement`.
+    # Pension, Vorruhestand Jan-Dez im Vorjahr", pkal kal1e001-kal1e012). The raw
+    # item lumps statutory pension receipt (Rente), civil-servant pension (Pension),
+    # and early retirement (Vorruhestand) into one flag, so the name spells out
+    # `pension_receipt_or_retirement` rather than collapsing it to a single status.
+    # REVIEW: combine_modules/pequiv_pkal.py uses this status as a fallback signal
+    # for `first_pension_receipt_year`. It can flag early exit / Vorruhestand that is
+    # not statutory pension claiming; whether it should feed "first statutory pension
+    # receipt" at all is an open decision for the maintainer.
     # Read as explicit literals (not an f-string loop): the convert stage selects
     # which raw columns to load from the .dta by scanning this function for literal
     # string subscripts on raw_data, so a dynamic reference is silently dropped.
-    out["in_retirement_m_1_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e001"]
+    out["pension_receipt_or_retirement_m_1_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e001"])
     )
-    out["in_retirement_m_2_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e002"]
+    out["pension_receipt_or_retirement_m_2_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e002"])
     )
-    out["in_retirement_m_3_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e003"]
+    out["pension_receipt_or_retirement_m_3_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e003"])
     )
-    out["in_retirement_m_4_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e004"]
+    out["pension_receipt_or_retirement_m_4_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e004"])
     )
-    out["in_retirement_m_5_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e005"]
+    out["pension_receipt_or_retirement_m_5_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e005"])
     )
-    out["in_retirement_m_6_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e006"]
+    out["pension_receipt_or_retirement_m_6_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e006"])
     )
-    out["in_retirement_m_7_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e007"]
+    out["pension_receipt_or_retirement_m_7_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e007"])
     )
-    out["in_retirement_m_8_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e008"]
+    out["pension_receipt_or_retirement_m_8_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e008"])
     )
-    out["in_retirement_m_9_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e009"]
+    out["pension_receipt_or_retirement_m_9_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e009"])
     )
-    out["in_retirement_m_10_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e010"]
+    out["pension_receipt_or_retirement_m_10_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e010"])
     )
-    out["in_retirement_m_11_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e011"]
+    out["pension_receipt_or_retirement_m_11_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e011"])
     )
-    out["in_retirement_m_12_last_year"] = _clean_in_retirement_month(
-        raw_data["kal1e012"]
+    out["pension_receipt_or_retirement_m_12_last_year"] = (
+        _clean_pension_receipt_or_retirement_month(raw_data["kal1e012"])
     )
     # Count retirement months from the twelve monthly indicators. Each is True for
     # a retirement month and NA otherwise (the `"[1] genannt"` renaming drops the
     # not-mentioned answers), so a not-mentioned / unanswered month counts as
     # not-in-retirement. The columns are listed here, not hidden behind a helper
     # taking the whole frame, so the count's provenance is visible at the caller.
-    in_retirement_months = (
+    pension_receipt_or_retirement_months = (
         out[
             [
-                "in_retirement_m_1_last_year",
-                "in_retirement_m_2_last_year",
-                "in_retirement_m_3_last_year",
-                "in_retirement_m_4_last_year",
-                "in_retirement_m_5_last_year",
-                "in_retirement_m_6_last_year",
-                "in_retirement_m_7_last_year",
-                "in_retirement_m_8_last_year",
-                "in_retirement_m_9_last_year",
-                "in_retirement_m_10_last_year",
-                "in_retirement_m_11_last_year",
-                "in_retirement_m_12_last_year",
+                "pension_receipt_or_retirement_m_1_last_year",
+                "pension_receipt_or_retirement_m_2_last_year",
+                "pension_receipt_or_retirement_m_3_last_year",
+                "pension_receipt_or_retirement_m_4_last_year",
+                "pension_receipt_or_retirement_m_5_last_year",
+                "pension_receipt_or_retirement_m_6_last_year",
+                "pension_receipt_or_retirement_m_7_last_year",
+                "pension_receipt_or_retirement_m_8_last_year",
+                "pension_receipt_or_retirement_m_9_last_year",
+                "pension_receipt_or_retirement_m_10_last_year",
+                "pension_receipt_or_retirement_m_11_last_year",
+                "pension_receipt_or_retirement_m_12_last_year",
             ]
         ]
         .astype("boolean")
         .fillna(value=False)
     )
-    out["number_of_months_in_retirement_last_year"] = apply_smallest_int_dtype(
-        in_retirement_months.sum(axis=1)
+    out["number_of_months_pension_receipt_or_retirement_last_year"] = (
+        apply_smallest_int_dtype(pension_receipt_or_retirement_months.sum(axis=1))
     )
-    out["in_retirement_in_at_least_one_month_last_year"] = (
-        out["number_of_months_in_retirement_last_year"] > 0
+    out["pension_receipt_or_retirement_in_at_least_one_month_last_year"] = (
+        out["number_of_months_pension_receipt_or_retirement_last_year"] > 0
     )
 
     return out
