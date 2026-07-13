@@ -62,6 +62,11 @@ Order: `<german_stem>_<english_modifiers>_<time>_<aggregation>_<source>`.
 - **aggregation:** `_hh` (household)
 - **source-module disambiguation:** `_hl`, `_pequiv`, … when the same concept comes from
   more than one module
+- **calendar-month index:** `_month_01` … `_month_12` for the twelve slots of a `pkal`
+  activity calendar (January is `01`). This is a *coordinate* identifying which month,
+  not the `_m` monthly-frequency suffix; it is zero-padded so the twelve columns sort in
+  calendar order. The year the calendar refers to is `previous_year` and lives in
+  metadata, not in the name (so no `_last_year` suffix — see below).
 
 The **reference period is not encoded in the name** — see below.
 
@@ -71,6 +76,7 @@ Examples:
 - `arbeitslosengeld_2_number_of_months_hh`
 - `gesetzliche_rente_survivor_y`
 - `income_after_tax_y_hh`
+- `full_time_employed_month_03`, `pension_receipt_or_retirement_month_12`
 
 ## Reference period: it lives in metadata, not the name
 
