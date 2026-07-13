@@ -1,0 +1,3 @@
+[tool.pytask.ini_options]
+paths = ["."]
+task_files = ["task_*.py", "task.py", "tasks.py"]
