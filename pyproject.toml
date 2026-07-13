@@ -148,10 +148,9 @@ expand_tables = [
 [tool.ty]
 # ty resolves third-party imports from this pixi env (the ty-pre-commit hook runs
 # `uv check --no-project`, so uv neither creates a `.venv` nor resolves deps). Points at
-# the `default` environment so a bare `pixi install` (no `-e`) builds it and ty resolves
-# out of the box; `default` carries the same `py314` + `tests` features as the `py314`
-# env, so the checked packages (Python 3.14, scikit-learn, pytest) are all present.
-environment.python = ".pixi/envs/default"
+# the `py314` env, matching the `run-ty` CI job's `pixi run -e py314`; run
+# `pixi install -e py314` once so the env exists.
+environment.python = ".pixi/envs/py314"
 rules.ambiguous-protocol-member = "error"
 rules.deprecated = "error"
 rules.division-by-zero = "error"
