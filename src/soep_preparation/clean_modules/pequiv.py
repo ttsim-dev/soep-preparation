@@ -15,14 +15,14 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _calculate_dependent_employment_income(
-    earnings_from_first_job: pd.Series,
-    earnings_from_second_job: pd.Series,
-    thirteenth_monthly_salary: pd.Series,
-    fourteenth_monthly_salary: pd.Series,
-    christmas_bonus: pd.Series,
-    holiday_bonus: pd.Series,
-    profit_sharing: pd.Series,
-    other_bonuses: pd.Series,
+    earnings_from_first_job_y: pd.Series,
+    earnings_from_second_job_y: pd.Series,
+    thirteenth_monthly_salary_y: pd.Series,
+    fourteenth_monthly_salary_y: pd.Series,
+    christmas_bonus_y: pd.Series,
+    holiday_bonus_y: pd.Series,
+    profit_sharing_y: pd.Series,
+    other_bonuses_y: pd.Series,
 ) -> pd.Series:
     """Add up the pay components that stem from dependent employment.
 
@@ -30,28 +30,32 @@ def _calculate_dependent_employment_income(
     self-employment is left out.
 
     Args:
-        earnings_from_first_job: Wages and salary from the main job.
-        earnings_from_second_job: Income from secondary employment.
-        thirteenth_monthly_salary: 13th monthly salary.
-        fourteenth_monthly_salary: 14th monthly salary.
-        christmas_bonus: Christmas bonus payment.
-        holiday_bonus: Vacation bonus payment.
-        profit_sharing: Profit-sharing payment.
-        other_bonuses: Remaining bonus payments.
+        earnings_from_first_job_y: Wages and salary from the main job in a regular 
+            month, scaled to the yearly level.
+        earnings_from_second_job_y: Income from secondary employment in a regular month,
+            scaled to the yearly level.
+        thirteenth_monthly_salary_y: Sum of 13th monthly salary payments received in
+            that year.
+        fourteenth_monthly_salary_y: Sum of 14th monthly salary payments received in
+            that year.
+        christmas_bonus_y: Sum of Christmas bonus payments received in that year.
+        holiday_bonus_y: Sum of vacation bonus payments received in that year.
+        profit_sharing_y: Sum of profit-sharing payments received in that year.
+        other_bonuses_y: Sum of remaining bonus payments received in that year.
 
     Returns:
         Income from dependent employment, missing where no component is reported.
     """
     components = pd.concat(
         [
-            earnings_from_first_job,
-            earnings_from_second_job,
-            thirteenth_monthly_salary,
-            fourteenth_monthly_salary,
-            christmas_bonus,
-            holiday_bonus,
-            profit_sharing,
-            other_bonuses,
+            earnings_from_first_job_y,
+            earnings_from_second_job_y,
+            thirteenth_monthly_salary_y,
+            fourteenth_monthly_salary_y,
+            christmas_bonus_y,
+            holiday_bonus_y,
+            profit_sharing_y,
+            other_bonuses_y,
         ],
         axis=1,
     )
@@ -336,14 +340,14 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["earnings_from_dependent_employment_y"] = (
         _calculate_dependent_employment_income(
-            earnings_from_first_job=out["earnings_from_first_job_y"],
-            earnings_from_second_job=out["earnings_from_second_job_y"],
-            thirteenth_monthly_salary=out["thirteenth_monthly_salary_y"],
-            fourteenth_monthly_salary=out["fourteenth_monthly_salary_y"],
-            christmas_bonus=out["christmas_bonus_y"],
-            holiday_bonus=out["holiday_bonus_y"],
-            profit_sharing=out["profit_sharing_y"],
-            other_bonuses=out["other_bonuses_y"],
+            earnings_from_first_job_y=out["earnings_from_first_job_y"],
+            earnings_from_second_job_y=out["earnings_from_second_job_y"],
+            thirteenth_monthly_salary_y=out["thirteenth_monthly_salary_y"],
+            fourteenth_monthly_salary_y=out["fourteenth_monthly_salary_y"],
+            christmas_bonus_y=out["christmas_bonus_y"],
+            holiday_bonus_y=out["holiday_bonus_y"],
+            profit_sharing_y=out["profit_sharing_y"],
+            other_bonuses_y=out["other_bonuses_y"],
         )
     )
 
