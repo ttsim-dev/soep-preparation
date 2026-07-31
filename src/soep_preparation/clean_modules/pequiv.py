@@ -14,6 +14,28 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
+def _calculate_dependent_employment_income(
+    labour_earnings: pd.Series,
+    self_employment_income: pd.Series,
+) -> pd.Series:
+    """Subtract self-employment income from total labour earnings.
+
+    Total labour earnings include self-employment income, so the remainder is the
+    dependent-employment part. Reported aggregates are rounded independently, which
+    can make the self-employment part exceed the total by a euro; the difference is
+    bounded below by zero because negative earnings are not meaningful.
+
+    Args:
+        labour_earnings: Total individual labour earnings.
+        self_employment_income: Income from self-employment.
+
+    Returns:
+        Income from dependent employment.
+    """
+    difference = labour_earnings - self_employment_income
+    return convert_to_float(difference.clip(lower=0))
+
+
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return convert_to_float(frailty_inputs.mean(axis=1))
 
@@ -271,6 +293,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["earnings_from_self_employment_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iself"], value=0)
+    )
+    out["earnings_from_dependent_employment_y"] = (
+        _calculate_dependent_employment_income(
+            labour_earnings=out["earnings_from_work_y"],
+            self_employment_income=out["earnings_from_self_employment_y"],
+        )
     )
     out["christmas_bonus_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ixmas"], value=0)

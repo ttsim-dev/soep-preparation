@@ -367,6 +367,7 @@ _PREVIOUS_YEAR = (
     "christmas_bonus_y",
     "cpi",
     "early_retirement_number_of_months",
+    "earnings_from_dependent_employment_y",
     "earnings_from_first_job_y",
     "earnings_from_second_job_y",
     "earnings_from_self_employment_y",
