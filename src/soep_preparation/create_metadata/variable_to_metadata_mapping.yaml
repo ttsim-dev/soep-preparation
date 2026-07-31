@@ -2237,6 +2237,52 @@ early_retirement_number_of_months:
     - 2022
     - 2023
     - 2024
+earnings_from_dependent_employment_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 earnings_from_first_job_y:
   dtype: double[pyarrow]
   module: pequiv
@@ -3713,6 +3759,52 @@ first_pension_receipt_year:
     - 2022
     - 2023
     - 2024
+fourteenth_monthly_salary_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 frailty:
   dtype: double[pyarrow]
   module: pequiv_pl
@@ -3843,162 +3935,6 @@ frailty_pl:
     - 2023
     - 2024
 full_time_employed_month_01:
-  dtype:
-    categorical:
-      categories:
-        - Full-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-full_time_employed_month_10:
-  dtype:
-    categorical:
-      categories:
-        - Full-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-full_time_employed_month_11:
-  dtype:
-    categorical:
-      categories:
-        - Full-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-full_time_employed_month_12:
   dtype:
     categorical:
       categories:
@@ -4415,6 +4351,162 @@ full_time_employed_month_08:
     - 2023
     - 2024
 full_time_employed_month_09:
+  dtype:
+    categorical:
+      categories:
+        - Full-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+full_time_employed_month_10:
+  dtype:
+    categorical:
+      categories:
+        - Full-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+full_time_employed_month_11:
+  dtype:
+    categorical:
+      categories:
+        - Full-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+full_time_employed_month_12:
   dtype:
     categorical:
       categories:
@@ -6901,664 +6993,6 @@ in_public_service:
       ordered: true
   module: pgen
   reference: current
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_in_at_least_one_month:
-  dtype: bool[pyarrow]
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_10:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_11:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_12:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_01:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_02:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_03:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_04:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_05:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_06:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_07:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_08:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-pension_receipt_or_retirement_month_09:
-  dtype:
-    categorical:
-      categories:
-        - true
-      categories_dtype: bool[pyarrow]
-      ordered: true
-  module: pkal
-  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -10570,99 +10004,6 @@ minijob_employed_month_01:
     - 2022
     - 2023
     - 2024
-minijob_employed_month_10:
-  dtype:
-    categorical:
-      categories:
-        - Minijob employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: string
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-minijob_employed_month_11:
-  dtype:
-    categorical:
-      categories:
-        - Minijob employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: string
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-minijob_employed_month_12:
-  dtype:
-    categorical:
-      categories:
-        - Minijob employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: string
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
 minijob_employed_month_02:
   dtype:
     categorical:
@@ -10911,6 +10252,99 @@ minijob_employed_month_09:
     - 2022
     - 2023
     - 2024
+minijob_employed_month_10:
+  dtype:
+    categorical:
+      categories:
+        - Minijob employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: string
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+minijob_employed_month_11:
+  dtype:
+    categorical:
+      categories:
+        - Minijob employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: string
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+minijob_employed_month_12:
+  dtype:
+    categorical:
+      categories:
+        - Minijob employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: string
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 month_interview:
   dtype: int8[pyarrow]
   module: pgen
@@ -10962,52 +10396,6 @@ months_worked_last_job:
   module: pl
   reference: time_invariant
   survey_years:
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-p_id_mother:
-  dtype: int32[pyarrow]
-  module: kidlong
-  reference: time_invariant
-  survey_years:
-    - 1984
     - 1985
     - 1986
     - 1987
@@ -12465,6 +11853,52 @@ p_id_father_2:
   module: bioparen
   reference: time_invariant
   survey_years: null
+p_id_mother:
+  dtype: int32[pyarrow]
+  module: kidlong
+  reference: time_invariant
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 p_id_mother_1:
   dtype: int32[pyarrow]
   module: bioparen
@@ -12489,144 +11923,6 @@ paid_into_private_rente:
     - 2013
     - 2018
 part_time_employed_month_01:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_month_10:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-part_time_employed_month_11:
-  dtype:
-    categorical:
-      categories:
-        - Part-time employed
-        - Werkstatt für behinderte Menschen
-      categories_dtype: str
-      ordered: false
-  module: pkal
-  reference: previous_year
-  survey_years:
-    - 1984
-    - 1985
-    - 1986
-    - 1987
-    - 1988
-    - 1989
-    - 1990
-    - 1991
-    - 1992
-    - 1993
-    - 1994
-    - 1995
-    - 1996
-    - 1997
-    - 1998
-    - 1999
-    - 2000
-    - 2001
-    - 2002
-    - 2003
-    - 2004
-    - 2005
-    - 2006
-    - 2007
-    - 2008
-    - 2009
-    - 2010
-    - 2011
-    - 2012
-    - 2013
-    - 2014
-    - 2015
-    - 2016
-    - 2017
-    - 2018
-    - 2019
-    - 2020
-    - 2021
-    - 2022
-    - 2023
-    - 2024
-part_time_employed_month_12:
   dtype:
     categorical:
       categories:
@@ -13094,6 +12390,144 @@ part_time_employed_month_09:
     - 2022
     - 2023
     - 2024
+part_time_employed_month_10:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+part_time_employed_month_11:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+part_time_employed_month_12:
+  dtype:
+    categorical:
+      categories:
+        - Part-time employed
+        - Werkstatt für behinderte Menschen
+      categories_dtype: str
+      ordered: false
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
 partner_p_id:
   dtype: int32[pyarrow]
   module: ppathl
@@ -13335,6 +12769,664 @@ party_affiliation_intensity:
       ordered: true
   module: pl
   reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_in_at_least_one_month:
+  dtype: bool[pyarrow]
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_01:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_02:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_03:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_04:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_05:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_06:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_07:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_08:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_09:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_10:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_11:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+pension_receipt_or_retirement_month_12:
+  dtype:
+    categorical:
+      categories:
+        - true
+      categories_dtype: bool[pyarrow]
+      ordered: true
+  module: pkal
+  reference: previous_year
   survey_years:
     - 1984
     - 1985
@@ -15394,6 +15486,52 @@ tenure:
   dtype: double[pyarrow]
   module: pgen
   reference: current
+  survey_years:
+    - 1984
+    - 1985
+    - 1986
+    - 1987
+    - 1988
+    - 1989
+    - 1990
+    - 1991
+    - 1992
+    - 1993
+    - 1994
+    - 1995
+    - 1996
+    - 1997
+    - 1998
+    - 1999
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    - 2005
+    - 2006
+    - 2007
+    - 2008
+    - 2009
+    - 2010
+    - 2011
+    - 2012
+    - 2013
+    - 2014
+    - 2015
+    - 2016
+    - 2017
+    - 2018
+    - 2019
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+    - 2024
+thirteenth_monthly_salary_y:
+  dtype: double[pyarrow]
+  module: pequiv
+  reference: previous_year
   survey_years:
     - 1984
     - 1985

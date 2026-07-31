@@ -15,7 +15,7 @@ import numpy as np
 from soep_preparation.wealth_imputation.donors import PmmResult, pmm_draw
 
 
-def draw_amounts(  # noqa: PLR0913
+def draw_amounts(
     recipient_predicted: np.ndarray,
     donor_predicted: np.ndarray,
     donor_observed: np.ndarray,

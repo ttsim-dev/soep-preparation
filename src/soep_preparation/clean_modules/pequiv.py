@@ -14,11 +14,59 @@ from soep_preparation.utilities.data_manipulator import (
 )
 
 
+def _calculate_dependent_employment_income(
+    earnings_from_first_job_y: pd.Series,
+    earnings_from_second_job_y: pd.Series,
+    thirteenth_monthly_salary_y: pd.Series,
+    fourteenth_monthly_salary_y: pd.Series,
+    christmas_bonus_y: pd.Series,
+    holiday_bonus_y: pd.Series,
+    profit_sharing_y: pd.Series,
+    other_bonuses_y: pd.Series,
+) -> pd.Series:
+    """Add up the pay components that stem from dependent employment.
+
+    These are the components of total labour earnings that remain once income from
+    self-employment is left out.
+
+    Args:
+        earnings_from_first_job_y: Wages and salary from the main job in a regular
+            month, scaled to the yearly level.
+        earnings_from_second_job_y: Income from secondary employment in a regular month,
+            scaled to the yearly level.
+        thirteenth_monthly_salary_y: Sum of 13th monthly salary payments received in
+            that year.
+        fourteenth_monthly_salary_y: Sum of 14th monthly salary payments received in
+            that year.
+        christmas_bonus_y: Sum of Christmas bonus payments received in that year.
+        holiday_bonus_y: Sum of vacation bonus payments received in that year.
+        profit_sharing_y: Sum of profit-sharing payments received in that year.
+        other_bonuses_y: Sum of remaining bonus payments received in that year.
+
+    Returns:
+        Income from dependent employment, missing where no component is reported.
+    """
+    components = pd.concat(
+        [
+            earnings_from_first_job_y,
+            earnings_from_second_job_y,
+            thirteenth_monthly_salary_y,
+            fourteenth_monthly_salary_y,
+            christmas_bonus_y,
+            holiday_bonus_y,
+            profit_sharing_y,
+            other_bonuses_y,
+        ],
+        axis=1,
+    )
+    return convert_to_float(components.sum(axis=1, min_count=1))
+
+
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return convert_to_float(frailty_inputs.mean(axis=1))
 
 
-def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     """Create cleaned variables from the pequiv module.
 
     Args:
@@ -272,6 +320,12 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["earnings_from_self_employment_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iself"], value=0)
     )
+    out["thirteenth_monthly_salary_y"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["i13ly"], value=0)
+    )
+    out["fourteenth_monthly_salary_y"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["i14ly"], value=0)
+    )
     out["christmas_bonus_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ixmas"], value=0)
     )
@@ -283,6 +337,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["other_bonuses_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iothy"], value=0)
+    )
+    out["earnings_from_dependent_employment_y"] = (
+        _calculate_dependent_employment_income(
+            earnings_from_first_job_y=out["earnings_from_first_job_y"],
+            earnings_from_second_job_y=out["earnings_from_second_job_y"],
+            thirteenth_monthly_salary_y=out["thirteenth_monthly_salary_y"],
+            fourteenth_monthly_salary_y=out["fourteenth_monthly_salary_y"],
+            christmas_bonus_y=out["christmas_bonus_y"],
+            holiday_bonus_y=out["holiday_bonus_y"],
+            profit_sharing_y=out["profit_sharing_y"],
+            other_bonuses_y=out["other_bonuses_y"],
+        )
     )
 
     # hh costs

@@ -183,7 +183,7 @@ class ImputationResult:
     `None`."""
 
 
-def run_imputation(  # noqa: PLR0913 -- keyword-only run settings + backtest waves
+def run_imputation(
     modules: Mapping[str, pd.DataFrame],
     *,
     n_draws: int,

@@ -11,7 +11,7 @@ from soep_preparation.wealth_imputation.registry import (
 )
 
 
-def _entry(  # noqa: PLR0913
+def _entry(
     *,
     status: VerificationStatus,
     required: bool,

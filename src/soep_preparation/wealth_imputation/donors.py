@@ -26,7 +26,7 @@ class PmmResult:
     """Score distance to the drawn donor as float64, shape `(n_recipients,)`."""
 
 
-def _fail_if_pmm_inputs_invalid(  # noqa: PLR0913
+def _fail_if_pmm_inputs_invalid(
     recipient_scores: np.ndarray,
     donor_scores: np.ndarray,
     donor_values: np.ndarray,
@@ -121,7 +121,7 @@ def _fail_if_exclude_invalid(
             raise ValueError(msg)
 
 
-def pmm_draw(  # noqa: PLR0913
+def pmm_draw(
     recipient_scores: np.ndarray,
     donor_scores: np.ndarray,
     donor_values: np.ndarray,

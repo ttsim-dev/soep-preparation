@@ -102,7 +102,7 @@ class ComponentDrawConfig:
     donors reflects the donor pool's bootstrap composition; `None` draws uniformly."""
 
 
-def simulate_household_total_draws(  # noqa: PLR0913 -- keyword-only simulation knobs
+def simulate_household_total_draws(
     recipients: pd.DataFrame,
     configs: Sequence[ComponentDrawConfig],
     *,
@@ -183,7 +183,7 @@ def simulate_household_total_draws(  # noqa: PLR0913 -- keyword-only simulation 
     return pd.concat(draw_frames, ignore_index=True)
 
 
-def simulate_household_totals(  # noqa: PLR0913 -- keyword-only simulation knobs
+def simulate_household_totals(
     recipients: pd.DataFrame,
     configs: Sequence[ComponentDrawConfig],
     *,

@@ -61,7 +61,7 @@ def _fail_if_probabilities_invalid(ownership_prob: np.ndarray) -> None:
         raise ValueError(msg)
 
 
-def draw_component(  # noqa: PLR0913
+def draw_component(
     ownership_prob: np.ndarray,
     ownership_share: np.ndarray,
     recipient_predicted: np.ndarray,

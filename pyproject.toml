@@ -88,21 +88,22 @@ unsafe-fixes = false
 [tool.ruff.lint]
 select = [ "ALL" ]
 extend-ignore = [
-  "COM812", # Avoid conflict with ruff-format
-  "EM101",  # Exception must not use a string literal
-  "EM102",  # Exception must not use an f-string literal
-  "FBT001", # Boolean-typed positional argument in function definition
-  "FIX002", # Line contains TODO (rely on TD area for spotting)
-  "ISC001", # Avoid conflict with ruff-format
-  "PD015",  # pd.merge fine because of inherent symmetry
-  "RUF001", # Ambiguous unicode in strings (raw SOEP labels carry them verbatim)
-  "RUF002", # Ambiguous unicode in docstrings
-  "RUF003", # Ambiguous unicode in comments
-  "S101",   # Use of `assert` detected
-  "TC001",  # Move application import into a type-checking block
-  "TC002",  # Move third-party import into a type-checking block
-  "TC003",  # Move standard library import into a type-checking block
-  "TRY003", # Avoid specifying long messages outside the exception class
+  "COM812",  # Avoid conflict with ruff-format
+  "EM101",   # Exception must not use a string literal
+  "EM102",   # Exception must not use an f-string literal
+  "FBT001",  # Boolean-typed positional argument in function definition
+  "FIX002",  # Line contains TODO (rely on TD area for spotting)
+  "ISC001",  # Avoid conflict with ruff-format
+  "PD015",   # pd.merge fine because of inherent symmetry
+  "PLR0913", # Too many arguments (one parameter per input series is the convention)
+  "RUF001",  # Ambiguous unicode in strings (raw SOEP labels carry them verbatim)
+  "RUF002",  # Ambiguous unicode in docstrings
+  "RUF003",  # Ambiguous unicode in comments
+  "S101",    # Use of `assert` detected
+  "TC001",   # Move application import into a type-checking block
+  "TC002",   # Move third-party import into a type-checking block
+  "TC003",   # Move standard library import into a type-checking block
+  "TRY003",  # Avoid specifying long messages outside the exception class
 ]
 per-file-ignores."**/task*.py" = [
   "ANN",    # Type annotations (pytask signatures use Annotated[Path, Product])
