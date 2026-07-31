@@ -15,32 +15,54 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _calculate_dependent_employment_income(
-    labour_earnings: pd.Series,
-    self_employment_income: pd.Series,
+    earnings_from_first_job: pd.Series,
+    earnings_from_second_job: pd.Series,
+    thirteenth_monthly_salary: pd.Series,
+    fourteenth_monthly_salary: pd.Series,
+    christmas_bonus: pd.Series,
+    holiday_bonus: pd.Series,
+    profit_sharing: pd.Series,
+    other_bonuses: pd.Series,
 ) -> pd.Series:
-    """Subtract self-employment income from total labour earnings.
+    """Add up the pay components that stem from dependent employment.
 
-    Total labour earnings include self-employment income, so the remainder is the
-    dependent-employment part. Reported aggregates are rounded independently, which
-    can make the self-employment part exceed the total by a euro; the difference is
-    bounded below by zero because negative earnings are not meaningful.
+    These are the components of total labour earnings that remain once income from
+    self-employment is left out.
 
     Args:
-        labour_earnings: Total individual labour earnings.
-        self_employment_income: Income from self-employment.
+        earnings_from_first_job: Wages and salary from the main job.
+        earnings_from_second_job: Income from secondary employment.
+        thirteenth_monthly_salary: 13th monthly salary.
+        fourteenth_monthly_salary: 14th monthly salary.
+        christmas_bonus: Christmas bonus payment.
+        holiday_bonus: Vacation bonus payment.
+        profit_sharing: Profit-sharing payment.
+        other_bonuses: Remaining bonus payments.
 
     Returns:
-        Income from dependent employment.
+        Income from dependent employment, missing where no component is reported.
     """
-    difference = labour_earnings - self_employment_income
-    return convert_to_float(difference.clip(lower=0))
+    components = pd.concat(
+        [
+            earnings_from_first_job,
+            earnings_from_second_job,
+            thirteenth_monthly_salary,
+            fourteenth_monthly_salary,
+            christmas_bonus,
+            holiday_bonus,
+            profit_sharing,
+            other_bonuses,
+        ],
+        axis=1,
+    )
+    return convert_to_float(components.sum(axis=1, min_count=1))
 
 
 def _calculate_frailty(frailty_inputs: pd.DataFrame) -> pd.Series:
     return convert_to_float(frailty_inputs.mean(axis=1))
 
 
-def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
+def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     """Create cleaned variables from the pequiv module.
 
     Args:
@@ -294,11 +316,11 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     out["earnings_from_self_employment_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iself"], value=0)
     )
-    out["earnings_from_dependent_employment_y"] = (
-        _calculate_dependent_employment_income(
-            labour_earnings=out["earnings_from_work_y"],
-            self_employment_income=out["earnings_from_self_employment_y"],
-        )
+    out["thirteenth_monthly_salary_y"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["i13ly"], value=0)
+    )
+    out["fourteenth_monthly_salary_y"] = object_to_float(
+        replace_not_applicable_answer(series=raw_data["i14ly"], value=0)
     )
     out["christmas_bonus_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["ixmas"], value=0)
@@ -311,6 +333,18 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     )
     out["other_bonuses_y"] = object_to_float(
         replace_not_applicable_answer(series=raw_data["iothy"], value=0)
+    )
+    out["earnings_from_dependent_employment_y"] = (
+        _calculate_dependent_employment_income(
+            earnings_from_first_job=out["earnings_from_first_job_y"],
+            earnings_from_second_job=out["earnings_from_second_job_y"],
+            thirteenth_monthly_salary=out["thirteenth_monthly_salary_y"],
+            fourteenth_monthly_salary=out["fourteenth_monthly_salary_y"],
+            christmas_bonus=out["christmas_bonus_y"],
+            holiday_bonus=out["holiday_bonus_y"],
+            profit_sharing=out["profit_sharing_y"],
+            other_bonuses=out["other_bonuses_y"],
+        )
     )
 
     # hh costs

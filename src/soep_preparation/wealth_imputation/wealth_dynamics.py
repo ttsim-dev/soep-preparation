@@ -240,7 +240,7 @@ def mean_draw_distribution(
     }
 
 
-def build_dynamics_report(  # noqa: PLR0913 -- keyword-only report knobs
+def build_dynamics_report(
     household_wealth: pd.DataFrame,
     roster: pd.DataFrame,
     *,

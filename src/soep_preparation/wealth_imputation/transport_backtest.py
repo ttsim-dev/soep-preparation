@@ -50,7 +50,7 @@ _RANK_METRICS = (
 )
 
 
-def run_transport_backtest(  # noqa: PLR0913 -- keyword-only run settings + wave sets
+def run_transport_backtest(
     modules: Mapping[str, pd.DataFrame],
     *,
     holdout_waves: Sequence[int],

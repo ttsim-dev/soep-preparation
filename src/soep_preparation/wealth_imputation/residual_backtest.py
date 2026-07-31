@@ -84,7 +84,7 @@ def out_of_fold_donor_indices(fold: np.ndarray, *, held_out_fold: int) -> np.nda
     return np.flatnonzero(fold != held_out_fold)
 
 
-def cross_fit_residual_draws(  # noqa: PLR0913 -- pure scorer with explicit knobs
+def cross_fit_residual_draws(
     design: np.ndarray,
     observed_residual: np.ndarray,
     *,

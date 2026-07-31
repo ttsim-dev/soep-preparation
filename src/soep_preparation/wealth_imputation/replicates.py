@@ -182,7 +182,7 @@ class ProjectionReplicates:
     than inferring it from the requested implicate tuple."""
 
 
-def impute_replicates(  # noqa: PLR0913 -- keyword-only run + replicate settings
+def impute_replicates(
     modules: Mapping[str, pd.DataFrame],
     *,
     n_replicates: int,

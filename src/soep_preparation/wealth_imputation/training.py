@@ -102,7 +102,7 @@ def fit_component_models(
     )
 
 
-def build_component_config(  # noqa: PLR0913
+def build_component_config(
     component: CanonicalComponent,
     models: ComponentModels,
     recipient_features: np.ndarray,
