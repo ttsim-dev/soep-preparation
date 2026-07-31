@@ -30,7 +30,7 @@ def _calculate_dependent_employment_income(
     self-employment is left out.
 
     Args:
-        earnings_from_first_job_y: Wages and salary from the main job in a regular 
+        earnings_from_first_job_y: Wages and salary from the main job in a regular
             month, scaled to the yearly level.
         earnings_from_second_job_y: Income from secondary employment in a regular month,
             scaled to the yearly level.
