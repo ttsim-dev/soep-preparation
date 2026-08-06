@@ -106,10 +106,12 @@ def assemble_probe_report(
         no row-level data.
     """
     rows = []
+    present_flags = []
     for entry in entries:
         present = entry.raw_variable in available_columns.get(
             entry.source_file, frozenset()
         )
+        present_flags.append(present)
         rows.append(
             {
                 "component": entry.component.value,
@@ -120,7 +122,7 @@ def assemble_probe_report(
                 "verification_status": entry.verification_status.value,
             }
         )
-    n_present = sum(row["present"] for row in rows)
+    n_present = sum(present_flags)
     n_unresolved_required = sum(
         entry.required_for_release
         and entry.verification_status is VerificationStatus.UNRESOLVED

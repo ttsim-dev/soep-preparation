@@ -14,7 +14,7 @@ on:
       - '*'
 jobs:
   run-tests:
-    name: Run tests for ${{ matrix.os }} on ${{ matrix.python-version }}
+    name: Run tests for ${{ matrix.os }} on ${{ matrix.environment }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -23,32 +23,38 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-        python-version:
-          - '3.14'
+        environment:
+          - py314
     steps:
-      - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.5
+      - uses: actions/checkout@v7.0.1
+      - uses: prefix-dev/setup-pixi@v0.10.1
         with:
-          pixi-version: v0.69.0
+          pixi-version: v0.76.1
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
           frozen: true
-      - name: Run pytest
-        shell: bash {0}
-        run: pixi run -e py314 tests-with-cov
+          environments: ${{ matrix.environment }}
+      - name: Run tests without coverage
+        if: ${{ !(runner.os == 'Linux' && matrix.environment == 'py314') }}
+        run: pixi run --locked -e ${{ matrix.environment }} tests
+        shell: bash -el {0}
+      - name: Run tests with coverage
+        if: runner.os == 'Linux' && matrix.environment == 'py314'
+        run: pixi run --locked -e py314 tests-with-cov
+        shell: bash -el {0}
       - name: Upload coverage report
-        if: runner.os == 'Linux' && matrix.python-version == '3.14'
-        uses: codecov/codecov-action@v5
+        if: runner.os == 'Linux' && matrix.environment == 'py314'
+        uses: codecov/codecov-action@v7.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
   run-ty:
     name: Run ty
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.5
+      - uses: actions/checkout@v7.0.1
+      - uses: prefix-dev/setup-pixi@v0.10.1
         with:
-          pixi-version: v0.69.0
+          pixi-version: v0.76.1
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
           frozen: true

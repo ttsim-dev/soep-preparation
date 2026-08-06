@@ -2,8 +2,8 @@
 
 ## Install
 
-Install [pixi](https://prefix.dev/docs/pixi/overview#installation) if you do not have it.
-It manages the environment and tasks.
+Install [pixi](https://prefix.dev/docs/pixi/overview#installation) if you do not have
+it. It manages the environment and tasks.
 
 ## Add the raw data
 

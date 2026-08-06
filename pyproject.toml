@@ -90,6 +90,7 @@ unsafe-fixes = false
 select = [ "ALL" ]
 extend-ignore = [
   "COM812",  # Avoid conflict with ruff-format
+  "CPY001",  # Missing copyright notice at top of file
   "EM101",   # Exception must not use a string literal
   "EM102",   # Exception must not use an f-string literal
   "FBT001",  # Boolean-typed positional argument in function definition
@@ -97,6 +98,7 @@ extend-ignore = [
   "ISC001",  # Avoid conflict with ruff-format
   "PD015",   # pd.merge fine because of inherent symmetry
   "PLR0913", # Too many arguments (one parameter per input series is the convention)
+  "PLR0917", # Too many positional arguments (same convention as PLR0913)
   "RUF001",  # Ambiguous unicode in strings (raw SOEP labels carry them verbatim)
   "RUF002",  # Ambiguous unicode in docstrings
   "RUF003",  # Ambiguous unicode in comments

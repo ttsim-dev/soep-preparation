@@ -4,10 +4,10 @@ Prepare German Socio-Economic Panel (SOEP-Core) survey data into typed, cleaned,
 documented variables — for research and as inputs to
 [GETTSIM](https://gettsim.readthedocs.io/en/stable/).
 
-The pipeline casts each raw variable to an adequate dtype, converts SOEP missing codes to
-`pd.NA`, reduces over-fine categories, combines related variables across modules into new
-ones, and exposes a metadata catalogue plus a helper for assembling a final dataset. The
-raw data is the SOEP-Core panel from
+The pipeline casts each raw variable to an adequate dtype, converts SOEP missing codes
+to `pd.NA`, reduces over-fine categories, combines related variables across modules into
+new ones, and exposes a metadata catalogue plus a helper for assembling a final dataset.
+The raw data is the SOEP-Core panel from
 [DIW Berlin](https://www.diw.de/en/diw_01.c.678568.en/research_data_center_soep.html).
 
 ```mermaid

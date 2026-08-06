@@ -46,6 +46,15 @@ _EXPECTED_NAMES = {
     CanonicalComponent.VEHICLES: "v0100a",
     CanonicalComponent.CONSUMER_DEBT: "c0100a",
 }
+# Sorted by value so parametrized test IDs are stable regardless of declaration order.
+_COMPONENTS_BY_VALUE = sorted(
+    CanonicalComponent.__members__.values(),
+    key=lambda component: component.value,
+)
+_EXPECTED_NAMES_BY_VALUE = sorted(
+    _EXPECTED_NAMES.items(),
+    key=lambda item: item[0].value,
+)
 
 
 def test_registry_has_one_entry_per_component_and_wave():
@@ -62,7 +71,7 @@ def test_each_component_appears_in_every_wave():
     assert grid == expected
 
 
-@pytest.mark.parametrize("component", sorted(CanonicalComponent, key=lambda c: c.value))
+@pytest.mark.parametrize("component", _COMPONENTS_BY_VALUE)
 def test_each_component_uses_the_same_variable_in_every_wave(
     component: CanonicalComponent,
 ) -> None:
@@ -75,7 +84,7 @@ def test_each_component_uses_the_same_variable_in_every_wave(
 
 @pytest.mark.parametrize(
     ("component", "expected"),
-    sorted(_EXPECTED_NAMES.items(), key=lambda item: item[0].value),
+    _EXPECTED_NAMES_BY_VALUE,
 )
 def test_available_components_map_to_their_v41_column(
     component: CanonicalComponent,
