@@ -39,19 +39,18 @@ def _calculate_dependent_employment_income(
     missing here and has a positive `earnings_from_work_y`.
 
     Args:
-        earnings_from_first_job_y: Wages and salary from the main job in the previous
-            year.
-        earnings_from_second_job_y: Income from secondary employment in the previous
-            year.
-        thirteenth_monthly_salary_y: Sum of 13th monthly salary payments received in the
-            previous year.
-        fourteenth_monthly_salary_y: Sum of 14th monthly salary payments received in the
-            previous year.
-        christmas_bonus_y: Sum of Christmas bonus payments received in the previous
-            year.
-        holiday_bonus_y: Sum of vacation bonus payments received in the previous year.
-        profit_sharing_y: Sum of profit-sharing payments received in the previous year.
-        other_bonuses_y: Sum of remaining bonus payments received in the previous year.
+        earnings_from_first_job_y: Wages and salary from the main job in a regular
+            month, scaled to the yearly level.
+        earnings_from_second_job_y: Income from secondary employment in a regular month,
+            scaled to the yearly level.
+        thirteenth_monthly_salary_y: Sum of 13th monthly salary payments received in
+            that year.
+        fourteenth_monthly_salary_y: Sum of 14th monthly salary payments received in
+            that year.
+        christmas_bonus_y: Sum of Christmas bonus payments received in that year.
+        holiday_bonus_y: Sum of vacation bonus payments received in that year.
+        profit_sharing_y: Sum of profit-sharing payments received in that year.
+        other_bonuses_y: Sum of remaining bonus payments received in that year.
 
     Returns:
         Income from dependent employment in the previous calendar year, missing where

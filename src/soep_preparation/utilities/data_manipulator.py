@@ -56,8 +56,13 @@ def replace_not_applicable_answer(series: pd.Series, value: float) -> pd.Series:
     """Replace "does not apply" (-2) SOEP codes with a concrete value.
 
     Code -2 ("trifft nicht zu") indicates that the question was not applicable
-    to the respondent.  For income variables this means "no income from this
-    source", so the appropriate replacement is 0.
+    to the respondent.  In the questionnaire modules (`pgen`, `pl`, `hl`, `hgen`,
+    `pkal`, `kidlong`) a filter question ruled the item out, so for income items
+    this means "no income from this source" and the appropriate replacement is 0.
+
+    Do not use this for `pequiv`, where -2 marks an unobserved rather than an
+    inapplicable value; see the module docstring of
+    `soep_preparation.clean_modules.pequiv`.
 
     All other negative codes (-1, -3 … -9) represent genuinely missing data
     and are left unchanged for ``replace_missing_codes_with_na`` to convert to

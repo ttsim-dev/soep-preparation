@@ -12,18 +12,27 @@ from soep_preparation.clean_modules.pequiv import (
 from soep_preparation.config import SRC
 from soep_preparation.utilities.general import get_relevant_column_names
 
-NOT_APPLICABLE = "[-2] trifft nicht zu"
-IDENTIFIERS = MappingProxyType({"hid": 1, "pid": 101, "cid": 1, "syear": 2017})
-
-INCOME_VARIABLE_TO_RAW_CODE = MappingProxyType(
+# Every monetary pequiv variable, with the raw code it is cleaned from.
+MONETARY_VARIABLE_TO_RAW_CODE = MappingProxyType(
     {
         "income_before_tax_y_hh": "i11101",
         "income_after_tax_y_hh": "i11102",
+        "income_from_rental_leasing_y_hh": "renty",
         "income_from_interest_dividends_y_hh": "divdy",
+        "kindergeld_y_hh_pequiv": "chspt",
         "mutterschaftsgeld_received_y": "imaty",
+        "betreuungsgeld_y_hh": "chsub",
+        "kinderzuschlag_y_hh_pequiv": "adchb",
+        "wohngeld_y_hh_pequiv": "house",
         "arbeitslosengeld_y": "iunby",
         "arbeitslosenhilfe_y": "iunay",
+        "arbeitslosengeld_2_y_hh_pequiv": "alg2",
+        "sozialhilfe_general_y_hh": "subst",
+        "sozialhilfe_other_y_hh": "sphlp",
         "grundsicherung_y": "isuby",
+        "grundsicherung_im_alter_y_hh": "ssold",
+        "pflegegeld_y_hh": "nursh",
+        "eigenheimzulage_y_hh": "hsup",
         "private_transfers_received_y": "ielse",
         "unterhalt_received_y": "ialim",
         "kindesunterhalt_received_y": "ichsu",
@@ -48,9 +57,11 @@ INCOME_VARIABLE_TO_RAW_CODE = MappingProxyType(
         "private_altersvorsorge_y": "iprv1",
         "private_altersvorsorge_survivor_y": "iprv2",
         "berufsständische_altersvorsorge_y": "ilib1",
+        "berufsständische_altersvorsorge_survivor_y": "ilib2",
         "riester_rente_y": "irie1",
         "riester_rente_survivor_y": "irie2",
         "gesetzliche_unfallversicherung_rente_y": "iguv1",
+        "gesetzliche_unfallversicherung_rente_survivor_y": "iguv2",
         "other_pension_y": "ison1",
         "other_pension_survivor_y": "ison2",
         "earnings_from_work_y": "i11110",
@@ -63,43 +74,80 @@ INCOME_VARIABLE_TO_RAW_CODE = MappingProxyType(
         "holiday_bonus_y": "iholy",
         "profit_sharing_y": "igray",
         "other_bonuses_y": "iothy",
+        "operation_maintenance_costs_y_hh": "opery",
     }
 )
 
 
+def _raw_data_holding(variable: str, value: object) -> pd.DataFrame:
+    """Build one raw person-year in which `variable` is read from `value`.
+
+    Every other raw column holds -2, which parses under all cleaning functions the
+    module applies, including the ones that cannot read labelled strings.
+    """
+    columns = get_relevant_column_names(SRC / "clean_modules" / "pequiv.py")
+    raw_data = pd.DataFrame({column: [-2] for column in columns}, dtype="object")
+    raw_code = MONETARY_VARIABLE_TO_RAW_CODE[variable]
+    raw_data[raw_code] = pd.Series([value], dtype="object")
+    return raw_data
+
+
+@pytest.mark.parametrize("variable", MONETARY_VARIABLE_TO_RAW_CODE)
+@pytest.mark.parametrize(
+    "missing_code",
+    [
+        -1,
+        -2,
+        -3,
+        -4,
+        -5,
+        -6,
+        -7,
+        -8,
+        "[-1] keine Angabe",
+        "[-2] trifft nicht zu",
+        "[-3] unplausibler Wert",
+        "[-4] Unzulaessige Mehrfachantwort",
+        "[-5] in Fragebogenversion nicht enthalten",
+        "[-6] Fragebogenversion mit geaenderter Filterfuehrung",
+        "[-7] nur in weniger detaillierter Fassung vorhanden",
+        "[-8] Frage in diesem Jahr nicht erhoben",
+    ],
+)
+def test_missing_code_cleans_to_missing(variable: str, missing_code: object) -> None:
+    """No negative pequiv code survives cleaning, whether numeric or labelled."""
+    raw_data = _raw_data_holding(variable=variable, value=missing_code)
+
+    expected = pd.Series([None], dtype="float64[pyarrow]")
+    actual = clean(raw_data)[variable]
+
+    pd.testing.assert_series_equal(actual, expected, check_names=False)
+
+
+@pytest.mark.parametrize("variable", MONETARY_VARIABLE_TO_RAW_CODE)
+def test_zero_stays_zero(variable: str) -> None:
+    """A genuine zero means "no income of this kind" and must not become missing."""
+    raw_data = _raw_data_holding(variable=variable, value=0.0)
+
+    expected = pd.Series([0.0], dtype="float64[pyarrow]")
+    actual = clean(raw_data)[variable]
+
+    pd.testing.assert_series_equal(actual, expected, check_names=False)
+
+
+@pytest.mark.parametrize("variable", MONETARY_VARIABLE_TO_RAW_CODE)
+def test_reported_amount_survives_cleaning(variable: str) -> None:
+    """A reported amount is kept as is."""
+    raw_data = _raw_data_holding(variable=variable, value=1234.5)
+
+    expected = pd.Series([1234.5], dtype="float64[pyarrow]")
+    actual = clean(raw_data)[variable]
+
+    pd.testing.assert_series_equal(actual, expected, check_names=False)
+
+
 def _make_series(*values: float | None) -> pd.Series:
     return pd.Series(values, dtype="float64[pyarrow]")
-
-
-@pytest.fixture(scope="module")
-def cleaned_not_applicable_row() -> pd.DataFrame:
-    """Clean one person-year whose every income variable reads `-2`.
-
-    The income columns get the labelled form the pipeline delivers. Everything
-    else gets a plain numeric `-2`, because the count columns are read with
-    `apply_smallest_int_dtype`, which cannot parse a labelled string.
-    """
-    income_codes = set(INCOME_VARIABLE_TO_RAW_CODE.values())
-    columns = get_relevant_column_names(SRC / "clean_modules" / "pequiv.py")
-
-    def value_for(column: str) -> object:
-        if column in IDENTIFIERS:
-            return IDENTIFIERS[column]
-        return NOT_APPLICABLE if column in income_codes else -2
-
-    raw_data = pd.DataFrame(
-        {column: [value_for(column)] for column in [*IDENTIFIERS, *columns]},
-        dtype="object",
-    )
-    return clean(raw_data)
-
-
-@pytest.mark.parametrize("variable", list(INCOME_VARIABLE_TO_RAW_CODE))
-def test_not_applicable_income_is_missing_rather_than_zero(
-    cleaned_not_applicable_row: pd.DataFrame, variable: str
-) -> None:
-    """A `-2` pequiv income code cleans to a missing value, never to zero."""
-    assert cleaned_not_applicable_row[variable].isna().all()
 
 
 def test_dependent_employment_income_sums_wage_and_bonus_components() -> None:
