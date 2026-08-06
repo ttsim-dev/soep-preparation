@@ -1,4 +1,10 @@
-"""Clean and convert SOEP pequiv variables to appropriate data types."""
+"""Clean and convert SOEP pequiv variables to appropriate data types.
+
+Unlike the questionnaire modules, pequiv uses `-2` ("does not apply") for people who
+are absent from the income modules, never for people who simply have no income of that
+kind — SOEP records that case as a plain 0. The code therefore marks an unobserved
+value, so this module lets `-2` become NA instead of mapping it to 0.
+"""
 
 import pandas as pd
 
@@ -10,7 +16,6 @@ from soep_preparation.utilities.data_manipulator import (
     object_to_float,
     object_to_int,
     object_to_str_categorical,
-    replace_not_applicable_answer,
 )
 
 
@@ -29,22 +34,28 @@ def _calculate_dependent_employment_income(
     These are the components of total labour earnings that remain once income from
     self-employment is left out.
 
+    `earnings_from_work_y` is imputed for partial-unit non-responding households,
+    whereas the components are simply not observed for them. Such a respondent is
+    missing here and has a positive `earnings_from_work_y`.
+
     Args:
-        earnings_from_first_job_y: Wages and salary from the main job in a regular
-            month, scaled to the yearly level.
-        earnings_from_second_job_y: Income from secondary employment in a regular month,
-            scaled to the yearly level.
-        thirteenth_monthly_salary_y: Sum of 13th monthly salary payments received in
-            that year.
-        fourteenth_monthly_salary_y: Sum of 14th monthly salary payments received in
-            that year.
-        christmas_bonus_y: Sum of Christmas bonus payments received in that year.
-        holiday_bonus_y: Sum of vacation bonus payments received in that year.
-        profit_sharing_y: Sum of profit-sharing payments received in that year.
-        other_bonuses_y: Sum of remaining bonus payments received in that year.
+        earnings_from_first_job_y: Wages and salary from the main job in the previous
+            year.
+        earnings_from_second_job_y: Income from secondary employment in the previous
+            year.
+        thirteenth_monthly_salary_y: Sum of 13th monthly salary payments received in the
+            previous year.
+        fourteenth_monthly_salary_y: Sum of 14th monthly salary payments received in the
+            previous year.
+        christmas_bonus_y: Sum of Christmas bonus payments received in the previous
+            year.
+        holiday_bonus_y: Sum of vacation bonus payments received in the previous year.
+        profit_sharing_y: Sum of profit-sharing payments received in the previous year.
+        other_bonuses_y: Sum of remaining bonus payments received in the previous year.
 
     Returns:
-        Income from dependent employment, missing where no component is reported.
+        Income from dependent employment in the previous calendar year, missing where
+        no component is observed.
     """
     components = pd.concat(
         [
@@ -92,18 +103,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         raw_data["d11107"]
     )
     # hh income
-    out["income_before_tax_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["i11101"], value=0)
-    )
-    out["income_after_tax_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["i11102"], value=0)
-    )
-    out["income_from_rental_leasing_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["renty"], value=0)
-    )
-    out["income_from_interest_dividends_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["divdy"], value=0)
-    )
+    out["income_before_tax_y_hh"] = object_to_float(raw_data["i11101"])
+    out["income_after_tax_y_hh"] = object_to_float(raw_data["i11102"])
+    out["income_from_rental_leasing_y_hh"] = object_to_float(raw_data["renty"])
+    out["income_from_interest_dividends_y_hh"] = object_to_float(raw_data["divdy"])
 
     # individual characteristics
     out["gender"] = object_to_str_categorical(
@@ -117,185 +120,99 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
 
     # hh social benefits
-    out["kindergeld_y_hh_pequiv"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["chspt"], value=0)
-    )
+    out["kindergeld_y_hh_pequiv"] = object_to_float(raw_data["chspt"])
     out["kindergeld_m_hh_pequiv"] = convert_to_float(out["kindergeld_y_hh_pequiv"] / 12)
-    out["mutterschaftsgeld_received_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["imaty"], value=0)
-    )
+    out["mutterschaftsgeld_received_y"] = object_to_float(raw_data["imaty"])
     # betreuungsgeld only available 2014 through 2016
-    out["betreuungsgeld_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["chsub"], value=0)
-    )
+    out["betreuungsgeld_y_hh"] = object_to_float(raw_data["chsub"])
 
-    out["kinderzuschlag_y_hh_pequiv"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["adchb"], value=0)
-    )
+    out["kinderzuschlag_y_hh_pequiv"] = object_to_float(raw_data["adchb"])
     out["kinderzuschlag_m_hh_pequiv"] = convert_to_float(
         out["kinderzuschlag_y_hh_pequiv"] / 12
     )
-    out["wohngeld_y_hh_pequiv"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["house"], value=0)
-    )
+    out["wohngeld_y_hh_pequiv"] = object_to_float(raw_data["house"])
     out["wohngeld_m_hh_pequiv"] = convert_to_float(out["wohngeld_y_hh_pequiv"] / 12)
 
     # individual social benefits
-    out["arbeitslosengeld_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iunby"], value=0)
-    )
+    out["arbeitslosengeld_y"] = object_to_float(raw_data["iunby"])
     # arbeitslosenhilfe available 1984 through 2005
-    out["arbeitslosenhilfe_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iunay"], value=0)
-    )
-    out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["alg2"], value=0)
-    )
+    out["arbeitslosenhilfe_y"] = object_to_float(raw_data["iunay"])
+    out["arbeitslosengeld_2_y_hh_pequiv"] = object_to_float(raw_data["alg2"])
     out["arbeitslosengeld_2_m_hh_pequiv"] = convert_to_float(
         out["arbeitslosengeld_2_y_hh_pequiv"] / 12
     )
 
-    out["sozialhilfe_general_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["subst"], value=0)
-    )
+    out["sozialhilfe_general_y_hh"] = object_to_float(raw_data["subst"])
     # sonstige sozialhilfe available in 1984 through 1991 and 2001 through 2009
-    out["sozialhilfe_other_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["sphlp"], value=0)
-    )
+    out["sozialhilfe_other_y_hh"] = object_to_float(raw_data["sphlp"])
     # grundsicherung only available 1984 through 2014
-    out["grundsicherung_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["isuby"], value=0)
-    )
-    out["grundsicherung_im_alter_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ssold"], value=0)
-    )
-    out["pflegegeld_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["nursh"], value=0)
-    )
+    out["grundsicherung_y"] = object_to_float(raw_data["isuby"])
+    out["grundsicherung_im_alter_y_hh"] = object_to_float(raw_data["ssold"])
+    out["pflegegeld_y_hh"] = object_to_float(raw_data["nursh"])
 
     # eigenheimzulage only available 1996 through 2014
-    out["eigenheimzulage_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["hsup"], value=0)
-    )
+    out["eigenheimzulage_y_hh"] = object_to_float(raw_data["hsup"])
     # private transfers contains
     # alimony in 1984 through 2000
     # divorce and caregiver alimonies in 1984 through 2014
     # unterhaltsvorschuss in 1984 through 2009
-    out["private_transfers_received_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ielse"], value=0)
-    )
+    out["private_transfers_received_y"] = object_to_float(raw_data["ielse"])
     # alimony received only available 2001 through 2014
-    out["unterhalt_received_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ialim"], value=0)
-    )
+    out["unterhalt_received_y"] = object_to_float(raw_data["ialim"])
     # caregiver alimony received available since 2015
-    out["kindesunterhalt_received_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ichsu"], value=0)
-    )
+    out["kindesunterhalt_received_y"] = object_to_float(raw_data["ichsu"])
     out["kindesunterhalt_received_m_pequiv"] = out["kindesunterhalt_received_y"] / 12
     # divorce alimony only available in 2015
-    out["ehegattenunterhalt_received_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ispou"], value=0)
-    )
+    out["ehegattenunterhalt_received_y"] = object_to_float(raw_data["ispou"])
     # unterhaltsvorschuss available since 2010
-    out["unterhaltsvorschuss_received_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iachm"], value=0)
-    )
-    out["bafög_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["istuy"], value=0)
-    )
+    out["unterhaltsvorschuss_received_y"] = object_to_float(raw_data["iachm"])
+    out["bafög_y"] = object_to_float(raw_data["istuy"])
 
     # gesetzliche rente available since 1986
     # contains knappschaftliche rente and alterssicherung landwirte since 2002
-    out["gesetzliche_rente_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["igrv1"], value=0)
-    )
-    out["gesetzliche_rente_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["igrv2"], value=0)
-    )
+    out["gesetzliche_rente_y"] = object_to_float(raw_data["igrv1"])
+    out["gesetzliche_rente_survivor_y"] = object_to_float(raw_data["igrv2"])
     # knappschaftliche rente available 1986 through 2001
-    out["knappschaftliche_rente_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ismp1"], value=0)
-    )
-    out["knappschaftliche_rente_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ismp2"], value=0)
-    )
+    out["knappschaftliche_rente_y"] = object_to_float(raw_data["ismp1"])
+    out["knappschaftliche_rente_survivor_y"] = object_to_float(raw_data["ismp2"])
     # alterssicherung landwirte available 1986 through 2001
-    out["alterssicherung_landwirte_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iagr1"], value=0)
-    )
-    out["alterssicherung_landwirte_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iagr2"], value=0)
-    )
+    out["alterssicherung_landwirte_y"] = object_to_float(raw_data["iagr1"])
+    out["alterssicherung_landwirte_survivor_y"] = object_to_float(raw_data["iagr2"])
     # war victim pension available 1986 through 2001 and 2003 through 2016
-    out["kriegsopferversorgung_rente_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iwar1"], value=0)
-    )
-    out["kriegsopferversorgung_rente_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iwar2"], value=0)
-    )
+    out["kriegsopferversorgung_rente_y"] = object_to_float(raw_data["iwar1"])
+    out["kriegsopferversorgung_rente_survivor_y"] = object_to_float(raw_data["iwar2"])
     # beamtenpension available since 1986
-    out["beamtenpension_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iciv1"], value=0)
-    )
-    out["beamtenpension_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iciv2"], value=0)
-    )
+    out["beamtenpension_y"] = object_to_float(raw_data["iciv1"])
+    out["beamtenpension_survivor_y"] = object_to_float(raw_data["iciv2"])
     # beamten pension zusätzliche versorgung available since 1986
-    out["beamtenpension_supplementary_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ivbl1"], value=0)
-    )
-    out["beamtenpension_supplementary_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ivbl2"], value=0)
-    )
+    out["beamtenpension_supplementary_y"] = object_to_float(raw_data["ivbl1"])
+    out["beamtenpension_supplementary_survivor_y"] = object_to_float(raw_data["ivbl2"])
     # vorruhestandsgeld only available 1996 through 2001
-    out["vorruhestandsgeld_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ieret"], value=0)
-    )
+    out["vorruhestandsgeld_y"] = object_to_float(raw_data["ieret"])
     # betriebliche altersversorgung available since 1986
-    out["betriebliche_altersversorgung_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["icom1"], value=0)
-    )
-    out["betriebliche_altersversorgung_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["icom2"], value=0)
-    )
+    out["betriebliche_altersversorgung_y"] = object_to_float(raw_data["icom1"])
+    out["betriebliche_altersversorgung_survivor_y"] = object_to_float(raw_data["icom2"])
     # private altersvorsorge available since 2003
-    out["private_altersvorsorge_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iprv1"], value=0)
-    )
-    out["private_altersvorsorge_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iprv2"], value=0)
-    )
+    out["private_altersvorsorge_y"] = object_to_float(raw_data["iprv1"])
+    out["private_altersvorsorge_survivor_y"] = object_to_float(raw_data["iprv2"])
     # berufsständische rente available since 2018
-    out["berufsständische_altersvorsorge_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ilib1"], value=0)
-    )
+    out["berufsständische_altersvorsorge_y"] = object_to_float(raw_data["ilib1"])
     out["berufsständische_altersvorsorge_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ilib2"], value=0)
+        raw_data["ilib2"]
     )
     # riester rente available since 2015
-    out["riester_rente_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["irie1"], value=0)
-    )
-    out["riester_rente_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["irie2"], value=0)
-    )
+    out["riester_rente_y"] = object_to_float(raw_data["irie1"])
+    out["riester_rente_survivor_y"] = object_to_float(raw_data["irie2"])
     # gesetzliche unfallversicherung available since 1986
-    out["gesetzliche_unfallversicherung_rente_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iguv1"], value=0)
-    )
+    out["gesetzliche_unfallversicherung_rente_y"] = object_to_float(raw_data["iguv1"])
     out["gesetzliche_unfallversicherung_rente_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iguv2"], value=0)
+        raw_data["iguv2"]
     )
     # andere rente available since 1986;
     # changes its content because different kinds of private pensions
     # are asked for explicitly in different years.
-    out["other_pension_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ison1"], value=0)
-    )
-    out["other_pension_survivor_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ison2"], value=0)
-    )
+    out["other_pension_y"] = object_to_float(raw_data["ison1"])
+    out["other_pension_survivor_y"] = object_to_float(raw_data["ison2"])
 
     # individual income
     out["employed_y"] = create_dummy(
@@ -308,36 +225,16 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         ordered=False,
     )
     out["hours_worked_y"] = object_to_float(raw_data["e11101"])
-    out["earnings_from_work_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["i11110"], value=0)
-    )
-    out["earnings_from_first_job_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ijob1"], value=0)
-    )
-    out["earnings_from_second_job_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ijob2"], value=0)
-    )
-    out["earnings_from_self_employment_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iself"], value=0)
-    )
-    out["thirteenth_monthly_salary_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["i13ly"], value=0)
-    )
-    out["fourteenth_monthly_salary_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["i14ly"], value=0)
-    )
-    out["christmas_bonus_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["ixmas"], value=0)
-    )
-    out["holiday_bonus_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iholy"], value=0)
-    )
-    out["profit_sharing_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["igray"], value=0)
-    )
-    out["other_bonuses_y"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["iothy"], value=0)
-    )
+    out["earnings_from_work_y"] = object_to_float(raw_data["i11110"])
+    out["earnings_from_first_job_y"] = object_to_float(raw_data["ijob1"])
+    out["earnings_from_second_job_y"] = object_to_float(raw_data["ijob2"])
+    out["earnings_from_self_employment_y"] = object_to_float(raw_data["iself"])
+    out["thirteenth_monthly_salary_y"] = object_to_float(raw_data["i13ly"])
+    out["fourteenth_monthly_salary_y"] = object_to_float(raw_data["i14ly"])
+    out["christmas_bonus_y"] = object_to_float(raw_data["ixmas"])
+    out["holiday_bonus_y"] = object_to_float(raw_data["iholy"])
+    out["profit_sharing_y"] = object_to_float(raw_data["igray"])
+    out["other_bonuses_y"] = object_to_float(raw_data["iothy"])
     out["earnings_from_dependent_employment_y"] = (
         _calculate_dependent_employment_income(
             earnings_from_first_job_y=out["earnings_from_first_job_y"],
@@ -352,9 +249,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
 
     # hh costs
-    out["operation_maintenance_costs_y_hh"] = object_to_float(
-        replace_not_applicable_answer(series=raw_data["opery"], value=0)
-    )
+    out["operation_maintenance_costs_y_hh"] = object_to_float(raw_data["opery"])
 
     # individual medical characteristics
     out["med_hospital_pequiv"] = object_to_bool_categorical(
