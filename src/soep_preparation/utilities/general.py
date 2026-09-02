@@ -3,6 +3,8 @@
 import ast
 import inspect
 import textwrap
+import warnings
+from collections.abc import Container, Iterable
 from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from types import ModuleType
@@ -13,15 +15,29 @@ if TYPE_CHECKING:
     from importlib.machinery import ModuleSpec
 
 
+def _module_names_without_raw_data_file(
+    data_root: Path, soep_version: str, script_names: list[str]
+) -> list[str]:
+    raw_data_dir = data_root / soep_version
+    return [
+        script_name
+        for script_name in script_names
+        if not (raw_data_dir / f"{script_name}.dta").exists()
+    ]
+
+
 def _fail_if_raw_data_files_are_missing(
     data_root: Path, soep_version: str, script_names: list[str]
 ) -> None:
-    missing_files = []
     raw_data_dir = data_root / soep_version
-    for script_name in script_names:
-        raw_data_file_path = raw_data_dir / f"{script_name}.dta"
-        if not raw_data_file_path.exists():
-            missing_files.append(raw_data_file_path)
+    missing_files = [
+        raw_data_dir / f"{script_name}.dta"
+        for script_name in _module_names_without_raw_data_file(
+            data_root=data_root,
+            soep_version=soep_version,
+            script_names=script_names,
+        )
+    ]
     if missing_files:
         missing_files_str = "\n".join(str(file) for file in missing_files)
         msg = (
@@ -51,7 +67,10 @@ def get_script_names(directory: Path) -> list[str]:
 
 
 def get_raw_data_file_names(
-    directory: Path, data_root: Path, soep_version: str
+    directory: Path,
+    data_root: Path,
+    soep_version: str,
+    optional_modules: Container[str] = frozenset(),
 ) -> list[str]:
     """Get names of all scripts in the directory with corresponding raw data files.
 
@@ -59,6 +78,8 @@ def get_raw_data_file_names(
         directory: The directory containing scripts.
         data_root: The root directory where data files are stored.
         soep_version: The version of the SOEP data.
+        optional_modules: Modules that are skipped with a warning when their raw data
+            file is absent, instead of aborting the run.
 
     Returns:
         A list of data file names.
@@ -68,34 +89,73 @@ def get_raw_data_file_names(
     _fail_if_raw_data_files_are_missing(
         data_root=data_root,
         soep_version=soep_version,
-        script_names=script_names,
+        script_names=[name for name in script_names if name not in optional_modules],
     )
-    return script_names
+    skipped = _module_names_without_raw_data_file(
+        data_root=data_root,
+        soep_version=soep_version,
+        script_names=[name for name in script_names if name in optional_modules],
+    )
+    if skipped:
+        msg = (
+            "Skipping optional modules without a raw data file in "
+            f"{data_root / soep_version}: {sorted(skipped)}. Variables of these "
+            "modules are unavailable in the final dataset."
+        )
+        warnings.warn(msg, stacklevel=2)
+    return [name for name in script_names if name not in skipped]
 
 
-def get_combine_module_names(directory: Path) -> list[str]:
+def get_combine_module_names(
+    directory: Path, available_modules: Iterable[str] | None = None
+) -> list[str]:
     """Get names of all combine scripts in the directory with valid raw modules.
 
     Args:
         directory: The directory containing combine scripts.
+        available_modules: Cleaned modules this run processes. A combine script
+            drawing on a module outside this collection is skipped with a warning.
+            Defaults to every module with a cleaning script.
 
     Returns:
         A list of combine module names.
 
     """
+    clean_module_directory = directory.parent / "clean_modules"
+    clean_module_names = get_script_names(clean_module_directory)
+    available = (
+        set(clean_module_names) if available_modules is None else set(available_modules)
+    )
+
     combine_module_names = []
-    script_names = get_script_names(directory)
-    for combine_module in script_names:
+    skipped = {}
+    for combine_module in get_script_names(directory):
+        unavailable = []
         for orig_module in combine_module.split("_"):
-            clean_module_directory = directory.parent / "clean_modules"
-            if orig_module not in get_script_names(clean_module_directory):
+            if orig_module not in clean_module_names:
                 msg = (
                     f"No cleaning script for module {orig_module}"
                     f" found in clean modules at {clean_module_directory}."
                     f"Existence is implied by combine script {combine_module}."
                 )
                 raise ValueError(msg)
-        combine_module_names.append(combine_module)
+            if orig_module not in available:
+                unavailable.append(orig_module)
+        if unavailable:
+            skipped[combine_module] = unavailable
+        else:
+            combine_module_names.append(combine_module)
+
+    if skipped:
+        skipped_str = ", ".join(
+            f"{name} (needs {sorted(modules)})"
+            for name, modules in sorted(skipped.items())
+        )
+        msg = (
+            "Skipping combine scripts whose modules are not part of this run: "
+            f"{skipped_str}."
+        )
+        warnings.warn(msg, stacklevel=2)
     return combine_module_names
 
 

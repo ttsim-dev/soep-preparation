@@ -44,9 +44,14 @@ and `health` are standalone files that do not:
 | `pwealth` / `hwealth` | person / household wealth (multiply imputed) |
 | `biobirth`, `bioparen`, `bioedu`, `biol` | fertility, parental, education, life-history biographies |
 | `kidlong` | child-level information across waves |
-| `cirdef` | household random-group / SOEP teaching-sample membership |
+| `cirdef` | household random-group / SOEP teaching-sample membership (optional) |
 | `design` | survey sampling design (random group, stratum, sample) |
 | `health` | derived SF-12 health module (physical / mental component summaries) |
+
+Modules listed in `OPTIONAL_RAW_DATA_MODULES` (`config.py`) are optional: if their
+`.dta` file is absent from the data directory, the pipeline warns and runs without them
+instead of aborting, and their variables are unavailable in the final dataset. Every
+other module's file must be present.
 
 For the full contents of any module or variable, see the online SOEP documentation; URLs
 follow `https://paneldata.org/soep-core/datasets/{module}/{variable}`. The "Codebook
