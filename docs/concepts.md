@@ -44,9 +44,12 @@ and `health` are standalone files that do not:
 | `pwealth` / `hwealth` | person / household wealth (multiply imputed) |
 | `biobirth`, `bioparen`, `bioedu`, `biol` | fertility, parental, education, life-history biographies |
 | `kidlong` | child-level information across waves |
-| `cirdef` | household random-group / SOEP teaching-sample membership |
+| `cirdef` | household random-group / SOEP teaching-sample membership (optional) |
 | `design` | survey sampling design (random group, stratum, sample) |
 | `health` | derived SF-12 health module (physical / mental component summaries) |
+
+The `cirdef` module is optional: it is only required to build the SOEP teaching sample.
+If it is absent, the pipeline warns and runs without it instead of aborting.
 
 For the full contents of any module or variable, see the online SOEP documentation; URLs
 follow `https://paneldata.org/soep-core/datasets/{module}/{variable}`. The "Codebook

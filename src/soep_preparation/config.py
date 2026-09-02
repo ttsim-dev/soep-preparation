@@ -4,7 +4,6 @@ SOEP_VERSION = "V41"
 SURVEY_YEARS = [*range(1984, 2024 + 1)]
 
 
-import functools
 import os
 from pathlib import Path
 from typing import Any, Literal
@@ -22,13 +21,35 @@ BLD = ROOT.joinpath("bld").resolve()
 DATA_ROOT = ROOT.joinpath("data").resolve()
 TEST_DIR = ROOT.joinpath("tests").resolve()
 
-get_raw_data_file_names = functools.partial(
-    grdfn,
-    directory=SRC / "clean_modules",
-    data_root=DATA_ROOT,
-    soep_version=SOEP_VERSION,
-)
-get_combine_module_names = functools.partial(gcmn, directory=SRC / "combine_modules")
+# Modules that are optional. A missing file skips the module (and any combine script
+# drawing on it) with a warning; for every other module it aborts the run.
+OPTIONAL_RAW_DATA_MODULES = frozenset({"cirdef"})
+
+
+def get_raw_data_file_names() -> list[str]:
+    """Get the modules processed in this run.
+
+    Returns:
+        Names of the cleaning scripts whose raw data file is present.
+    """
+    return grdfn(
+        directory=SRC / "clean_modules",
+        data_root=DATA_ROOT,
+        soep_version=SOEP_VERSION,
+        optional_modules=OPTIONAL_RAW_DATA_MODULES,
+    )
+
+
+def get_combine_module_names() -> list[str]:
+    """Get the combine scripts processed in this run.
+
+    Returns:
+        Names of the combine scripts all of whose modules are processed.
+    """
+    return gcmn(
+        directory=SRC / "combine_modules",
+        available_modules=get_raw_data_file_names(),
+    )
 
 
 RAW_DATA_FILES = DataCatalog(name="raw_pandas")
@@ -67,6 +88,7 @@ __all__ = [
     "BLD",
     "DATA_ROOT",
     "MODULES",
+    "OPTIONAL_RAW_DATA_MODULES",
     "RAW_DATA_FILES",
     "ROOT",
     "RUN_WEALTH_IMPUTATION",

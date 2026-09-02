@@ -75,7 +75,11 @@ def task_create_variable_to_metadata_mapping_yaml(
         FileNotFoundError: If a persisted module entry has no source file.
     """
     _fail_if_stale_module_entries(modules_metadata)
-    new_metadata = _create_variable_metadata(modules_metadata)
+    new_metadata = _carry_forward_skipped_modules(
+        new_mapping=_create_variable_metadata(modules_metadata),
+        existing_mapping=current_metadata,
+        present_modules=set(modules_metadata),
+    )
 
     with out_path.open("w", encoding="utf-8") as file:
         yaml.dump(
@@ -239,6 +243,42 @@ def _create_variable_metadata(
     return mapping
 
 
+def _carry_forward_skipped_modules(
+    new_mapping: dict[str, dict],
+    existing_mapping: dict[str, dict],
+    present_modules: set[str],
+) -> dict[str, dict]:
+    """Keep the existing metadata of modules that this run did not process.
+
+    A module whose raw data file is absent (see `OPTIONAL_RAW_DATA_MODULES`) produces
+    no metadata, which `_fail_if_mapping_changed` would report as removed variables.
+    Its existing entries are carried over instead, so the generated mapping does not
+    depend on which optional raw data files are available. A module without a source
+    file is not carried over — its variables are genuinely gone.
+
+    Args:
+        new_mapping: Variable metadata generated in this run.
+        existing_mapping: Variable metadata of the checked-in mapping.
+        present_modules: Modules processed in this run.
+
+    Returns:
+        The generated mapping, extended by the entries of skipped modules.
+    """
+    carried_forward = {
+        variable: metadata
+        for variable, metadata in existing_mapping.items()
+        if metadata["module"] not in present_modules
+        and _has_source_file(metadata["module"])
+    }
+    return carried_forward | new_mapping
+
+
+def _has_source_file(module_name: str) -> bool:
+    return (SRC / "clean_modules" / f"{module_name}.py").exists() or (
+        SRC / "combine_modules" / f"{module_name}.py"
+    ).exists()
+
+
 def _fail_if_stale_module_entries(module_names: Iterable[str]) -> None:
     """Abort if a persisted module entry has no cleaning/combining source file.
 
@@ -256,12 +296,7 @@ def _fail_if_stale_module_entries(module_names: Iterable[str]) -> None:
         FileNotFoundError: If any entry has no source file under `clean_modules/`
             or `combine_modules/`.
     """
-    stale = [
-        name
-        for name in module_names
-        if not (SRC / "clean_modules" / f"{name}.py").exists()
-        and not (SRC / "combine_modules" / f"{name}.py").exists()
-    ]
+    stale = [name for name in module_names if not _has_source_file(name)]
     if not stale:
         return
 
