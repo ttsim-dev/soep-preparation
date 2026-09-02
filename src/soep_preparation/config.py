@@ -21,9 +21,8 @@ BLD = ROOT.joinpath("bld").resolve()
 DATA_ROOT = ROOT.joinpath("data").resolve()
 TEST_DIR = ROOT.joinpath("tests").resolve()
 
-# Modules whose raw data file is not part of every SOEP distribution. A missing file
-# skips the module (and any combine script drawing on it) with a warning; for every
-# other module it aborts the run.
+# Modules that are optional. A missing file skips the module (and any combine script
+# drawing on it) with a warning; for every other module it aborts the run.
 OPTIONAL_RAW_DATA_MODULES = frozenset({"cirdef"})
 
 

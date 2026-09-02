@@ -9,9 +9,6 @@ from soep_preparation.utilities.general import (
     get_raw_data_file_names,
 )
 
-# Any label works: the functions under test only join it onto `data_root`.
-_SOEP_VERSION = "test-version"
-
 
 def _make_clean_modules(directory: Path, module_names: list[str]) -> Path:
     clean_modules = directory / "clean_modules"
@@ -22,7 +19,7 @@ def _make_clean_modules(directory: Path, module_names: list[str]) -> Path:
 
 
 def _make_raw_data(directory: Path, module_names: list[str]) -> Path:
-    raw_data_dir = directory / _SOEP_VERSION
+    raw_data_dir = directory / "V1"
     raw_data_dir.mkdir(parents=True)
     for module_name in module_names:
         (raw_data_dir / f"{module_name}.dta").touch()
@@ -48,7 +45,7 @@ def test_get_raw_data_file_names_raises_for_missing_required_file(
         get_raw_data_file_names(
             directory=clean_modules,
             data_root=data_root,
-            soep_version=_SOEP_VERSION,
+            soep_version="V1",
         )
 
 
@@ -61,7 +58,7 @@ def test_get_raw_data_file_names_skips_missing_optional_file(tmp_path: Path) -> 
         names = get_raw_data_file_names(
             directory=clean_modules,
             data_root=data_root,
-            soep_version=_SOEP_VERSION,
+            soep_version="V1",
             optional_modules=frozenset({"cirdef"}),
         )
 
@@ -76,7 +73,7 @@ def test_get_raw_data_file_names_includes_present_optional_file(tmp_path: Path) 
     names = get_raw_data_file_names(
         directory=clean_modules,
         data_root=data_root,
-        soep_version=_SOEP_VERSION,
+        soep_version="V1",
         optional_modules=frozenset({"cirdef"}),
     )
 
