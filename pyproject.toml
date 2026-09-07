@@ -25,13 +25,14 @@ dependencies = [
   "pytask>=0.6",
   "pytask-parallel>=0.5.1",
 ]
+[[project.maintainers]]
+name = "Hans-Martin von Gaudecker"
+email = "hmgaudecker@uni-bonn.de"
 [[project.authors]]
 name = "Felix Schmitz"
 email = "s87fschm@uni-bonn.de"
+
 [[project.authors]]
-name = "Hans-Martin von Gaudecker"
-email = "hmgaudecker@uni-bonn.de"
-[[project.maintainers]]
 name = "Hans-Martin von Gaudecker"
 email = "hmgaudecker@uni-bonn.de"
 [project.urls]
@@ -48,6 +49,9 @@ build.targets.sdist.only-packages = true
 build.targets.wheel.only-include = [ "src" ]
 build.targets.wheel.sources = [ "src" ]
 
+[tool.pixi.workspace]
+channels = [ "conda-forge" ]
+platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
 [tool.pixi.dependencies]
 deepdiff = "*"
 jupyter-book = ">=2"
@@ -57,18 +61,6 @@ prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
 scikit-learn = ">=1.9.0,<2"
-[tool.pixi.environments]
-default = [ "py314", "tests" ]
-py314 = [ "py314", "tests" ]
-[tool.pixi.feature.py314]
-dependencies.python = "~=3.14.0"
-[tool.pixi.feature.tests.pypi-dependencies]
-pytest = "*"
-pytest-cov = "*"
-pytest-xdist = "*"
-[tool.pixi.feature.tests.tasks]
-tests = "pytest"
-tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 [tool.pixi.pypi-dependencies]
 soep_preparation = { path = ".", editable = true }
 kaleido = ">=1.0.0"
@@ -78,9 +70,18 @@ wealth = { cmd = "pytask", env = { SOEP_WEALTH_IMPUTATION = "1" } }
 generate-variables = { cmd = "python _generate_variables.py", cwd = "docs" }
 build-docs = { cmd = "python _generate_variables.py && jupyter book build --html --execute", cwd = "docs" }
 view-docs = { cmd = "python _generate_variables.py && jupyter book start", cwd = "docs" }
-[tool.pixi.workspace]
-channels = [ "conda-forge" ]
-platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
+[tool.pixi.feature.py314]
+dependencies.python = "~=3.14.0"
+[tool.pixi.feature.tests.pypi-dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+[tool.pixi.feature.tests.tasks]
+tests = "pytest"
+tests-with-cov = "pytest tests --cov-report=xml --cov=./"
+[tool.pixi.environments]
+default = [ "py314", "tests" ]
+py314 = [ "py314", "tests" ]
 
 [tool.ruff]
 fix = true
@@ -135,7 +136,6 @@ pylint.max-statements = 100
 column_width = 88
 max_supported_python = "3.14"
 table_format = "long"
-collapse_tables = [ "tool.hatch", "tool.pytest", "tool.pytask", "tool.ty" ]
 expand_tables = [
   "tool.pixi.dependencies",
   "tool.pixi.environments",
@@ -145,6 +145,7 @@ expand_tables = [
   "tool.pixi.tasks",
   "tool.pixi.workspace",
 ]
+collapse_tables = [ "tool.hatch", "tool.pytask", "tool.pytest", "tool.ty" ]
 
 [tool.ty]
 # ty resolves third-party imports from this pixi env (the ty-pre-commit hook runs
