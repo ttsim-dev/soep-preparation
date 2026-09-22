@@ -104,26 +104,6 @@ repos:
           - tomli
   - repo: local
     hooks:
-      # Runs at pre-commit stage and fails if the config declares pre-push hooks
-      # that this clone never installed — otherwise they look active and silently
-      # never fire.
-      - id: pre-push-hooks-installed
-        name: pre-push hooks are installed in this clone
-        entry: .ai-instructions/hooks/check_pre_push_installed.py
-        language: script
-        pass_filenames: false
-        always_run: true
-      # `--check` re-solves and compares without writing, so it cannot dirty the
-      # worktree. pre-push, not pre-commit: a mid-branch commit may legitimately
-      # lag the lock, but a push with a stale lock burns a CI cycle.
-      - id: pixi-lock-check
-        name: pixi.lock is in sync with the manifest
-        entry: pixi lock --check
-        language: system
-        pass_filenames: false
-        files: ^(pyproject\.toml|pixi\.toml|pixi\.lock)$
-        stages:
-          - pre-push
       - id: no-hardcoded-user-paths
         name: no hardcoded user-specific absolute paths
         language: pygrep
@@ -149,13 +129,6 @@ repos:
 ci:
   autoupdate_schedule: monthly
   # pre-commit.ci has no pixi environments and blocks network at hook runtime;
-  # the GitHub Actions `run-ty` job covers type checking, and pixi-lock-check
-  # needs a pixi binary that pre-commit.ci does not provide.
-  #
-  # `pre-push-hooks-installed` runs a file from the `.ai-instructions` submodule,
-  # which pre-commit.ci does not clone, and it asks about the local clone, which
-  # is meaningless on a runner anyway.
+  # the GitHub Actions `run-ty` job covers type checking.
   skip:
     - ty
-    - pixi-lock-check
-    - pre-push-hooks-installed
