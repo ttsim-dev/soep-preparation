@@ -27,7 +27,6 @@ docs/variables.md
 *.spec
 .eggs/
 .installed.cfg
-bld/
 build/
 dist/
 MANIFEST
@@ -81,9 +80,10 @@ __pycache__/
 # pytask
 .pytask/
 .pytask.sqlite3
+bld/
+out/
 pytask.lock
 pytask.lock.journal
-out/
 
 # Ruff
 .ruff_cache/
