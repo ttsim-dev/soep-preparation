@@ -20,11 +20,11 @@ is redrawn each draw). One shared RNG threads all draws so a fixed seed reproduc
 whole simulation.
 """
 
-# REVIEW (F4): apart from the property/mortgage bundle (`_draw_secured_housing`), the
-# unsecured components and the accounting residual are still drawn independently, so the
-# household accounting law and the empirical co-movement of the unsecured components
-# are not preserved. Extending the bundle to all components of one observed household is
-# left for human decision.
+# Known limitation: apart from the property/mortgage bundle
+# (`_draw_secured_housing`), the unsecured components and the accounting residual are
+# still drawn independently, so the household accounting law and the empirical
+# co-movement of the unsecured components are not preserved. Extending the bundle to
+# all components of one observed household is left for human decision.
 
 from collections.abc import Sequence
 from dataclasses import dataclass

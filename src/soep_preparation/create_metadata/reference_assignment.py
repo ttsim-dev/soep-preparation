@@ -1,7 +1,7 @@
 """Curated reference period for every non-index final SOEP variable.
 
 `REFERENCE_BY_VARIABLE` maps each variable to the calendar period its value refers
-to, relative to the interview date (issue #44). The assignment follows the
+to, relative to the interview date. The assignment follows the
 questionnaire meaning of each variable:
 
 - `pkal` activity-calendar variables and `pequiv` CNEF annual incomes (`_y`) refer
@@ -13,7 +13,7 @@ questionnaire meaning of each variable:
   biographies, pointers to other persons) are `time_invariant`.
 
 A handful of assignments are rule-based and not yet confirmed against the survey-year
-alignment report (the empirical #44 probe, which needs the raw data): the
+alignment report (the empirical probe, which needs the raw data): the
 employment-ended-reason variables, some monthly `_m` amounts, and the unqualified
 `*_received_hh` receipt flags. These are the ones to verify when the alignment report
 is regenerated; the rest follow the deterministic rules above.

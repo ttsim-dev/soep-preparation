@@ -120,7 +120,7 @@ def assemble_probe_report(
                 "verification_status": entry.verification_status.value,
             }
         )
-    n_present = sum(row["present"] for row in rows)
+    n_present = sum(1 for row in rows if row["present"])
     n_unresolved_required = sum(
         entry.required_for_release
         and entry.verification_status is VerificationStatus.UNRESOLVED

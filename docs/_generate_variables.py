@@ -59,12 +59,16 @@ def _render(mapping: dict[str, dict]) -> str:
     lines = [
         "# Variables",
         "",
-        f"{len(mapping)} final variables across {len(by_module)} modules, generated "
-        "from `variable_to_metadata_mapping.yaml`.",
+        (
+            f"{len(mapping)} final variables across {len(by_module)} modules, "
+            "generated from `variable_to_metadata_mapping.yaml`."
+        ),
         "",
-        "A **—** in the *Survey years* column marks a variable with no per-wave "
-        "availability: biographical and design modules have no `survey_year` "
-        "dimension.",
+        (
+            "A **—** in the *Survey years* column marks a variable with no per-wave "
+            "availability: biographical and design modules have no `survey_year` "
+            "dimension."
+        ),
         "",
     ]
     for module in sorted(by_module):

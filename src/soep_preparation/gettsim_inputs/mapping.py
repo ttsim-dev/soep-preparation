@@ -33,8 +33,8 @@ The per-date scope lives in the committed `gettsim_input_scope.json`, generated 
 from GETTSIM (`_generate_input_scope.py`) so this module needs no runtime GETTSIM
 dependency. `tests/gettsim_inputs/test_input_scope.py` regenerates it where GETTSIM is
 importable and fails if it has drifted. Periods that start before 2005 are flagged
-`low_confidence`: GETTSIM's pre-2015 policy environments are not complete (gettsim
-issue #962), so an early-date slice may omit nodes.
+`low_confidence`: GETTSIM's pre-2015 policy environments are not complete, so an
+early-date slice may omit nodes.
 """
 
 import datetime
@@ -328,7 +328,7 @@ class MappingPeriod:
     """Last policy date in the period (inclusive)."""
     low_confidence: bool
     """`True` for periods starting before 2005, where GETTSIM's policy environment is
-    not complete (issue #962) and the slice may omit nodes."""
+    not complete and the slice may omit nodes."""
     in_scope: frozenset[str]
     """`_BASE` qnames that are part of GETTSIM's policy environment in this period."""
 
