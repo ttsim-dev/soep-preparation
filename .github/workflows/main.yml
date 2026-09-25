@@ -26,29 +26,30 @@ jobs:
         python-version:
           - '3.14'
     steps:
-      - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.5
+      - uses: actions/checkout@v7.0.1
+      - uses: prefix-dev/setup-pixi@v0.10.2
         with:
-          pixi-version: v0.69.0
+          pixi-version: v0.81.0
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
           frozen: true
+          environments: py314
       - name: Run pytest
         shell: bash {0}
-        run: pixi run -e py314 tests-with-cov
+        run: pixi run --locked -e py314 tests-with-cov
       - name: Upload coverage report
         if: runner.os == 'Linux' && matrix.python-version == '3.14'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
   run-ty:
     name: Run ty
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: prefix-dev/setup-pixi@v0.9.5
+      - uses: actions/checkout@v7.0.1
+      - uses: prefix-dev/setup-pixi@v0.10.2
         with:
-          pixi-version: v0.69.0
+          pixi-version: v0.81.0
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
           frozen: true

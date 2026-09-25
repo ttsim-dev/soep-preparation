@@ -141,7 +141,7 @@ def test_date_before_coverage_raises() -> None:
 
 
 def test_pre_2005_period_is_low_confidence() -> None:
-    """Periods starting before 2005 are flagged low-confidence (issue #962)."""
+    """Periods starting before 2005 are flagged low-confidence."""
     assert period_for_date(datetime.date(2000, 1, 1)).low_confidence is True
 
 

@@ -13,9 +13,9 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _bruttokaltmiete_m_hh(
-    miete: pd.Series[pd.Categorical],
-    rented_or_owned: pd.Series[pd.Categorical],
-) -> pd.Series[float]:
+    miete: pd.Series,
+    rented_or_owned: pd.Series,
+) -> pd.Series:
     out = object_to_float(miete)
     return out.where(rented_or_owned != "Owner", 0)
 

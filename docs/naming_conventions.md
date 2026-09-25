@@ -33,20 +33,20 @@ The only tokens allowed to remain German:
 
 Everything else is English. Common German scaffolding and its English replacement:
 
-| German | English |
-|---|---|
-| `bezieht` / `bezog` | received |
-| `aktuell` | current |
-| `anzahl_monate` | number_of_months |
-| `im_letzten_monat` | last_month |
-| `eingezahlt` | paid_in |
+| German                         | English                |
+| ------------------------------ | ---------------------- |
+| `bezieht` / `bezog`            | received               |
+| `aktuell`                      | current                |
+| `anzahl_monate`                | number_of_months       |
+| `im_letzten_monat`             | last_month             |
+| `eingezahlt`                   | paid_in                |
 | `nach_steuern` / `vor_steuern` | after_tax / before_tax |
-| `brutto` | gross |
-| `hinterbliebene` | survivor |
-| `einkommen` / `einkünfte` | income / earnings |
-| `erwerbstätig` | employed |
-| `betriebsgröße` | firm_size |
-| `gemeldet` | registered |
+| `brutto`                       | gross                  |
+| `hinterbliebene`               | survivor               |
+| `einkommen` / `einkünfte`      | income / earnings      |
+| `erwerbstätig`                 | employed               |
+| `betriebsgröße`                | firm_size              |
+| `gemeldet`                     | registered             |
 
 ## PEP 8
 
@@ -93,7 +93,8 @@ and [paneldata.org](https://paneldata.org/soep-core/)):
 - **Point-in-time, survey year `t`:** current-status questions (current employment,
   satisfaction, current benefit receipt), measured at the interview.
 - **Recent past, ≈ the month before the interview (still `t`):** "current" monthly
-  amounts; e.g. `pglabnet` ("Current Net Labor Income") is the *previous month*'s income.
+  amounts; e.g. `pglabnet` ("Current Net Labor Income") is the *previous month*'s
+  income.
 - **Previous calendar year `t − 1`:** annual flows (`_y`), the `pkal` 12-month calendar
   ("January through December of last year"), and number-of-months counts. This is the
   SOEP income reference year.
@@ -110,8 +111,8 @@ metadata `reference` field:
 
 ### Recipe: build `ryear` / `rmonth`
 
-The `add_reference_columns` helper turns `survey_year` into the reference year and month,
-with the January→December rollover for `previous_month`:
+The `add_reference_columns` helper turns `survey_year` into the reference year and
+month, with the January→December rollover for `previous_month`:
 
 ```python
 from soep_preparation.utilities.reference_period import add_reference_columns
