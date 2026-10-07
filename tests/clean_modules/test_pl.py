@@ -64,7 +64,7 @@ def test_employment_ended_reason_harmonized_translates_soep_label(
 ) -> None:
     """Each SOEP `plb0304_h` label maps to its English category."""
     result = translate_categories(
-        object_to_str_categorical(pd.Series([soep_label], dtype="object")),
-        _EMPLOYMENT_ENDED_REASON_HARMONIZED_EN,
+        series=object_to_str_categorical(pd.Series([soep_label], dtype="object")),
+        translations=_EMPLOYMENT_ENDED_REASON_HARMONIZED_EN,
     )
     assert result.iloc[0] == expected

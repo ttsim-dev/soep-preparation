@@ -153,8 +153,8 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
         raw_data["plb0304_v11"]
     )
     out["employment_ended_reason_harmonized_pl"] = translate_categories(
-        object_to_str_categorical(raw_data["plb0304_h"]),
-        _EMPLOYMENT_ENDED_REASON_HARMONIZED_EN,
+        series=object_to_str_categorical(raw_data["plb0304_h"]),
+        translations=_EMPLOYMENT_ENDED_REASON_HARMONIZED_EN,
     )
     out["active_work_search_last_four_weeks"] = object_to_bool_categorical(
         series=raw_data["plb0424_v2"],
