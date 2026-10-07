@@ -25,13 +25,14 @@ dependencies = [
   "pytask>=0.6",
   "pytask-parallel>=0.5.1",
 ]
+[[project.maintainers]]
+name = "Hans-Martin von Gaudecker"
+email = "hmgaudecker@uni-bonn.de"
 [[project.authors]]
 name = "Felix Schmitz"
 email = "s87fschm@uni-bonn.de"
+
 [[project.authors]]
-name = "Hans-Martin von Gaudecker"
-email = "hmgaudecker@uni-bonn.de"
-[[project.maintainers]]
 name = "Hans-Martin von Gaudecker"
 email = "hmgaudecker@uni-bonn.de"
 [project.urls]
@@ -48,6 +49,9 @@ build.targets.sdist.only-packages = true
 build.targets.wheel.only-include = [ "src" ]
 build.targets.wheel.sources = [ "src" ]
 
+[tool.pixi.workspace]
+channels = [ "conda-forge" ]
+platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
 [tool.pixi.dependencies]
 deepdiff = "*"
 jupyter-book = ">=2"
@@ -57,18 +61,6 @@ prek = "*"
 pygments = ">=2.19.2"
 pygraphviz = "*"
 scikit-learn = ">=1.9.0,<2"
-[tool.pixi.environments]
-default = [ "py314", "tests" ]
-py314 = [ "py314", "tests" ]
-[tool.pixi.feature.py314]
-dependencies.python = "~=3.14.0"
-[tool.pixi.feature.tests.pypi-dependencies]
-pytest = "*"
-pytest-cov = "*"
-pytest-xdist = "*"
-[tool.pixi.feature.tests.tasks]
-tests = "pytest"
-tests-with-cov = "pytest tests --cov-report=xml --cov=./"
 [tool.pixi.pypi-dependencies]
 soep_preparation = { path = ".", editable = true }
 kaleido = ">=1.0.0"
@@ -78,9 +70,18 @@ wealth = { cmd = "pytask", env = { SOEP_WEALTH_IMPUTATION = "1" } }
 generate-variables = { cmd = "python _generate_variables.py", cwd = "docs" }
 build-docs = { cmd = "python _generate_variables.py && jupyter book build --html --execute", cwd = "docs" }
 view-docs = { cmd = "python _generate_variables.py && jupyter book start", cwd = "docs" }
-[tool.pixi.workspace]
-channels = [ "conda-forge" ]
-platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
+[tool.pixi.feature.py314]
+dependencies.python = "~=3.14.0"
+[tool.pixi.feature.tests.pypi-dependencies]
+pytest = "*"
+pytest-cov = "*"
+pytest-xdist = "*"
+[tool.pixi.feature.tests.tasks]
+tests = "pytest"
+tests-with-cov = "pytest tests --cov-report=xml --cov=./"
+[tool.pixi.environments]
+default = [ "py314", "tests" ]
+py314 = [ "py314", "tests" ]
 
 [tool.ruff]
 fix = true
@@ -89,6 +90,7 @@ unsafe-fixes = false
 select = [ "ALL" ]
 extend-ignore = [
   "COM812",  # Avoid conflict with ruff-format
+  "CPY001",  # Copyright notice at top of file
   "EM101",   # Exception must not use a string literal
   "EM102",   # Exception must not use an f-string literal
   "FBT001",  # Boolean-typed positional argument in function definition
@@ -96,6 +98,7 @@ extend-ignore = [
   "ISC001",  # Avoid conflict with ruff-format
   "PD015",   # pd.merge fine because of inherent symmetry
   "PLR0913", # Too many arguments (one parameter per input series is the convention)
+  "PLR0917", # Too many positional arguments
   "RUF001",  # Ambiguous unicode in strings (raw SOEP labels carry them verbatim)
   "RUF002",  # Ambiguous unicode in docstrings
   "RUF003",  # Ambiguous unicode in comments
@@ -131,11 +134,14 @@ per-file-ignores."tests/metadata/test_mapping_changed.py" = [
 pydocstyle.convention = "google"
 pylint.max-statements = 100
 
+[tool.codespell]
+ignore-words = ".codespell-wordlist.txt"
+skip = "*.lock,*.svg,*.bib,*.ipynb"
+
 [tool.pyproject-fmt]
 column_width = 88
 max_supported_python = "3.14"
 table_format = "long"
-collapse_tables = [ "tool.hatch", "tool.pytest", "tool.pytask", "tool.ty" ]
 expand_tables = [
   "tool.pixi.dependencies",
   "tool.pixi.environments",
@@ -145,12 +151,11 @@ expand_tables = [
   "tool.pixi.tasks",
   "tool.pixi.workspace",
 ]
+collapse_tables = [ "tool.hatch", "tool.pytask", "tool.pytest", "tool.ty" ]
 
 [tool.ty]
-# ty resolves third-party imports from this pixi env (the ty-pre-commit hook runs
-# `uv check --no-project`, so uv neither creates a `.venv` nor resolves deps). Points at
-# the `py314` env, matching the `run-ty` CI job's `pixi run -e py314`; run
-# `pixi install -e py314` once so the env exists.
+# ty resolves third-party imports from this pixi env. The pre-commit hook runs
+# ty directly; pixi owns the project environment. Run `pixi install` once.
 environment.python = ".pixi/envs/py314"
 rules.ambiguous-protocol-member = "error"
 rules.deprecated = "error"

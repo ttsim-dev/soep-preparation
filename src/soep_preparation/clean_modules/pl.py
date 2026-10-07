@@ -19,13 +19,39 @@ _HEALTH_INSURANCE_2022_EN = {
     "In einer gesetzlichen Krankenversicherung": "In statutory health insurance",
 }
 
+# Not every reason occurs in every survey year:
+# - 1985-1998 only: "Vocational training ended", both transfers, "Retirement",
+#   "Other reasons", "Multiple reasons". From 1999 on, retirement is coded as
+#   "Reached age limit".
+# - 2019 on only: "Work permit not renewed".
+_EMPLOYMENT_ENDED_REASON_HARMONIZED_EN = {
+    "Wegen Betriebsstilllegung": "Plant closure",
+    "Durch eigene Kuendigung": "Own resignation",
+    "Durch Kuendigung des Arbeitgebers": "Dismissal by employer",
+    "Durch Aufloesungsvertrag": "Termination agreement",
+    "Befristete Beschaeftigung war beendet": "Fixed-term employment ended",
+    "Erreichen der Altersgrenze": "Reached age limit",
+    "Beurlaubung/Mutterschutz/Elternzeit": (
+        "Leave of absence / maternity / parental leave"
+    ),
+    "Aufgabe der selbstaendigen Taetigkeit": "Gave up self-employment",
+    "Ende Ausbildung": "Vocational training ended",
+    "Versetzung auf eigenen Wunsch": "Transfer at own request",
+    "Versetzung durch Betrieb": "Transfer by employer",
+    "Rente": "Retirement",
+    # SOEP's own label carries the typo "Sonstife".
+    "Sonstife Gruende f-Stellenausscheidung": "Other reasons",
+    "Mehrfachnennung": "Multiple reasons",
+    "Weil Arbeitserlaubnis nicht verlängert wurde": "Work permit not renewed",
+}
+
 
 def _private_rente_beitrag_m_ein_umfragejahr(
-    private_rente_beitrag_jahr: pd.Series[int],
-    eingezahlte_monate: pd.Series[int],
-    eingezahlt: pd.Series[pd.Categorical],
+    private_rente_beitrag_jahr: pd.Series,
+    eingezahlte_monate: pd.Series,
+    eingezahlt: pd.Series,
     survey_year: int,
-) -> pd.Series[int]:
+) -> pd.Series:
     # For 2013 it was recorded in Euros, for 2018 in cents.
     # Converting 2018 values to Euros.
     relevant_suvery_year = 2018
@@ -123,6 +149,10 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["employment_ended_business_closure"] = object_to_str_categorical(
         raw_data["plb0304_v11"]
+    )
+    out["employment_ended_reason_harmonized_pl"] = translate_categories(
+        series=object_to_str_categorical(raw_data["plb0304_h"]),
+        translations=_EMPLOYMENT_ENDED_REASON_HARMONIZED_EN,
     )
     out["active_work_search_last_four_weeks"] = object_to_bool_categorical(
         series=raw_data["plb0424_v2"],

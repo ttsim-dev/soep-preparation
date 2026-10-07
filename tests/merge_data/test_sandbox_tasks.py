@@ -32,6 +32,7 @@ def test_sandbox_tasks_produce_identical_results():
     # instead of the root one, allowing us to collect only sandbox tasks
     original_cwd = Path.cwd()
     sandbox_config_path = sandbox_dir / "pyproject.toml"
+    created_sandbox_config = not sandbox_config_path.exists()
     try:
         # Create a minimal pyproject.toml in sandbox directory
         # This makes pytask use sandbox as root and only collect tasks from there
@@ -39,7 +40,8 @@ def test_sandbox_tasks_produce_identical_results():
 paths = ["."]
 task_files = ["task_*.py", "task.py", "tasks.py"]
 """
-        sandbox_config_path.write_text(sandbox_config_content)
+        if created_sandbox_config:
+            sandbox_config_path.write_text(sandbox_config_content)
 
         # Change to sandbox directory and run pytask
         # Pytask will find the pyproject.toml in sandbox and use it
@@ -65,8 +67,8 @@ task_files = ["task_*.py", "task.py", "tasks.py"]
             )
         result.check_returncode()
     finally:
-        # Clean up: remove temporary config and restore original directory
-        if sandbox_config_path.exists():
+        # Clean up: remove the config only if this test created it
+        if created_sandbox_config and sandbox_config_path.exists():
             sandbox_config_path.unlink()
         os.chdir(original_cwd)
 

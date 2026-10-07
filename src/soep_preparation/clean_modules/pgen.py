@@ -261,9 +261,9 @@ _FIRST_NATIONALITY_EN = {
 
 
 def _education(
-    casmin: pd.Series[pd.Categorical],
-    isced: pd.Series[pd.Categorical],
-) -> pd.Series[pd.Categorical]:
+    casmin: pd.Series,
+    isced: pd.Series,
+) -> pd.Series:
     """Transform education variable to three levels."""
     out = casmin.combine_first(isced).map(
         {
@@ -322,9 +322,9 @@ def _fail_if_expected_categories_absent(
 
 
 def _in_education(
-    employment: pd.Series[pd.Categorical],
-    occupation: pd.Series[pd.Categorical],
-) -> pd.Series[pd.Categorical]:
+    employment: pd.Series,
+    occupation: pd.Series,
+) -> pd.Series:
     in_education = [
         "Auszubildende (1984-1999), Lehrlinge (1990 Ost)",
         "Auszubildende, gewerblich-technisch (ab 2000)",
@@ -344,7 +344,7 @@ def _in_education(
 
 
 def _self_employed_occupations(
-    occupation: pd.Series[pd.Categorical],
+    occupation: pd.Series,
 ) -> list:
     """Occupation names that indicate self employment."""
     occupation_names = list(occupation.dropna().unique())

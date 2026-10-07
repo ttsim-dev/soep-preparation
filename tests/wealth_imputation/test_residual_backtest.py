@@ -35,7 +35,7 @@ def test_assign_folds_balances_fold_sizes_within_one():
     """Fold sizes differ by at most one row (a balanced K-fold split)."""
     folds = assign_folds(n_rows=23, n_folds=5, rng=np.random.default_rng(seed=0))
     counts = np.bincount(folds, minlength=5)
-    assert counts.max() - counts.min() <= 1
+    assert max(counts) - min(counts) <= 1
 
 
 def test_out_of_fold_donor_indices_excludes_the_held_out_fold():

@@ -149,7 +149,7 @@ _SECURED_LIABILITY_OF: dict[CanonicalComponent, CanonicalComponent] = {
 class ImputationResult:
     """The 2022 household-wealth point estimates with donor-spread bands and a summary.
 
-    Two totals are reported side by side (#66-style honesty about what is validated):
+    Two totals are reported side by side, to be explicit about what is validated:
 
     - `intervals` is the **component-only** total -- the sum of the modelled components.
       It is the primary output because it is what the out-of-fold backtest validates
@@ -440,7 +440,7 @@ def run_imputation(
         "distribution_calibrated": False,
         "uses_support_gate": caliper is not None,
         "donor_pool_mean_residual": donor_pool_mean_residual,
-        # Support transparency (F4): per-component nearest-donor score-distance
+        # Support transparency: per-component nearest-donor score-distance
         # quantiles and, when a caliper gates the run, the share of recipients whose
         # nearest donor exceeds it. This quantifies the extrapolation the projection
         # cannot avoid while the target wave has no anchoring wealth answers; it does
@@ -453,7 +453,7 @@ def run_imputation(
         # vehicles, observed only in 2017), so their projected level has no cross-wave
         # support. Read alongside any tail/level statistic for these components.
         "single_wave_components": _single_wave_components(donor_wave_composition),
-        # Coherence diagnostic (F2): the expected share of recipients drawn as a
+        # Coherence diagnostic: the expected share of recipients drawn as a
         # mortgage holder but a non-property-owner -- an incoherent balance sheet no
         # donor household has. The coupled property/mortgage draw zeros the mortgage for
         # every non-property-owner, so this is zero by construction whenever both the

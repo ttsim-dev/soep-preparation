@@ -13,6 +13,7 @@ genuine spread to the bands rather than a fixed shift.
 """
 
 from dataclasses import dataclass
+from typing import Self
 
 import numpy as np
 import pandas as pd
@@ -56,7 +57,7 @@ class ResidualModel:
     """The positive, finite scale used in the asinh transform."""
 
     @classmethod
-    def fit(cls, features: np.ndarray, residual: np.ndarray) -> ResidualModel:
+    def fit(cls, features: np.ndarray, residual: np.ndarray) -> Self:
         """Fit the signed matching-score model on the training residual.
 
         Args:

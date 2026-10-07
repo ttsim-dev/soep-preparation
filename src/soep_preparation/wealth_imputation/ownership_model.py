@@ -8,6 +8,7 @@ stage; the wrapper itself is trained and tested on in-memory arrays.
 """
 
 from dataclasses import dataclass
+from typing import Self
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -53,7 +54,7 @@ class OwnershipModel:
         *,
         seed: int,
         sample_weight: np.ndarray | None = None,
-    ) -> OwnershipModel:
+    ) -> Self:
         """Fit the incidence model on observed ownership outcomes.
 
         Args:

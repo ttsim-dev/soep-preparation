@@ -1,6 +1,6 @@
 """Guard: no cleaning or combine module produces an integer-coded categorical.
 
-Integer-coded categoricals fail on two counts (issues #63 and #66):
+Integer-coded categoricals fail on two counts:
 
 - a reader must look up what `0/1/2` mean, even though the integer *is* the value
   for the only cases this applies to — month numbers and genuine rating scales; and
@@ -12,7 +12,7 @@ Two AST guards keep the dtype out:
 - `object_to_int_categorical` is removed, so no module may call it.
 - `object_to_int(renaming={...})` with a *small* inline label→int dict is the same
   anti-pattern through the back door: a few meaningfully-named outcomes coded to
-  integers. Per #66 these belong in a string `category` (`object_to_str_categorical`),
+  integers. These belong in a string `category` (`object_to_str_categorical`),
   not an integer code. Genuine rating/Likert scales are exempt — they have more than
   `_MAX_INT_CODED_OUTCOMES` points and the integer is the scale value — so only inline
   renamings with at most that many entries are flagged.
@@ -34,7 +34,7 @@ _SRC = Path(__file__).parent.parent / "src" / "soep_preparation"
 _MODULE_DIRS = ("clean_modules", "combine_modules")
 
 # Above this many outcomes a label→int mapping is a genuine rating/Likert scale, where
-# the integer is the scale value (#66's stated counterexample). At or below it, a few
+# the integer is the scale value. At or below it, a few
 # meaningfully-named outcomes coded to integers is the banned int-categorical pattern.
 _MAX_INT_CODED_OUTCOMES = 5
 
@@ -117,7 +117,7 @@ def test_no_module_uses_int_categorical() -> None:
 
 
 def test_no_module_codes_small_categorical_as_int() -> None:
-    """No module codes a small meaningfully-named categorical to integers (#66)."""
+    """No module codes a small meaningfully-named categorical to integers."""
     assert _modules_coding_small_categorical_as_int() == []
 
 
@@ -177,8 +177,8 @@ def test_int_renaming_threshold_false_positive_on_a_five_point_numeric_scale() -
 def test_int_renaming_threshold_false_negative_on_a_six_outcome_qualitative() -> None:
     """Known limit: a six-outcome qualitative coding is not flagged (false negative).
 
-    Above the threshold the integer codes are arbitrary qualitative labels that #66
-    would want as a string categorical, but the count heuristic waves them through.
+    Above the threshold the integer codes are arbitrary qualitative labels that belong
+    in a string categorical, but the count heuristic waves them through.
     """
     pairs = "\n".join(
         f'        "[{code}] Qualitative {code}": {code},' for code in range(1, 7)

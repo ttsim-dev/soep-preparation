@@ -1,9 +1,9 @@
 # Projected household wealth in 2022
 
-The `wealth_imputation` package constructs a model-based measure of household net
-wealth for the 2022 SOEP-Core sample. The procedure uses the observed wealth waves
-2002, 2007, 2012, and 2017 together with household characteristics observed in 2022.
-It is disabled in the standard pipeline and must be run explicitly.
+The `wealth_imputation` package constructs a model-based measure of household net wealth
+for the 2022 SOEP-Core sample. The procedure uses the observed wealth waves 2002, 2007,
+2012, and 2017 together with household characteristics observed in 2022. It is disabled
+in the standard pipeline and must be run explicitly.
 
 ```{warning}
 SOEP-Core V41 contains no wealth observations for 2022. The latest available wealth
@@ -28,14 +28,14 @@ $$
 
 This **component total** includes the following balance-sheet items.
 
-| Component | Sign | Source | Conversion to 2022 prices |
-|---|---:|---|---|
-| Owner-occupied property, gross value | $+$ | `hwealth` | House-price index |
-| Mortgage debt on owner-occupied property | $-$ | `hwealth` | None |
-| Financial assets | $+$ | `hwealth` | MSCI World index |
-| Vehicles | $+$ | `hwealth` | None |
-| Private pensions and insurance wealth | $+$ | `pwealth`, aggregated within household | REX bond index |
-| Consumer debt | $-$ | `pwealth`, aggregated within household | None |
+| Component                                | Sign | Source                                 | Conversion to 2022 prices |
+| ---------------------------------------- | ---: | -------------------------------------- | ------------------------- |
+| Owner-occupied property, gross value     |  $+$ | `hwealth`                              | House-price index         |
+| Mortgage debt on owner-occupied property |  $-$ | `hwealth`                              | None                      |
+| Financial assets                         |  $+$ | `hwealth`                              | MSCI World index          |
+| Vehicles                                 |  $+$ | `hwealth`                              | None                      |
+| Private pensions and insurance wealth    |  $+$ | `pwealth`, aggregated within household | REX bond index            |
+| Consumer debt                            |  $-$ | `pwealth`, aggregated within household | None                      |
 
 The household file supplies jointly held property, financial assets, and vehicles. For
 private pensions, insurance wealth, and consumer debt, the pipeline sums person-level
@@ -58,21 +58,21 @@ therefore a sensitivity analysis, not the preferred outcome.
 
 The estimation sample consists of households observed in the wealth waves 2002, 2007,
 2012, and 2017. When an earlier wave is used as a validation outcome, that wave is
-excluded from estimation. The prediction sample consists of SOEP households observed
-in 2022.
+excluded from estimation. The prediction sample consists of SOEP households observed in
+2022\.
 
 Covariates are assembled at the person level and include demographic, labour-market,
-income, and household characteristics, as well as wealth from the preceding wealth
-wave. Each household is represented by its oldest observed member. Continuous
-covariates enter linearly; categorical covariates are represented by indicator
-variables. Missing continuous values are replaced by estimation-sample medians, and
-missing or previously unseen categorical values map to the omitted all-zero category.
+income, and household characteristics, as well as wealth from the preceding wealth wave.
+Each household is represented by its oldest observed member. Continuous covariates enter
+linearly; categorical covariates are represented by indicator variables. Missing
+continuous values are replaced by estimation-sample medians, and missing or previously
+unseen categorical values map to the omitted all-zero category.
 
 This setup identifies a projection under a stability assumption: after conditioning on
 the included covariates and lagged wealth, the component-specific relationships
-estimated through 2017 are assumed to remain informative for households in 2022.
-Changes between 2017 and 2022 that are not captured by these covariates or the price
-indices remain extrapolation error.
+estimated through 2017 are assumed to remain informative for households in 2022. Changes
+between 2017 and 2022 that are not captured by these covariates or the price indices
+remain extrapolation error.
 
 ## Econometric specification
 
@@ -102,9 +102,9 @@ The scale $a_c$ is the median positive amount for component $c$. A component is 
 if its estimation sample has fewer than five households, fewer than two owners, or no
 variation in ownership.
 
-Mortgage debt is coupled to owner-occupied housing. The algorithm first draws a
-property donor and assigns that donor's mortgage to the same recipient. This preserves
-the observed property-mortgage pair and prevents a mortgage from being assigned to a
+Mortgage debt is coupled to owner-occupied housing. The algorithm first draws a property
+donor and assigns that donor's mortgage to the same recipient. This preserves the
+observed property-mortgage pair and prevents a mortgage from being assigned to a
 predicted non-owner.
 
 ### Predictive mean matching
@@ -145,8 +145,8 @@ household net wealth.
 
 ## Statistical uncertainty
 
-The package provides two different simulation products. They answer different
-questions and should not be combined mechanically.
+The package provides two different simulation products. They answer different questions
+and should not be combined mechanically.
 
 ### Conditional PMM intervals
 
@@ -158,9 +158,9 @@ These bounds condition on the fitted coefficients and on SOEP implicate `a`. The
 reflect simulated ownership and donor selection, including a new residual donor in each
 residual-inclusive draw. They do not include coefficient uncertainty, uncertainty from
 the other SOEP implicates, systematic forecast error from transporting the model to
-2022, or the full dependence between components. They are therefore simulation
-intervals conditional on the estimated model, not confidence intervals and not
-calibrated prediction intervals.
+2022, or the full dependence between components. They are therefore simulation intervals
+conditional on the estimated model, not confidence intervals and not calibrated
+prediction intervals.
 
 Distributional statistics must be calculated within each completed draw. The summary
 field `distribution_across_draws` follows this rule for the Gini coefficient, wealth
@@ -179,9 +179,9 @@ combines:
 
 The same bootstrap weights enter estimation and donor selection. Consequently, the
 between-replicate variance combines coefficient, donor-selection, and donor-implicate
-variation. With only five replicates, these sources cannot be estimated separately.
-The optional layer-ablation exercise describes their relative importance but does not
-turn the release into formal multiple imputation.
+variation. With only five replicates, these sources cannot be estimated separately. The
+optional layer-ablation exercise describes their relative importance but does not turn
+the release into formal multiple imputation.
 
 ```{important}
 The five projection columns are not the original SOEP implicates and do not support
@@ -190,10 +190,10 @@ different SOEP implicate as donor data. The metadata therefore sets `rubin_valid
 `false`.
 ```
 
-The summary distinguishes the between-replicate standard deviation from the Monte
-Carlo standard error of the replicate mean. The former describes variation generated
-by the projection procedure; the latter equals that standard deviation divided by the
-square root of the number of replicates and describes finite-simulation precision.
+The summary distinguishes the between-replicate standard deviation from the Monte Carlo
+standard error of the replicate mean. The former describes variation generated by the
+projection procedure; the latter equals that standard deviation divided by the square
+root of the number of replicates and describes finite-simulation precision.
 
 ### Aggregate transport scenarios
 
@@ -217,11 +217,10 @@ Two values of $\sigma_T$ are reported:
   design-weighted official wealth aggregate;
 - `excluding_largest_growth_step` omits the largest historical change.
 
-Neither value is estimated from forecast errors. Both are scenario calibrations and
-must remain separate from the no-transport projection replicates. In the production
-run, these scenarios generate more aggregate variation than the projection replicates,
-so conclusions about wealth levels are especially sensitive to the transport
-assumption.
+Neither value is estimated from forecast errors. Both are scenario calibrations and must
+remain separate from the no-transport projection replicates. In the production run,
+these scenarios generate more aggregate variation than the projection replicates, so
+conclusions about wealth levels are especially sensitive to the transport assumption.
 
 ## Validation evidence
 
@@ -231,12 +230,12 @@ The package implements two out-of-sample exercises.
    predict 2017. Predicted component totals are compared with the sum of the six
    completed 2017 components. This evaluates the primary component outcome, not the
    residual-inclusive scenario.
-2. **Rolling-origin validation.** Each of 2007, 2012, and 2017 is predicted using only
+1. **Rolling-origin validation.** Each of 2007, 2012, and 2017 is predicted using only
    earlier wealth waves. Predicted component totals are compared with the official
    net-wealth total using rank-based statistics. Because the two variables cover
    different balance-sheet concepts, this exercise assesses ordering rather than level
-   agreement. Vehicles cannot be estimated in these folds because they are observed
-   only in 2017.
+   agreement. Vehicles cannot be estimated in these folds because they are observed only
+   in 2017.
 
 The rolling-origin Spearman correlation is about 0.69 on average and 0.731 for the 2017
 fold. Exact-quintile classification is about 0.40, with a mean absolute error of roughly
@@ -261,9 +260,9 @@ shares, exact wealth groups, or household wealth mobility.
 - **Partial unit nonresponse.** Person-level pensions, insurance wealth, and consumer
   debt are summed only over household members represented in `pwealth`. An absent
   eligible adult causes downward measurement error in these components.
-- **Conditional independence across components.** Except for housing and mortgage
-  debt, donor amounts are sampled separately. This can alter tail dependence and
-  measured inequality.
+- **Conditional independence across components.** Except for housing and mortgage debt,
+  donor amounts are sampled separately. This can alter tail dependence and measured
+  inequality.
 - **Limited time support.** Vehicles and the reconciliation residual are estimated from
   2017 only.
 - **Nominal liabilities.** Mortgage and consumer debt are not converted to 2022 prices.
@@ -296,15 +295,15 @@ diagnostic to the replicate summary.
 
 Outputs are written to `bld/wealth_imputation/`:
 
-| File | Contents |
-|---|---|
-| `household_wealth_2022_component_only.arrow` | Household medians and conditional PMM intervals for $W^C$ |
-| `household_wealth_2022_residual_inclusive.arrow` | Scenario medians and intervals for $W^R$ |
-| `imputation_summary.json` | Run settings, support diagnostics, and draw-level distributions |
-| `backtest_2017_report.json` | 2017 component-validation results |
-| `transport_backtest_report.json` | Rolling-origin rank-validation results |
-| `household_wealth_2022_component_only_projection_replicates.arrow` | Five projection draws and transport-scenario draws |
-| `projection_replicates_summary.json` | Replicate variation, scenario calibration, and metadata guards |
+| File                                                               | Contents                                                        |
+| ------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `household_wealth_2022_component_only.arrow`                       | Household medians and conditional PMM intervals for $W^C$       |
+| `household_wealth_2022_residual_inclusive.arrow`                   | Scenario medians and intervals for $W^R$                        |
+| `imputation_summary.json`                                          | Run settings, support diagnostics, and draw-level distributions |
+| `backtest_2017_report.json`                                        | 2017 component-validation results                               |
+| `transport_backtest_report.json`                                   | Rolling-origin rank-validation results                          |
+| `household_wealth_2022_component_only_projection_replicates.arrow` | Five projection draws and transport-scenario draws              |
+| `projection_replicates_summary.json`                               | Replicate variation, scenario calibration, and metadata guards  |
 
 The replicate columns `component_only_net_wealth_2022_a` through `_e` contain the
 no-transport projections. Columns beginning with

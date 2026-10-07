@@ -1,7 +1,7 @@
 """Survey-year alignment probe: per-variable, per-year distribution summaries.
 
 The report helps resolve whether each variable's recorded values are aligned to the
-survey year or to the previous year (issue #44): an analyst compares the year-over-year
+survey year or to the previous year: an analyst compares the year-over-year
 movement against the questionnaire and external benchmarks. The summaries are
 low-cell-count-screened — only year-cells with enough observations are described.
 """

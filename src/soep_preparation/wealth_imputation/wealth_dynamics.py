@@ -321,18 +321,27 @@ def build_dynamics_report(
             "not_household_mobility": True,
             "caveats": [
                 "unweighted: no SOEP design/longitudinal weights applied",
-                "not a population trend: sample composition and refresh samples vary "
-                "by wave",
-                "transitions into the imputed wave rank households by their point "
-                "estimate, so they are point-imputed person exposure, not draw-level "
-                "mobility",
-                "the imputed wave is a proxy; transitions into it are attenuated by "
-                "regression to the mean",
-                "concept-mixed: observed waves use w011h (net overall wealth); the "
-                "imputed wave is the component-only modelled sum, which omits business "
-                "and other real estate (the official total carries these via the "
-                "separate residual scenario). Levels are not strictly comparable, so "
-                "treat the series as rank discrimination, not tail-calibrated levels",
+                (
+                    "not a population trend: sample composition and refresh samples "
+                    "vary by wave"
+                ),
+                (
+                    "transitions into the imputed wave rank households by their point "
+                    "estimate, so they are point-imputed person exposure, not "
+                    "draw-level mobility"
+                ),
+                (
+                    "the imputed wave is a proxy; transitions into it are attenuated "
+                    "by regression to the mean"
+                ),
+                (
+                    "concept-mixed: observed waves use w011h (net overall wealth); the "
+                    "imputed wave is the component-only modelled sum, which omits "
+                    "business and other real estate (the official total carries these "
+                    "via the separate residual scenario). Levels are not strictly "
+                    "comparable, so treat the series as rank discrimination, not "
+                    "tail-calibrated levels"
+                ),
             ],
         },
         "distribution": distribution,

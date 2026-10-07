@@ -10,7 +10,7 @@ For every policy-date boundary in GETTSIM's objects, the script reads which
 collapses adjacent
 boundaries whose in-scope set is identical into one period. Coverage runs from the start
 of the SOEP survey range; periods starting before 2005 are flagged `low_confidence`
-because GETTSIM's pre-2015 environments are incomplete (gettsim issue #962).
+because GETTSIM's pre-2015 environments are incomplete.
 
 Usage (from the workspace root):
 

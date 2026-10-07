@@ -12,9 +12,9 @@ from soep_preparation.utilities.data_manipulator import (
 
 
 def _kindergeld_m_hh(
-    betrag: pd.Series[pd.Categorical],
-    bezug: pd.Series[pd.Categorical],
-) -> pd.Series[float]:
+    betrag: pd.Series,
+    bezug: pd.Series,
+) -> pd.Series:
     out = object_to_float(betrag)
     return out.where(
         ~(betrag.isna()) & (bezug.astype("bool[pyarrow]")),
@@ -22,7 +22,7 @@ def _kindergeld_m_hh(
     )
 
 
-def _grundsicherung_im_alter_received(amount_m: pd.Series[float]) -> pd.Series:
+def _grundsicherung_im_alter_received(amount_m: pd.Series) -> pd.Series:
     """Receipt of Grundsicherung im Alter, inferred from a positive amount.
 
     SOEP carries no separate receipt question for Grundsicherung im Alter — only

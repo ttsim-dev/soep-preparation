@@ -10,6 +10,7 @@ is a thin, fail-closed boundary; real covariates are wired in the deferred data 
 """
 
 from dataclasses import dataclass
+from typing import Self
 
 import numpy as np
 import pandas as pd
@@ -61,7 +62,7 @@ class AmountModel:
         *,
         scale: float,
         sample_weight: np.ndarray | None = None,
-    ) -> AmountModel:
+    ) -> Self:
         """Fit the amount model on observed euro amounts.
 
         Args:

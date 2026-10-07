@@ -13,7 +13,7 @@ treated as a known transformation.
 
 Sources:
 - MSCI World and REX (5-year German government bonds): annual series provided by
-  MImmesberger on PR #88 (`benchmark_index_annual.csv`), base 100 in 2000.
+  MImmesberger (`benchmark_index_annual.csv`), base 100 in 2000.
 - House prices: BIS nominal residential property prices for Germany, FRED series
   `QDEN628BIS`, annual averages of the quarterly index (base 100 in 2010); used to
   deflate the owner-occupied and other-real-estate components.
