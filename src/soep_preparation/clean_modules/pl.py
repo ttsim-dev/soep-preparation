@@ -19,13 +19,11 @@ _HEALTH_INSURANCE_2022_EN = {
     "In einer gesetzlichen Krankenversicherung": "In statutory health insurance",
 }
 
-# `plb0304_h` harmonises `plb0304_v11` (1991-1998), `plb0304_v13` (1999-2000) and
-# `plb0304_v14` (2001 on) and also covers 1985-1990. Its codes differ from
-# `plb0304_v14` from code 9 on. Which categories occur depends on the wave:
-# - "Vocational training ended", the two transfers, "Retirement", "Other reasons"
-#   and "Multiple reasons" occur only in 1985-1998.
-# - From 1999 on, retirement is recorded as "Reached age limit".
-# - "Work permit not renewed" occurs from 2019 on.
+# Not every reason occurs in every survey year:
+# - 1985-1998 only: "Vocational training ended", both transfers, "Retirement",
+#   "Other reasons", "Multiple reasons". From 1999 on, retirement is coded as
+#   "Reached age limit".
+# - 2019 on only: "Work permit not renewed".
 _EMPLOYMENT_ENDED_REASON_HARMONIZED_EN = {
     "Wegen Betriebsstilllegung": "Plant closure",
     "Durch eigene Kuendigung": "Own resignation",
