@@ -19,6 +19,27 @@ _HEALTH_INSURANCE_2022_EN = {
     "In einer gesetzlichen Krankenversicherung": "In statutory health insurance",
 }
 
+_EMPLOYMENT_ENDED_REASON_HARMONIZED_EN = {
+    "Wegen Betriebsstilllegung": "Plant closure",
+    "Durch eigene Kuendigung": "Own resignation",
+    "Durch Kuendigung des Arbeitgebers": "Dismissal by employer",
+    "Durch Aufloesungsvertrag": "Termination agreement",
+    "Befristete Beschaeftigung war beendet": "Fixed-term employment ended",
+    "Erreichen der Altersgrenze": "Reached age limit",
+    "Beurlaubung/Mutterschutz/Elternzeit": (
+        "Leave of absence / maternity / parental leave"
+    ),
+    "Aufgabe der selbstaendigen Taetigkeit": "Gave up self-employment",
+    "Ende Ausbildung": "Vocational training ended",
+    "Versetzung auf eigenen Wunsch": "Transfer at own request",
+    "Versetzung durch Betrieb": "Transfer by employer",
+    "Rente": "Retirement",
+    # SOEP's own label carries the typo "Sonstife".
+    "Sonstife Gruende f-Stellenausscheidung": "Other reasons",
+    "Mehrfachnennung": "Multiple reasons",
+    "Weil Arbeitserlaubnis nicht verlängert wurde": "Work permit not renewed",
+}
+
 
 def _private_rente_beitrag_m_ein_umfragejahr(
     private_rente_beitrag_jahr: pd.Series,
@@ -85,6 +106,29 @@ def _arbeitslosengeld_received_last_month(
     )
 
 
+def _employment_ended_reason_harmonized(series: pd.Series) -> pd.Series:
+    """Translate the harmonised SOEP job-end reason `plb0304_h` to English.
+
+    `plb0304_h` harmonises the wave-specific versions `plb0304_v11` (1991-1998),
+    `plb0304_v13` (1999-2000) and `plb0304_v14` (2001 onwards) into one coding, and
+    also covers 1985-1990. Its codes differ from `plb0304_v14` from code 9 on (e.g.
+    "work permit not renewed" is 9 in `plb0304_v14` and 15 here). Which categories
+    occur depends on the wave's questionnaire:
+
+    - "Vocational training ended", the two transfers, "Retirement", "Other reasons"
+      and "Multiple reasons" occur only in 1985-1998.
+    - From 1999 on, retirement is recorded as "Reached age limit"; the 1999-2000
+      source label `plb0304_v13` is "Verrentung, Pensionierung".
+    - "Work permit not renewed" occurs from 2019 on.
+
+    The reasons carry no natural order, so the categorical is unordered.
+    """
+    return translate_categories(
+        object_to_str_categorical(series),
+        _EMPLOYMENT_ENDED_REASON_HARMONIZED_EN,
+    )
+
+
 def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     """Create cleaned variables from the pl module.
 
@@ -123,6 +167,9 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:  # noqa: PLR0915
     )
     out["employment_ended_business_closure"] = object_to_str_categorical(
         raw_data["plb0304_v11"]
+    )
+    out["employment_ended_reason_harmonized_pl"] = _employment_ended_reason_harmonized(
+        raw_data["plb0304_h"]
     )
     out["active_work_search_last_four_weeks"] = object_to_bool_categorical(
         series=raw_data["plb0424_v2"],
