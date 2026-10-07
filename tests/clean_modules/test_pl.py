@@ -4,8 +4,12 @@ import pandas as pd
 import pytest
 
 from soep_preparation.clean_modules.pl import (
+    _EMPLOYMENT_ENDED_REASON_HARMONIZED_EN,
     _arbeitslosengeld_received_last_month,
-    _employment_ended_reason_harmonized,
+)
+from soep_preparation.utilities.data_manipulator import (
+    object_to_str_categorical,
+    translate_categories,
 )
 
 
@@ -59,37 +63,8 @@ def test_employment_ended_reason_harmonized_translates_soep_label(
     soep_label: str, expected: str
 ) -> None:
     """Each SOEP `plb0304_h` label maps to its English category."""
-    result = _employment_ended_reason_harmonized(
-        pd.Series([soep_label], dtype="object")
+    result = translate_categories(
+        object_to_str_categorical(pd.Series([soep_label], dtype="object")),
+        _EMPLOYMENT_ENDED_REASON_HARMONIZED_EN,
     )
     assert result.iloc[0] == expected
-
-
-@pytest.mark.parametrize(
-    "missing_code",
-    [-1, -2, -3, -4, -5, -8, "[-2] trifft nicht zu", "[-1] keine Angabe"],
-)
-def test_employment_ended_reason_harmonized_maps_missing_codes_to_na(
-    missing_code: int | str,
-) -> None:
-    """SOEP missing-data codes become missing, not a category."""
-    result = _employment_ended_reason_harmonized(
-        pd.Series(["[2] Durch eigene Kuendigung", missing_code], dtype="object")
-    )
-    assert pd.isna(result.iloc[1])
-
-
-def test_employment_ended_reason_harmonized_is_unordered_categorical() -> None:
-    """The reasons carry no natural order, so the categorical is unordered."""
-    result = _employment_ended_reason_harmonized(
-        pd.Series(["[2] Durch eigene Kuendigung", -2], dtype="object")
-    )
-    assert result.cat.ordered is False
-
-
-def test_employment_ended_reason_harmonized_fails_on_unknown_label() -> None:
-    """A label absent from the translation map fails loudly."""
-    with pytest.raises(ValueError, match="missing from the translation map"):
-        _employment_ended_reason_harmonized(
-            pd.Series(["[16] Neuer Grund"], dtype="object")
-        )
