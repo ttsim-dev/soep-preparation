@@ -55,6 +55,7 @@ _CURRENT = (
     "employed_part_time",
     "employment_ended_business_closure",
     "employment_ended_reason_1999_pl",
+    "employment_ended_reason_harmonized_pl",
     "employment_ended_reason_pgen",
     "employment_ended_reason_pl",
     "employment_level",
