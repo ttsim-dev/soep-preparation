@@ -98,7 +98,7 @@ _BASE: Final[dict[str, str | None]] = {
     "sozialversicherung__kranken__beitrag__privat_versichert": None,
     "sozialversicherung__pflege__beitrag__hat_kinder": None,
     # Pension insurance (`sozialversicherung__rente__*`).
-    "sozialversicherung__rente__bezieht_rente": None,
+    "sozialversicherung__rente__bezieht_altersrente": None,
     "sozialversicherung__rente__entgeltpunkte": None,
     "sozialversicherung__rente__entgeltpunkte_ost": None,
     "sozialversicherung__rente__entgeltpunkte_west": None,
@@ -113,11 +113,7 @@ _BASE: Final[dict[str, str | None]] = {
     "sozialversicherung__rente__erwerbsminderung__voll_erwerbsgemindert": None,
     "sozialversicherung__rente__freiwillige_beitragsmonate": None,
     "sozialversicherung__rente__grundrente__bewertungszeiten_monate": None,
-    "sozialversicherung__rente__grundrente__bruttolohn_vorjahr_y": None,
-    "sozialversicherung__rente__grundrente__einnahmen_aus_kapitalvermögen_vorvorjahr_y": "income_from_interest_dividends_y_hh",  # noqa: E501
-    "sozialversicherung__rente__grundrente__einnahmen_aus_selbstständiger_arbeit_vorvorjahr_y": None,  # noqa: E501
-    "sozialversicherung__rente__grundrente__einnahmen_aus_vermietung_und_verpachtung_vorvorjahr_y": "income_from_rental_leasing_y_hh",  # noqa: E501
-    "sozialversicherung__rente__grundrente__gesamteinnahmen_aus_renten_vorjahr_m": None,
+    "sozialversicherung__rente__grundrente__einkommen_vorjahr_m": None,
     "sozialversicherung__rente__grundrente__grundrentenzeiten_monate": None,
     "sozialversicherung__rente__grundrente__mean_entgeltpunkte": None,
     "sozialversicherung__rente__jahr_renteneintritt": None,
@@ -241,7 +237,7 @@ GAP_NOTES: Final[MappingProxyType[str, str]] = MappingProxyType(
         "sozialversicherung__pflege__beitrag__hat_kinder": (
             "Derive from a number-of-children variable."
         ),
-        "sozialversicherung__rente__bezieht_rente": (
+        "sozialversicherung__rente__bezieht_altersrente": (
             "Derive bool from a pension-receipt variable."
         ),
         "sozialversicherung__rente__entgeltpunkte": (
@@ -289,6 +285,12 @@ GAP_NOTES: Final[MappingProxyType[str, str]] = MappingProxyType(
             "maintenance-received amount is constructed."
         ),
         "bürgergeld__bezug_im_vorjahr": "Derive from prior-year Bürgergeld receipt.",
+        "sozialversicherung__rente__grundrente__einkommen_vorjahr_m": (
+            "§ 97a SGB VI income (zvE plus tax-free pension share plus Abgeltungsteuer "
+            "capital income); SOEP has no zvE. Compute it with the GETTSIM target "
+            "`sozialversicherung__rente__grundrente__einkommen_für_einkommensberechnung_im_folgejahr_m` "  # noqa: E501
+            "in a run for the previous year."
+        ),
         "kindergeld__betrag_m": (
             "Computed node (per child). SOEP `kindergeld_m_hh` is a household total, "
             "so it cannot supply the per-child amount without an allocation rule; "
