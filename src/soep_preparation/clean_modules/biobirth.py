@@ -147,8 +147,8 @@ def drop_unlisted_children(
     """
     listed = long[child_variables].notna().any(axis=1)
     person = [long["hh_id_original"], long["p_id"]]
-    without_listed_child = ~listed.groupby(person).transform("any")
-    first_slot = long["tmp_child_number"] == long.groupby(person)[
+    without_listed_child = ~listed.groupby(person, dropna=False).transform("any")
+    first_slot = long["tmp_child_number"] == long.groupby(person, dropna=False)[
         "tmp_child_number"
     ].transform("min")
     out = long.assign(

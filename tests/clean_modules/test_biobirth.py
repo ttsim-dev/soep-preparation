@@ -40,3 +40,10 @@ def test_drop_unlisted_children_marks_the_child_number_missing_without_children(
     """The row of a person without a listed child carries no child number."""
     out = drop_unlisted_children(_long(), child_variables=CHILD_VARIABLES)
     assert out.loc[out["p_id"] == CHILDLESS, "tmp_child_number"].isna().all()
+
+
+def test_drop_unlisted_children_keeps_persons_without_a_household_id() -> None:
+    """A missing original household id does not drop a person's rows."""
+    long = _long().assign(hh_id_original=pd.array([1, 1, None, None], dtype="Int64"))
+    out = drop_unlisted_children(long, child_variables=CHILD_VARIABLES)
+    assert out["p_id"].tolist() == [PARENT, CHILDLESS]
