@@ -106,28 +106,52 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
         "tmp_p_id_child",
         "tmp_birth_month_child",
     ]
-    # We remove rows that are completely empty that is,
-    # all non-existent children of the potential enumeration are dropped
-    # (individual with 2 children only takes two rows in the final data)
-    tmp_long = (
+    tmp_long = drop_unlisted_children(
         pd.wide_to_long(
             wide,
             stubnames=prev_wide_variables,
             i=["hh_id_original", "p_id"],
             j="tmp_child_number",
             sep="_",
-        )
-        .dropna(subset=prev_wide_variables, how="all")
-        .reset_index()
+        ).reset_index(),
+        child_variables=prev_wide_variables,
     )
 
     long = pd.DataFrame()
     long["hh_id_original"] = tmp_long["hh_id_original"]
     long["p_id"] = tmp_long["p_id"]
     long["number_of_children"] = tmp_long["tmp_number_of_children"]
-    long["child_number"] = tmp_long["tmp_child_number"]
+    long["child_number"] = apply_smallest_int_dtype(tmp_long["tmp_child_number"])
     long["p_id_child"] = tmp_long["tmp_p_id_child"]
     long["birth_year_child"] = tmp_long["tmp_birth_year_child"]
     long["birth_month_child"] = tmp_long["tmp_birth_month_child"]
 
     return long
+
+
+def drop_unlisted_children(
+    long: pd.DataFrame, child_variables: list[str]
+) -> pd.DataFrame:
+    """Drop the enumeration slots without a child.
+
+    A person with two children keeps two rows. A person who lists no child, the
+    childless among them, keeps one row with the child variables and the child
+    number missing, so that their number of children survives.
+
+    Args:
+        long: The enumeration slots, one row per person and potential child.
+        child_variables: The variables describing a child.
+
+    Returns:
+        One row per listed child, and one per person without a listed child.
+    """
+    listed = long[child_variables].notna().any(axis=1)
+    person = [long["hh_id_original"], long["p_id"]]
+    without_listed_child = ~listed.groupby(person).transform("any")
+    first_slot = long["tmp_child_number"] == long.groupby(person)[
+        "tmp_child_number"
+    ].transform("min")
+    out = long.assign(
+        tmp_child_number=long["tmp_child_number"].astype("Int64").where(listed)
+    )
+    return out.loc[listed | (without_listed_child & first_slot)].reset_index(drop=True)
