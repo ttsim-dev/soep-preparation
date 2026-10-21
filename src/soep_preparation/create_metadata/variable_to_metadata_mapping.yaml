@@ -1609,7 +1609,7 @@ building_year_hh_min:
     - 2023
     - 2024
 child_number:
-  dtype: int64
+  dtype: int8[pyarrow]
   module: biobirth
   reference: time_invariant
   survey_years: null
