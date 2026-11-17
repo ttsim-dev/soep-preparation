@@ -255,6 +255,7 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
             },
         ),
     )
+    out["year_of_death"] = clean_year_of_death(raw_data["todjahr"])
     out["sexual_orientation"] = object_to_str_categorical(raw_data["sexor"])
     out["partnership_status"] = object_to_str_categorical(raw_data["partner"])
     out["partner_p_id"] = object_to_int(
@@ -277,3 +278,19 @@ def clean(raw_data: pd.DataFrame) -> pd.DataFrame:
     # the linkage and missing otherwise.
     out["rv_id"] = object_to_int(raw_data["rv_id"])
     return out
+
+
+def clean_year_of_death(todjahr: pd.Series) -> pd.Series:
+    """Return the four-digit year of death, missing where it is not known.
+
+    SOEP codes `-2` for persons not known to be deceased and `-1` for persons known
+    to be deceased whose year of death is unknown; both become missing.
+    """
+    return object_to_int(
+        todjahr.replace(
+            {
+                -1: "[-1] Keine Angabe",
+                -2: "[-2] Trifft nicht zu",
+            },
+        ),
+    )

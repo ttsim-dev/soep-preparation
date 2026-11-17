@@ -536,6 +536,7 @@ _TIME_INVARIANT = (
     "religion_mother",
     "residence_childhood",
     "rv_id",
+    "year_of_death",
     "year_of_immigration",
     "years_worked_last_job",
 )
