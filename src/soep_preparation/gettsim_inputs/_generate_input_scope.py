@@ -18,7 +18,7 @@ Usage (from the workspace root):
         soep-preparation/src/soep_preparation/gettsim_inputs/_generate_input_scope.py
 """
 
-import datetime
+import datetime as dt
 import importlib
 import json
 from pathlib import Path
@@ -29,22 +29,22 @@ from soep_preparation.gettsim_inputs.mapping import BASE_MAPPING
 SCOPE_PATH = Path(__file__).with_name("gettsim_input_scope.json")
 # GETTSIM rules carry a far-future default end of 2099-12-31; covering past it would add
 # a spurious tail period in which every dated rule has expired.
-_FIRST_COVERED_DATE = datetime.date(1984, 1, 1)
-_LAST_COVERED_DATE = datetime.date(2099, 12, 31)
-_LOW_CONFIDENCE_BEFORE = datetime.date(2005, 1, 1)
+_FIRST_COVERED_DATE = dt.date(1984, 1, 1)
+_LAST_COVERED_DATE = dt.date(2099, 12, 31)
+_LOW_CONFIDENCE_BEFORE = dt.date(2005, 1, 1)
 
 
-def _gettsim_boundary_dates() -> list[datetime.date]:
+def _gettsim_boundary_dates() -> list[dt.date]:
     """Return the sorted policy-date boundaries of GETTSIM's column objects."""
     gettsim = importlib.import_module("gettsim")
     main, main_target = gettsim.main, gettsim.MainTarget
     objects = main(
         main_target=main_target.orig_policy_objects.column_objects_and_param_functions,
     )
-    boundaries: set[datetime.date] = set()
+    boundaries: set[dt.date] = set()
     for obj in objects.values():
         boundaries.add(obj.start_date)
-        boundaries.add(obj.end_date + datetime.timedelta(days=1))
+        boundaries.add(obj.end_date + dt.timedelta(days=1))
     cuts = {
         date for date in boundaries if _FIRST_COVERED_DATE < date <= _LAST_COVERED_DATE
     }
@@ -52,7 +52,7 @@ def _gettsim_boundary_dates() -> list[datetime.date]:
     return sorted(cuts)
 
 
-def _in_scope_at(policy_date: datetime.date) -> frozenset[str]:
+def _in_scope_at(policy_date: dt.date) -> frozenset[str]:
     """Return the `BASE_MAPPING` qnames in GETTSIM's environment at `policy_date`."""
     gettsim = importlib.import_module("gettsim")
     main, main_target = gettsim.main, gettsim.MainTarget
@@ -68,7 +68,7 @@ def _in_scope_at(policy_date: datetime.date) -> frozenset[str]:
 def build_periods() -> list[dict[str, Any]]:
     """Build the collapsed list of policy periods with their in-scope qnames."""
     cuts = _gettsim_boundary_dates()
-    ends = [*(cut - datetime.timedelta(days=1) for cut in cuts[1:]), _LAST_COVERED_DATE]
+    ends = [*(cut - dt.timedelta(days=1) for cut in cuts[1:]), _LAST_COVERED_DATE]
 
     periods: list[dict[str, Any]] = []
     for start, end in zip(cuts, ends, strict=True):

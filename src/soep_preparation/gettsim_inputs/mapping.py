@@ -37,7 +37,7 @@ importable and fails if it has drifted. Periods that start before 2005 are flagg
 early-date slice may omit nodes.
 """
 
-import datetime
+import datetime as dt
 import functools
 import json
 from dataclasses import dataclass
@@ -322,9 +322,9 @@ _SCOPE_PATH: Final = Path(__file__).with_name("gettsim_input_scope.json")
 class MappingPeriod:
     """One policy-date period over which GETTSIM's in-scope qnames are constant."""
 
-    start_date: datetime.date
+    start_date: dt.date
     """First policy date in the period (inclusive)."""
-    end_date: datetime.date
+    end_date: dt.date
     """Last policy date in the period (inclusive)."""
     low_confidence: bool
     """`True` for periods starting before 2005, where GETTSIM's policy environment is
@@ -339,8 +339,8 @@ def _periods() -> tuple[MappingPeriod, ...]:
     raw = json.loads(_SCOPE_PATH.read_text(encoding="utf-8"))
     periods = tuple(
         MappingPeriod(
-            start_date=datetime.date.fromisoformat(entry["start_date"]),
-            end_date=datetime.date.fromisoformat(entry["end_date"]),
+            start_date=dt.date.fromisoformat(entry["start_date"]),
+            end_date=dt.date.fromisoformat(entry["end_date"]),
             low_confidence=entry["low_confidence"],
             in_scope=frozenset(entry["in_scope"]),
         )
@@ -354,7 +354,7 @@ def mapping_periods() -> tuple[MappingPeriod, ...]:
     return _periods()
 
 
-def period_for_date(policy_date: datetime.date | str) -> MappingPeriod:
+def period_for_date(policy_date: dt.date | str) -> MappingPeriod:
     """Return the mapping period containing `policy_date`.
 
     Args:
@@ -383,7 +383,7 @@ def period_for_date(policy_date: datetime.date | str) -> MappingPeriod:
 
 
 def get_soep_to_gettsim(
-    policy_date: datetime.date | str,
+    policy_date: dt.date | str,
 ) -> MappingProxyType[str, str | None]:
     """Return the SOEP-to-GETTSIM mapping in scope at `policy_date`.
 
@@ -409,7 +409,7 @@ def get_soep_to_gettsim(
     )
 
 
-def _coerce_policy_date(policy_date: datetime.date | str) -> datetime.date:
+def _coerce_policy_date(policy_date: dt.date | str) -> dt.date:
     """Coerce a policy date given as an ISO 8601 string to a `datetime.date`.
 
     Args:
@@ -422,5 +422,5 @@ def _coerce_policy_date(policy_date: datetime.date | str) -> datetime.date:
         ValueError: If `policy_date` is a string not in ISO 8601 date format.
     """
     if isinstance(policy_date, str):
-        return datetime.date.fromisoformat(policy_date)
+        return dt.date.fromisoformat(policy_date)
     return policy_date

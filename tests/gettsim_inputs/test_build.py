@@ -1,6 +1,6 @@
 """Tests for building a GETTSIM-ready dataset from a SOEP final dataset."""
 
-import datetime
+import datetime as dt
 
 import pandas as pd
 import pytest
@@ -40,7 +40,7 @@ def test_build_renames_living_space_to_gettsim_qname() -> None:
 
 def test_build_with_policy_date_renames_living_space() -> None:
     """Building with a date-resolved mapping renames the living-space column."""
-    mapping = get_soep_to_gettsim(datetime.date(2023, 1, 1))
+    mapping = get_soep_to_gettsim(dt.date(2023, 1, 1))
     out = build_gettsim_inputs(_synthetic_final_dataset(), mapping=mapping)
     assert "wohnen__wohnfläche_hh" in out.columns
 
