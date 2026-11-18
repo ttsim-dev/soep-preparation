@@ -113,7 +113,7 @@ _BASE: Final[dict[str, str | None]] = {
     "sozialversicherung__rente__erwerbsminderung__voll_erwerbsgemindert": None,
     "sozialversicherung__rente__freiwillige_beitragsmonate": None,
     "sozialversicherung__rente__grundrente__bewertungszeiten_monate": None,
-    "sozialversicherung__rente__grundrente__einkommen_vorjahr_m_ehe": None,
+    "sozialversicherung__rente__grundrente__einkommen_vorvorjahr_m_ehe": None,
     "sozialversicherung__rente__grundrente__grundrentenzeiten_monate": None,
     "sozialversicherung__rente__grundrente__mean_entgeltpunkte": None,
     "sozialversicherung__rente__jahr_renteneintritt": None,
@@ -285,11 +285,12 @@ GAP_NOTES: Final[MappingProxyType[str, str]] = MappingProxyType(
             "maintenance-received amount is constructed."
         ),
         "bürgergeld__bezug_im_vorjahr": "Derive from prior-year Bürgergeld receipt.",
-        "sozialversicherung__rente__grundrente__einkommen_vorjahr_m_ehe": (
+        "sozialversicherung__rente__grundrente__einkommen_vorvorjahr_m_ehe": (
             "§ 97a SGB VI income (zvE plus tax-free pension share plus Abgeltungsteuer "
             "capital income); SOEP has no zvE. Compute it with the GETTSIM target "
-            "`sozialversicherung__rente__grundrente__einkommen_im_folgejahr_m_ehe` "
-            "in a run for the previous year."
+            "`sozialversicherung__rente__grundrente__"
+            "einkommen_für_einkommensanrechnung_im_übernächsten_jahr_m_ehe` "
+            "in a run for the year before the previous one."
         ),
         "kindergeld__betrag_m": (
             "Computed node (per child). SOEP `kindergeld_m_hh` is a household total, "
