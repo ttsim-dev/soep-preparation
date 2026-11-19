@@ -6,7 +6,7 @@ repos:
       - id: check-useless-excludes
       # - id: identity  # Prints all files passed to pre-commits. Debugging.
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: v2.29.4
+    rev: v2.30.6
     hooks:
       - id: pyproject-fmt
   - repo: https://github.com/lyz-code/yamlfix
@@ -49,11 +49,11 @@ repos:
       - id: yamllint
         exclude: variable_to_metadata_mapping\.yaml
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.38.0
+    rev: 0.39.0
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.8
+    rev: v0.17.5
     hooks:
       - id: ruff-check
         types_or:
@@ -68,14 +68,14 @@ repos:
           - pyi
           - python
   - repo: https://github.com/astral-sh/ty-pre-commit
-    rev: v0.0.83
+    rev: v0.0.104
     hooks:
       - id: ty
         # Run ty directly so import resolution uses `[tool.ty] environment.python`.
         # Keep this dependency pin aligned with the hook revision above.
         entry: ty check
         additional_dependencies:
-          - ty==0.0.83
+          - ty==0.0.104
   - repo: https://github.com/executablebooks/mdformat
     rev: 1.0.0
     hooks:
@@ -124,6 +124,15 @@ repos:
         files: ^(pyproject\.toml|pixi\.toml|pixi\.lock)$
         stages:
           - pre-push
+      # Whole-repository analysis: a change in one file can orphan code in another.
+      - id: dead-code
+        name: no internal or test code without a caller
+        entry: python .ai-instructions/hooks/dead_code.py
+        language: python
+        additional_dependencies:
+          - vulture==2.16
+        pass_filenames: false
+        files: \.py$|^pyproject\.toml$
       - id: no-hardcoded-user-paths
         name: no hardcoded user-specific absolute paths
         language: pygrep
@@ -152,10 +161,13 @@ ci:
   # the GitHub Actions `run-ty` job covers type checking, and pixi-lock-check
   # needs a pixi binary that pre-commit.ci does not provide.
   #
-  # `pre-push-hooks-installed` runs a file from the `.ai-instructions` submodule,
-  # which pre-commit.ci does not clone, and it asks about the local clone, which
-  # is meaningless on a runner anyway.
+  # The hooks above that run files from the `.ai-instructions` submodule
+  # fail as a missing file on pre-commit.ci, which clones without submodules.
+  # `pre-push-hooks-installed` asks about the local clone and is meaningless on
+  # a runner anyway; `dead-code` runs in the GitHub Actions `run-ty` job, which
+  # checks out the submodule.
   skip:
     - ty
     - pixi-lock-check
     - pre-push-hooks-installed
+    - dead-code

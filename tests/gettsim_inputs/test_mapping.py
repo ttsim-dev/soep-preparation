@@ -5,7 +5,7 @@ the keys are GETTSIM qnames (`__`-qualified) rather than SOEP names, and the dat
 selector returns exactly the qnames in GETTSIM's policy environment at that date.
 """
 
-import datetime
+import datetime as dt
 import itertools
 
 import pytest
@@ -87,78 +87,74 @@ def test_kindergeld_amount_is_unmapped_with_documented_gap() -> None:
 
 def test_weiblich_is_in_scope_before_2018() -> None:
     """`weiblich` is a GETTSIM input through 2017 (Altersrente für Frauen)."""
-    assert "weiblich" in get_soep_to_gettsim(datetime.date(2015, 1, 1))
+    assert "weiblich" in get_soep_to_gettsim(dt.date(2015, 1, 1))
 
 
 def test_weiblich_is_out_of_scope_from_2018() -> None:
     """`weiblich` leaves GETTSIM's inputs once the women's pension expires in 2018."""
-    assert "weiblich" not in get_soep_to_gettsim(datetime.date(2019, 1, 1))
+    assert "weiblich" not in get_soep_to_gettsim(dt.date(2019, 1, 1))
 
 
 def test_alg2_einstandspartner_is_in_scope_before_buergergeld() -> None:
     """The ALG II Einstandspartner pointer is in scope before Bürgergeld (2023)."""
-    mapping = get_soep_to_gettsim(datetime.date(2015, 1, 1))
+    mapping = get_soep_to_gettsim(dt.date(2015, 1, 1))
     assert mapping["arbeitslosengeld_2__p_id_einstandspartner"] == "partner_p_id"
 
 
 def test_buergergeld_einstandspartner_replaces_alg2_from_2023() -> None:
     """From 2023 the Bürgergeld Einstandspartner pointer is in scope, not ALG II's."""
-    mapping = get_soep_to_gettsim(datetime.date(2024, 1, 1))
+    mapping = get_soep_to_gettsim(dt.date(2024, 1, 1))
     assert "arbeitslosengeld_2__p_id_einstandspartner" not in mapping
     assert mapping["bürgergeld__p_id_einstandspartner"] == "partner_p_id"
 
 
 def test_erziehungsgeld_is_in_scope_in_its_pre_2007_window() -> None:
     """The pre-2007 Erziehungsgeld nodes are in scope at an early policy date."""
-    assert "erziehungsgeld__budgetsatz" in get_soep_to_gettsim(
-        datetime.date(2005, 6, 1)
-    )
+    assert "erziehungsgeld__budgetsatz" in get_soep_to_gettsim(dt.date(2005, 6, 1))
 
 
 def test_erziehungsgeld_is_out_of_scope_after_2007() -> None:
     """Erziehungsgeld leaves scope once Elterngeld replaces it from 2007."""
-    assert "erziehungsgeld__budgetsatz" not in get_soep_to_gettsim(
-        datetime.date(2015, 1, 1)
-    )
+    assert "erziehungsgeld__budgetsatz" not in get_soep_to_gettsim(dt.date(2015, 1, 1))
 
 
 def test_resolved_mapping_values_match_base() -> None:
     """A date-resolved mapping reuses the date-invariant `BASE_MAPPING` values."""
-    mapping = get_soep_to_gettsim(datetime.date(2020, 1, 1))
+    mapping = get_soep_to_gettsim(dt.date(2020, 1, 1))
     assert all(BASE_MAPPING[qname] == value for qname, value in mapping.items())
 
 
 def test_resolved_qnames_are_a_subset_of_base() -> None:
     """Every resolved qname is one of the candidate qnames in `BASE_MAPPING`."""
-    mapping = get_soep_to_gettsim(datetime.date(2020, 1, 1))
+    mapping = get_soep_to_gettsim(dt.date(2020, 1, 1))
     assert set(mapping) <= set(BASE_MAPPING)
 
 
 def test_date_before_coverage_raises() -> None:
     """A policy date before the covered range raises `ValueError`."""
     with pytest.raises(ValueError, match="No GETTSIM-input mapping period"):
-        get_soep_to_gettsim(datetime.date(1900, 1, 1))
+        get_soep_to_gettsim(dt.date(1900, 1, 1))
 
 
 def test_pre_2005_period_is_low_confidence() -> None:
     """Periods starting before 2005 are flagged low-confidence."""
-    assert period_for_date(datetime.date(2000, 1, 1)).low_confidence is True
+    assert period_for_date(dt.date(2000, 1, 1)).low_confidence is True
 
 
 def test_recent_period_is_not_low_confidence() -> None:
     """A recent period is not flagged low-confidence."""
-    assert period_for_date(datetime.date(2024, 1, 1)).low_confidence is False
+    assert period_for_date(dt.date(2024, 1, 1)).low_confidence is False
 
 
 def test_period_for_date_accepts_iso_string() -> None:
     """An ISO date string selects the same period as the equivalent `date`."""
-    assert period_for_date("2024-01-01") == period_for_date(datetime.date(2024, 1, 1))
+    assert period_for_date("2024-01-01") == period_for_date(dt.date(2024, 1, 1))
 
 
 def test_get_soep_to_gettsim_accepts_iso_string() -> None:
     """An ISO date string resolves the same mapping as the equivalent `date`."""
     assert dict(get_soep_to_gettsim("2024-01-01")) == dict(
-        get_soep_to_gettsim(datetime.date(2024, 1, 1))
+        get_soep_to_gettsim(dt.date(2024, 1, 1))
     )
 
 
@@ -171,7 +167,7 @@ def test_period_for_date_rejects_malformed_string() -> None:
 def test_periods_are_contiguous_and_non_overlapping() -> None:
     """Consecutive periods join with no gap and no overlap."""
     periods = mapping_periods()
-    one_day = datetime.timedelta(days=1)
+    one_day = dt.timedelta(days=1)
     assert all(
         later.start_date == earlier.end_date + one_day
         for earlier, later in itertools.pairwise(periods)

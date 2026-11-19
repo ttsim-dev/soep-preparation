@@ -54,10 +54,10 @@ channels = [ "conda-forge" ]
 platforms = [ "linux-64", "osx-64", "osx-arm64", "win-64" ]
 [tool.pixi.dependencies]
 deepdiff = "*"
-jupyter-book = ">=2"
+jupyter-book = ">=2.1.7"
 jupyterlab = "*"
-mystmd = "*"
-prek = "*"
+mystmd = ">=1.13.0"
+prek = ">=0.5.9"
 pygments = ">=2.19.2"
 pygraphviz = "*"
 scikit-learn = ">=1.9.0,<2"
@@ -154,6 +154,9 @@ expand_tables = [
 collapse_tables = [ "tool.hatch", "tool.pytask", "tool.pytest", "tool.ty" ]
 
 [tool.ty]
+# The `.ai-instructions` hook scripts import tools that exist only in their
+# pre-commit environments (vulture), so ty cannot resolve them.
+src.exclude = [ ".ai-instructions" ]
 # ty resolves third-party imports from this pixi env. The pre-commit hook runs
 # ty directly; pixi owns the project environment. Run `pixi install` once.
 environment.python = ".pixi/envs/py314"
@@ -174,6 +177,13 @@ rules.unused-ignore-comment = "error"
 ini_options.norecursedirs = [ "docs", "pro-audit-*" ]
 ini_options.addopts = [ "--pdbcls=pdbp:Pdb" ]
 ini_options.filterwarnings = []
+
+# Read by the `dead-code` hook (`.ai-instructions/hooks/dead_code.py`). The package
+# is listed under `public`: its non-underscore functions are importable helpers
+# described in `docs/`, so only `_`-private definitions are reported.
+[tool.dead-code]
+consumers = [ "src", "docs" ]
+public = [ "src/soep_preparation/" ]
 
 [tool.yamlfix]
 line_length = 88
