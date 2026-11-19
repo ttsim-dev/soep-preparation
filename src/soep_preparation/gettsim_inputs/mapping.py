@@ -238,7 +238,8 @@ GAP_NOTES: Final[MappingProxyType[str, str]] = MappingProxyType(
             "Derive from a number-of-children variable."
         ),
         "sozialversicherung__rente__bezieht_altersrente": (
-            "Derive bool from a pension-receipt variable."
+            "Derive bool from an old-age-pension receipt variable. Receipt of an "
+            "Erwerbsminderungsrente or a survivor's pension must not set it."
         ),
         "sozialversicherung__rente__entgeltpunkte": (
             "Not in SOEP; needs FDZ-RV linkage (`rv_id`)."
